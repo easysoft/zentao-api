@@ -58,9 +58,19 @@ function coerceValue(value: unknown, type?: string): unknown {
     return Number.isNaN(numberValue) ? value : numberValue;
   }
   if (type === 'boolean') {
-    if (value === 'true') return true;
-    if (value === 'false') return false;
-    return Boolean(value);
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') {
+      if (value === 1) return true;
+      if (value === 0) return false;
+      return value;
+    }
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
+      if (['false', '0', 'no', 'off'].includes(normalized)) return false;
+      return value;
+    }
+    return value;
   }
   return value;
 }

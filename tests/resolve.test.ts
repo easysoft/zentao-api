@@ -138,6 +138,44 @@ describe('resolveModuleCommand', () => {
     });
   });
 
+  test('coerces common boolean string values without treating every non-empty string as true', () => {
+    defineModules({
+      name: 'flagform',
+      actions: [
+        {
+          name: 'create',
+          type: 'create',
+          method: 'post',
+          path: '/flag-forms',
+          resultType: 'object',
+          requestBody: {
+            type: 'object',
+            schema: {
+              type: 'object',
+              properties: {
+                enabled: { type: 'boolean' },
+                archived: { type: 'boolean' },
+                visible: { type: 'boolean' },
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    const command = resolveModuleCommand(getModule('flagform'), 'create', {
+      enabled: '0',
+      archived: 'off',
+      visible: '1',
+    });
+
+    expect(command.data).toEqual({
+      enabled: false,
+      archived: false,
+      visible: true,
+    });
+  });
+
   test('preserves explicit object values from data for array schema fields', () => {
     defineModules({
       name: 'iteration',
