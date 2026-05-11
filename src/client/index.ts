@@ -1,5 +1,5 @@
 import { ZentaoError } from '../misc/errors.js';
-import { assertInsecureSupported, withInsecureTls } from '../misc/environment.js';
+import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
 import { addProfile, switchProfile } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
@@ -96,21 +96,19 @@ export class ZentaoClient {
     }
 
     try {
-      return await withInsecureTls(insecure, async () => {
-        const response = await fetch(url, init);
-        if (!response.ok) {
-          throw new ZentaoError('E_HTTP_ERROR', {
-            status: response.status,
-            statusText: response.statusText,
-          }, {
-            url: response.url,
-            status: response.status,
-            statusText: response.statusText,
-            body: await response.text().catch(() => undefined),
-          });
-        }
-        return parseResponse(response);
-      });
+      const response = await fetchWithInsecureTls(insecure, url, init);
+      if (!response.ok) {
+        throw new ZentaoError('E_HTTP_ERROR', {
+          status: response.status,
+          statusText: response.statusText,
+        }, {
+          url: response.url,
+          status: response.status,
+          statusText: response.statusText,
+          body: await response.text().catch(() => undefined),
+        });
+      }
+      return parseResponse(response);
     } catch (error) {
       if (error instanceof ZentaoError) throw error;
       if (error instanceof DOMException && error.name === 'AbortError') {

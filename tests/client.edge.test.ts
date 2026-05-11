@@ -111,17 +111,25 @@ describe('ZentaoClient edge cases', () => {
 });
 
 describe('insecure TLS environment handling', () => {
-  test('withInsecureTls restores an unset NODE_TLS_REJECT_UNAUTHORIZED value', async () => {
+  test('insecure requests do not mutate NODE_TLS_REJECT_UNAUTHORIZED while pending', async () => {
     const previous = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    let valueDuringRequest: string | undefined;
+    const server = createMockServer(async () => {
+      valueDuringRequest = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+      return Response.json({ status: 'success' });
+    });
 
     try {
       delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
 
-      const valueDuringRequest = await withInsecureTls(true, async () => process.env.NODE_TLS_REJECT_UNAUTHORIZED);
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      await client.get('/products');
+      await client.request('/products', { insecure: true });
 
-      expect(valueDuringRequest).toBe('0');
+      expect(valueDuringRequest).toBeUndefined();
       expect(process.env.NODE_TLS_REJECT_UNAUTHORIZED).toBeUndefined();
     } finally {
+      server.stop();
       if (previous === undefined) {
         delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
       } else {
@@ -130,7 +138,7 @@ describe('insecure TLS environment handling', () => {
     }
   });
 
-  test('withInsecureTls restores an existing NODE_TLS_REJECT_UNAUTHORIZED value', async () => {
+  test('withInsecureTls leaves existing NODE_TLS_REJECT_UNAUTHORIZED values untouched', async () => {
     const previous = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
 
     try {
@@ -138,7 +146,7 @@ describe('insecure TLS environment handling', () => {
 
       const valueDuringRequest = await withInsecureTls(true, async () => process.env.NODE_TLS_REJECT_UNAUTHORIZED);
 
-      expect(valueDuringRequest).toBe('0');
+      expect(valueDuringRequest).toBe('1');
       expect(process.env.NODE_TLS_REJECT_UNAUTHORIZED).toBe('1');
     } finally {
       if (previous === undefined) {
