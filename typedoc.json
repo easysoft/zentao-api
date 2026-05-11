@@ -8,6 +8,7 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
+  "disableSources": true,
   "githubPages": false,
   "hideGenerator": true,
   "sidebar": {
