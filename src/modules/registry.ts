@@ -15,13 +15,27 @@ export interface DefineModulesOptions {
 let modules = cloneModules(BUILTIN_MODULES);
 let moduleMap = buildModuleMap(modules);
 
+function cloneValue<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(cloneValue) as T;
+  }
+  if (value && typeof value === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      result[key] = cloneValue(nestedValue);
+    }
+    return result as T;
+  }
+  return value;
+}
+
 function cloneActions(source: readonly ModuleAction[]): ModuleAction[] {
-  return source.map((action) => ({ ...action }));
+  return source.map((action) => cloneValue(action));
 }
 
 function cloneModules(source: readonly ModuleDefinition[]): ModuleDefinition[] {
   return source.map((module) => ({
-    ...module,
+    ...cloneValue(module),
     actions: cloneActions(module.actions),
   }));
 }
@@ -35,7 +49,7 @@ function mergeActions(base: readonly ModuleAction[], extension: readonly ModuleA
   const next = cloneActions(base);
   for (const action of extension) {
     const index = findActionIndex(next, String(action.name));
-    const clone = { ...action };
+    const clone = cloneValue(action);
     if (index >= 0) {
       next[index] = clone;
     } else {
@@ -79,7 +93,7 @@ export function defineModules(input: ModuleDefinition | ModuleDefinition[], opti
     validateModule(module);
     const key = module.name.toLowerCase();
     const index = modules.findIndex((item) => item.name.toLowerCase() === key);
-    const next = { ...module, actions: cloneActions(module.actions) };
+    const next = { ...cloneValue(module), actions: cloneActions(module.actions) };
     if (index >= 0) {
       modules[index] = options.replace ? next : mergeModule(modules[index], module);
     } else {
@@ -99,7 +113,7 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
   for (const action of asArray(input)) {
     validateAction(action);
     const index = findActionIndex(module.actions, String(action.name));
-    const next = { ...action };
+    const next = cloneValue(action);
     // 同名动作替换，未知动作追加；不做深度合并，避免 schema/数组字段出现隐式规则。
     if (index >= 0) {
       module.actions[index] = next;
@@ -115,7 +129,7 @@ export function getModule(moduleName: string): ModuleDefinition {
   if (!module) {
     throw new ZentaoError('E_INVALID_MODULE', { module: moduleName });
   }
-  return module;
+  return cloneModules([module])[0];
 }
 
 /** 获取指定模块动作；`ls` 会作为 `list` 的别名处理。 */
@@ -123,12 +137,12 @@ export function getModuleAction(moduleName: string, actionName: string): ModuleA
   const module = getModule(moduleName);
   const normalized = actionName === 'ls' ? 'list' : actionName;
   const direct = module.actions.find((action) => String(action.name).toLowerCase() === normalized.toLowerCase());
-  if (direct) return direct;
+  if (direct) return cloneValue(direct);
 
   const crud = new Set(['list', 'get', 'create', 'update', 'delete']);
   if (!crud.has(normalized)) {
     const custom = module.actions.find((action) => action.type === 'action' && String(action.name).toLowerCase() === normalized.toLowerCase());
-    if (custom) return custom;
+    if (custom) return cloneValue(custom);
   }
 
   throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });

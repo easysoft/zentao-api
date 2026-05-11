@@ -128,6 +128,18 @@ describe('module registry', () => {
     expect(() => getModule('missing')).toThrow('module');
     expect(() => getModuleAction('product', 'missing')).toThrow('action');
   });
+
+  test('getModule and getModuleAction do not expose mutable registry internals', () => {
+    const module = getModule('product');
+    module.actions.length = 0;
+
+    expect(getModuleAction('product', 'list').path).toBe('/products');
+
+    const action = getModuleAction('product', 'list');
+    action.path = '/mutated-products';
+
+    expect(getModuleAction('product', 'list').path).toBe('/products');
+  });
 });
 
 describe('high-level request', () => {
