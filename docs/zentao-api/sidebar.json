@@ -1,0 +1,87 @@
+[
+  {
+    "text": "ZenTao API",
+    "items": [
+      {
+        "text": "概览",
+        "link": "/zentao-api/"
+      },
+      {
+        "text": "用户 (user)",
+        "link": "/zentao-api/user"
+      },
+      {
+        "text": "项目集 (program)",
+        "link": "/zentao-api/program"
+      },
+      {
+        "text": "产品 (product)",
+        "link": "/zentao-api/product"
+      },
+      {
+        "text": "项目 (project)",
+        "link": "/zentao-api/project"
+      },
+      {
+        "text": "执行 (execution)",
+        "link": "/zentao-api/execution"
+      },
+      {
+        "text": "产品计划 (productplan)",
+        "link": "/zentao-api/productplan"
+      },
+      {
+        "text": "需求 (story)",
+        "link": "/zentao-api/story"
+      },
+      {
+        "text": "业务需求 (epic)",
+        "link": "/zentao-api/epic"
+      },
+      {
+        "text": "用户需求 (requirement)",
+        "link": "/zentao-api/requirement"
+      },
+      {
+        "text": "Bug (bug)",
+        "link": "/zentao-api/bug"
+      },
+      {
+        "text": "测试用例 (testcase)",
+        "link": "/zentao-api/testcase"
+      },
+      {
+        "text": "任务 (task)",
+        "link": "/zentao-api/task"
+      },
+      {
+        "text": "反馈 (feedback)",
+        "link": "/zentao-api/feedback"
+      },
+      {
+        "text": "工单 (ticket)",
+        "link": "/zentao-api/ticket"
+      },
+      {
+        "text": "应用 (system)",
+        "link": "/zentao-api/system"
+      },
+      {
+        "text": "版本 (build)",
+        "link": "/zentao-api/build"
+      },
+      {
+        "text": "测试单 (testtask)",
+        "link": "/zentao-api/testtask"
+      },
+      {
+        "text": "发布 (release)",
+        "link": "/zentao-api/release"
+      },
+      {
+        "text": "附件 (file)",
+        "link": "/zentao-api/file"
+      }
+    ]
+  }
+]

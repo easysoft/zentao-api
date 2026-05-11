@@ -1,0 +1,240 @@
+[
+  {
+    "text": "Classes",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "ZentaoClient",
+        "link": "/reference/classes/ZentaoClient.md"
+      },
+      {
+        "text": "ZentaoError",
+        "link": "/reference/classes/ZentaoError.md"
+      }
+    ]
+  },
+  {
+    "text": "Interfaces",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "ApiListResponse",
+        "link": "/reference/interfaces/ApiListResponse.md"
+      },
+      {
+        "text": "ApiResponse",
+        "link": "/reference/interfaces/ApiResponse.md"
+      },
+      {
+        "text": "ClientRequestOptions",
+        "link": "/reference/interfaces/ClientRequestOptions.md"
+      },
+      {
+        "text": "DefineModulesOptions",
+        "link": "/reference/interfaces/DefineModulesOptions.md"
+      },
+      {
+        "text": "GlobalOptions",
+        "link": "/reference/interfaces/GlobalOptions.md"
+      },
+      {
+        "text": "LoginResponse",
+        "link": "/reference/interfaces/LoginResponse.md"
+      },
+      {
+        "text": "ModuleAction",
+        "link": "/reference/interfaces/ModuleAction.md"
+      },
+      {
+        "text": "ModuleActionPagerGetterMap",
+        "link": "/reference/interfaces/ModuleActionPagerGetterMap.md"
+      },
+      {
+        "text": "ModuleActionParam",
+        "link": "/reference/interfaces/ModuleActionParam.md"
+      },
+      {
+        "text": "ModuleActionRequestBody",
+        "link": "/reference/interfaces/ModuleActionRequestBody.md"
+      },
+      {
+        "text": "ModuleActionResponse",
+        "link": "/reference/interfaces/ModuleActionResponse.md"
+      },
+      {
+        "text": "ModuleDefinition",
+        "link": "/reference/interfaces/ModuleDefinition.md"
+      },
+      {
+        "text": "Pager",
+        "link": "/reference/interfaces/Pager.md"
+      },
+      {
+        "text": "RequestOptions",
+        "link": "/reference/interfaces/RequestOptions.md"
+      },
+      {
+        "text": "ResolvedModuleCommand",
+        "link": "/reference/interfaces/ResolvedModuleCommand.md"
+      },
+      {
+        "text": "ResponseData",
+        "link": "/reference/interfaces/ResponseData.md"
+      },
+      {
+        "text": "ServerConfig",
+        "link": "/reference/interfaces/ServerConfig.md"
+      },
+      {
+        "text": "ZentaoClientOptions",
+        "link": "/reference/interfaces/ZentaoClientOptions.md"
+      },
+      {
+        "text": "ZentaoProfile",
+        "link": "/reference/interfaces/ZentaoProfile.md"
+      },
+      {
+        "text": "ZentaoProfileConfig",
+        "link": "/reference/interfaces/ZentaoProfileConfig.md"
+      },
+      {
+        "text": "ZentaoProfileRecord",
+        "link": "/reference/interfaces/ZentaoProfileRecord.md"
+      },
+      {
+        "text": "ZentaoProfilesStore",
+        "link": "/reference/interfaces/ZentaoProfilesStore.md"
+      }
+    ]
+  },
+  {
+    "text": "Type Aliases",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "ErrorCode",
+        "link": "/reference/type-aliases/ErrorCode.md"
+      },
+      {
+        "text": "HttpMethod",
+        "link": "/reference/type-aliases/HttpMethod.md"
+      },
+      {
+        "text": "ListPagerInfo",
+        "link": "/reference/type-aliases/ListPagerInfo.md"
+      },
+      {
+        "text": "ModuleActionMethod",
+        "link": "/reference/type-aliases/ModuleActionMethod.md"
+      },
+      {
+        "text": "ModuleActionName",
+        "link": "/reference/type-aliases/ModuleActionName.md"
+      },
+      {
+        "text": "ModuleActionParamOption",
+        "link": "/reference/type-aliases/ModuleActionParamOption.md"
+      },
+      {
+        "text": "ModuleActionResultRender",
+        "link": "/reference/type-aliases/ModuleActionResultRender.md"
+      },
+      {
+        "text": "ModuleActionResultRenderType",
+        "link": "/reference/type-aliases/ModuleActionResultRenderType.md"
+      },
+      {
+        "text": "ModuleActionResultType",
+        "link": "/reference/type-aliases/ModuleActionResultType.md"
+      },
+      {
+        "text": "ModuleActionType",
+        "link": "/reference/type-aliases/ModuleActionType.md"
+      },
+      {
+        "text": "ModuleName",
+        "link": "/reference/type-aliases/ModuleName.md"
+      }
+    ]
+  },
+  {
+    "text": "Variables",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "BUILD",
+        "link": "/reference/variables/BUILD.md"
+      },
+      {
+        "text": "ERRORS",
+        "link": "/reference/variables/ERRORS.md"
+      },
+      {
+        "text": "VERSION",
+        "link": "/reference/variables/VERSION.md"
+      },
+      {
+        "text": "ZENTAO_PROFILES_STORAGE_KEY",
+        "link": "/reference/variables/ZENTAO_PROFILES_STORAGE_KEY.md"
+      }
+    ]
+  },
+  {
+    "text": "Functions",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "addProfile",
+        "link": "/reference/functions/addProfile.md"
+      },
+      {
+        "text": "defineModuleActions",
+        "link": "/reference/functions/defineModuleActions.md"
+      },
+      {
+        "text": "defineModules",
+        "link": "/reference/functions/defineModules.md"
+      },
+      {
+        "text": "deleteProfile",
+        "link": "/reference/functions/deleteProfile.md"
+      },
+      {
+        "text": "getAllProfiles",
+        "link": "/reference/functions/getAllProfiles.md"
+      },
+      {
+        "text": "getGlobalOptions",
+        "link": "/reference/functions/getGlobalOptions.md"
+      },
+      {
+        "text": "getModule",
+        "link": "/reference/functions/getModule.md"
+      },
+      {
+        "text": "getModuleAction",
+        "link": "/reference/functions/getModuleAction.md"
+      },
+      {
+        "text": "getProfile",
+        "link": "/reference/functions/getProfile.md"
+      },
+      {
+        "text": "getProfileKey",
+        "link": "/reference/functions/getProfileKey.md"
+      },
+      {
+        "text": "request",
+        "link": "/reference/functions/request.md"
+      },
+      {
+        "text": "setGlobalOptions",
+        "link": "/reference/functions/setGlobalOptions.md"
+      },
+      {
+        "text": "switchProfile",
+        "link": "/reference/functions/switchProfile.md"
+      }
+    ]
+  }
+]
