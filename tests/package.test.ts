@@ -29,4 +29,12 @@ describe('package exports', () => {
     expect(packageJson.scripts.check).toContain('smoke:package');
     expect(packageJson.scripts.prepublishOnly).toBe('bun run check');
   });
+
+  test('prevents partial build artifacts when type checking fails', () => {
+    const tsconfig = JSON.parse(readFileSync(join(process.cwd(), 'tsconfig.json'), 'utf8')) as {
+      compilerOptions: Record<string, unknown>;
+    };
+
+    expect(tsconfig.compilerOptions.noEmitOnError).toBe(true);
+  });
 });

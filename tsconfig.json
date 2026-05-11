@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
+    "noEmitOnError": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "lib": ["ES2022", "DOM"],
