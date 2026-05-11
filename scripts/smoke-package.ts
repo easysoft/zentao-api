@@ -21,10 +21,17 @@ function readPackageJson(): {
 }
 
 const packageJson = readPackageJson();
+const browserExport = packageJson.exports['./browser'];
+assert(typeof browserExport === 'string', 'package.json must define a string ./browser export.');
+
+function toPackedPath(file: string): string {
+  return file.replace(/^\.\//, '');
+}
+
 const requiredFiles = [
   packageJson.main,
   packageJson.types,
-  './dist/browser/zentao-api.global.js',
+  browserExport,
 ];
 
 for (const file of requiredFiles) {
@@ -55,7 +62,13 @@ const packOutput = execFileSync('npm', ['pack', '--dry-run', '--json'], {
 const [pack] = JSON.parse(packOutput) as Array<{ files: Array<{ path: string }> }>;
 const packedFiles = new Set(pack.files.map((file) => file.path));
 
-for (const file of ['dist/index.js', 'dist/index.d.ts', 'dist/browser/zentao-api.global.js', 'README.md', 'LICENSE']) {
+for (const file of [
+  toPackedPath(packageJson.main),
+  toPackedPath(packageJson.types),
+  toPackedPath(browserExport),
+  'README.md',
+  'LICENSE',
+]) {
   assert(packedFiles.has(file), `Packed tarball is missing ${file}.`);
 }
 

@@ -37,4 +37,10 @@ describe('package exports', () => {
 
     expect(tsconfig.compilerOptions.noEmitOnError).toBe(true);
   });
+
+  test('package smoke test verifies the configured browser export target', () => {
+    const smokePackageScript = readFileSync(join(process.cwd(), 'scripts/smoke-package.ts'), 'utf8');
+
+    expect(smokePackageScript).toContain("packageJson.exports['./browser']");
+  });
 });
