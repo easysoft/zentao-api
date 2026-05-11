@@ -4,12 +4,10 @@ export { getGlobalOptions, setGlobalOptions } from './misc/global-options.js';
 export {
   ZENTAO_PROFILES_STORAGE_KEY,
   addProfile,
-  addProfle,
   deleteProfile,
   getAllProfiles,
   getProfile,
   getProfileKey,
-  getProfle,
   switchProfile,
 } from './profiles/index.js';
 export {
