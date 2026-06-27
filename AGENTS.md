@@ -25,7 +25,7 @@ Single file: `bun test tests/client.test.ts`
 ## Architecture
 
 - **ZentaoClient** (`src/client/`) — HTTP client; token injection, TLS, timeout, URL construction (`/api.php/v2`), `get/post/put/delete/login`, static `init()` singleton.
-- **request()** (`src/request/`) — `"module/action"` format (e.g. `"bug/list"`), resolves via registry, assembles path/query/body, normalizes into `ResponseData` with pagination.
+- **request()** (`src/request/`) — High-level module requests using `"module"`, `"module/action"` (e.g. `"bug/list"`), or `"module/<objectID>"` shortcuts; resolves via registry, assembles path/query/body, normalizes into `ResponseData` with pagination.
 - **Module Registry** (`src/modules/registry.ts` + `generated.ts`) — All ZenTao modules/actions with path templates, params, body schemas. `generated.ts` is **auto-generated** from `data/zentao-openapi.json` — do not edit manually.
 - **Module Resolution** (`src/modules/resolve.ts`) — Path template substitution, scope inference (product > project > execution), query/body assembly.
 - **Profiles** (`src/profiles/`) — Persistent profiles at `~/.config/zentao/zentao.json` (Node) / `localStorage` (browser). Keyed by `account@server`.

@@ -57,6 +57,14 @@ setGlobalOptions({ recPerPage: '50' });
 const result = await request('product/list', {});
 ```
 
+请求名支持三种写法：
+
+```ts
+await request('product');      // 默认调用 product/list
+await request('product/list'); // 显式调用模块动作
+await request('product/1');    // 详情快捷写法，等价于 product/get + id=1
+```
+
 单次调用的选项会覆盖全局选项：
 
 ```ts
@@ -93,7 +101,7 @@ const client = await ZentaoClient.fromProfile('admin@https://zentao.example.com'
 
 | 函数 | 说明 |
 |------|------|
-| `request(name, params?, options?)` | 按 `"module/action"` 格式调用已注册模块 |
+| `request(name, params?, options?)` | 按 `"module"`、`"module/action"` 或 `"module/<objectID>"` 调用已注册模块 |
 | `defineModules(modules, options?)` | 注册或扩展模块定义 |
 | `defineModuleActions(module, actions)` | 为已有模块追加或替换动作 |
 | `getModule(name)` | 获取模块定义 |
@@ -118,7 +126,7 @@ try {
 }
 ```
 
-> **注意**：服务端返回 `{ status: "fail" }` 时 SDK 不会抛出异常，按原始响应内容返回。仅 HTTP/网络/超时等传输层错误会抛出 `ZentaoError`。
+> **注意**：服务端返回 `{ status: "fail" }` 时 SDK 默认不会抛出异常，按原始响应内容返回。需要把业务失败转为异常时，可在单次请求或全局选项中启用 `throwOnFail`。HTTP/网络/超时等传输层错误始终会抛出 `ZentaoError`。
 
 ## 扩展模块
 
