@@ -63,10 +63,13 @@ export function defineModules(input: ModuleDefinition | ModuleDefinition[], opti
  *
  * 不做深度合并：同名动作整体替换，未知动作追加。这避免在 schema、参数数组等字段上出现隐式合并规则。
  *
+ * `method` / `resultType` 可省略：写入时按动作 `type` 自动推导（见 {@link ModuleAction}）。
+ *
  * @param moduleName - 目标模块名（大小写不敏感）。
  * @param input - 单个或一组动作定义。
- * @throws {ZentaoError} `E_INVALID_MODULE`（模块未注册）或 `E_INVALID_ACTION_DEFINITION`
- *   （动作缺少 `name` / `path` / `method` 等必填字段）。
+ * @throws {ZentaoError} `E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION_DEFINITION`
+ *   （动作缺少 `name` / `path`，或 `method` / `resultType` 类型非法），或
+ *   `E_INDETERMINATE_ACTION_METHOD` / `E_INDETERMINATE_ACTION_RESULT_TYPE`（省略字段且无法按 `type` 推导）。
  */
 export function defineModuleActions(moduleName: string, input: ModuleAction | ModuleAction[]): void {
   const key = moduleName.toLowerCase();
@@ -108,8 +111,9 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
  * @param moduleName - 目标模块名（大小写不敏感）。
  * @param actionName - 目标动作名（大小写不敏感）。
  * @param action - 深度合并的补丁对象，或接收当前动作深克隆并返回完整动作定义的函数。
- * @throws {ZentaoError} `E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION`（动作不存在）
- *   或 `E_INVALID_ACTION_DEFINITION`（合并结果缺少 `name` / `path` / `method` 等必填字段）。
+ * @throws {ZentaoError} `E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION`（动作不存在）、
+ *   `E_INVALID_ACTION_DEFINITION`（合并结果缺少 `name` / `path`，或 `method` / `resultType` 类型非法），
+ *   或 `E_INDETERMINATE_ACTION_METHOD` / `E_INDETERMINATE_ACTION_RESULT_TYPE`（省略字段且无法按 `type` 推导）。
  */
 export function extendModuleAction(
   moduleName: string,

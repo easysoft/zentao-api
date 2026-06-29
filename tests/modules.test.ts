@@ -149,6 +149,85 @@ describe('module registry', () => {
   });
 });
 
+describe('action method / resultType inference', () => {
+  test('infers method and resultType from type when omitted', () => {
+    const cases: Array<{ type: ModuleAction['type']; method: ModuleAction['method']; resultType: ModuleAction['resultType'] }> = [
+      { type: 'list', method: 'get', resultType: 'list' },
+      { type: 'get', method: 'get', resultType: 'object' },
+      { type: 'create', method: 'post', resultType: 'object' },
+      { type: 'update', method: 'put', resultType: 'object' },
+      { type: 'delete', method: 'delete', resultType: 'text' },
+      { type: 'action', method: 'post', resultType: 'text' },
+    ];
+
+    defineModules({
+      name: 'inferred',
+      actions: cases.map(({ type }) => ({
+        name: type,
+        type,
+        path: `/inferred/${type}`,
+      })),
+    });
+
+    for (const { type, method, resultType } of cases) {
+      const action = getModuleAction('inferred', type);
+      expect(action.method).toBe(method);
+      expect(action.resultType).toBe(resultType);
+    }
+  });
+
+  test('keeps explicit method / resultType over inferred defaults', () => {
+    defineModules({
+      name: 'explicit',
+      actions: [
+        { name: 'remove', type: 'action', method: 'delete', resultType: 'object', path: '/explicit/{id}' },
+      ],
+    });
+
+    const action = getModuleAction('explicit', 'remove');
+    expect(action.method).toBe('delete');
+    expect(action.resultType).toBe('object');
+  });
+
+  test('throws when method cannot be inferred from an unknown type', () => {
+    expect(() =>
+      defineModules({
+        name: 'bad-method',
+        actions: [
+          { name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], path: '/bad' },
+        ],
+      }),
+    ).toThrow('method');
+  });
+
+  test('throws when resultType cannot be inferred from an unknown type', () => {
+    expect(() =>
+      defineModules({
+        name: 'bad-result',
+        actions: [
+          { name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], method: 'get', path: '/bad' },
+        ],
+      }),
+    ).toThrow('result type');
+  });
+
+  test('infers omitted fields through defineModuleActions and extendModuleAction', () => {
+    defineModules({
+      name: 'infer-extend',
+      actions: [{ name: 'list', type: 'list', path: '/infer-extend' }],
+    });
+
+    defineModuleActions('infer-extend', { name: 'close', type: 'action', path: '/infer-extend/{id}/close' });
+    expect(getModuleAction('infer-extend', 'close').method).toBe('post');
+    expect(getModuleAction('infer-extend', 'close').resultType).toBe('text');
+
+    extendModuleAction('infer-extend', 'list', { display: 'Listed' });
+    const list = getModuleAction('infer-extend', 'list');
+    expect(list.method).toBe('get');
+    expect(list.resultType).toBe('list');
+  });
+});
+
 describe('extendModuleAction', () => {
   test('deep-merges a partial patch and keeps untouched fields', () => {
     const before = getModuleAction('product', 'list');

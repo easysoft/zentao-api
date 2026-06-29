@@ -21,6 +21,8 @@ export const ERRORS = {
   E_INVALID_ACTION: 'Unknown action: {module}-{action}',
   E_INVALID_MODULE_DEFINITION: 'Invalid module definition.',
   E_INVALID_ACTION_DEFINITION: 'Invalid module action definition.',
+  E_INDETERMINATE_ACTION_METHOD: 'Cannot infer HTTP method for action "{action}" from type "{type}"; specify "method" explicitly.',
+  E_INDETERMINATE_ACTION_RESULT_TYPE: 'Cannot infer result type for action "{action}" from type "{type}"; specify "resultType" explicitly.',
   E_MISSING_PARAM: 'Missing required parameter: {param}',
   E_INVALID_PARAM: 'Invalid value for parameter {param}: {value}',
   E_INVALID_REQUEST_NAME: 'Request name must use the form "moduleName", "moduleName/methodName", or "moduleName/<objectID>".',

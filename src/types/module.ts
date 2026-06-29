@@ -76,14 +76,18 @@ export interface ModuleActionPagerGetterMap {
 export interface ModuleAction {
   /** 动作名称，例如 `list`、`get`、`close`。 */
   name: ModuleActionName;
-  /** 动作类型，决定高阶 request 的路径/参数解析策略。 */
+  /** 动作类型，决定高阶 request 的路径/参数解析策略，并在 `method`、`resultType` 省略时作为推导依据。 */
   type: ModuleActionType;
   /** 面向用户展示的动作名称。 */
   display?: string;
   /** 动作说明。 */
   description?: string;
-  /** HTTP 方法。 */
-  method: ModuleActionMethod;
+  /**
+   * HTTP 方法；省略时按 {@link type} 自动推导：
+   * `list`/`get` → `GET`、`create`/`action` → `POST`、`update` → `PUT`、`delete` → `DELETE`。
+   * 当 `type` 无法推导出方法时抛出 `E_INDETERMINATE_ACTION_METHOD`。
+   */
+  method?: ModuleActionMethod;
   /** API 路径模板，可包含 `{productID}` 等路径参数。 */
   path: string;
   /** 路径参数定义；字符串为说明，对象可携带默认值和可选项。 */
@@ -92,8 +96,12 @@ export interface ModuleAction {
   params?: readonly ModuleActionParam[];
   /** 请求体定义。 */
   requestBody?: ModuleActionRequestBody;
-  /** 结果形态。 */
-  resultType: ModuleActionResultType;
+  /**
+   * 结果形态；省略时按 {@link type} 自动推导：
+   * `list` → `list`、`get`/`create`/`update` → `object`、`delete`/`action` → `text`。
+   * 当 `type` 无法推导出结果形态时抛出 `E_INDETERMINATE_ACTION_RESULT_TYPE`。
+   */
+  resultType?: ModuleActionResultType;
   /** 从原始响应中提取分页信息的位置或函数。 */
   pagerGetter?: string | ModuleActionPagerGetterMap | ((data: unknown, params: Record<string, unknown>) => ListPagerInfo);
   /** 从原始响应中提取业务数据的位置或函数。 */

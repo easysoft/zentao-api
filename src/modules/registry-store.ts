@@ -1,7 +1,32 @@
 import { ZentaoError } from '../misc/errors.js';
-import type { ModuleAction, ModuleDefinition } from '../types/index.js';
+import type {
+  ModuleAction,
+  ModuleActionMethod,
+  ModuleActionResultType,
+  ModuleActionType,
+  ModuleDefinition,
+} from '../types/index.js';
 import { isRecord } from '../utils/object.js';
 import { BUILTIN_MODULES } from './generated.js';
+
+// 动作类型到 HTTP 方法 / 结果形态的默认推导表：当动作未显式声明 method / resultType 时按 type 补齐。
+const METHOD_BY_TYPE: Partial<Record<ModuleActionType, ModuleActionMethod>> = {
+  list: 'get',
+  get: 'get',
+  create: 'post',
+  update: 'put',
+  delete: 'delete',
+  action: 'post',
+};
+
+const RESULT_TYPE_BY_TYPE: Partial<Record<ModuleActionType, ModuleActionResultType>> = {
+  list: 'list',
+  get: 'object',
+  create: 'object',
+  update: 'object',
+  delete: 'text',
+  action: 'text',
+};
 
 // 运行时注册表存放「深克隆 + 深冻结」后的模块定义：
 // - 深克隆：避免用户后续修改自己的输入对象时污染注册表；
@@ -61,8 +86,33 @@ export function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
+/**
+ * 按 {@link ModuleAction.type} 就地补齐省略的 `method` / `resultType`。
+ *
+ * 已显式声明的字段保持不变；当 `type` 无法推导出对应默认值时抛错，提示显式指定。
+ *
+ * @throws {ZentaoError} `E_INDETERMINATE_ACTION_METHOD` / `E_INDETERMINATE_ACTION_RESULT_TYPE`
+ */
+export function normalizeAction(action: ModuleAction): ModuleAction {
+  if (action.method === undefined) {
+    const method = METHOD_BY_TYPE[action.type];
+    if (method === undefined) {
+      throw new ZentaoError('E_INDETERMINATE_ACTION_METHOD', { action: String(action.name), type: String(action.type) });
+    }
+    action.method = method;
+  }
+  if (action.resultType === undefined) {
+    const resultType = RESULT_TYPE_BY_TYPE[action.type];
+    if (resultType === undefined) {
+      throw new ZentaoError('E_INDETERMINATE_ACTION_RESULT_TYPE', { action: String(action.name), type: String(action.type) });
+    }
+    action.resultType = resultType;
+  }
+  return action;
+}
+
 export function freezeAction(action: ModuleAction): ModuleAction {
-  return deepFreeze(action);
+  return deepFreeze(normalizeAction(action));
 }
 
 export function freezeModule(module: ModuleDefinition): ModuleDefinition {
@@ -113,7 +163,14 @@ export function validateModule(module: ModuleDefinition): void {
 }
 
 export function validateAction(action: ModuleAction): void {
-  if (!action || typeof action.name !== 'string' || typeof action.path !== 'string' || typeof action.method !== 'string') {
+  if (!action || typeof action.name !== 'string' || typeof action.path !== 'string') {
+    throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+  }
+  // method / resultType 可省略（由 normalizeAction 按 type 推导），但显式给出时必须是字符串。
+  if (action.method !== undefined && typeof action.method !== 'string') {
+    throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+  }
+  if (action.resultType !== undefined && typeof action.resultType !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
 }
