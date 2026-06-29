@@ -1,6 +1,26 @@
 # 变更日志
 
-## 0.3.1 - 2026-06-27
+## 0.3.2 - 2026-06-29
+
+### 新增
+
+- 新增 `extendModuleAction`，可对已注册模块的某个 action 做深度合并式扩展，便于在不重写整体定义的前提下增量调整路径、参数与请求体。
+- 引入内置覆盖（builtin overrides）机制：在自动生成的注册表之上叠加随 SDK 一起维护的人工补丁，已为执行（execution）、需求（story）、任务（task）等模块补齐生成流程无法表达的定义。
+- 产品（product）与执行（execution）相关 action 的访问控制（acl）默认改为 `open`。
+
+### 变更
+
+- 拆分模块注册表为 `define`、`query`、`store` 三个职责模块，并通过 `registry.ts` 统一导出；内置覆盖经由注册表 post-reset 钩子接入，`resetModuleDefinitions` 后会自动重新应用。
+- 按领域拆分 `src/types`，类型定义分散到各自的文件中，结构更清晰。
+- `extendModuleAction` 的回调改为返回完整 action 定义，语义更明确。
+
+### 测试
+
+- 新增 `extendModuleAction` 与内置覆盖的注册表测试覆盖。
+
+### 文档
+
+- 补充 `extendModuleAction` 与模块注册表拆分的说明，并更新请求简写文档；重新生成 API 文档与参考。
 
 ### 新增
 
