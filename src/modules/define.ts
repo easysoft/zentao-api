@@ -1,6 +1,7 @@
 import { ZentaoError } from '../misc/errors.js';
 import type { ModuleAction, ModuleDefinition } from '../types/index.js';
 import { asArray } from '../utils/index.js';
+import { applyBuiltinOverrides } from './override.js';
 import {
   deepClone,
   findActionIndex,
@@ -97,4 +98,9 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
 /** @internal */
 export function resetModuleDefinitions(): void {
   resetState();
+  // 重置回内置基线后，重新应用内置覆盖，使其等同于内置定义。
+  applyBuiltinOverrides();
 }
+
+// 模块加载时立即应用内置覆盖，使其成为默认（内置）注册表的一部分。
+applyBuiltinOverrides();
