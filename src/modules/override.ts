@@ -99,4 +99,20 @@ export function applyBuiltinOverrides(): void {
       executionID: '执行ID',
     },
   });
+
+  // 修改 acl 字段默认值为 open
+  [
+    ['product', 'create'],
+    ['product', 'update'],
+    ['execution', 'create'],
+    ['execution', 'update'],
+  ].forEach(([moduleName, actionName]) => {
+    extendModuleAction(moduleName, actionName, (action) => {
+      const properties = action.requestBody!.schema?.properties as Record<string, Record<string, unknown>>;
+      if(properties.acl && properties.acl.defaultValue === undefined) {
+        properties.acl.defaultValue = 'open';
+      }
+      return action;
+    });
+  });
 }
