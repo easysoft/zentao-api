@@ -55,8 +55,6 @@ export type {
   ModuleActionParamOption,
   ModuleActionRequestBody,
   ModuleActionResponse,
-  ModuleActionResultRender,
-  ModuleActionResultRenderType,
   ModuleActionResultType,
   ModuleActionType,
   ModuleDefinition,

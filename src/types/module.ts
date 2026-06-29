@@ -53,15 +53,6 @@ export interface ModuleActionResponse {
   example?: unknown;
 }
 
-/** 模块动作渲染目标类型；保留给 CLI 等上层应用使用。 */
-export type ModuleActionResultRenderType = 'markdown' | 'json' | 'raw';
-/** 模块动作自定义渲染函数类型；SDK 本身不直接渲染终端输出。 */
-export type ModuleActionResultRender = (
-  result: unknown,
-  type: ModuleActionResultRenderType,
-  action: ModuleAction,
-) => string;
-
 /** 从原始响应中提取分页字段时使用的字段映射。 */
 export interface ModuleActionPagerGetterMap {
   /** 当前页码字段名。 */
@@ -106,8 +97,6 @@ export interface ModuleAction {
   pagerGetter?: string | ModuleActionPagerGetterMap | ((data: unknown, params: Record<string, unknown>) => ListPagerInfo);
   /** 从原始响应中提取业务数据的位置或函数。 */
   resultGetter?: string | Record<string, string> | ((data: unknown, params: Record<string, unknown>) => unknown);
-  /** 供上层应用使用的渲染配置。 */
-  render?: string | ModuleActionResultRender | Record<ModuleActionResultRenderType, ModuleActionResultRender>;
 }
 
 /** 内置模块名称，同时允许用户扩展自定义模块名。 */

@@ -15,6 +15,8 @@ SDK 已知错误码到默认消息的映射表。
 | ------ | ------ | ------ |
 | <a id="property-e_api_failed"></a> `E_API_FAILED` | `"ZenTao API returned failure: {message}"` | `'ZenTao API returned failure: {message}'` |
 | <a id="property-e_http_error"></a> `E_HTTP_ERROR` | `"HTTP request failed: {status} {statusText}"` | `'HTTP request failed: {status} {statusText}'` |
+| <a id="property-e_indeterminate_action_method"></a> `E_INDETERMINATE_ACTION_METHOD` | "Cannot infer HTTP method for action \"\{action\}\" from type \"\{type\}\"; specify \"method\" explicitly." | `'Cannot infer HTTP method for action "{action}" from type "{type}"; specify "method" explicitly.'` |
+| <a id="property-e_indeterminate_action_result_type"></a> `E_INDETERMINATE_ACTION_RESULT_TYPE` | "Cannot infer result type for action \"\{action\}\" from type \"\{type\}\"; specify \"resultType\" explicitly." | `'Cannot infer result type for action "{action}" from type "{type}"; specify "resultType" explicitly.'` |
 | <a id="property-e_insecure_browser"></a> `E_INSECURE_BROWSER` | `"The insecure option is only supported in Node.js runtimes."` | `'The insecure option is only supported in Node.js runtimes.'` |
 | <a id="property-e_invalid_action"></a> `E_INVALID_ACTION` | `"Unknown action: {module}-{action}"` | `'Unknown action: {module}-{action}'` |
 | <a id="property-e_invalid_action_definition"></a> `E_INVALID_ACTION_DEFINITION` | `"Invalid module action definition."` | `'Invalid module action definition.'` |

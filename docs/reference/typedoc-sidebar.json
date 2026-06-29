@@ -168,14 +168,6 @@
         "link": "/reference/type-aliases/ModuleActionParamOption.md"
       },
       {
-        "text": "ModuleActionResultRender",
-        "link": "/reference/type-aliases/ModuleActionResultRender.md"
-      },
-      {
-        "text": "ModuleActionResultRenderType",
-        "link": "/reference/type-aliases/ModuleActionResultRenderType.md"
-      },
-      {
         "text": "ModuleActionResultType",
         "link": "/reference/type-aliases/ModuleActionResultType.md"
       },

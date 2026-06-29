@@ -176,7 +176,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     userID: '用户ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -347,7 +346,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     programID: '项目集ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -566,7 +564,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     productID: '产品ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -762,7 +759,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     projectID: '项目ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -1012,7 +1008,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     executionID: '执行ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -1200,7 +1195,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     productplanID: '产品计划ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -1431,7 +1425,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     storyID: '需求ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活需求',
@@ -1459,7 +1452,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'change',
                 display: '变更需求',
@@ -1501,7 +1493,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭需求',
@@ -1532,7 +1523,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -1754,7 +1744,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     epicID: '业务需求ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活业务需求',
@@ -1782,7 +1771,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'change',
                 display: '变更业务需求',
@@ -1824,7 +1812,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭业务需求',
@@ -1855,7 +1842,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -2076,7 +2062,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     requirementID: '用户需求ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活用户需求',
@@ -2104,7 +2089,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'change',
                 display: '变更用户需求',
@@ -2136,7 +2120,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭用户需求',
@@ -2167,7 +2150,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -2387,7 +2369,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     bugID: 'Bug ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活Bug',
@@ -2422,7 +2403,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭Bug',
@@ -2446,7 +2426,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'resolve',
                 display: '解决Bug',
@@ -2489,7 +2468,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -2727,7 +2705,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     testcasID: '测试用例ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -2946,7 +2923,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     taskID: '任务ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活任务',
@@ -2979,7 +2955,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭任务',
@@ -3003,7 +2978,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'finish',
                 display: '完成任务',
@@ -3054,7 +3028,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }, {
                 name: 'start',
                 display: '启动任务',
@@ -3099,7 +3072,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -3291,7 +3263,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活反馈',
@@ -3319,7 +3290,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭反馈',
@@ -3350,7 +3320,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -3553,7 +3522,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     ticketID: '工单ID',
                 },
-                render: 'action',
             }, {
                 name: 'activate',
                 display: '激活工单',
@@ -3581,7 +3549,6 @@ export const BUILTIN_MODULES = [
                         }
                     },
                 },
-                render: 'action',
             }, {
                 name: 'close',
                 display: '关闭工单',
@@ -3613,7 +3580,6 @@ export const BUILTIN_MODULES = [
                         ]
                     },
                 },
-                render: 'action',
             }
         ],
     },
@@ -3883,7 +3849,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     buildID: '版本ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -4052,7 +4017,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     testtaskID: '测试单ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -4195,7 +4159,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     releasID: '发布ID',
                 },
-                render: 'action',
             }
         ],
     },
@@ -4239,7 +4202,6 @@ export const BUILTIN_MODULES = [
                 pathParams: {
                     fileID: '附件ID',
                 },
-                render: 'action',
             }
         ],
     }

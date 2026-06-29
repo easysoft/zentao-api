@@ -52,8 +52,6 @@
 | [ModuleActionMethod](type-aliases/ModuleActionMethod.md) | 模块动作使用的 HTTP 方法；兼容生成定义中的小写方法。 |
 | [ModuleActionName](type-aliases/ModuleActionName.md) | 模块动作名称，允许除基础动作外的自定义名称。 |
 | [ModuleActionParamOption](type-aliases/ModuleActionParamOption.md) | 模块动作参数可选项。 |
-| [ModuleActionResultRender](type-aliases/ModuleActionResultRender.md) | 模块动作自定义渲染函数类型；SDK 本身不直接渲染终端输出。 |
-| [ModuleActionResultRenderType](type-aliases/ModuleActionResultRenderType.md) | 模块动作渲染目标类型；保留给 CLI 等上层应用使用。 |
 | [ModuleActionResultType](type-aliases/ModuleActionResultType.md) | 模块动作结果形态。 |
 | [ModuleActionType](type-aliases/ModuleActionType.md) | 模块动作类型：基础 CRUD 或自定义动作。 |
 | [ModuleName](type-aliases/ModuleName.md) | 内置模块名称，同时允许用户扩展自定义模块名。 |

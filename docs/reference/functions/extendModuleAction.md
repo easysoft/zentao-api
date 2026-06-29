@@ -27,5 +27,6 @@
 
 ## Throws
 
-`E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION`（动作不存在）
-  或 `E_INVALID_ACTION_DEFINITION`（合并结果缺少 `name` / `path` / `method` 等必填字段）。
+`E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION`（动作不存在）、
+  `E_INVALID_ACTION_DEFINITION`（合并结果缺少 `name` / `path`，或 `method` / `resultType` 类型非法），
+  或 `E_INDETERMINATE_ACTION_METHOD` / `E_INDETERMINATE_ACTION_RESULT_TYPE`（省略字段且无法按 `type` 推导）。

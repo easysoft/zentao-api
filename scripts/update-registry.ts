@@ -551,7 +551,6 @@ function buildRegistry(): RegistryBuildResult {
 
             const params = (actionType === 'list') ? buildParams(entry.op.parameters) : undefined;
             const requestBody = buildRequestBody(entry.op);
-            const render = (actionType === 'delete' || actionType === 'action') ? 'action' : undefined;
 
             let body = ``;
             body += `                name: '${escapeStr(actionName)}',\n`;
@@ -590,10 +589,6 @@ function buildRegistry(): RegistryBuildResult {
                 body += `                    type: 'object',\n`;
                 body += `                    schema: ${indentJson(requestBody.schema, 20)},\n`;
                 body += `                },\n`;
-            }
-
-            if (render) {
-                body += `                render: '${render}',\n`;
             }
 
             actionBodies.push(body);

@@ -24,7 +24,7 @@ SDK 统一错误类型。
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `code` | `"E_INVALID_BASE_URL"` \| `"E_NO_GLOBAL_CLIENT"` \| `"E_HTTP_ERROR"` \| `"E_NETWORK_ERROR"` \| `"E_TIMEOUT"` \| `"E_INSECURE_BROWSER"` \| `"E_LOGIN_FAILED"` \| `"E_INVALID_PROFILE"` \| `"E_NO_PROFILE"` \| `"E_PROFILE_NOT_FOUND"` \| `"E_PROFILE_STORAGE_INVALID"` \| `"E_PROFILE_STORAGE_UNAVAILABLE"` \| `"E_INVALID_MODULE"` \| `"E_INVALID_ACTION"` \| `"E_INVALID_MODULE_DEFINITION"` \| `"E_INVALID_ACTION_DEFINITION"` \| `"E_MISSING_PARAM"` \| `"E_INVALID_PARAM"` \| `"E_INVALID_REQUEST_NAME"` \| `"E_API_FAILED"` | 错误码，必须是 [ERRORS](../variables/ERRORS.md) 中已声明的 key。 |
+| `code` | `"E_INVALID_BASE_URL"` \| `"E_NO_GLOBAL_CLIENT"` \| `"E_HTTP_ERROR"` \| `"E_NETWORK_ERROR"` \| `"E_TIMEOUT"` \| `"E_INSECURE_BROWSER"` \| `"E_LOGIN_FAILED"` \| `"E_INVALID_PROFILE"` \| `"E_NO_PROFILE"` \| `"E_PROFILE_NOT_FOUND"` \| `"E_PROFILE_STORAGE_INVALID"` \| `"E_PROFILE_STORAGE_UNAVAILABLE"` \| `"E_INVALID_MODULE"` \| `"E_INVALID_ACTION"` \| `"E_INVALID_MODULE_DEFINITION"` \| `"E_INVALID_ACTION_DEFINITION"` \| `"E_INDETERMINATE_ACTION_METHOD"` \| `"E_INDETERMINATE_ACTION_RESULT_TYPE"` \| `"E_MISSING_PARAM"` \| `"E_INVALID_PARAM"` \| `"E_INVALID_REQUEST_NAME"` \| `"E_API_FAILED"` | 错误码，必须是 [ERRORS](../variables/ERRORS.md) 中已声明的 key。 |
 | `replacements?` | `Record`\<`string`, `string` \| `number`\> | 可选的占位符替换值；遍历后会把 `{key}` 替换为字符串化的值。 |
 | `details?` | `unknown` | 可选的附加上下文（HTTP 响应详情、原始异常等），保存到 [details](#constructorzentaoerror)。 |
 
@@ -41,7 +41,7 @@ SDK 统一错误类型。
 | Property | Modifier | Type | Description | Inherited from |
 | ------ | ------ | ------ | ------ | ------ |
 | <a id="property-cause"></a> `cause?` | `public` | `unknown` | - | `Error.cause` |
-| <a id="property-code"></a> `code` | `readonly` | `"E_INVALID_BASE_URL"` \| `"E_NO_GLOBAL_CLIENT"` \| `"E_HTTP_ERROR"` \| `"E_NETWORK_ERROR"` \| `"E_TIMEOUT"` \| `"E_INSECURE_BROWSER"` \| `"E_LOGIN_FAILED"` \| `"E_INVALID_PROFILE"` \| `"E_NO_PROFILE"` \| `"E_PROFILE_NOT_FOUND"` \| `"E_PROFILE_STORAGE_INVALID"` \| `"E_PROFILE_STORAGE_UNAVAILABLE"` \| `"E_INVALID_MODULE"` \| `"E_INVALID_ACTION"` \| `"E_INVALID_MODULE_DEFINITION"` \| `"E_INVALID_ACTION_DEFINITION"` \| `"E_MISSING_PARAM"` \| `"E_INVALID_PARAM"` \| `"E_INVALID_REQUEST_NAME"` \| `"E_API_FAILED"` | 错误码，对应 [ERRORS](../variables/ERRORS.md) 的 key；用于稳定地区分错误类型。 | - |
+| <a id="property-code"></a> `code` | `readonly` | `"E_INVALID_BASE_URL"` \| `"E_NO_GLOBAL_CLIENT"` \| `"E_HTTP_ERROR"` \| `"E_NETWORK_ERROR"` \| `"E_TIMEOUT"` \| `"E_INSECURE_BROWSER"` \| `"E_LOGIN_FAILED"` \| `"E_INVALID_PROFILE"` \| `"E_NO_PROFILE"` \| `"E_PROFILE_NOT_FOUND"` \| `"E_PROFILE_STORAGE_INVALID"` \| `"E_PROFILE_STORAGE_UNAVAILABLE"` \| `"E_INVALID_MODULE"` \| `"E_INVALID_ACTION"` \| `"E_INVALID_MODULE_DEFINITION"` \| `"E_INVALID_ACTION_DEFINITION"` \| `"E_INDETERMINATE_ACTION_METHOD"` \| `"E_INDETERMINATE_ACTION_RESULT_TYPE"` \| `"E_MISSING_PARAM"` \| `"E_INVALID_PARAM"` \| `"E_INVALID_REQUEST_NAME"` \| `"E_API_FAILED"` | 错误码，对应 [ERRORS](../variables/ERRORS.md) 的 key；用于稳定地区分错误类型。 | - |
 | <a id="property-details"></a> `details?` | `readonly` | `unknown` | 附加上下文，例如 HTTP 响应详情、原始异常或失败的禅道响应原文。 | - |
 | <a id="property-message"></a> `message` | `public` | `string` | - | `Error.message` |
 | <a id="property-name"></a> `name` | `public` | `string` | - | `Error.name` |
