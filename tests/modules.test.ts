@@ -3,6 +3,7 @@ import {
   ZentaoClient,
   defineModuleActions,
   defineModules,
+  extendModuleAction,
   getModule,
   getModuleAction,
   request,
@@ -145,6 +146,119 @@ describe('module registry', () => {
     }).toThrow(TypeError);
 
     expect(getModuleAction('product', 'list').path).toBe('/products');
+  });
+});
+
+describe('extendModuleAction', () => {
+  test('deep-merges a partial patch and keeps untouched fields', () => {
+    const before = getModuleAction('product', 'list');
+
+    extendModuleAction('product', 'list', { display: 'Patched list' });
+
+    const after = getModuleAction('product', 'list');
+    expect(after.display).toBe('Patched list');
+    expect(after.path).toBe(before.path);
+    expect(after.method).toBe(before.method);
+    expect(after.resultType).toBe(before.resultType);
+  });
+
+  test('recursively merges nested objects without dropping sibling keys', () => {
+    defineModules({
+      name: 'custom',
+      actions: [
+        {
+          name: 'create',
+          type: 'action',
+          method: 'POST',
+          path: '/customs',
+          resultType: 'text',
+          requestBody: {
+            required: true,
+            schema: {
+              name: { type: 'string', description: '名称' },
+              owner: { type: 'string', description: '负责人' },
+            },
+          },
+        },
+      ],
+    });
+
+    extendModuleAction('custom', 'create', {
+      requestBody: { schema: { owner: { description: '指派给' } } },
+    });
+
+    const action = getModuleAction('custom', 'create');
+    // 嵌套对象递归合并：owner.description 被改写，owner.type 与 name 字段保留。
+    expect(action.requestBody).toEqual({
+      required: true,
+      schema: {
+        name: { type: 'string', description: '名称' },
+        owner: { type: 'string', description: '指派给' },
+      },
+    });
+  });
+
+  test('replaces arrays wholesale instead of concatenating', () => {
+    defineModules({
+      name: 'custom',
+      actions: [
+        {
+          name: 'list',
+          type: 'list',
+          method: 'GET',
+          path: '/customs',
+          resultType: 'list',
+          params: [{ name: 'status', type: 'string' }],
+        },
+      ],
+    });
+
+    extendModuleAction('custom', 'list', { params: [{ name: 'product', type: 'number' }] });
+
+    expect(getModuleAction('custom', 'list').params).toEqual([{ name: 'product', type: 'number' }]);
+  });
+
+  test('accepts a function patch receiving the current action', () => {
+    const original = getModuleAction('product', 'list').display;
+
+    extendModuleAction('product', 'list', (current) => ({ display: `${current.display} (extended)` }));
+
+    expect(getModuleAction('product', 'list').display).toBe(`${original} (extended)`);
+  });
+
+  test('does not mutate the previously returned frozen action', () => {
+    const before = getModuleAction('product', 'list');
+
+    extendModuleAction('product', 'list', { display: 'New display' });
+
+    // 旧引用保持冻结且未被改动，扩展产生的是新对象。
+    expect(before.display).not.toBe('New display');
+    expect(getModuleAction('product', 'list')).not.toBe(before);
+    expect(Object.isFrozen(getModuleAction('product', 'list'))).toBe(true);
+  });
+
+  test('throws for unknown module or action', () => {
+    expect(() => extendModuleAction('missing', 'list', {})).toThrow('module');
+    expect(() => extendModuleAction('product', 'missing', {})).toThrow('action');
+  });
+
+  test('throws when the merged result is no longer a valid action', () => {
+    expect(() =>
+      extendModuleAction('product', 'list', { path: undefined as unknown as string }),
+    ).not.toThrow();
+    expect(() =>
+      extendModuleAction('product', 'list', () => ({ method: 123 as unknown as ModuleAction['method'] })),
+    ).toThrow();
+  });
+
+  test('survives a registry reset back to the builtin baseline', () => {
+    const original = getModuleAction('product', 'list').display;
+
+    extendModuleAction('product', 'list', { display: 'Temporary' });
+    expect(getModuleAction('product', 'list').display).toBe('Temporary');
+
+    resetModuleDefinitions();
+    expect(getModuleAction('product', 'list').display).toBe(original);
   });
 });
 
