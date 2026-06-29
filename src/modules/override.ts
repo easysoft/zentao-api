@@ -1,4 +1,4 @@
-import { defineModuleActions, defineModules } from './define.js';
+import { extendModuleAction, defineModules } from './define.js';
 
 /**
  * 内置覆盖 / 扩展定义。
@@ -60,5 +60,43 @@ import { defineModuleActions, defineModules } from './define.js';
  * @internal
  */
 export function applyBuiltinOverrides(): void {
-  // 在此处添加内置扩展。默认无任何覆盖；按上方示例填入 defineModuleActions / defineModules 调用即可。
+  // 创建执行时，需要添加产品字段
+  extendModuleAction('execution', 'create', (action) => {
+    const required = action.requestBody!.schema?.required;
+    if(Array.isArray(required) && !required.includes('products')) {
+      required.push('products');
+    }
+    return action;
+  });
+
+  // 修改 story/update 字段定义
+  extendModuleAction('story', 'update', (action) => {
+    const properties = action.requestBody!.schema?.properties as Record<string, unknown>;
+
+    // 为 story/update 增加 plan 字段
+    if(properties && !properties.plan) {
+      properties.plan = {
+        type: 'integer',
+        description: '所属计划',
+        format: 'int32',
+      };
+    }
+
+    // 修改 category 字段类型为 string
+    if (properties && properties.category) {
+      properties.category = {
+        type: 'string',
+        description: '类别',
+      };
+    }
+    return action;
+  });
+
+  // 修改 task/list URL 定义
+  extendModuleAction('task', 'list', {
+    path: '/executions/{executionID}/tasks',
+    pathParams: {
+      executionID: '执行ID',
+    },
+  });
 }
