@@ -1,7 +1,6 @@
 import { ZentaoError } from '../misc/errors.js';
 import type { ModuleAction, ModuleDefinition } from '../types/index.js';
 import { asArray } from '../utils/index.js';
-import { applyBuiltinOverrides } from './override.js';
 import {
   deepClone,
   findActionIndex,
@@ -95,12 +94,14 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
   rebuildModuleMap();
 }
 
-/** @internal */
+/**
+ * 将注册表重置为内置基线。
+ *
+ * 重置会触发 store 的「重置后钩子」，由 barrel（`./registry.ts`）在其中重新应用内置覆盖
+ * （见 `./override.ts`），因此重置后内置扩展依旧生效。
+ *
+ * @internal
+ */
 export function resetModuleDefinitions(): void {
   resetState();
-  // 重置回内置基线后，重新应用内置覆盖，使其等同于内置定义。
-  applyBuiltinOverrides();
 }
-
-// 模块加载时立即应用内置覆盖，使其成为默认（内置）注册表的一部分。
-applyBuiltinOverrides();

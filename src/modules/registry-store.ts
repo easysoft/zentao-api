@@ -112,8 +112,18 @@ export function rebuildModuleMap(): void {
   moduleMap = buildModuleMap(modules);
 }
 
-/** 将注册表重置为内置模块（深克隆 + 深冻结），并重建查找表。 */
+// 重置后钩子：在 resetState 把状态还原为内置基线之后触发，
+// 用于让上层（barrel）重新应用内置覆盖（override），而无需 store / define 直接依赖 override。
+let postResetHook: (() => void) | undefined;
+
+/** 注册「重置后钩子」，在每次 {@link resetState} 还原内置基线后调用。 */
+export function setPostResetHook(hook: (() => void) | undefined): void {
+  postResetHook = hook;
+}
+
+/** 将注册表重置为内置模块（深克隆 + 深冻结），重建查找表，并触发重置后钩子。 */
 export function resetState(): void {
   modules = freezeModules(cloneBuiltinModules());
   rebuildModuleMap();
+  postResetHook?.();
 }
