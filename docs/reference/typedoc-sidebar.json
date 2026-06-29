@@ -248,6 +248,10 @@
         "link": "/reference/functions/deleteProfile.md"
       },
       {
+        "text": "extendModuleAction",
+        "link": "/reference/functions/extendModuleAction.md"
+      },
+      {
         "text": "filterData",
         "link": "/reference/functions/filterData.md"
       },

@@ -135,14 +135,16 @@ Schema:
     },
     "acl": {
       "type": "string",
-      "description": "访问控制(open 公开 | private 私有)"
+      "description": "访问控制(open 公开 | private 私有)",
+      "defaultValue": "open"
     }
   },
   "required": [
     "project",
     "name",
     "begin",
-    "end"
+    "end",
+    "products"
   ]
 }
 ```
@@ -318,7 +320,8 @@ Schema:
     },
     "acl": {
       "type": "string",
-      "description": "访问控制(open 公开 | private 私有)"
+      "description": "访问控制(open 公开 | private 私有)",
+      "defaultValue": "open"
     }
   },
   "required": [

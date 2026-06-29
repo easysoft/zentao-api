@@ -79,6 +79,7 @@
 | [defineModuleActions](functions/defineModuleActions.md) | 为已存在的模块追加或覆盖动作。 |
 | [defineModules](functions/defineModules.md) | 注册或扩展模块定义。 |
 | [deleteProfile](functions/deleteProfile.md) | 删除指定 profile。 |
+| [extendModuleAction](functions/extendModuleAction.md) | 扩展已存在的模块动作。 |
 | [filterData](functions/filterData.md) | 按条件组过滤列表，多组之间按 AND 组合。 |
 | [getAllProfiles](functions/getAllProfiles.md) | 列出本地保存的所有 profile。 |
 | [getGlobalOptions](functions/getGlobalOptions.md) | 获取当前全局选项的快照。 |

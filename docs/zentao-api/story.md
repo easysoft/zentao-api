@@ -294,9 +294,8 @@ Schema:
       "format": "float"
     },
     "category": {
-      "type": "integer",
-      "description": "类别(feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)",
-      "format": "int32"
+      "type": "string",
+      "description": "类别"
     },
     "source": {
       "type": "string",
@@ -305,6 +304,11 @@ Schema:
     "assignedTo": {
       "type": "string",
       "description": "指派给"
+    },
+    "plan": {
+      "type": "integer",
+      "description": "所属计划",
+      "format": "int32"
     }
   },
   "required": [
@@ -322,9 +326,10 @@ Schema:
   "module": 1,
   "parent": 1,
   "estimate": 1,
-  "category": 1,
+  "category": "<string>",
   "source": "<string>",
-  "assignedTo": "<string>"
+  "assignedTo": "<string>",
+  "plan": 1
 }
 ```
 
@@ -344,9 +349,10 @@ const result = await request("story/update", {
   "module": 1,
   "parent": 1,
   "estimate": 1,
-  "category": 1,
+  "category": "<string>",
   "source": "<string>",
-  "assignedTo": "<string>"
+  "assignedTo": "<string>",
+  "plan": 1
 });
 ```
 ## 删除需求

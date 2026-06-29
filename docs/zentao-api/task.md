@@ -6,7 +6,7 @@
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
-| `list` | 获取任务列表，支持获取执行下的任务 | `GET` | `/{scope}/{scopeID}/tasks` |
+| `list` | 获取任务列表，支持获取执行下的任务 | `GET` | `/executions/{executionID}/tasks` |
 | `create` | 创建任务 | `POST` | `/tasks` |
 | `get` | 获取任务详情 | `GET` | `/tasks/{taskID}` |
 | `update` | 修改任务 | `PUT` | `/tasks/{taskID}` |
@@ -19,15 +19,14 @@
 ## 获取任务列表，支持获取执行下的任务
 
 - SDK 调用：`request("task/list", params)`
-- HTTP：`GET /{scope}/{scopeID}/tasks`
+- HTTP：`GET /executions/{executionID}/tasks`
 - 动作类型：`list`
 
 ### 路径参数
 
 | 参数 | 说明 |
 | --- | --- |
-| `scope` | 任务范围 |
-| `scopeID` | 范围ID |
+| `executionID` | 执行ID |
 
 ### 查询参数
 
@@ -54,8 +53,7 @@
 import { request } from 'zentao-api';
 
 const result = await request("task/list", {
-  "scope": "<string>",
-  "scopeID": 1,
+  "executionID": 1,
   "status": "unclosed",
   "orderBy": "id_asc",
   "recPerPage": 1,

@@ -123,7 +123,8 @@ Schema:
     },
     "acl": {
       "type": "string",
-      "description": "访问控制(open 公开 | private 私有)"
+      "description": "访问控制(open 公开 | private 私有)",
+      "defaultValue": "open"
     }
   },
   "required": [
@@ -285,7 +286,8 @@ Schema:
     },
     "acl": {
       "type": "string",
-      "description": "访问控制(open 公开 | private 私有)"
+      "description": "访问控制(open 公开 | private 私有)",
+      "defaultValue": "open"
     }
   },
   "required": [
