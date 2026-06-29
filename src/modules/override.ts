@@ -93,11 +93,12 @@ export function applyBuiltinOverrides(): void {
   });
 
   // 修改 task/list URL 定义
-  extendModuleAction('task', 'list', {
-    path: '/executions/{executionID}/tasks',
-    pathParams: {
+  extendModuleAction('task', 'list', (action) => {
+    action.path = '/executions/{executionID}/tasks';
+    action.pathParams = {
       executionID: '执行ID',
-    },
+    };
+    return action;
   });
 
   // 修改 acl 字段默认值为 open

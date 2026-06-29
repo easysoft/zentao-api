@@ -294,6 +294,52 @@ describe('extendModuleAction', () => {
   });
 });
 
+describe('builtin overrides (override.ts)', () => {
+  test('execution/create adds products to required fields', () => {
+    const required = getModuleAction('execution', 'create').requestBody?.schema?.required;
+    expect(Array.isArray(required)).toBe(true);
+    expect(required).toContain('products');
+  });
+
+  test('story/update adds the plan field and changes category to string', () => {
+    const properties = getModuleAction('story', 'update').requestBody?.schema?.properties as Record<
+      string,
+      Record<string, unknown>
+    >;
+    expect(properties.plan).toEqual({ type: 'integer', description: '所属计划', format: 'int32' });
+    expect(properties.category).toEqual({ type: 'string', description: '类别' });
+  });
+
+  test('task/list points at the execution-scoped path and keeps the executionID param', () => {
+    const action = getModuleAction('task', 'list');
+    expect(action.path).toBe('/executions/{executionID}/tasks');
+    expect(action.pathParams?.executionID).toBe('执行ID');
+  });
+
+  test.each([
+    ['product', 'create'],
+    ['product', 'update'],
+    ['execution', 'create'],
+    ['execution', 'update'],
+  ] as const)('%s/%s defaults acl to open', (moduleName, actionName) => {
+    const properties = getModuleAction(moduleName, actionName).requestBody?.schema?.properties as Record<
+      string,
+      Record<string, unknown>
+    >;
+    expect(properties.acl?.defaultValue).toBe('open');
+  });
+
+  test('overrides are reapplied after a registry reset', () => {
+    extendModuleAction('task', 'list', { path: '/mutated-tasks' });
+    expect(getModuleAction('task', 'list').path).toBe('/mutated-tasks');
+
+    resetModuleDefinitions();
+
+    // 重置触发 post-reset 钩子重新应用内置覆盖，task/list 回到 override.ts 定义的路径。
+    expect(getModuleAction('task', 'list').path).toBe('/executions/{executionID}/tasks');
+  });
+});
+
 describe('high-level request', () => {
   test('uses global client and global recPerPage with moduleName/methodName', async () => {
     let receivedUrl = '';
