@@ -104,8 +104,10 @@ const client = await ZentaoClient.fromProfile('admin@https://zentao.example.com'
 | `request(name, params?, options?)` | 按 `"module"`、`"module/action"` 或 `"module/<objectID>"` 调用已注册模块 |
 | `defineModules(modules, options?)` | 注册或扩展模块定义 |
 | `defineModuleActions(module, actions)` | 为已有模块追加或替换动作 |
+| `extendModuleAction(module, action, patch)` | 深度合并补丁，或用回调改写已有动作 |
 | `getModule(name)` | 获取模块定义 |
 | `getModuleAction(module, action)` | 获取指定动作定义 |
+| `getModuleNames()` | 获取所有已注册模块名 |
 | `setGlobalOptions(options)` | 设置全局默认选项 |
 | `getGlobalOptions()` | 获取当前全局选项 |
 
@@ -164,6 +166,32 @@ defineModuleActions('bug', {
   path: '/bugs/{bugID}/archive',
   pathParams: { bugID: 'Bug ID' },
   resultType: 'text',
+});
+```
+
+### 微调已有动作
+
+只想改动作的个别字段（而不是整体替换）时，用 `extendModuleAction`。传入补丁对象会与原动作**深度合并**：普通对象递归合并，数组及其他值整体替换，`undefined` 的键会被忽略。
+
+```ts
+import { extendModuleAction } from 'zentao-api';
+
+// 改写 task/list 的 URL
+extendModuleAction('task', 'list', {
+  path: '/executions/{executionID}/tasks',
+  pathParams: { executionID: '执行ID' },
+});
+```
+
+需要基于现有定义做条件改写时，可传入回调。回调收到当前动作的深克隆，返回值作为**完整**动作定义直接取代原动作（不再合并）：
+
+```ts
+extendModuleAction('execution', 'create', (action) => {
+  const required = action.requestBody!.schema?.required;
+  if (Array.isArray(required) && !required.includes('products')) {
+    required.push('products');
+  }
+  return action;
 });
 ```
 

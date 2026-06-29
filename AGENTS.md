@@ -26,7 +26,12 @@ Single file: `bun test tests/client.test.ts`
 
 - **ZentaoClient** (`src/client/`) — HTTP client; token injection, TLS, timeout, URL construction (`/api.php/v2`), `get/post/put/delete/login`, static `init()` singleton.
 - **request()** (`src/request/`) — High-level module requests using `"module"`, `"module/action"` (e.g. `"bug/list"`), or `"module/<objectID>"` shortcuts; resolves via registry, assembles path/query/body, normalizes into `ResponseData` with pagination.
-- **Module Registry** (`src/modules/registry.ts` + `generated.ts`) — All ZenTao modules/actions with path templates, params, body schemas. `generated.ts` is **auto-generated** from `data/zentao-openapi.json` — do not edit manually.
+- **Module Registry** (`src/modules/`) — All ZenTao modules/actions with path templates, params, body schemas. Split by responsibility behind the `registry.ts` barrel:
+  - `generated.ts` — **auto-generated** from `data/zentao-openapi.json`, do not edit manually.
+  - `registry-store.ts` — shared runtime state plus clone/freeze/merge/validate primitives (internal).
+  - `define.ts` — write APIs: `defineModules`, `defineModuleActions`, `extendModuleAction`, `resetModuleDefinitions`.
+  - `query.ts` — read APIs: `getModule`, `getModuleAction`, `getModuleNames`, `isModuleName`.
+  - `override.ts` — **builtin overrides** (`applyBuiltinOverrides`): hand-maintained patches over `generated.ts` that ship with the SDK. Applied once on load and re-applied after `resetModuleDefinitions` via the store's post-reset hook. Add a fix here only when the OpenAPI generation flow can't express it; otherwise prefer updating the spec.
 - **Module Resolution** (`src/modules/resolve.ts`) — Path template substitution, scope inference (product > project > execution), query/body assembly.
 - **Profiles** (`src/profiles/`) — Persistent profiles at `~/.config/zentao/zentao.json` (Node) / `localStorage` (browser). Keyed by `account@server`.
 - **Errors** (`src/misc/errors.ts`) — `ZentaoError` with stable codes and placeholder messages.
