@@ -15,6 +15,7 @@ export {
   type DefineModulesOptions,
   defineModules,
   defineModuleActions,
+  extendModuleAction,
   resetModuleDefinitions,
 } from './define.js';
 

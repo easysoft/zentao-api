@@ -3,6 +3,7 @@ import type { ModuleAction, ModuleDefinition } from '../types/index.js';
 import { asArray } from '../utils/index.js';
 import {
   deepClone,
+  deepMerge,
   findActionIndex,
   freezeAction,
   freezeModule,
@@ -86,6 +87,51 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
       actions.push(frozen);
     }
   }
+
+  const nextModule = freezeModule({ ...module, actions });
+  const modules = getModulesState();
+  const index = modules.findIndex((item) => item.name.toLowerCase() === key);
+  modules[index] = nextModule;
+  rebuildModuleMap();
+}
+
+/**
+ * 扩展已存在的模块动作。
+ *
+ * 与 {@link defineModuleActions} 的「整体替换」不同，这里对单个动作做**深度合并**：
+ * 只需给出（或通过函数返回）待修改的字段，其余字段沿用原动作定义。普通对象递归合并，
+ * 数组及其他值由扩展整体替换，值为 `undefined` 的键会被忽略。
+ *
+ * 当 `action` 为函数时，会以当前动作的深克隆为入参调用它，并将其返回值作为扩展补丁。
+ *
+ * @param moduleName - 目标模块名（大小写不敏感）。
+ * @param actionName - 目标动作名（大小写不敏感）。
+ * @param action - 扩展补丁，或接收当前动作并返回补丁的函数。
+ * @throws {ZentaoError} `E_INVALID_MODULE`（模块未注册）、`E_INVALID_ACTION`（动作不存在）
+ *   或 `E_INVALID_ACTION_DEFINITION`（合并结果缺少 `name` / `path` / `method` 等必填字段）。
+ */
+export function extendModuleAction(
+  moduleName: string,
+  actionName: string,
+  action: Partial<ModuleAction> | ((action: ModuleAction) => Partial<ModuleAction>),
+): void {
+  const key = moduleName.toLowerCase();
+  const module = getModuleMapState().get(key);
+  if (!module) {
+    throw new ZentaoError('E_INVALID_MODULE', { module: moduleName });
+  }
+
+  const actions: ModuleAction[] = module.actions.slice();
+  const actionIndex = findActionIndex(actions, actionName);
+  if (actionIndex < 0) {
+    throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });
+  }
+
+  const current = actions[actionIndex];
+  const patch = typeof action === 'function' ? action(deepClone(current)) : action;
+  const merged = deepMerge(current, patch);
+  validateAction(merged);
+  actions[actionIndex] = freezeAction(merged);
 
   const nextModule = freezeModule({ ...module, actions });
   const modules = getModulesState();

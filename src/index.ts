@@ -14,6 +14,7 @@ export {
   defineModuleActions,
   defineModules,
   type DefineModulesOptions,
+  extendModuleAction,
   getModuleNames,
   getModule,
   getModuleAction,

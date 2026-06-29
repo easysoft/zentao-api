@@ -1,5 +1,6 @@
 import { ZentaoError } from '../misc/errors.js';
 import type { ModuleAction, ModuleDefinition } from '../types/index.js';
+import { isRecord } from '../utils/object.js';
 import { BUILTIN_MODULES } from './generated.js';
 
 // 运行时注册表存放「深克隆 + 深冻结」后的模块定义：
@@ -25,6 +26,26 @@ export function deepClone<T>(value: T): T {
     return result as T;
   }
   return value;
+}
+
+/**
+ * 深度合并：以 `patch` 覆盖 `base`，返回新对象，不修改任何入参。
+ *
+ * - 仅当两侧同为普通对象时递归合并；其余情况（含数组）由 `patch` 整体替换。
+ * - `patch` 中值为 `undefined` 的键会被跳过，因此扩展方只需给出待修改的字段。
+ * - 未被 `patch` 触及的嵌套值沿用 `base` 的引用（外层会重新深冻结，引用本就不可变）。
+ */
+export function deepMerge<T>(base: T, patch: unknown): T {
+  if (!isRecord(patch)) {
+    return (patch === undefined ? base : deepClone(patch)) as T;
+  }
+  const result: Record<string, unknown> = isRecord(base) ? { ...base } : {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === undefined) continue;
+    const current = result[key];
+    result[key] = isRecord(value) && isRecord(current) ? deepMerge(current, value) : deepClone(value);
+  }
+  return result as T;
 }
 
 export function cloneBuiltinModules(): ModuleDefinition[] {
