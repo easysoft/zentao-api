@@ -218,12 +218,40 @@ describe('extendModuleAction', () => {
     expect(getModuleAction('custom', 'list').params).toEqual([{ name: 'product', type: 'number' }]);
   });
 
-  test('accepts a function patch receiving the current action', () => {
-    const original = getModuleAction('product', 'list').display;
+  test('uses a function return value as the full action without merging', () => {
+    const before = getModuleAction('product', 'list');
 
-    extendModuleAction('product', 'list', (current) => ({ display: `${current.display} (extended)` }));
+    // 函数返回完整动作定义直接取代原定义，不做合并。
+    extendModuleAction('product', 'list', (current) => ({ ...current, display: `${current.display} (extended)` }));
 
-    expect(getModuleAction('product', 'list').display).toBe(`${original} (extended)`);
+    const after = getModuleAction('product', 'list');
+    expect(after.display).toBe(`${before.display} (extended)`);
+    expect(after.path).toBe(before.path);
+    expect(after.method).toBe(before.method);
+  });
+
+  test('function return replaces wholesale: fields omitted by the function are dropped', () => {
+    defineModules({
+      name: 'custom',
+      actions: [
+        {
+          name: 'list',
+          type: 'list',
+          method: 'GET',
+          path: '/customs',
+          resultType: 'list',
+          params: [{ name: 'status', type: 'string' }],
+        },
+      ],
+    });
+
+    // 返回的动作没有 params，合并不会发生，旧的 params 被整体丢弃。
+    extendModuleAction('custom', 'list', (current) => {
+      const { params: _drop, ...rest } = current;
+      return rest as typeof current;
+    });
+
+    expect(getModuleAction('custom', 'list').params).toBeUndefined();
   });
 
   test('does not mutate the previously returned frozen action', () => {
@@ -242,12 +270,16 @@ describe('extendModuleAction', () => {
     expect(() => extendModuleAction('product', 'missing', {})).toThrow('action');
   });
 
-  test('throws when the merged result is no longer a valid action', () => {
+  test('throws when the resulting action is no longer valid', () => {
     expect(() =>
       extendModuleAction('product', 'list', { path: undefined as unknown as string }),
     ).not.toThrow();
+    // 函数返回完整动作，但 method 非法 → 校验失败。
     expect(() =>
-      extendModuleAction('product', 'list', () => ({ method: 123 as unknown as ModuleAction['method'] })),
+      extendModuleAction('product', 'list', (current) => ({
+        ...current,
+        method: 123 as unknown as ModuleAction['method'],
+      })),
     ).toThrow();
   });
 
