@@ -703,6 +703,33 @@ describe('high-level request', () => {
     }
   });
 
+  test('autoFill aborts update when the prefill GET returns fail', async () => {
+    const methods: string[] = [];
+    const server = createMockServer(async (req) => {
+      methods.push(req.method);
+      if (req.method === 'GET') {
+        return Response.json({ status: 'fail', message: '无权读取 Bug' });
+      }
+      await req.text();
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await expect(request('bug/update', { id: 7, title: 'new title' }, { autoFill: true })).rejects.toMatchObject({
+        code: 'E_API_FAILED',
+        details: expect.objectContaining({
+          message: '无权读取 Bug',
+        }),
+      });
+      expect(methods).toEqual(['GET']);
+    } finally {
+      server.stop();
+    }
+  });
+
   test('autoFill is skipped without the option, leaving omitted fields out of PUT', async () => {
     let getCalled = false;
     let putBody: Record<string, unknown> | undefined;

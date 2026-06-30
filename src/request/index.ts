@@ -139,7 +139,8 @@ function getExplicitDataKeys(data: unknown): Set<string> {
  * 在执行 `update` 动作前，用当前对象的现值填充用户未显式传入的 body 字段。
  *
  * 仅当模块存在 `type: 'get'` 动作且 update 动作声明了对象类型 body schema 时生效；
- * 否则原样返回参数。GET 失败或返回非对象时同样跳过填充，交由后续 PUT 正常处理。
+ * 否则原样返回参数。GET 返回失败状态时会抛出 `E_API_FAILED`，避免继续发送未补齐的 PUT；
+ * GET 成功但返回非对象时跳过填充，交由后续 PUT 正常处理。
  *
  * 字段归属判断同时覆盖平铺 `params` 字段与 `params.data` 中的字段；只有 schema 中声明、
  * 用户未传且当前对象存在的字段才会被补齐，避免覆盖用户本次想修改的字段。
@@ -158,7 +159,7 @@ async function autoFillUpdateParams(
     client: options.client,
     timeout: options.timeout,
     insecure: options.insecure,
-    throwOnFail: options.throwOnFail,
+    throwOnFail: true,
   })).data;
   if (!isRecord(current)) return params;
 
