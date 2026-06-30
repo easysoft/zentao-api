@@ -51,4 +51,7 @@ export interface RequestOptions extends ProcessListOptions {
    * 不传时回落到全局 `autoFill`，默认 false。
    */
   autoFill?: boolean;
+
+  /** 是否返回原始响应体，默认 false。 */
+  raw?: boolean;
 }

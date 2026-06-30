@@ -333,6 +333,10 @@ export async function request<T = unknown>(
     insecure: options.insecure ?? globals.insecure,
   });
 
+  if (options.raw) {
+    return raw as ResponseData<T>;
+  }
+
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: ProcessListOptions = { ...options, limit: options.limit ?? globals.limit };
   const response = normalizeResponse<T>(command, raw, processOptions);
