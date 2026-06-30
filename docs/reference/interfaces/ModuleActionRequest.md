@@ -1,6 +1,6 @@
-[zentao-api](../index.md) / ResolvedModuleCommand
+[zentao-api](../index.md) / ModuleActionRequest
 
-# Interface: ResolvedModuleCommand
+# Interface: ModuleActionRequest
 
 将模块动作和参数解析后的可执行请求描述。
 

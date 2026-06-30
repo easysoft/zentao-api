@@ -62,6 +62,10 @@
         "link": "/reference/interfaces/ModuleActionParam.md"
       },
       {
+        "text": "ModuleActionRequest",
+        "link": "/reference/interfaces/ModuleActionRequest.md"
+      },
+      {
         "text": "ModuleActionRequestBody",
         "link": "/reference/interfaces/ModuleActionRequestBody.md"
       },
@@ -88,10 +92,6 @@
       {
         "text": "RequestOptions",
         "link": "/reference/interfaces/RequestOptions.md"
-      },
-      {
-        "text": "ResolvedModuleCommand",
-        "link": "/reference/interfaces/ResolvedModuleCommand.md"
       },
       {
         "text": "ResponseData",

@@ -22,6 +22,7 @@
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
 | [ModuleActionPagerGetterMap](interfaces/ModuleActionPagerGetterMap.md) | 从原始响应中提取分页字段时使用的字段映射，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
 | [ModuleActionParam](interfaces/ModuleActionParam.md) | 模块动作的查询参数定义。 |
+| [ModuleActionRequest](interfaces/ModuleActionRequest.md) | 将模块动作和参数解析后的可执行请求描述。 |
 | [ModuleActionRequestBody](interfaces/ModuleActionRequestBody.md) | 模块动作请求体定义。 |
 | [ModuleActionResponse](interfaces/ModuleActionResponse.md) | 模块动作响应定义。 |
 | [ModuleDefinition](interfaces/ModuleDefinition.md) | 禅道模块定义，由多个动作组成。 |
@@ -29,7 +30,6 @@
 | [ProcessListOptions](interfaces/ProcessListOptions.md) | [processData](functions/processData.md) 处理列表时的选项；执行顺序为 过滤 → 搜索 → 排序 → 限制数量 → 摘取。 |
 | [ProcessSingleOptions](interfaces/ProcessSingleOptions.md) | [processData](functions/processData.md) 处理单条对象时的选项。 |
 | [RequestOptions](interfaces/RequestOptions.md) | 高阶 `request("moduleName")` / `request("moduleName/methodName")` / `request("moduleName/<objectID>")` 的单次调用选项。 |
-| [ResolvedModuleCommand](interfaces/ResolvedModuleCommand.md) | 将模块动作和参数解析后的可执行请求描述。 |
 | [ResponseData](interfaces/ResponseData.md) | 高阶 `request()` 归一化后的返回数据。 |
 | [ServerConfig](interfaces/ServerConfig.md) | 禅道 `?mode=getconfig` 返回的服务端配置。 |
 | [ZentaoClientOptions](interfaces/ZentaoClientOptions.md) | 创建 [ZentaoClient](classes/ZentaoClient.md) 时使用的配置。 |
