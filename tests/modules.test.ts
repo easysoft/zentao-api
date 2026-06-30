@@ -29,6 +29,7 @@ afterEach(() => {
     timeout: undefined,
     insecure: undefined,
     throwOnFail: undefined,
+    autoFill: undefined,
   });
 });
 
@@ -719,6 +720,56 @@ describe('high-level request', () => {
       setGlobalOptions({ client });
 
       await request('bug/update', { id: 7, title: 'new title' });
+
+      expect(getCalled).toBe(false);
+      expect(putBody).toEqual({ title: 'new title' });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('autoFill can be enabled via global options', async () => {
+    let getCalled = false;
+    let putBody: Record<string, unknown> | undefined;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'GET') {
+        getCalled = true;
+        return Response.json({ status: 'success', bug: { id: 7, title: 'old title', severity: 2 } });
+      }
+      putBody = (await req.json()) as Record<string, unknown>;
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client, autoFill: true });
+
+      await request('bug/update', { id: 7, title: 'new title' });
+
+      expect(getCalled).toBe(true);
+      expect(putBody).toMatchObject({ title: 'new title', severity: 2 });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('per-call autoFill:false overrides global autoFill', async () => {
+    let getCalled = false;
+    let putBody: Record<string, unknown> | undefined;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'GET') {
+        getCalled = true;
+        return Response.json({ status: 'success', bug: { id: 7, title: 'old title', severity: 2 } });
+      }
+      putBody = (await req.json()) as Record<string, unknown>;
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client, autoFill: true });
+
+      await request('bug/update', { id: 7, title: 'new title' }, { autoFill: false });
 
       expect(getCalled).toBe(false);
       expect(putBody).toEqual({ title: 'new title' });

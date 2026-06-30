@@ -275,8 +275,8 @@ function normalizeResponse<T>(
  * 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
  * 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
  *
- * 对 `update` 动作传入 `options.autoFill` 为真时，会先 GET 当前对象，用现值补齐
- * 用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
+ * 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
+ * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
  *
  * @typeParam T 期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
  * @param name - 请求名，例如 `product`、`product/list` 或 `product/1`。
@@ -319,7 +319,7 @@ export async function request<T = unknown>(
   // autoFill：update 动作先 GET 当前对象，用现值补齐用户未显式传入的字段，
   // 避免禅道 PUT 把未提交字段覆盖为空。
   const action = getModuleAction(moduleName, actionName);
-  const finalParams = action.type === 'update' && options.autoFill
+  const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
     ? await autoFillUpdateParams(module, action, mergedParams, options)
     : mergedParams;
 
