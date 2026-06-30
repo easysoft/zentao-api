@@ -12,6 +12,9 @@
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
 
+对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
+
 ### Type Parameters
 
 | Type Parameter |
@@ -45,6 +48,9 @@
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+
+对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
 
 ### Type Parameters
 

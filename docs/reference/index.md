@@ -20,7 +20,7 @@
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供高阶 [request](functions/request.md) 调用复用。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
-| [ModuleActionPagerGetterMap](interfaces/ModuleActionPagerGetterMap.md) | 从原始响应中提取分页字段时使用的字段映射。 |
+| [ModuleActionPagerGetterMap](interfaces/ModuleActionPagerGetterMap.md) | 从原始响应中提取分页字段时使用的字段映射，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
 | [ModuleActionParam](interfaces/ModuleActionParam.md) | 模块动作的查询参数定义。 |
 | [ModuleActionRequestBody](interfaces/ModuleActionRequestBody.md) | 模块动作请求体定义。 |
 | [ModuleActionResponse](interfaces/ModuleActionResponse.md) | 模块动作响应定义。 |

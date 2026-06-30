@@ -1,5 +1,21 @@
 # 变更日志
 
+## 0.3.3 - 2026-06-30
+
+### 新增
+
+- 新增 `autoFill` 选项：更新（update）类请求在省略部分字段时，可自动以对象现有值回填被忽略的字段，避免误清空数据。
+- `autoFill` 支持通过全局选项（global options）统一开启，无需在每次调用时单独传入。
+
+### 修复
+
+- 修正 action getter 未接收到调用参数的问题，并支持解析嵌套字段映射（nested field maps）。
+
+### 变更
+
+- 移除 `ModuleAction.render` 定义，精简 action 定义结构。
+- 当省略 `method` 与 `resultType` 时，改为依据 action 的 `type` 自动推断，减少冗余配置。
+
 ## 0.3.2 - 2026-06-29
 
 ### 新增
