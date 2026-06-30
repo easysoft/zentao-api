@@ -645,4 +645,111 @@ describe('high-level request', () => {
       server.stop();
     }
   });
+
+  test('autoFill fills omitted update fields from the current object before PUT', async () => {
+    let getCalled = false;
+    let putBody: Record<string, unknown> | undefined;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'GET') {
+        getCalled = true;
+        return Response.json({
+          status: 'success',
+          bug: {
+            id: 7,
+            title: 'old title',
+            severity: 2,
+            pri: 1,
+            type: 'codeerror',
+            openedBuild: ['trunk'],
+            steps: 'old steps',
+            project: 0,
+            execution: 0,
+            story: 0,
+            // 以下字段不在 update body schema 中，不应被带入 PUT。
+            status: 'active',
+            resolvedBy: 'admin',
+          },
+        });
+      }
+      putBody = (await req.json()) as Record<string, unknown>;
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await request('bug/update', { id: 7, title: 'new title' }, { autoFill: true });
+
+      expect(getCalled).toBe(true);
+      // 用户显式传入的 title 保留，其余字段用现值补齐。
+      expect(putBody).toEqual({
+        title: 'new title',
+        severity: 2,
+        pri: 1,
+        type: 'codeerror',
+        openedBuild: ['trunk'],
+        steps: 'old steps',
+        project: 0,
+        execution: 0,
+        story: 0,
+      });
+      // schema 之外的字段不会被填充。
+      expect(putBody).not.toHaveProperty('status');
+      expect(putBody).not.toHaveProperty('resolvedBy');
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('autoFill is skipped without the option, leaving omitted fields out of PUT', async () => {
+    let getCalled = false;
+    let putBody: Record<string, unknown> | undefined;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'GET') {
+        getCalled = true;
+        return Response.json({ status: 'success', bug: { id: 7, severity: 2 } });
+      }
+      putBody = (await req.json()) as Record<string, unknown>;
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await request('bug/update', { id: 7, title: 'new title' });
+
+      expect(getCalled).toBe(false);
+      expect(putBody).toEqual({ title: 'new title' });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('autoFill keeps user-provided params.data fields over current values', async () => {
+    let putBody: Record<string, unknown> | undefined;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'GET') {
+        return Response.json({
+          status: 'success',
+          bug: { id: 7, title: 'old title', severity: 2, pri: 1 },
+        });
+      }
+      putBody = (await req.json()) as Record<string, unknown>;
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await request('bug/update', { id: 7, data: { severity: 4 } }, { autoFill: true });
+
+      // params.data 中的 severity 优先于现值，未传的 title/pri 用现值补齐。
+      expect(putBody).toMatchObject({ title: 'old title', severity: 4, pri: 1 });
+    } finally {
+      server.stop();
+    }
+  });
 });

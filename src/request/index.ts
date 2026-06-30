@@ -1,7 +1,7 @@
 import { ZentaoError } from '../misc/errors.js';
 import { getGlobalOptions } from '../misc/global-options.js';
-import type { DataRecord, HttpMethod, ProcessListOptions, RequestOptions, ResponseData } from '../types/index.js';
-import { getModule } from '../modules/registry.js';
+import type { DataRecord, HttpMethod, ModuleAction, ModuleDefinition, ProcessListOptions, RequestOptions, ResponseData } from '../types/index.js';
+import { getModule, getModuleAction } from '../modules/registry.js';
 import type { BUILTIN_MODULES } from '../modules/generated.js';
 import { extractPager, extractResult, resolveModuleCommand } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
@@ -119,6 +119,60 @@ function splitRequestName(name: string): { moduleName: string; actionName: strin
   };
 }
 
+/** 解析 `params.data` 中用户显式传入的 body 字段名，用于 autoFill 判断字段归属。 */
+function getExplicitDataKeys(data: unknown): Set<string> {
+  let value = data;
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return new Set();
+    }
+  }
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return new Set(Object.keys(value as Record<string, unknown>));
+  }
+  return new Set();
+}
+
+/**
+ * 在执行 `update` 动作前，用当前对象的现值填充用户未显式传入的 body 字段。
+ *
+ * 仅当模块存在 `type: 'get'` 动作且 update 动作声明了对象类型 body schema 时生效；
+ * 否则原样返回参数。GET 失败或返回非对象时同样跳过填充，交由后续 PUT 正常处理。
+ *
+ * 字段归属判断同时覆盖平铺 `params` 字段与 `params.data` 中的字段；只有 schema 中声明、
+ * 用户未传且当前对象存在的字段才会被补齐，避免覆盖用户本次想修改的字段。
+ */
+async function autoFillUpdateParams(
+  module: ModuleDefinition,
+  action: ModuleAction,
+  params: Record<string, unknown>,
+  options: RequestOptions,
+): Promise<Record<string, unknown>> {
+  const properties = (action.requestBody?.schema as { properties?: Record<string, unknown> } | undefined)?.properties;
+  const getAction = module.actions.find((candidate) => candidate.type === 'get');
+  if (!properties || !getAction) return params;
+
+  const current = (await request(`${module.name}/${getAction.name}`, params, {
+    client: options.client,
+    timeout: options.timeout,
+    insecure: options.insecure,
+    throwOnFail: options.throwOnFail,
+  })).data;
+  if (!isRecord(current)) return params;
+
+  const explicitDataKeys = getExplicitDataKeys(params.data);
+  const filled: Record<string, unknown> = { ...params };
+  for (const key of Object.keys(properties)) {
+    const userProvided = Object.prototype.hasOwnProperty.call(params, key) || explicitDataKeys.has(key);
+    if (!userProvided && Object.prototype.hasOwnProperty.call(current, key)) {
+      filled[key] = current[key];
+    }
+  }
+  return filled;
+}
+
 function stringifyMessage(value: unknown): string | undefined {
   if (typeof value === 'string') return value;
   if (value === undefined) return undefined;
@@ -221,6 +275,9 @@ function normalizeResponse<T>(
  * 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
  * 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
  *
+ * 对 `update` 动作传入 `options.autoFill` 为真时，会先 GET 当前对象，用现值补齐
+ * 用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
+ *
  * @typeParam T 期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
  * @param name - 请求名，例如 `product`、`product/list` 或 `product/1`。
  * @param params - 请求参数。
@@ -258,7 +315,15 @@ export async function request<T = unknown>(
     ...(id !== undefined ? { id } : {}),
     ...(recPerPage !== undefined ? { recPerPage } : {}),
   };
-  const command = resolveModuleCommand(module, actionName, mergedParams);
+
+  // autoFill：update 动作先 GET 当前对象，用现值补齐用户未显式传入的字段，
+  // 避免禅道 PUT 把未提交字段覆盖为空。
+  const action = getModuleAction(moduleName, actionName);
+  const finalParams = action.type === 'update' && options.autoFill
+    ? await autoFillUpdateParams(module, action, mergedParams, options)
+    : mergedParams;
+
+  const command = resolveModuleCommand(module, actionName, finalParams);
   const raw = await client.request(command.path, {
     method: String(command.action.method).toUpperCase() as HttpMethod,
     query: command.query,

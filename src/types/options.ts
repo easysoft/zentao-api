@@ -34,4 +34,13 @@ export interface RequestOptions extends ProcessListOptions {
    * 不传时回落到全局 `throwOnFail`，默认 false（保留原始失败响应）。
    */
   throwOnFail?: boolean;
+
+  /**
+   * 是否在执行 `update` 操作时自动填充未传入的字段。
+   *
+   * 设为 `true` 后，会先 GET 当前对象，把用户未显式传入（含 `params.data`）且
+   * 动作 body schema 中声明的字段用现值补齐，再发起 PUT，避免禅道用空值覆盖未提交字段。
+   * 因此只需传想修改的字段即可。仅对 `type: 'update'` 且模块存在 `type: 'get'` 动作时生效。
+   */
+  autoFill?: boolean;
 }
