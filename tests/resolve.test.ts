@@ -6,13 +6,13 @@ import {
   type ModuleDefinition,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
-import { extractPager, extractResult, resolveModuleCommand } from '../src/modules/resolve';
+import { extractPager, extractResult, resolveActionRequest } from '../src/modules/resolve';
 
 afterEach(() => {
   resetModuleDefinitions();
 });
 
-describe('resolveModuleCommand', () => {
+describe('resolveActionRequest', () => {
   test('resolves scoped list paths by execution, project, then product priority', () => {
     defineModules({
       name: 'workitem',
@@ -53,7 +53,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    const command = resolveModuleCommand(getModule('workitem'), 'list', {
+    const command = resolveActionRequest(getModule('workitem'), 'list', {
       productID: 1,
       projectID: '2',
       executionID: '3',
@@ -88,7 +88,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    const command = resolveModuleCommand(getModule('widget'), 'transition', { id: '42' });
+    const command = resolveActionRequest(getModule('widget'), 'transition', { id: '42' });
 
     expect(command.path).toBe('/widgets/archive/42');
     expect(command.id).toBe(42);
@@ -123,7 +123,7 @@ describe('resolveModuleCommand', () => {
     };
     defineModules(formModule);
 
-    const command = resolveModuleCommand(getModule('form'), 'create', {
+    const command = resolveActionRequest(getModule('form'), 'create', {
       data: '{"name":"from data","estimate":"8"}',
       enabled: 'false',
       tags: 'api,sdk',
@@ -163,7 +163,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    const command = resolveModuleCommand(getModule('flagform'), 'create', {
+    const command = resolveActionRequest(getModule('flagform'), 'create', {
       enabled: '0',
       archived: 'off',
       visible: '1',
@@ -199,7 +199,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    expect(() => resolveModuleCommand(getModule('strictflagform'), 'create', {
+    expect(() => resolveActionRequest(getModule('strictflagform'), 'create', {
       enabled: 'maybe',
     })).toThrowError(expect.objectContaining({ code: 'E_INVALID_PARAM' }));
   });
@@ -229,7 +229,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    const command = resolveModuleCommand(getModule('iteration'), 'create', {
+    const command = resolveActionRequest(getModule('iteration'), 'create', {
       data: {
         name: 'iteration 1',
         plans: { '1': [2] },
@@ -268,7 +268,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    const command = resolveModuleCommand(getModule('nullableform'), 'update', {
+    const command = resolveActionRequest(getModule('nullableform'), 'update', {
       id: 1,
       data: {
         title: null,
@@ -308,7 +308,7 @@ describe('resolveModuleCommand', () => {
       ],
     });
 
-    expect(() => resolveModuleCommand(getModule('requiredform'), 'create', {})).toThrow('name');
+    expect(() => resolveActionRequest(getModule('requiredform'), 'create', {})).toThrow('name');
   });
 });
 

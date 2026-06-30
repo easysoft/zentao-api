@@ -3,7 +3,7 @@ import { getGlobalOptions } from '../misc/global-options.js';
 import type { DataRecord, HttpMethod, ModuleAction, ModuleDefinition, ProcessListOptions, RequestOptions, ResponseData } from '../types/index.js';
 import { getModule, getModuleAction } from '../modules/registry.js';
 import type { BUILTIN_MODULES } from '../modules/generated.js';
-import { extractPager, extractResult, resolveModuleCommand } from '../modules/resolve.js';
+import { extractPager, extractResult, resolveActionRequest } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
 
 type BuiltinModuleDefinition = (typeof BUILTIN_MODULES)[number];
@@ -235,7 +235,7 @@ function applyProcessing(data: unknown, options: ProcessListOptions): unknown {
 
 /** 将禅道原始响应归一化为稳定的 ResponseData 结构。 */
 function normalizeResponse<T>(
-  command: ReturnType<typeof resolveModuleCommand>,
+  command: ReturnType<typeof resolveActionRequest>,
   raw: unknown,
   options: ProcessListOptions,
 ): ResponseData<T> {
@@ -323,7 +323,7 @@ export async function request<T = unknown>(
     ? await autoFillUpdateParams(module, action, mergedParams, options)
     : mergedParams;
 
-  const command = resolveModuleCommand(module, actionName, finalParams);
+  const command = resolveActionRequest(module, actionName, finalParams);
   const raw = await client.request(command.path, {
     method: String(command.action.method).toUpperCase() as HttpMethod,
     query: command.query,

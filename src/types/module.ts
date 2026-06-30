@@ -154,7 +154,7 @@ export interface ModuleDefinition {
 }
 
 /** 将模块动作和参数解析后的可执行请求描述。 */
-export interface ResolvedModuleCommand {
+export interface ModuleActionRequest {
   /** 模块名称。 */
   module: string;
   /** 匹配到的动作定义。 */
