@@ -53,15 +53,28 @@ export interface ModuleActionResponse {
   example?: unknown;
 }
 
-/** 从原始响应中提取分页字段时使用的字段映射。 */
+/** 从原始响应中提取分页字段时使用的字段映射，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 */
 export interface ModuleActionPagerGetterMap {
-  /** 当前页码字段名。 */
+  /** 当前页码字段路径。 */
   pageID: string;
-  /** 每页记录数字段名。 */
+  /** 每页记录数字段路径。 */
   recPerPage: string;
-  /** 总记录数字段名。 */
+  /** 总记录数字段路径。 */
   recTotal: string;
 }
+
+/**
+ * 从原始响应中重映射业务数据字段的映射表。
+ * 键为输出字段名，值为原始响应中的字段路径（支持 `a.b` 嵌套）。
+ */
+export type ModuleActionResultFieldMap = Readonly<Record<string, string>>;
+
+/**
+ * 从原始响应中提取数据时使用的函数形态。
+ * @param data 原始响应对象。
+ * @param params 触发本次请求的原始调用参数。
+ */
+export type ModuleActionGetterFn<T> = (data: unknown, params: Record<string, unknown>) => T;
 
 /** 禅道模块中的单个 API 动作定义。 */
 export interface ModuleAction {
@@ -93,10 +106,16 @@ export interface ModuleAction {
    * 当 `type` 无法推导出结果形态时抛出 `E_INDETERMINATE_ACTION_RESULT_TYPE`。
    */
   resultType?: ModuleActionResultType;
-  /** 从原始响应中提取分页信息的位置或函数。 */
-  pagerGetter?: string | ModuleActionPagerGetterMap | ((data: unknown, params: Record<string, unknown>) => ListPagerInfo);
-  /** 从原始响应中提取业务数据的位置或函数。 */
-  resultGetter?: string | Record<string, string> | ((data: unknown, params: Record<string, unknown>) => unknown);
+  /**
+   * 从原始响应中提取分页信息的位置或函数：
+   * 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。
+   */
+  pagerGetter?: string | ModuleActionPagerGetterMap | ModuleActionGetterFn<ListPagerInfo>;
+  /**
+   * 从原始响应中提取业务数据的位置或函数：
+   * 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。
+   */
+  resultGetter?: string | ModuleActionResultFieldMap | ModuleActionGetterFn<unknown>;
 }
 
 /** 内置模块名称，同时允许用户扩展自定义模块名。 */

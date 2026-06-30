@@ -191,10 +191,10 @@ function normalizeResponse<T>(
 
   const record = raw as Record<string, unknown>;
   const status = record.status === 'fail' ? 'fail' : 'success';
-  const data = applyProcessing(extractResult(command.action, record), options);
+  const data = applyProcessing(extractResult(command.action, record, command.params), options);
   const rawMessage = record.message;
 
-  const pager = extractPager(command.action, record);
+  const pager = extractPager(command.action, record, command.params);
   const response: ResponseData<T> = {
     status,
     message: stringifyMessage(rawMessage),

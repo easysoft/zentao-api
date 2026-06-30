@@ -370,4 +370,62 @@ describe('result and pager extraction', () => {
       recTotal: 1,
     });
   });
+
+  test('passes call params to function getters', () => {
+    const action: ModuleAction = {
+      name: 'computed',
+      type: 'get',
+      method: 'get',
+      path: '/computed',
+      resultType: 'object',
+      resultGetter: (_data, params) => ({ echoed: params.id }),
+      pagerGetter: (_data, params) => ({
+        pageID: Number(params.page),
+        recPerPage: 10,
+        recTotal: 0,
+      }),
+    };
+
+    expect(extractResult(action, {}, { id: 42 })).toEqual({ echoed: 42 });
+    expect(extractPager(action, {}, { page: 3 })).toEqual({
+      pageID: 3,
+      recPerPage: 10,
+      recTotal: 0,
+    });
+  });
+
+  test('extracts mapped result and pager fields from nested paths', () => {
+    const action: ModuleAction = {
+      name: 'summary',
+      type: 'get',
+      method: 'get',
+      path: '/summary',
+      resultType: 'object',
+      resultGetter: {
+        rows: 'data.items',
+      },
+      pagerGetter: {
+        pageID: 'data.page',
+        recPerPage: 'data.size',
+        recTotal: 'data.total',
+      },
+    };
+    const response = {
+      data: {
+        page: 3,
+        size: 20,
+        total: 2,
+        items: [{ id: 1 }, { id: 2 }],
+      },
+    };
+
+    expect(extractResult(action, response)).toEqual({
+      rows: [{ id: 1 }, { id: 2 }],
+    });
+    expect(extractPager(action, response)).toEqual({
+      pageID: 3,
+      recPerPage: 20,
+      recTotal: 2,
+    });
+  });
 });

@@ -184,29 +184,37 @@ export function resolveModuleCommand(
 }
 
 /** 根据动作定义中的 resultGetter，从原始响应里提取业务数据。 */
-export function extractResult(action: ModuleAction, response: Record<string, unknown>): unknown {
+export function extractResult(
+  action: ModuleAction,
+  response: Record<string, unknown>,
+  params: Record<string, unknown> = {},
+): unknown {
   const getter = action.resultGetter;
   if (!getter) return response.data ?? response;
-  if (typeof getter === 'function') return getter(response, {});
+  if (typeof getter === 'function') return getter(response, params);
   if (typeof getter === 'string') return getNestedValue(response, getter);
 
   const result: Record<string, unknown> = {};
   for (const [targetKey, sourceKey] of Object.entries(getter)) {
-    result[targetKey] = response[sourceKey];
+    result[targetKey] = getNestedValue(response, sourceKey);
   }
   return result;
 }
 
 /** 根据动作定义中的 pagerGetter，从原始响应里提取分页信息。 */
-export function extractPager(action: ModuleAction, response: Record<string, unknown>): ListPagerInfo | undefined {
+export function extractPager(
+  action: ModuleAction,
+  response: Record<string, unknown>,
+  params: Record<string, unknown> = {},
+): ListPagerInfo | undefined {
   const getter = action.pagerGetter;
   if (!getter) return response.pager as ListPagerInfo | undefined;
-  if (typeof getter === 'function') return getter(response, {});
+  if (typeof getter === 'function') return getter(response, params);
   if (typeof getter === 'string') return getNestedValue(response, getter) as ListPagerInfo | undefined;
 
-  const page = response[getter.pageID];
-  const recPerPage = response[getter.recPerPage];
-  const recTotal = response[getter.recTotal];
+  const page = getNestedValue(response, getter.pageID);
+  const recPerPage = getNestedValue(response, getter.recPerPage);
+  const recTotal = getNestedValue(response, getter.recTotal);
   if (page === undefined || recPerPage === undefined || recTotal === undefined) return undefined;
   return {
     pageID: Number(page),
