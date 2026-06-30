@@ -18,6 +18,7 @@
 | <a id="property-insecure"></a> `insecure?` | `boolean` | 本次调用 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 | - |
 | <a id="property-limit"></a> `limit?` | `string` | 限制返回列表数量，在排序后、摘取前截断；不改变服务端页大小。 | [`ProcessListOptions`](ProcessListOptions.md).[`limit`](ProcessListOptions.md#property-limit) |
 | <a id="property-pick"></a> `pick?` | `string`[] | 摘取字段路径列表。 | [`ProcessListOptions`](ProcessListOptions.md).[`pick`](ProcessListOptions.md#property-pick) |
+| <a id="property-raw"></a> `raw?` | `boolean` | 是否返回原始响应体，默认 false。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 | - |
 | <a id="property-search"></a> `search?` | `string`[] | 模糊搜索关键词组，组内空格分隔为 OR，多组之间按 AND 组合。 | [`ProcessListOptions`](ProcessListOptions.md).[`search`](ProcessListOptions.md#property-search) |
 | <a id="property-searchfields"></a> `searchFields?` | `string`[] | 限定搜索字段，缺省时搜索全部字段。 | [`ProcessListOptions`](ProcessListOptions.md).[`searchFields`](ProcessListOptions.md#property-searchfields) |

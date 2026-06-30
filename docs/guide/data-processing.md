@@ -109,6 +109,17 @@ const bugs = await request(
 const bug = await request('bug/123', {}, { pick: ['id', 'title'] });
 ```
 
+## 跳过处理：原始响应 raw
+
+传入 `raw: true` 时，`request()` 直接返回服务端响应体，**跳过归一化与上述全部本地处理**（`filter` / `search` / `sort` / `limit` / `pick` 均不生效），也不会触发 `throwOnFail`。适合需要拿到未经加工的原始数据、自行解析分页或调试接口返回的场景。
+
+```ts
+// 返回原始响应体，不做任何处理
+const raw = await request('bug/list', { productID: 1 }, { raw: true });
+```
+
+缺省为 `false`。
+
 ## 直接调用处理函数
 
 上述能力也以独立函数形式导出，可脱离 `request()` 对任意数据使用。详细签名见 [Reference](/reference/)。
