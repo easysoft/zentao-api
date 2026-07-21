@@ -1,4 +1,4 @@
-import { extendModuleAction, defineModules } from './define.js';
+import { extendModuleAction } from './define.js';
 
 /**
  * 内置覆盖 / 扩展定义。
@@ -13,49 +13,7 @@ import { extendModuleAction, defineModules } from './define.js';
  * 维护约定：
  * - 不要修改 `./generated.ts`（它由 `scripts/update-registry.ts` 自动生成）。
  *   能通过更新 OpenAPI 数据解决的，优先走生成流程；只有生成器无法表达的扩展才写在这里。
- * - 复用 {@link defineModules} / {@link defineModuleActions} 的语义：
- *   - {@link defineModuleActions}：为**已存在**的模块追加动作（同名替换、未知追加）。
- *   - {@link defineModules}：登记**新模块**，或对已存在模块做合并 / 整体替换（`replace`）。
- * - 写入会自动深克隆 + 深冻结，无需自己处理不可变性。
- *
- * @example 为已存在的 `bug` 模块补充一个自定义动作：
- * ```ts
- * defineModuleActions('bug', {
- *   name: 'assignTo',
- *   display: '指派 Bug',
- *   type: 'action',
- *   method: 'put',
- *   path: '/bugs/{bugID}/assignto',
- *   resultType: 'text',
- *   pathParams: { bugID: 'Bug ID' },
- *   requestBody: {
- *     required: true,
- *     schema: {
- *       assignedTo: { type: 'string', description: '指派给' },
- *       comment: { type: 'string', description: '备注' },
- *     },
- *   },
- * });
- * ```
- *
- * @example 登记一个 OpenAPI 未覆盖的新模块：
- * ```ts
- * defineModules({
- *   name: 'custom',
- *   display: '自定义模块',
- *   actions: [
- *     {
- *       name: 'list',
- *       type: 'list',
- *       method: 'get',
- *       path: '/customs',
- *       resultType: 'list',
- *       pagerGetter: 'pager',
- *       resultGetter: 'customs',
- *     },
- *   ],
- * });
- * ```
+ * - 复用 {@link defineModuleActions} / {@link extendModuleAction} 的语义。
  *
  * @internal
  */
@@ -149,6 +107,30 @@ export function applyBuiltinOverrides(): void {
       const properties = action.requestBody!.schema?.properties as Record<string, Record<string, unknown>>;
       if(properties.acl && properties.acl.defaultValue === undefined) {
         properties.acl.defaultValue = 'open';
+      }
+      return action;
+    });
+  });
+
+  // story/bug create 的 spec/steps 字段支持图片标记语法 ![alt](path)
+  // 这些字段在 schema 中声明为 string 类型，CLI 会在上传图片后将路径替换为禅道图片标记
+  [
+    ['story', 'create'],
+    ['bug', 'create'],
+  ].forEach(([moduleName, actionName]) => {
+    extendModuleAction(moduleName, actionName, (action) => {
+      const properties = action.requestBody!.schema?.properties as Record<string, Record<string, unknown>> | undefined;
+      if (!properties) return action;
+
+      const contentFields = moduleName === 'story'
+        ? ['spec', 'verify']
+        : ['steps'];
+
+      for (const field of contentFields) {
+        const prop = properties[field];
+        if (prop && typeof prop === 'object') {
+          prop.description = `${prop.description ?? ''}（支持图片标记：![描述](本地路径)）`;
+        }
       }
       return action;
     });

@@ -2,7 +2,7 @@ import { ZentaoError } from './errors.js';
 
 /** 判断当前运行时是否为 Node.js。 */
 export function isNodeRuntime(): boolean {
-  return typeof process !== 'undefined' && Boolean(process.versions?.node);
+  return typeof process !== 'undefined' && Boolean(process.versions?.node || process.versions?.bun);
 }
 
 // 通过函数参数间接化 `import(specifier)`，让打包器无法在静态分析阶段把

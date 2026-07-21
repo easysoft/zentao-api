@@ -33,6 +33,10 @@
       "import": "./dist/browser.js"
     },
     "./browser/global": "./dist/browser/zentao-api.global.js",
+    "./modules/upload": {
+      "types": "./dist/modules/upload.d.ts",
+      "import": "./dist/modules/upload.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
