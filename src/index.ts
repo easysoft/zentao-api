@@ -20,6 +20,7 @@ export {
   getModuleAction,
   getModuleActionParams,
 } from './modules/registry.js';
+export { uploadFile, type UploadedFile } from './modules/upload.js';
 export {
   request,
   type BuiltinRequestName,

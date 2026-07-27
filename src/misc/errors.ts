@@ -27,6 +27,9 @@ export const ERRORS = {
   E_INVALID_PARAM: 'Invalid value for parameter {param}: {value}',
   E_INVALID_REQUEST_NAME: 'Request name must use the form "moduleName", "moduleName/methodName", or "moduleName/<objectID>".',
   E_API_FAILED: 'ZenTao API returned failure: {message}',
+  E_UPLOAD_NODE_ONLY: 'File upload is only supported in Node.js runtimes.',
+  E_UPLOAD_NOT_A_FILE: 'Upload path is not a file: {path}',
+  E_UPLOAD_FAILED: 'File upload failed: {message}',
 } as const;
 
 /** SDK 已知错误码，对应 {@link ERRORS} 的 key。 */
