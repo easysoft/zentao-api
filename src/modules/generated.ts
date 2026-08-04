@@ -1266,17 +1266,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/stories',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '产品ID',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "产品ID",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string"
                             },
@@ -1340,7 +1343,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title"
                         ]
                     },

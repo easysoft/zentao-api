@@ -166,6 +166,9 @@ function buildQuery(action: ModuleAction, params: Record<string, unknown>): Reco
     if (value === undefined && param.name === 'pageID') {
       value = params.page;
     }
+    if (value === undefined && param.name === 'productID') {
+      value = params.product;
+    }
     if (value === undefined) {
       value = param.defaultValue ?? param.options?.[0]?.value;
     }
