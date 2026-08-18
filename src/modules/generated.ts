@@ -2868,7 +2868,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'bug',
         display: 'Bug',
-        description: 'Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、产品的Bug模块树、创建Bug、获取Bug详情、修改Bug、修改Bug模块、删除Bug、删除Bug模块、激活Bug、关闭Bug、解决Bug',
+        description: 'Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、产品的Bug模块树、创建Bug、获取Bug详情、修改Bug、修改Bug模块、删除Bug、删除Bug模块、激活Bug、关闭Bug、确认Bug、解决Bug',
         actions: [
             {
                 name: 'list',
@@ -3200,6 +3200,57 @@ export const BUILTIN_MODULES = [
                     schema: {
                         "type": "object",
                         "properties": {
+                            "comment": {
+                                "type": "string",
+                                "description": "备注"
+                            }
+                        }
+                    },
+                },
+            }, {
+                name: 'confirm',
+                display: '确认Bug',
+                type: 'action',
+                method: 'put',
+                path: '/bugs/{bugID}/confirm',
+                resultType: 'text',
+                pathParams: {
+                    bugID: 'Bug ID',
+                },
+                requestBody: {
+                    required: true,
+                    type: 'object',
+                    schema: {
+                        "type": "object",
+                        "properties": {
+                            "assignedTo": {
+                                "type": "string",
+                                "description": "指派给"
+                            },
+                            "type": {
+                                "type": "string",
+                                "description": "Bug类型(codeerror 代码错误 | config 配置相关 | install 安装部署 | security 安全相关 | performance 性能问题 | standard 标准规范 | automation 测试脚本 | designdefect 设计缺陷 | others 其他)"
+                            },
+                            "pri": {
+                                "type": "integer",
+                                "description": "优先级，默认是3",
+                                "format": "int32"
+                            },
+                            "deadline": {
+                                "type": "string",
+                                "description": "截止日期"
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "状态"
+                            },
+                            "mailto": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "抄送给"
+                            },
                             "comment": {
                                 "type": "string",
                                 "description": "备注"
@@ -3898,7 +3949,7 @@ export const BUILTIN_MODULES = [
                             },
                             "assignedTo": {
                                 "type": "string",
-                                "description": "任务名称"
+                                "description": "指派给"
                             },
                             "consumed": {
                                 "type": "number",
@@ -3907,11 +3958,11 @@ export const BUILTIN_MODULES = [
                             },
                             "realStarted": {
                                 "type": "string",
-                                "description": "实际开始"
+                                "description": "实际开始，精确到秒"
                             },
                             "finishedDate": {
                                 "type": "string",
-                                "description": "实际完成"
+                                "description": "实际完成，精确到秒"
                             },
                             "comment": {
                                 "type": "string",
@@ -3947,7 +3998,7 @@ export const BUILTIN_MODULES = [
                             },
                             "realStarted": {
                                 "type": "string",
-                                "description": "实际开始"
+                                "description": "实际开始，精确到秒"
                             },
                             "consumed": {
                                 "type": "number",
@@ -6329,14 +6380,12 @@ export const BUILTIN_MODULES = [
                 requestBody: {
                     required: true,
                     type: 'object',
-                    mediaType: 'multipart/form-data',
                     schema: {
                         "type": "object",
                         "properties": {
                             "file": {
                                 "type": "string",
-                                "format": "binary",
-                                "description": "待上传文件；Node.js/Bun 可传本地文件路径，浏览器传 File 或 Blob"
+                                "description": "本地文件路径，将按 multipart/form-data 上传"
                             },
                             "objectType": {
                                 "type": "string",
@@ -6592,11 +6641,11 @@ export const BUILTIN_MODULES = [
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'list',
                 pagerGetter: 'pager',
+                resultGetter: 'docs',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
                 },
-                resultGetter: 'docs',
             }, {
                 name: 'productDocs',
                 display: '获取产品文档列表',
@@ -6907,7 +6956,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档内容，支持HTML标签"
+                                "description": "文档正文，使用HTML格式；纯文本可直接传递"
                             }
                         },
                         "required": [
@@ -6944,7 +6993,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档内容，支持HTML标签"
+                                "description": "文档正文，使用HTML格式；纯文本可直接传递"
                             }
                         },
                         "required": [
@@ -6981,7 +7030,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档内容，支持HTML标签"
+                                "description": "文档正文，使用HTML格式；纯文本可直接传递"
                             }
                         },
                         "required": [
@@ -7018,7 +7067,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档内容，支持HTML标签"
+                                "description": "文档正文，使用HTML格式；纯文本可直接传递"
                             }
                         },
                         "required": [
@@ -7050,7 +7099,7 @@ export const BUILTIN_MODULES = [
                             },
                             "parentID": {
                                 "type": "integer",
-                                "description": "父目录",
+                                "description": "父目录ID，必须属于当前文档库",
                                 "format": "int32"
                             }
                         },
@@ -7082,7 +7131,7 @@ export const BUILTIN_MODULES = [
                             },
                             "parentID": {
                                 "type": "integer",
-                                "description": "父目录",
+                                "description": "父目录ID，必须属于当前文档库",
                                 "format": "int32"
                             }
                         },
@@ -7114,7 +7163,7 @@ export const BUILTIN_MODULES = [
                             },
                             "parentID": {
                                 "type": "integer",
-                                "description": "父目录",
+                                "description": "父目录ID，必须属于当前文档库",
                                 "format": "int32"
                             }
                         },
@@ -7146,7 +7195,7 @@ export const BUILTIN_MODULES = [
                             },
                             "parentID": {
                                 "type": "integer",
-                                "description": "父目录",
+                                "description": "父目录ID，必须属于当前文档库",
                                 "format": "int32"
                             }
                         },
@@ -7285,7 +7334,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档内容，支持HTML标签"
+                                "description": "文档正文，使用HTML格式；纯文本可直接传递。接口不接受块编辑器的JSON快照，修改块编辑器文档后会保存为HTML格式"
                             }
                         },
                         "required": [
@@ -7393,7 +7442,12 @@ export const BUILTIN_MODULES = [
                             },
                             "name": {
                                 "type": "string",
-                                "description": "待办名称"
+                                "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+                            },
+                            "objectID": {
+                                "type": "integer",
+                                "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+                                "format": "int32"
                             },
                             "begin": {
                                 "type": "string",
@@ -7414,8 +7468,7 @@ export const BUILTIN_MODULES = [
                         },
                         "required": [
                             "date",
-                            "type",
-                            "name"
+                            "type"
                         ]
                     },
                 },
@@ -7445,7 +7498,12 @@ export const BUILTIN_MODULES = [
                             },
                             "name": {
                                 "type": "string",
-                                "description": "待办名称"
+                                "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+                            },
+                            "objectID": {
+                                "type": "integer",
+                                "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+                                "format": "int32"
                             },
                             "begin": {
                                 "type": "string",
@@ -7466,8 +7524,7 @@ export const BUILTIN_MODULES = [
                         },
                         "required": [
                             "date",
-                            "type",
-                            "name"
+                            "type"
                         ]
                     },
                 },
@@ -8182,17 +8239,19 @@ export const BUILTIN_MODULES = [
                 path: '/my/meetings',
                 resultType: 'list',
                 pagerGetter: 'pager',
+                resultGetter: 'meetings',
                 params: [
                     {
                         name: 'browseType',
                         required: false,
                         type: 'string',
-                        description: '状态，默认是all',
-                        defaultValue: 'all',
+                        description: '状态，默认是futureMeeting',
+                        defaultValue: 'futureMeeting',
                         options: [
+                            { value: 'futureMeeting', label: '我参加的（未开始）' },
                             { value: 'all', label: '全部' },
                             { value: 'booked', label: '我预约的' },
-                            { value: 'participate', label: '我参加的' },
+                            { value: 'participate', label: '我参加的（全部）' },
                         ],
                     },
                     {
@@ -8222,7 +8281,6 @@ export const BUILTIN_MODULES = [
                         description: '页码，从第1页开始',
                     },
                 ],
-                resultGetter: 'meetings',
             }, {
                 name: 'issues',
                 display: '指派给我的问题',
@@ -8455,6 +8513,7 @@ export type BuiltinActionMeta = {
         deleteModule: { resultType: 'text' };
         activate: { resultType: 'text' };
         close: { resultType: 'text' };
+        confirm: { resultType: 'text' };
         resolve: { resultType: 'text' };
     };
     testcase: {

@@ -179,6 +179,19 @@ describe('module registry', () => {
     expect(action!.pathParams?.storyID).toBe('需求ID');
   });
 
+  test('parses query options whose labels contain nested parentheses', () => {
+    const action = getModuleAction('my', 'meetings');
+    const browseType = action?.params?.find(param => param.name === 'browseType');
+
+    expect(browseType?.defaultValue).toBe('futureMeeting');
+    expect(browseType?.options).toEqual([
+      { value: 'futureMeeting', label: '我参加的（未开始）' },
+      { value: 'all', label: '全部' },
+      { value: 'booked', label: '我预约的' },
+      { value: 'participate', label: '我参加的（全部）' },
+    ]);
+  });
+
   test('defineModules merges same-name generated modules by default', () => {
     const extension: ModuleDefinition = {
       name: 'product',
