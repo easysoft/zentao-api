@@ -1,6 +1,6 @@
 # Bug (bug)
 
-Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、产品的Bug模块树、创建Bug、获取Bug详情、修改Bug、修改Bug模块、删除Bug、删除Bug模块、激活Bug、关闭Bug、解决Bug
+Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、产品的Bug模块树、创建Bug、获取Bug详情、修改Bug、修改Bug模块、删除Bug、删除Bug模块、激活Bug、关闭Bug、确认Bug、解决Bug
 
 ## 动作概览
 
@@ -16,6 +16,7 @@ Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、
 | `deleteModule` | 删除Bug模块 | `DELETE` | `/bug/modules/{moduleID}` |
 | `activate` | 激活Bug | `PUT` | `/bugs/{bugID}/activate` |
 | `close` | 关闭Bug | `PUT` | `/bugs/{bugID}/close` |
+| `confirm` | 确认Bug | `PUT` | `/bugs/{bugID}/confirm` |
 | `resolve` | 解决Bug | `PUT` | `/bugs/{bugID}/resolve` |
 
 ## 获取Bug列表，支持获取项目/产品/执行下的Bug
@@ -647,6 +648,106 @@ import { request } from 'zentao-api';
 
 const result = await request("bug/close", {
   "bugID": 1,
+  "comment": "<string>"
+});
+```
+## 确认Bug
+
+- SDK 调用：`request("bug/confirm", params)`
+- HTTP：`PUT /bugs/{bugID}/confirm`
+- 动作类型：`action`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `bugID` | Bug ID |
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+请求体必填：是
+
+Schema:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "assignedTo": {
+      "type": "string",
+      "description": "指派给"
+    },
+    "type": {
+      "type": "string",
+      "description": "Bug类型(codeerror 代码错误 | config 配置相关 | install 安装部署 | security 安全相关 | performance 性能问题 | standard 标准规范 | automation 测试脚本 | designdefect 设计缺陷 | others 其他)"
+    },
+    "pri": {
+      "type": "integer",
+      "description": "优先级，默认是3",
+      "format": "int32"
+    },
+    "deadline": {
+      "type": "string",
+      "description": "截止日期"
+    },
+    "status": {
+      "type": "string",
+      "description": "状态"
+    },
+    "mailto": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "抄送给"
+    },
+    "comment": {
+      "type": "string",
+      "description": "备注"
+    }
+  }
+}
+```
+
+示例:
+
+```json
+{
+  "assignedTo": "<string>",
+  "type": "<string>",
+  "pri": 1,
+  "deadline": "<string>",
+  "status": "<string>",
+  "mailto": [
+    "<string>"
+  ],
+  "comment": "<string>"
+}
+```
+
+### 返回值
+
+- 返回形态：`text`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("bug/confirm", {
+  "bugID": 1,
+  "assignedTo": "<string>",
+  "type": "<string>",
+  "pri": 1,
+  "deadline": "<string>",
+  "status": "<string>",
+  "mailto": [
+    "<string>"
+  ],
   "comment": "<string>"
 });
 ```

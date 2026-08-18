@@ -44,7 +44,12 @@ Schema:
     },
     "name": {
       "type": "string",
-      "description": "待办名称"
+      "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+    },
+    "objectID": {
+      "type": "integer",
+      "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+      "format": "int32"
     },
     "begin": {
       "type": "string",
@@ -65,8 +70,7 @@ Schema:
   },
   "required": [
     "date",
-    "type",
-    "name"
+    "type"
   ]
 }
 ```
@@ -78,6 +82,7 @@ Schema:
   "date": "<string>",
   "type": "<string>",
   "name": "<string>",
+  "objectID": 1,
   "begin": "<string>",
   "end": "<string>",
   "assignedTo": "<string>",
@@ -98,6 +103,7 @@ const result = await request("todo/create", {
   "date": "<string>",
   "type": "<string>",
   "name": "<string>",
+  "objectID": 1,
   "begin": "<string>",
   "end": "<string>",
   "assignedTo": "<string>",
@@ -140,7 +146,12 @@ Schema:
     },
     "name": {
       "type": "string",
-      "description": "待办名称"
+      "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+    },
+    "objectID": {
+      "type": "integer",
+      "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+      "format": "int32"
     },
     "begin": {
       "type": "string",
@@ -161,8 +172,7 @@ Schema:
   },
   "required": [
     "date",
-    "type",
-    "name"
+    "type"
   ]
 }
 ```
@@ -174,6 +184,7 @@ Schema:
   "date": "<string>",
   "type": "<string>",
   "name": "<string>",
+  "objectID": 1,
   "begin": "<string>",
   "end": "<string>",
   "assignedTo": "<string>",
@@ -195,6 +206,7 @@ const result = await request("todo/update", {
   "date": "<string>",
   "type": "<string>",
   "name": "<string>",
+  "objectID": 1,
   "begin": "<string>",
   "end": "<string>",
   "assignedTo": "<string>",

@@ -518,7 +518,7 @@ const result = await request("my/testcases", {
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `browseType` | string | 否 | `all` | 状态，默认是all<br>`all` 全部<br>`booked` 我预约的<br>`participate` 我参加的 |
+| `browseType` | string | 否 | `futureMeeting` | 状态，默认是futureMeeting<br>`futureMeeting` 我参加的（未开始）<br>`all` 全部<br>`booked` 我预约的<br>`participate` 我参加的（全部） |
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
@@ -539,7 +539,7 @@ const result = await request("my/testcases", {
 import { request } from 'zentao-api';
 
 const result = await request("my/meetings", {
-  "browseType": "all",
+  "browseType": "futureMeeting",
   "orderBy": "id_asc",
   "recPerPage": 1,
   "pageID": 1

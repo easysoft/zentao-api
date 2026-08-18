@@ -37,8 +37,8 @@ Schema:
   "properties": {
     "file": {
       "type": "string",
-      "format": "binary",
-      "description": "待上传文件；Node.js/Bun 可传本地文件路径，浏览器传 File 或 Blob"
+      "description": "本地文件路径，将按 multipart/form-data 上传",
+      "format": "binary"
     },
     "objectType": {
       "type": "string",

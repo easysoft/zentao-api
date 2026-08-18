@@ -669,7 +669,7 @@ Schema:
     },
     "assignedTo": {
       "type": "string",
-      "description": "任务名称"
+      "description": "指派给"
     },
     "consumed": {
       "type": "number",
@@ -678,11 +678,11 @@ Schema:
     },
     "realStarted": {
       "type": "string",
-      "description": "实际开始"
+      "description": "实际开始，精确到秒"
     },
     "finishedDate": {
       "type": "string",
-      "description": "实际完成"
+      "description": "实际完成，精确到秒"
     },
     "comment": {
       "type": "string",
@@ -761,7 +761,7 @@ Schema:
     },
     "realStarted": {
       "type": "string",
-      "description": "实际开始"
+      "description": "实际开始，精确到秒"
     },
     "consumed": {
       "type": "number",

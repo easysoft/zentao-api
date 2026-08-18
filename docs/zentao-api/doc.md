@@ -1090,7 +1090,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档内容，支持HTML标签"
+      "description": "文档正文，使用HTML格式；纯文本可直接传递"
     }
   },
   "required": [
@@ -1165,7 +1165,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档内容，支持HTML标签"
+      "description": "文档正文，使用HTML格式；纯文本可直接传递"
     }
   },
   "required": [
@@ -1240,7 +1240,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档内容，支持HTML标签"
+      "description": "文档正文，使用HTML格式；纯文本可直接传递"
     }
   },
   "required": [
@@ -1315,7 +1315,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档内容，支持HTML标签"
+      "description": "文档正文，使用HTML格式；纯文本可直接传递"
     }
   },
   "required": [
@@ -1385,7 +1385,7 @@ Schema:
     },
     "parentID": {
       "type": "integer",
-      "description": "父目录",
+      "description": "父目录ID，必须属于当前文档库",
       "format": "int32"
     }
   },
@@ -1453,7 +1453,7 @@ Schema:
     },
     "parentID": {
       "type": "integer",
-      "description": "父目录",
+      "description": "父目录ID，必须属于当前文档库",
       "format": "int32"
     }
   },
@@ -1521,7 +1521,7 @@ Schema:
     },
     "parentID": {
       "type": "integer",
-      "description": "父目录",
+      "description": "父目录ID，必须属于当前文档库",
       "format": "int32"
     }
   },
@@ -1589,7 +1589,7 @@ Schema:
     },
     "parentID": {
       "type": "integer",
-      "description": "父目录",
+      "description": "父目录ID，必须属于当前文档库",
       "format": "int32"
     }
   },
@@ -1913,7 +1913,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档内容，支持HTML标签"
+      "description": "文档正文，使用HTML格式；纯文本可直接传递。接口不接受块编辑器的JSON快照，修改块编辑器文档后会保存为HTML格式"
     }
   },
   "required": [
