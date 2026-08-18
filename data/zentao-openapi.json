@@ -150,7 +150,7 @@
                                 },
                                 "example": {
                                     "status": "success",
-                                    "token": "5a56e741153258bf210e582c9fbcd99f"
+                                    "token": "71db036388cc4055f2b17ef1a552cf90"
                                 }
                             }
                         }
@@ -525,7 +525,7 @@
                                             "visits": 2,
                                             "visions": "or,rnd,lite",
                                             "ip": "10.0.4.7",
-                                            "last": "2026-08-17 10:37:19",
+                                            "last": "2026-08-18 15:30:38",
                                             "fails": 0,
                                             "locked": "",
                                             "feedback": 0,
@@ -1623,10 +1623,10 @@
                                             "teamCount": 0,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:20",
+                                            "openedDate": "2026-08-18 15:30:39",
                                             "openedVersion": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:20",
+                                            "lastEditedDate": "2026-08-18 15:30:39",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -2235,10 +2235,10 @@
                                         "teamCount": 0,
                                         "market": 0,
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:20",
+                                        "openedDate": "2026-08-18 15:30:39",
                                         "openedVersion": "",
                                         "lastEditedBy": "admin",
-                                        "lastEditedDate": "2026-08-17 10:37:20",
+                                        "lastEditedDate": "2026-08-18 15:30:39",
                                         "closedBy": "",
                                         "closedDate": "",
                                         "closedReason": "",
@@ -2881,7 +2881,7 @@
                                             "plans": 0,
                                             "releases": 0,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17",
+                                            "createdDate": "2026-08-18",
                                             "createdVersion": "ipd5.5",
                                             "closedDate": "",
                                             "order": 5,
@@ -3480,7 +3480,7 @@
                                         "plans": 0,
                                         "releases": 0,
                                         "createdBy": "admin",
-                                        "createdDate": "2026-08-17 10:37:21",
+                                        "createdDate": "2026-08-18 15:30:40",
                                         "createdVersion": "ipd5.5",
                                         "closedDate": "",
                                         "order": 5,
@@ -3948,7 +3948,7 @@
                                             "plans": 0,
                                             "releases": 0,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:21",
+                                            "createdDate": "2026-08-18 15:30:40",
                                             "createdVersion": "ipd5.5",
                                             "closedDate": "",
                                             "order": 5,
@@ -4694,10 +4694,10 @@
                                             "teamCount": 1,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:22",
+                                            "openedDate": "2026-08-18 15:30:41",
                                             "openedVersion": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:23",
+                                            "lastEditedDate": "2026-08-18 15:30:42",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -5450,10 +5450,10 @@
                                             "teamCount": 1,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:22",
+                                            "openedDate": "2026-08-18 15:30:41",
                                             "openedVersion": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:23",
+                                            "lastEditedDate": "2026-08-18 15:30:42",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -5629,7 +5629,7 @@
                                 ]
                             },
                             "example": {
-                                "realEnd": "2026-08-17"
+                                "realEnd": "2026-08-18"
                             }
                         }
                     }
@@ -6241,10 +6241,10 @@
                                             "teamCount": 0,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:25",
+                                            "openedDate": "2026-08-18 15:30:43",
                                             "openedVersion": "ipd5.5",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:27",
+                                            "lastEditedDate": "2026-08-18 15:30:45",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -6281,7 +6281,7 @@
                                             "productName": "",
                                             "product": 0,
                                             "productID": 0,
-                                            "delay": 148,
+                                            "delay": 149,
                                             "totalEstimate": "0.00",
                                             "totalConsumed": "0.00",
                                             "totalLeft": "0.00",
@@ -6959,10 +6959,10 @@
                                         "teamCount": 0,
                                         "market": 0,
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:25",
+                                        "openedDate": "2026-08-18 15:30:43",
                                         "openedVersion": "ipd5.5",
                                         "lastEditedBy": "admin",
-                                        "lastEditedDate": "2026-08-17 10:37:27",
+                                        "lastEditedDate": "2026-08-18 15:30:45",
                                         "closedBy": "",
                                         "closedDate": "",
                                         "closedReason": "",
@@ -6994,7 +6994,7 @@
                                         "vision": "rnd",
                                         "frozen": "",
                                         "deleted": 0,
-                                        "delay": 148,
+                                        "delay": 149,
                                         "totalHours": "224.0",
                                         "totalEstimate": 0,
                                         "totalConsumed": 0,
@@ -7028,7 +7028,7 @@
                                             "end": "2026-10-01",
                                             "firstEnd": "",
                                             "realBegan": "",
-                                            "realEnd": "2026-08-17",
+                                            "realEnd": "2026-08-18",
                                             "days": 0,
                                             "schedule": "",
                                             "status": "closed",
@@ -7046,12 +7046,12 @@
                                             "teamCount": 0,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:22",
+                                            "openedDate": "2026-08-18 15:30:41",
                                             "openedVersion": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:24",
+                                            "lastEditedDate": "2026-08-18 15:30:43",
                                             "closedBy": "admin",
-                                            "closedDate": "2026-08-17 10:37:24",
+                                            "closedDate": "2026-08-18 15:30:43",
                                             "closedReason": "",
                                             "canceledBy": "",
                                             "canceledDate": "",
@@ -7600,10 +7600,10 @@
                                             "teamCount": 0,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:25",
+                                            "openedDate": "2026-08-18 15:30:43",
                                             "openedVersion": "ipd5.5",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:27",
+                                            "lastEditedDate": "2026-08-18 15:30:45",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -7640,7 +7640,7 @@
                                             "productName": "智能照明",
                                             "product": "1",
                                             "productID": 0,
-                                            "delay": 148,
+                                            "delay": 149,
                                             "totalEstimate": "0.00",
                                             "totalConsumed": "0.00",
                                             "totalLeft": "0.00",
@@ -8108,7 +8108,7 @@
                                         "order": "0",
                                         "closedReason": "",
                                         "createdBy": "admin",
-                                        "createdDate": "2026-08-17 10:37:28",
+                                        "createdDate": "2026-08-18 15:30:46",
                                         "deleted": 0,
                                         "isParent": 0
                                     }
@@ -8339,7 +8339,7 @@
                                             "order": "0",
                                             "closedReason": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:28",
+                                            "createdDate": "2026-08-18 15:30:46",
                                             "deleted": 0,
                                             "stories": 0,
                                             "bugs": 0,
@@ -9155,14 +9155,14 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:29",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:29",
+                                            "assignedDate": "2026-08-18 15:30:47",
                                             "approvedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:30",
+                                            "lastEditedDate": "2026-08-18 15:30:48",
                                             "changedBy": "admin",
-                                            "changedDate": "2026-08-17 10:37:31",
+                                            "changedDate": "2026-08-18 15:30:48",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "releasedDate": "",
@@ -9245,7 +9245,7 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:30",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "",
                                             "assignedDate": "",
                                             "approvedDate": "",
@@ -9939,14 +9939,14 @@
                                         "fromStory": 0,
                                         "fromVersion": 1,
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:29",
+                                        "openedDate": "2026-08-18 15:30:47",
                                         "assignedTo": "admin",
-                                        "assignedDate": "2026-08-17 10:37:29",
+                                        "assignedDate": "2026-08-18 15:30:47",
                                         "approvedDate": "",
                                         "lastEditedBy": "admin",
-                                        "lastEditedDate": "2026-08-17 10:37:30",
+                                        "lastEditedDate": "2026-08-18 15:30:48",
                                         "changedBy": "admin",
-                                        "changedDate": "2026-08-17 10:37:31",
+                                        "changedDate": "2026-08-18 15:30:48",
                                         "reviewedBy": "",
                                         "reviewedDate": "",
                                         "releasedDate": "",
@@ -10569,14 +10569,14 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:29",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:29",
+                                            "assignedDate": "2026-08-18 15:30:47",
                                             "approvedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:30",
+                                            "lastEditedDate": "2026-08-18 15:30:48",
                                             "changedBy": "admin",
-                                            "changedDate": "2026-08-17 10:37:31",
+                                            "changedDate": "2026-08-18 15:30:48",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "releasedDate": "",
@@ -10655,7 +10655,7 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:30",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "",
                                             "assignedDate": "",
                                             "approvedDate": "",
@@ -11247,9 +11247,9 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:32",
+                                            "openedDate": "2026-08-18 15:30:49",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:32",
+                                            "assignedDate": "2026-08-18 15:30:49",
                                             "approvedDate": "",
                                             "lastEditedBy": "",
                                             "lastEditedDate": "",
@@ -12649,9 +12649,9 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:34",
+                                            "openedDate": "2026-08-18 15:30:51",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:34",
+                                            "assignedDate": "2026-08-18 15:30:51",
                                             "approvedDate": "",
                                             "lastEditedBy": "",
                                             "lastEditedDate": "",
@@ -13761,9 +13761,9 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:36",
+                                            "openedDate": "2026-08-18 15:30:53",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:36",
+                                            "assignedDate": "2026-08-18 15:30:53",
                                             "approvedDate": "",
                                             "lastEditedBy": "",
                                             "lastEditedDate": "",
@@ -14669,10 +14669,10 @@
                                             "notifyEmail": "",
                                             "mailto": "",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:39",
+                                            "openedDate": "2026-08-18 15:30:55",
                                             "openedBuild": "主干",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:39",
+                                            "assignedDate": "2026-08-18 15:30:55",
                                             "deadline": "",
                                             "resolvedBy": "",
                                             "resolution": "",
@@ -14696,7 +14696,7 @@
                                             "issueKey": "",
                                             "testtask": 0,
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:40",
+                                            "lastEditedDate": "2026-08-18 15:30:56",
                                             "deleted": 0,
                                             "priOrder": 3,
                                             "severityOrder": 3,
@@ -14737,10 +14737,10 @@
                                             "notifyEmail": "",
                                             "mailto": "",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:39",
+                                            "openedDate": "2026-08-18 15:30:56",
                                             "openedBuild": "主干",
                                             "assignedTo": "productManager",
-                                            "assignedDate": "2026-08-17 10:37:39",
+                                            "assignedDate": "2026-08-18 15:30:56",
                                             "deadline": "",
                                             "resolvedBy": "",
                                             "resolution": "",
@@ -15381,10 +15381,10 @@
                                         "notifyEmail": "",
                                         "mailto": "",
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:39",
+                                        "openedDate": "2026-08-18 15:30:55",
                                         "openedBuild": "trunk",
                                         "assignedTo": "admin",
-                                        "assignedDate": "2026-08-17 10:37:39",
+                                        "assignedDate": "2026-08-18 15:30:55",
                                         "deadline": "",
                                         "resolvedBy": "",
                                         "resolution": "",
@@ -15408,7 +15408,7 @@
                                         "issueKey": "",
                                         "testtask": 0,
                                         "lastEditedBy": "admin",
-                                        "lastEditedDate": "2026-08-17 10:37:40",
+                                        "lastEditedDate": "2026-08-18 15:30:56",
                                         "deleted": 0,
                                         "executionName": "智能设备研发3.2版本开发",
                                         "storyTitle": "",
@@ -15865,10 +15865,10 @@
                                             "notifyEmail": "",
                                             "mailto": "",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:39",
+                                            "openedDate": "2026-08-18 15:30:55",
                                             "openedBuild": "主干",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:39",
+                                            "assignedDate": "2026-08-18 15:30:55",
                                             "deadline": "",
                                             "resolvedBy": "",
                                             "resolution": "",
@@ -15892,7 +15892,7 @@
                                             "issueKey": "",
                                             "testtask": 0,
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:40",
+                                            "lastEditedDate": "2026-08-18 15:30:56",
                                             "deleted": 0,
                                             "priOrder": 3,
                                             "severityOrder": 3,
@@ -15936,10 +15936,10 @@
                                             "notifyEmail": "",
                                             "mailto": "",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:39",
+                                            "openedDate": "2026-08-18 15:30:56",
                                             "openedBuild": "主干",
                                             "assignedTo": "productManager",
-                                            "assignedDate": "2026-08-17 10:37:39",
+                                            "assignedDate": "2026-08-18 15:30:56",
                                             "deadline": "",
                                             "resolvedBy": "",
                                             "resolution": "",
@@ -16449,10 +16449,10 @@
                                             "notifyEmail": "",
                                             "mailto": "",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:39",
+                                            "openedDate": "2026-08-18 15:30:55",
                                             "openedBuild": "主干",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:39",
+                                            "assignedDate": "2026-08-18 15:30:55",
                                             "deadline": "",
                                             "resolvedBy": "",
                                             "resolution": "",
@@ -16476,7 +16476,7 @@
                                             "issueKey": "",
                                             "testtask": 0,
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:40",
+                                            "lastEditedDate": "2026-08-18 15:30:56",
                                             "deleted": 0,
                                             "priOrder": 3,
                                             "severityOrder": 3,
@@ -16587,6 +16587,108 @@
                         }
                     }
                 ]
+            }
+        },
+        "\/bugs\/{bugID}\/confirm": {
+            "put": {
+                "tags": [
+                    "Bug"
+                ],
+                "summary": "确认Bug",
+                "description": "确认Bug",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "状态(success 成功 | fail 失败)"
+                                        }
+                                    },
+                                    "required": [
+                                        "status"
+                                    ]
+                                },
+                                "example": {
+                                    "status": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "TokenAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "bugID",
+                        "in": "path",
+                        "description": "bugID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "assignedTo": {
+                                        "type": "string",
+                                        "description": "指派给"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "description": "Bug类型(codeerror 代码错误 | config 配置相关 | install 安装部署 | security 安全相关 | performance 性能问题 | standard 标准规范 | automation 测试脚本 | designdefect 设计缺陷 | others 其他)"
+                                    },
+                                    "pri": {
+                                        "type": "integer",
+                                        "description": "优先级，默认是3",
+                                        "format": "int32"
+                                    },
+                                    "deadline": {
+                                        "type": "string",
+                                        "description": "截止日期"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "状态"
+                                    },
+                                    "mailto": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "description": "抄送给"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "description": "备注"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "assignedTo": "admin",
+                                "type": "codeerror",
+                                "pri": 3,
+                                "deadline": "2025-12-12",
+                                "mailto": [
+                                    "admin"
+                                ]
+                            }
+                        }
+                    }
+                }
             }
         },
         "\/bugs\/{bugID}\/resolve": {
@@ -17709,11 +17811,11 @@
                                         "frequency": 1,
                                         "order": 0,
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:42",
+                                        "openedDate": "2026-08-18 15:30:59",
                                         "reviewedBy": "",
                                         "reviewedDate": "",
                                         "lastEditedBy": "admin",
-                                        "lastEditedDate": "2026-08-17 10:37:43",
+                                        "lastEditedDate": "2026-08-18 15:30:59",
                                         "version": 2,
                                         "linkCase": "",
                                         "fromBug": 0,
@@ -18191,11 +18293,11 @@
                                             "frequency": 1,
                                             "order": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:42",
+                                            "openedDate": "2026-08-18 15:30:59",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:43",
+                                            "lastEditedDate": "2026-08-18 15:30:59",
                                             "version": 2,
                                             "linkCase": "",
                                             "fromBug": 0,
@@ -18655,11 +18757,11 @@
                                             "frequency": 1,
                                             "order": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:42",
+                                            "openedDate": "2026-08-18 15:30:59",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:43",
+                                            "lastEditedDate": "2026-08-18 15:30:59",
                                             "linkCase": "",
                                             "fromBug": 0,
                                             "fromCaseID": 0,
@@ -19112,11 +19214,11 @@
                                             "color": "",
                                             "frequency": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:42",
+                                            "openedDate": "2026-08-18 15:30:59",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:43",
+                                            "lastEditedDate": "2026-08-18 15:30:59",
                                             "linkCase": "",
                                             "fromBug": 0,
                                             "fromCaseID": 0,
@@ -20404,9 +20506,9 @@
                                             "desc": "",
                                             "version": 2,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:45",
+                                            "openedDate": "2026-08-18 15:31:00",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:45",
+                                            "assignedDate": "2026-08-18 15:31:01",
                                             "estStarted": "2025-12-25",
                                             "realStarted": null,
                                             "finishedBy": "",
@@ -20420,7 +20522,7 @@
                                             "realDuration": 0,
                                             "closedReason": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:46",
+                                            "lastEditedDate": "2026-08-18 15:31:01",
                                             "activatedDate": null,
                                             "order": 0,
                                             "repo": 0,
@@ -20442,7 +20544,7 @@
                                             "designName": "",
                                             "latestDesignVersion": "",
                                             "assignedToRealName": "admin",
-                                            "delay": 164,
+                                            "delay": 165,
                                             "needConfirm": false,
                                             "productType": "normal",
                                             "cases": [],
@@ -20486,9 +20588,9 @@
                                             "desc": "",
                                             "version": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:45",
+                                            "openedDate": "2026-08-18 15:31:01",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:45",
+                                            "assignedDate": "2026-08-18 15:31:01",
                                             "estStarted": "2026-01-01",
                                             "realStarted": null,
                                             "finishedBy": "",
@@ -20524,7 +20626,7 @@
                                             "designName": "",
                                             "latestDesignVersion": "",
                                             "assignedToRealName": "admin",
-                                            "delay": 155,
+                                            "delay": 156,
                                             "needConfirm": false,
                                             "progress": 0,
                                             "rawParent": 0,
@@ -20663,7 +20765,7 @@
                                     },
                                     "realStarted": {
                                         "type": "string",
-                                        "description": "实际开始"
+                                        "description": "实际开始，精确到秒"
                                     },
                                     "consumed": {
                                         "type": "number",
@@ -20686,7 +20788,7 @@
                             },
                             "example": {
                                 "assignedTo": "admin",
-                                "realStarted": "2025-12-26",
+                                "realStarted": "2025-12-26 09:00:00",
                                 "consumed": 1,
                                 "left": 1
                             }
@@ -20756,7 +20858,7 @@
                                     },
                                     "assignedTo": {
                                         "type": "string",
-                                        "description": "任务名称"
+                                        "description": "指派给"
                                     },
                                     "consumed": {
                                         "type": "number",
@@ -20765,11 +20867,11 @@
                                     },
                                     "realStarted": {
                                         "type": "string",
-                                        "description": "实际开始"
+                                        "description": "实际开始，精确到秒"
                                     },
                                     "finishedDate": {
                                         "type": "string",
-                                        "description": "实际完成"
+                                        "description": "实际完成，精确到秒"
                                     },
                                     "comment": {
                                         "type": "string",
@@ -20786,8 +20888,8 @@
                                 "currentConsumed": 1,
                                 "assignedTo": "admin",
                                 "consumed": 1,
-                                "realStarted": "2025-12-25",
-                                "finishedDate": "2025-12-30"
+                                "realStarted": "2025-12-25 09:00:00",
+                                "finishedDate": "2025-12-30 17:30:00"
                             }
                         }
                     }
@@ -21541,7 +21643,7 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:48",
+                                            "createdDate": "2026-08-18 15:31:03",
                                             "editedBy": "",
                                             "editedDate": "",
                                             "activateBy": "",
@@ -21550,7 +21652,7 @@
                                             "closedDate": "",
                                             "assignedTo": "admin",
                                             "assignedBy": "admin",
-                                            "assignedDate": "2026-08-17 10:37:48",
+                                            "assignedDate": "2026-08-18 15:31:03",
                                             "approvedDate": "",
                                             "deleted": 0,
                                             "relatedObject": 0
@@ -21853,7 +21955,7 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:48",
+                                            "createdDate": "2026-08-18 15:31:03",
                                             "editedBy": "",
                                             "editedDate": "",
                                             "activateBy": "",
@@ -21862,7 +21964,7 @@
                                             "closedDate": "",
                                             "assignedTo": "admin",
                                             "assignedBy": "admin",
-                                            "assignedDate": "2026-08-17 10:37:48",
+                                            "assignedDate": "2026-08-18 15:31:03",
                                             "approvedDate": "",
                                             "deleted": 0,
                                             "relatedObject": 0
@@ -22174,7 +22276,7 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:48",
+                                            "createdDate": "2026-08-18 15:31:03",
                                             "editedBy": "",
                                             "editedDate": "",
                                             "activateBy": "",
@@ -22183,7 +22285,7 @@
                                             "closedDate": "",
                                             "assignedTo": "admin",
                                             "assignedBy": "admin",
-                                            "assignedDate": "2026-08-17 10:37:48",
+                                            "assignedDate": "2026-08-18 15:31:03",
                                             "approvedDate": "",
                                             "deleted": 0,
                                             "relatedObject": 0
@@ -22497,7 +22599,7 @@
                                         "from": 0,
                                         "version": 1,
                                         "createdBy": "admin",
-                                        "createdDate": "2026-08-17 10:37:48",
+                                        "createdDate": "2026-08-18 15:31:03",
                                         "editedBy": "",
                                         "editedDate": "",
                                         "activateBy": "",
@@ -22506,7 +22608,7 @@
                                         "closedDate": "",
                                         "assignedTo": "admin",
                                         "assignedBy": "admin",
-                                        "assignedDate": "2026-08-17 10:37:48",
+                                        "assignedDate": "2026-08-18 15:31:03",
                                         "approvedDate": "",
                                         "deleted": 0,
                                         "risk": "",
@@ -22914,9 +23016,9 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:49",
+                                            "createdDate": "2026-08-18 15:31:04",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:50",
+                                            "editedDate": "2026-08-18 15:31:04",
                                             "resolution": "",
                                             "resolvedBy": "",
                                             "activateBy": "",
@@ -23399,9 +23501,9 @@
                                         "from": 0,
                                         "version": 1,
                                         "createdBy": "admin",
-                                        "createdDate": "2026-08-17 10:37:49",
+                                        "createdDate": "2026-08-18 15:31:04",
                                         "editedBy": "admin",
-                                        "editedDate": "2026-08-17 10:37:50",
+                                        "editedDate": "2026-08-18 15:31:04",
                                         "resolution": "",
                                         "resolvedBy": "",
                                         "activateBy": "",
@@ -23680,9 +23782,9 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:49",
+                                            "createdDate": "2026-08-18 15:31:04",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:50",
+                                            "editedDate": "2026-08-18 15:31:04",
                                             "resolution": "",
                                             "resolvedBy": "",
                                             "activateBy": "",
@@ -24041,9 +24143,9 @@
                                             "from": 0,
                                             "version": 1,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:49",
+                                            "createdDate": "2026-08-18 15:31:04",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:50",
+                                            "editedDate": "2026-08-18 15:31:04",
                                             "resolution": "",
                                             "resolvedBy": "",
                                             "activateBy": "",
@@ -24457,13 +24559,13 @@
                                             "room": 0,
                                             "minutes": "会议纪要内容",
                                             "minutedBy": "admin",
-                                            "minutedDate": "2026-08-17 10:37:51",
+                                            "minutedDate": "2026-08-18 15:31:06",
                                             "objectType": "",
                                             "objectID": 0,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:51",
+                                            "createdDate": "2026-08-18 15:31:05",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:51",
+                                            "editedDate": "2026-08-18 15:31:06",
                                             "deleted": 0
                                         }
                                     ],
@@ -24852,13 +24954,13 @@
                                         "room": 0,
                                         "minutes": "会议纪要内容",
                                         "minutedBy": "admin",
-                                        "minutedDate": "2026-08-17 10:37:51",
+                                        "minutedDate": "2026-08-18 15:31:06",
                                         "objectType": "",
                                         "objectID": 0,
                                         "createdBy": "admin",
-                                        "createdDate": "2026-08-17 10:37:51",
+                                        "createdDate": "2026-08-18 15:31:05",
                                         "editedBy": "admin",
-                                        "editedDate": "2026-08-17 10:37:51",
+                                        "editedDate": "2026-08-18 15:31:06",
                                         "deleted": 0,
                                         "participantName": "admin",
                                         "files": [],
@@ -25157,13 +25259,13 @@
                                             "room": 0,
                                             "minutes": "会议纪要内容",
                                             "minutedBy": "admin",
-                                            "minutedDate": "2026-08-17 10:37:51",
+                                            "minutedDate": "2026-08-18 15:31:06",
                                             "objectType": "",
                                             "objectID": 0,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:51",
+                                            "createdDate": "2026-08-18 15:31:05",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:51",
+                                            "editedDate": "2026-08-18 15:31:06",
                                             "deleted": 0
                                         }
                                     ],
@@ -25425,13 +25527,13 @@
                                             "room": 0,
                                             "minutes": "会议纪要内容",
                                             "minutedBy": "admin",
-                                            "minutedDate": "2026-08-17 10:37:51",
+                                            "minutedDate": "2026-08-18 15:31:06",
                                             "objectType": "",
                                             "objectID": 0,
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:37:51",
+                                            "createdDate": "2026-08-18 15:31:05",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:51",
+                                            "editedDate": "2026-08-18 15:31:06",
                                             "deleted": 0
                                         }
                                     ],
@@ -25644,7 +25746,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": 0,
                                             "hours": "7.0",
                                             "estimate": "0.00",
@@ -25663,7 +25765,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": 16,
                                             "hours": "7.0",
                                             "estimate": "0.00",
@@ -25805,7 +25907,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": 0,
                                             "hours": "7.0",
                                             "estimate": "0.00",
@@ -25824,7 +25926,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": 16,
                                             "hours": "7.0",
                                             "estimate": "0.00",
@@ -26092,7 +26194,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": "16天",
                                             "hours": "7工时",
                                             "estimate": "0.00",
@@ -26115,7 +26217,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": "16天",
                                             "hours": "7工时",
                                             "estimate": "0.00",
@@ -26269,7 +26371,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": "16天",
                                             "hours": "7工时",
                                             "estimate": "0.00",
@@ -26292,7 +26394,7 @@
                                             "role": "",
                                             "position": "",
                                             "limited": "no",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": "16天",
                                             "hours": "7工时",
                                             "estimate": "0.00",
@@ -26832,7 +26934,7 @@
                                 ]
                             },
                             "example": {
-                                "date": "2026-08-17",
+                                "date": "2026-08-18",
                                 "name": "从反馈创建的待办"
                             }
                         }
@@ -27387,16 +27489,16 @@
                                         "result": 3,
                                         "faq": 0,
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:54",
+                                        "openedDate": "2026-08-18 15:31:08",
                                         "reviewedBy": "",
                                         "reviewedDate": "",
                                         "processedBy": "admin",
-                                        "processedDate": "2026-08-17 10:37:56",
+                                        "processedDate": "2026-08-18 15:31:10",
                                         "closedBy": "",
                                         "closedDate": "",
                                         "closedReason": "",
                                         "editedBy": "admin",
-                                        "editedDate": "2026-08-17 10:37:54",
+                                        "editedDate": "2026-08-18 15:31:08",
                                         "assignedTo": "",
                                         "prevAssignedTo": "",
                                         "assignedDate": "",
@@ -27713,16 +27815,16 @@
                                             "result": 3,
                                             "faq": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:54",
+                                            "openedDate": "2026-08-18 15:31:08",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "processedBy": "admin",
-                                            "processedDate": "2026-08-17 10:37:56",
+                                            "processedDate": "2026-08-18 15:31:10",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:54",
+                                            "editedDate": "2026-08-18 15:31:08",
                                             "assignedTo": "",
                                             "prevAssignedTo": "",
                                             "assignedDate": "",
@@ -28648,7 +28750,7 @@
                                         "openedBuild": "trunk",
                                         "feedback": 0,
                                         "assignedTo": "admin",
-                                        "assignedDate": "2026-08-17 10:37:57",
+                                        "assignedDate": "2026-08-18 15:31:10",
                                         "realStarted": "",
                                         "startedBy": "",
                                         "startedDate": "",
@@ -28658,7 +28760,7 @@
                                         "left": "0.00",
                                         "status": "wait",
                                         "openedBy": "admin",
-                                        "openedDate": "2026-08-17 10:37:57",
+                                        "openedDate": "2026-08-18 15:31:10",
                                         "activatedCount": 0,
                                         "activatedBy": "",
                                         "activatedDate": "",
@@ -28671,7 +28773,7 @@
                                         "resolvedDate": "",
                                         "resolution": "",
                                         "editedBy": "admin",
-                                        "editedDate": "2026-08-17 10:37:58",
+                                        "editedDate": "2026-08-18 15:31:12",
                                         "keywords": "",
                                         "repeatTicket": 0,
                                         "mailto": "",
@@ -28988,7 +29090,7 @@
                                             "left": "0.00",
                                             "status": "wait",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:54",
+                                            "openedDate": "2026-08-18 15:31:08",
                                             "activatedCount": 0,
                                             "activatedBy": "",
                                             "activatedDate": "",
@@ -29022,7 +29124,7 @@
                                             "openedBuild": "trunk",
                                             "feedback": 0,
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:57",
+                                            "assignedDate": "2026-08-18 15:31:10",
                                             "realStarted": "",
                                             "startedBy": "",
                                             "startedDate": "",
@@ -29032,7 +29134,7 @@
                                             "left": "0.00",
                                             "status": "wait",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:57",
+                                            "openedDate": "2026-08-18 15:31:10",
                                             "activatedCount": 0,
                                             "activatedBy": "",
                                             "activatedDate": "",
@@ -29045,7 +29147,7 @@
                                             "resolvedDate": "",
                                             "resolution": "",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:58",
+                                            "editedDate": "2026-08-18 15:31:12",
                                             "keywords": "",
                                             "repeatTicket": 0,
                                             "mailto": "",
@@ -29388,8 +29490,8 @@
                                 "productID": 1,
                                 "integrated": 0,
                                 "children": [],
-                                "name": "smart-20260817023759",
-                                "desc": "smart-20260817023759"
+                                "name": "smart-20260818073113",
+                                "desc": "smart-20260818073113"
                             }
                         }
                     }
@@ -29472,9 +29574,9 @@
                                 ]
                             },
                             "example": {
-                                "name": "smart-20260817023759-updated",
+                                "name": "smart-20260818073113-updated",
                                 "children": [],
-                                "desc": "smart-20260817023759-updated"
+                                "desc": "smart-20260818073113-updated"
                             }
                         }
                     }
@@ -30023,7 +30125,7 @@
                                             "builder": "admin",
                                             "desc": "test",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:00",
+                                            "createdDate": "2026-08-18 15:31:13",
                                             "deleted": 0,
                                             "productName": "智能照明",
                                             "executionDeleted": 0,
@@ -30052,7 +30154,7 @@
                                             "builder": "admin",
                                             "desc": "test",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:00",
+                                            "createdDate": "2026-08-18 15:31:13",
                                             "deleted": 0,
                                             "productName": "智能照明",
                                             "executionDeleted": 0,
@@ -30327,7 +30429,7 @@
                                             "builder": "admin",
                                             "desc": "test",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:00",
+                                            "createdDate": "2026-08-18 15:31:13",
                                             "deleted": 0,
                                             "executionName": "智能设备研发3.2版本开发",
                                             "productName": "智能照明",
@@ -30354,7 +30456,7 @@
                                             "builder": "admin",
                                             "desc": "test",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:00",
+                                            "createdDate": "2026-08-18 15:31:13",
                                             "deleted": 0,
                                             "executionName": "智能设备研发3.2版本开发",
                                             "productName": "智能照明",
@@ -30954,7 +31056,7 @@
                                             "auto": "no",
                                             "subStatus": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:01",
+                                            "createdDate": "2026-08-18 15:31:14",
                                             "members": "",
                                             "deleted": 0,
                                             "multiple": 1,
@@ -31244,7 +31346,7 @@
                                             "auto": "no",
                                             "subStatus": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:01",
+                                            "createdDate": "2026-08-18 15:31:14",
                                             "members": "",
                                             "deleted": 0,
                                             "idName": 1,
@@ -31526,7 +31628,7 @@
                                             "auto": "no",
                                             "subStatus": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:01",
+                                            "createdDate": "2026-08-18 15:31:14",
                                             "members": "",
                                             "deleted": 0,
                                             "multiple": 1,
@@ -32072,7 +32174,7 @@
                                             "status": "wait",
                                             "subStatus": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:02",
+                                            "createdDate": "2026-08-18 15:31:15",
                                             "deleted": 0,
                                             "productName": "智能照明",
                                             "productType": "normal",
@@ -32256,14 +32358,13 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart\/form-data": {
+                        "application\/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
                                     "file": {
                                         "type": "string",
-                                        "format": "binary",
-                                        "description": "待上传文件；Node.js/Bun 可传本地文件路径，浏览器传 File 或 Blob"
+                                        "description": "本地文件路径，将按 multipart\/form-data 上传"
                                     },
                                     "objectType": {
                                         "type": "string",
@@ -32492,6 +32593,79 @@
                                         "status": {
                                             "type": "string",
                                             "description": "状态(success 成功 | fail 失败)"
+                                        },
+                                        "dataList": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "parent": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "program": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "product": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "project": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "execution": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "assignedTo": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "createdBy": {
+                                                        "type": "string"
+                                                    },
+                                                    "createdDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "editedBy": {
+                                                        "type": "string"
+                                                    },
+                                                    "editedDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "assignedBy": {
+                                                        "type": "string"
+                                                    },
+                                                    "assignedDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "mailto": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "deleted": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "description": "合同"
+                                        },
+                                        "pager": {
+                                            "$ref": "#\/components\/schemas\/Pager",
+                                            "description": "分页信息"
                                         }
                                     },
                                     "required": [
@@ -32499,7 +32673,329 @@
                                     ]
                                 },
                                 "example": {
-                                    "status": "success"
+                                    "status": "success",
+                                    "dataList": [
+                                        {
+                                            "id": 16,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-08-18 15:31:16",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 15,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-25 15:53:55",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "test"
+                                        },
+                                        {
+                                            "id": 14,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-25 10:54:19",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "test"
+                                        },
+                                        {
+                                            "id": 13,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:50:50",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "aaa"
+                                        },
+                                        {
+                                            "id": 12,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:47:45",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "aaa"
+                                        },
+                                        {
+                                            "id": 11,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:38:33",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 10,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:38:17",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 9,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:37:32",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 8,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:36:30",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 7,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:35:46",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 6,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:25:43",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 5,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:14:55",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 4,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 14:08:54",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "test"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 13:46:00",
+                                            "editedBy": "",
+                                            "editedDate": "",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": ""
+                                        },
+                                        {
+                                            "id": 2,
+                                            "parent": 0,
+                                            "program": 0,
+                                            "product": 0,
+                                            "project": 0,
+                                            "execution": 0,
+                                            "assignedTo": "",
+                                            "status": "",
+                                            "createdBy": "admin",
+                                            "createdDate": "2026-06-23 10:53:30",
+                                            "editedBy": "admin",
+                                            "editedDate": "2026-06-23 10:54:31",
+                                            "assignedBy": "",
+                                            "assignedDate": "",
+                                            "mailto": [
+                                                ""
+                                            ],
+                                            "deleted": "0",
+                                            "name": "test"
+                                        }
+                                    ],
+                                    "pager": {
+                                        "recTotal": 15,
+                                        "recPerPage": 20,
+                                        "pageID": 1
+                                    }
                                 }
                             }
                         }
@@ -32648,6 +33144,72 @@
                                         "status": {
                                             "type": "string",
                                             "description": "状态(success 成功 | fail 失败)"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "parent": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "program": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "product": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "project": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "execution": {
+                                                    "type": "integer",
+                                                    "format": "int32"
+                                                },
+                                                "assignedTo": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "createdBy": {
+                                                    "type": "string"
+                                                },
+                                                "createdDate": {
+                                                    "type": "string"
+                                                },
+                                                "editedBy": {
+                                                    "type": "string"
+                                                },
+                                                "editedDate": {
+                                                    "type": "string"
+                                                },
+                                                "assignedBy": {
+                                                    "type": "string"
+                                                },
+                                                "assignedDate": {
+                                                    "type": "string"
+                                                },
+                                                "mailto": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "deleted": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "description": "合同"
                                         }
                                     },
                                     "required": [
@@ -32655,7 +33217,28 @@
                                     ]
                                 },
                                 "example": {
-                                    "status": "success"
+                                    "status": "success",
+                                    "data": {
+                                        "id": 1,
+                                        "parent": 0,
+                                        "program": 0,
+                                        "product": 0,
+                                        "project": 0,
+                                        "execution": 0,
+                                        "assignedTo": "",
+                                        "status": "",
+                                        "createdBy": "admin",
+                                        "createdDate": "2026-06-23 10:37:19",
+                                        "editedBy": "admin",
+                                        "editedDate": "2026-08-18 15:31:16",
+                                        "assignedBy": "",
+                                        "assignedDate": "",
+                                        "mailto": [
+                                            "&quot;&quot;"
+                                        ],
+                                        "deleted": "1",
+                                        "name": "contract1"
+                                    }
                                 }
                             }
                         }
@@ -33207,7 +33790,7 @@
                                         "desc": "",
                                         "order": 0,
                                         "addedBy": "admin",
-                                        "addedDate": "2026-08-17 10:38:03",
+                                        "addedDate": "2026-08-18 15:31:16",
                                         "archived": 0,
                                         "orderBy": "id_asc",
                                         "vision": "rnd",
@@ -33561,7 +34144,7 @@
                                             "desc": "",
                                             "order": 6,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:38:04",
+                                            "addedDate": "2026-08-18 15:31:17",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -33684,8 +34267,12 @@
                             "example": {
                                 "name": "新增团队文档库",
                                 "acl": "open",
-                                "groups": "[1]",
-                                "users": "[\"admin\"]"
+                                "groups": [
+                                    1
+                                ],
+                                "users": [
+                                    "admin"
+                                ]
                             }
                         }
                     }
@@ -33816,14 +34403,14 @@
                                             "name": "新增团队文档库",
                                             "baseUrl": "",
                                             "acl": "open",
-                                            "groups": "[1]",
-                                            "users": "[&quot;admin&quot;]",
+                                            "groups": "1",
+                                            "users": "admin",
                                             "main": 0,
                                             "collector": "",
                                             "desc": "",
                                             "order": 7,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:38:04",
+                                            "addedDate": "2026-08-18 15:31:17",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -33946,8 +34533,12 @@
                             "example": {
                                 "name": "新增产品文档库",
                                 "acl": "default",
-                                "groups": "[1]",
-                                "users": "[\"admin\"]"
+                                "groups": [
+                                    1
+                                ],
+                                "users": [
+                                    "admin"
+                                ]
                             }
                         }
                     }
@@ -34085,7 +34676,7 @@
                                             "desc": "",
                                             "order": 0,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:37:21",
+                                            "addedDate": "2026-08-18 15:30:40",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -34103,14 +34694,14 @@
                                             "name": "新增产品文档库",
                                             "baseUrl": "",
                                             "acl": "default",
-                                            "groups": "[1]",
-                                            "users": "[&quot;admin&quot;]",
+                                            "groups": "1",
+                                            "users": "admin",
                                             "main": 0,
                                             "collector": "",
                                             "desc": "",
                                             "order": 8,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:38:05",
+                                            "addedDate": "2026-08-18 15:31:17",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -34233,8 +34824,12 @@
                             "example": {
                                 "name": "新增项目文档库",
                                 "acl": "default",
-                                "groups": "[1]",
-                                "users": "[\"admin\"]"
+                                "groups": [
+                                    1
+                                ],
+                                "users": [
+                                    "admin"
+                                ]
                             }
                         }
                     }
@@ -34372,7 +34967,7 @@
                                             "desc": "",
                                             "order": 0,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:37:22",
+                                            "addedDate": "2026-08-18 15:30:41",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -34390,14 +34985,14 @@
                                             "name": "新增项目文档库",
                                             "baseUrl": "",
                                             "acl": "default",
-                                            "groups": "[1]",
-                                            "users": "[&quot;admin&quot;]",
+                                            "groups": "1",
+                                            "users": "admin",
                                             "main": 0,
                                             "collector": "",
                                             "desc": "",
                                             "order": 9,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:38:05",
+                                            "addedDate": "2026-08-18 15:31:18",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -34422,7 +35017,7 @@
                                             "desc": "",
                                             "order": 0,
                                             "addedBy": "admin",
-                                            "addedDate": "2026-08-17 10:37:26",
+                                            "addedDate": "2026-08-18 15:30:44",
                                             "archived": 0,
                                             "orderBy": "id_asc",
                                             "vision": "rnd",
@@ -34577,7 +35172,7 @@
                                         "desc": "",
                                         "order": 6,
                                         "addedBy": "admin",
-                                        "addedDate": "2026-08-17 10:38:04",
+                                        "addedDate": "2026-08-18 15:31:17",
                                         "archived": 0,
                                         "orderBy": "id_asc",
                                         "vision": "rnd",
@@ -34688,8 +35283,12 @@
                             "example": {
                                 "name": "新文档库",
                                 "acl": "default",
-                                "groups": "[1]",
-                                "users": "[\"admin\"]"
+                                "groups": [
+                                    1
+                                ],
+                                "users": [
+                                    "admin"
+                                ]
                             }
                         }
                     }
@@ -34824,7 +35423,7 @@
                                     },
                                     "content": {
                                         "type": "string",
-                                        "description": "文档内容，支持HTML标签"
+                                        "description": "文档正文，使用HTML格式；纯文本可直接传递"
                                     }
                                 },
                                 "required": [
@@ -34835,7 +35434,7 @@
                             "example": {
                                 "moduleID": "1",
                                 "title": "演示文档",
-                                "content": "这是文章正文"
+                                "content": "<p>这是文章正文<\/p>"
                             }
                         }
                     }
@@ -34979,7 +35578,7 @@
                                     },
                                     "content": {
                                         "type": "string",
-                                        "description": "文档内容，支持HTML标签"
+                                        "description": "文档正文，使用HTML格式；纯文本可直接传递"
                                     }
                                 },
                                 "required": [
@@ -34990,7 +35589,7 @@
                             "example": {
                                 "moduleID": "1",
                                 "title": "演示文档",
-                                "content": "这是文章正文"
+                                "content": "<p>这是文章正文<\/p>"
                             }
                         }
                     }
@@ -35013,6 +35612,225 @@
                                         "status": {
                                             "type": "string",
                                             "description": "状态(success 成功 | fail 失败)"
+                                        },
+                                        "docs": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "description": "ID",
+                                                        "format": "int32"
+                                                    },
+                                                    "project": {
+                                                        "type": "integer",
+                                                        "description": "所属项目",
+                                                        "format": "int32"
+                                                    },
+                                                    "product": {
+                                                        "type": "integer",
+                                                        "description": "所属产品",
+                                                        "format": "int32"
+                                                    },
+                                                    "execution": {
+                                                        "type": "integer",
+                                                        "description": "所属执行",
+                                                        "format": "int32"
+                                                    },
+                                                    "lib": {
+                                                        "type": "integer",
+                                                        "description": "所属库",
+                                                        "format": "int32"
+                                                    },
+                                                    "template": {
+                                                        "type": "string",
+                                                        "description": "模板"
+                                                    },
+                                                    "templateType": {
+                                                        "type": "string"
+                                                    },
+                                                    "templateDesc": {
+                                                        "type": "string"
+                                                    },
+                                                    "objects": {
+                                                        "type": "string"
+                                                    },
+                                                    "chapterType": {
+                                                        "type": "string"
+                                                    },
+                                                    "cycle": {
+                                                        "type": "string"
+                                                    },
+                                                    "cycleConfig": {
+                                                        "type": "string"
+                                                    },
+                                                    "module": {
+                                                        "type": "integer",
+                                                        "description": "所属父级",
+                                                        "format": "int32"
+                                                    },
+                                                    "reportModule": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "description": "文档标题"
+                                                    },
+                                                    "keywords": {
+                                                        "type": "string",
+                                                        "description": "关键字"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "description": "文档类型"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "description": "文档状态"
+                                                    },
+                                                    "parent": {
+                                                        "type": "integer",
+                                                        "description": "所属父级",
+                                                        "format": "int32"
+                                                    },
+                                                    "path": {
+                                                        "type": "string"
+                                                    },
+                                                    "grade": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "order": {
+                                                        "type": "integer",
+                                                        "description": "排序",
+                                                        "format": "int32"
+                                                    },
+                                                    "views": {
+                                                        "type": "integer",
+                                                        "description": "浏览次数",
+                                                        "format": "int32"
+                                                    },
+                                                    "assetLib": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "assetLibType": {
+                                                        "type": "string"
+                                                    },
+                                                    "from": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "fromVersion": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "collects": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "weeklyDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "addedBy": {
+                                                        "type": "string",
+                                                        "description": "创建者"
+                                                    },
+                                                    "addedDate": {
+                                                        "type": "string",
+                                                        "description": "创建日期"
+                                                    },
+                                                    "assignedTo": {
+                                                        "type": "string"
+                                                    },
+                                                    "assignedDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "approvedDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "editedBy": {
+                                                        "type": "string",
+                                                        "description": "修改者"
+                                                    },
+                                                    "editedDate": {
+                                                        "type": "string",
+                                                        "description": "修改日期"
+                                                    },
+                                                    "editingDate": {
+                                                        "type": "string",
+                                                        "description": "正在修改者和时间"
+                                                    },
+                                                    "editedList": {
+                                                        "type": "string",
+                                                        "description": "文档编辑者"
+                                                    },
+                                                    "mailto": {
+                                                        "type": "string",
+                                                        "description": "抄送给"
+                                                    },
+                                                    "acl": {
+                                                        "type": "string",
+                                                        "description": "权限"
+                                                    },
+                                                    "isDeliverable": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "groups": {
+                                                        "type": "string",
+                                                        "description": "分组"
+                                                    },
+                                                    "users": {
+                                                        "type": "string",
+                                                        "description": "用户"
+                                                    },
+                                                    "readGroups": {
+                                                        "type": "string"
+                                                    },
+                                                    "readUsers": {
+                                                        "type": "string"
+                                                    },
+                                                    "version": {
+                                                        "type": "integer",
+                                                        "description": "版本号",
+                                                        "format": "int32"
+                                                    },
+                                                    "builtIn": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "frozen": {
+                                                        "type": "string"
+                                                    },
+                                                    "vision": {
+                                                        "type": "string"
+                                                    },
+                                                    "deleted": {
+                                                        "type": "boolean",
+                                                        "description": "已删除"
+                                                    },
+                                                    "readable": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "editable": {
+                                                        "type": "boolean",
+                                                        "description": "可编辑"
+                                                    },
+                                                    "collector": {
+                                                        "type": "string",
+                                                        "description": "收藏者"
+                                                    },
+                                                    "isCollector": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "hasContent": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            },
+                                            "description": "文档"
                                         }
                                     },
                                     "required": [
@@ -35020,7 +35838,66 @@
                                     ]
                                 },
                                 "example": {
-                                    "status": "success"
+                                    "status": "success",
+                                    "docs": [
+                                        {
+                                            "id": 2,
+                                            "project": 0,
+                                            "product": 0,
+                                            "execution": 0,
+                                            "lib": 7,
+                                            "template": "",
+                                            "templateType": "",
+                                            "templateDesc": "",
+                                            "objects": "",
+                                            "chapterType": "",
+                                            "cycle": "",
+                                            "cycleConfig": "",
+                                            "module": 0,
+                                            "reportModule": "",
+                                            "title": "演示文档",
+                                            "keywords": "",
+                                            "type": "text",
+                                            "status": "normal",
+                                            "parent": 0,
+                                            "path": ",2,",
+                                            "grade": 0,
+                                            "order": 2,
+                                            "views": 0,
+                                            "assetLib": 0,
+                                            "assetLibType": "",
+                                            "from": 0,
+                                            "fromVersion": 1,
+                                            "collects": 0,
+                                            "weeklyDate": "",
+                                            "addedBy": "admin",
+                                            "addedDate": "2026-08-18 15:31:18",
+                                            "assignedTo": "",
+                                            "assignedDate": "",
+                                            "approvedDate": "",
+                                            "editedBy": "admin",
+                                            "editedDate": "2026-08-18 15:31:18",
+                                            "editingDate": "",
+                                            "editedList": "",
+                                            "mailto": "",
+                                            "acl": "open",
+                                            "isDeliverable": 0,
+                                            "groups": "",
+                                            "users": "",
+                                            "readGroups": "",
+                                            "readUsers": "",
+                                            "version": 1,
+                                            "builtIn": 0,
+                                            "frozen": "",
+                                            "vision": "rnd",
+                                            "deleted": false,
+                                            "readable": true,
+                                            "editable": true,
+                                            "collector": "",
+                                            "isCollector": false,
+                                            "hasContent": true
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -35134,7 +36011,7 @@
                                     },
                                     "content": {
                                         "type": "string",
-                                        "description": "文档内容，支持HTML标签"
+                                        "description": "文档正文，使用HTML格式；纯文本可直接传递"
                                     }
                                 },
                                 "required": [
@@ -35145,7 +36022,7 @@
                             "example": {
                                 "moduleID": "1",
                                 "title": "演示文档",
-                                "content": "这是文章正文"
+                                "content": "<p>这是文章正文<\/p>"
                             }
                         }
                     }
@@ -35289,7 +36166,7 @@
                                     },
                                     "content": {
                                         "type": "string",
-                                        "description": "文档内容，支持HTML标签"
+                                        "description": "文档正文，使用HTML格式；纯文本可直接传递"
                                     }
                                 },
                                 "required": [
@@ -35300,7 +36177,7 @@
                             "example": {
                                 "moduleID": "1",
                                 "title": "演示文档",
-                                "content": "这是文章正文"
+                                "content": "<p>这是文章正文<\/p>"
                             }
                         }
                     }
@@ -35428,7 +36305,7 @@
                                     },
                                     "content": {
                                         "type": "string",
-                                        "description": "文档内容，支持HTML标签"
+                                        "description": "文档正文，使用HTML格式；纯文本可直接传递。接口不接受块编辑器的JSON快照，修改块编辑器文档后会保存为HTML格式"
                                     }
                                 },
                                 "required": [
@@ -35438,8 +36315,8 @@
                             },
                             "example": {
                                 "moduleID": "1",
-                                "title": "演示文档",
-                                "content": "这是文章正文"
+                                "title": "API修改演示文档",
+                                "content": "<p>这是修改后的文章正文<\/p>"
                             }
                         }
                     }
@@ -35735,11 +36612,11 @@
                                 "example": {
                                     "status": "success",
                                     "doc": {
-                                        "id": 4,
-                                        "project": 2,
+                                        "id": 1,
+                                        "project": 0,
                                         "product": 0,
                                         "execution": 0,
-                                        "lib": 9,
+                                        "lib": 6,
                                         "template": "",
                                         "templateType": "",
                                         "templateDesc": "",
@@ -35747,14 +36624,14 @@
                                         "chapterType": "",
                                         "cycle": "",
                                         "cycleConfig": "",
-                                        "module": 1,
+                                        "module": 0,
                                         "reportModule": "",
-                                        "title": "演示文档",
+                                        "title": "API修改演示文档",
                                         "keywords": "",
-                                        "type": "text",
+                                        "type": "",
                                         "status": "normal",
                                         "parent": 0,
-                                        "path": ",4,",
+                                        "path": ",1,",
                                         "grade": 0,
                                         "views": 0,
                                         "assetLib": 0,
@@ -35765,42 +36642,47 @@
                                         "collects": 0,
                                         "weeklyDate": "",
                                         "addedBy": "admin",
-                                        "addedDate": "2026-08-17 10:38:07",
+                                        "addedDate": "2026-08-18 15:31:18",
                                         "assignedTo": "",
                                         "assignedDate": "",
                                         "approvedDate": "",
                                         "editedBy": "admin",
-                                        "editedDate": "2026-08-17 10:38:07",
+                                        "editedDate": "2026-08-18 15:31:19",
                                         "editingDate": "",
-                                        "editedList": "",
+                                        "editedList": ",admin",
                                         "mailto": "",
-                                        "acl": "open",
+                                        "acl": "private",
                                         "isDeliverable": 0,
                                         "groups": "",
                                         "users": "",
                                         "readGroups": "",
                                         "readUsers": "",
-                                        "version": 1,
+                                        "version": 2,
                                         "builtIn": 0,
                                         "frozen": "",
                                         "vision": "rnd",
                                         "deleted": 0,
                                         "collector": "",
-                                        "releasedDate": "2026-08-17 10:38:07",
+                                        "releasedDate": "2026-08-18 15:31:18",
                                         "releasedBy": "admin",
                                         "files": [],
                                         "digest": "",
-                                        "content": "这是文章正文",
+                                        "content": "<p>这是修改后的文章正文<\/p>",
                                         "rawContent": "",
                                         "contentType": "html",
-                                        "contentVersion": 1,
+                                        "contentVersion": 2,
                                         "moduleName": "",
                                         "executionName": "",
                                         "productName": "",
                                         "privs": {
-                                            "edit": true
+                                            "edit": false
                                         },
-                                        "editors": [],
+                                        "editors": [
+                                            {
+                                                "account": "admin",
+                                                "date": "2026-08-18 15:31:19"
+                                            }
+                                        ],
                                         "readable": true,
                                         "editable": true
                                     }
@@ -35950,7 +36832,7 @@
                                     },
                                     "parentID": {
                                         "type": "integer",
-                                        "description": "父目录",
+                                        "description": "父目录ID，必须属于当前文档库",
                                         "format": "int32"
                                     }
                                 },
@@ -36189,7 +37071,7 @@
                                     },
                                     "parentID": {
                                         "type": "integer",
-                                        "description": "父目录",
+                                        "description": "父目录ID，必须属于当前文档库",
                                         "format": "int32"
                                     }
                                 },
@@ -36428,7 +37310,7 @@
                                     },
                                     "parentID": {
                                         "type": "integer",
-                                        "description": "父目录",
+                                        "description": "父目录ID，必须属于当前文档库",
                                         "format": "int32"
                                     }
                                 },
@@ -36667,7 +37549,7 @@
                                     },
                                     "parentID": {
                                         "type": "integer",
-                                        "description": "父目录",
+                                        "description": "父目录ID，必须属于当前文档库",
                                         "format": "int32"
                                     }
                                 },
@@ -36966,21 +37848,14 @@
                                         "status": {
                                             "type": "string",
                                             "description": "状态(success 成功 | fail 失败)"
-                                        },
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "ID",
-                                            "format": "int32"
                                         }
                                     },
                                     "required": [
-                                        "status",
-                                        "id"
+                                        "status"
                                     ]
                                 },
                                 "example": {
-                                    "status": "success",
-                                    "id": 4
+                                    "status": "success"
                                 }
                             }
                         }
@@ -37008,7 +37883,12 @@
                                     },
                                     "name": {
                                         "type": "string",
-                                        "description": "待办名称"
+                                        "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+                                    },
+                                    "objectID": {
+                                        "type": "integer",
+                                        "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+                                        "format": "int32"
                                     },
                                     "begin": {
                                         "type": "string",
@@ -37029,14 +37909,13 @@
                                 },
                                 "required": [
                                     "date",
-                                    "type",
-                                    "name"
+                                    "type"
                                 ]
                             },
                             "example": {
                                 "date": "2026-12-10",
-                                "type": "custom",
-                                "name": "审批项目预算",
+                                "type": "bug",
+                                "objectID": 1,
                                 "begin": "0900",
                                 "end": "0930",
                                 "assignedTo": "admin",
@@ -37111,7 +37990,12 @@
                                     },
                                     "name": {
                                         "type": "string",
-                                        "description": "待办名称"
+                                        "description": "待办名称，type为custom时必填；type为非custom时由关联对象的名称或标题自动生成"
+                                    },
+                                    "objectID": {
+                                        "type": "integer",
+                                        "description": "关联对象ID，type为非custom时必填，必须是type对应对象的ID",
+                                        "format": "int32"
                                     },
                                     "begin": {
                                         "type": "string",
@@ -37132,14 +38016,13 @@
                                 },
                                 "required": [
                                     "date",
-                                    "type",
-                                    "name"
+                                    "type"
                                 ]
                             },
                             "example": {
                                 "date": "2026-12-10",
-                                "type": "custom",
-                                "name": "审批项目预算",
+                                "type": "bug",
+                                "objectID": 1,
                                 "begin": "0900",
                                 "end": "0930",
                                 "assignedTo": "admin",
@@ -37341,9 +38224,9 @@
                                         {
                                             "id": 3,
                                             "account": "admin",
-                                            "date": "2026-08-17",
-                                            "begin": "10:40",
-                                            "end": "11:10",
+                                            "date": "2026-08-18",
+                                            "begin": "15:40",
+                                            "end": "16:10",
                                             "feedback": 1,
                                             "type": "feedback",
                                             "cycle": 0,
@@ -37356,7 +38239,7 @@
                                             "config": "",
                                             "assignedTo": "admin",
                                             "assignedBy": "admin",
-                                            "assignedDate": "2026-08-17 10:37:55",
+                                            "assignedDate": "2026-08-18 15:31:08",
                                             "finishedBy": "",
                                             "finishedDate": "",
                                             "closedBy": "",
@@ -37371,24 +38254,89 @@
                                             "begin": "09:00",
                                             "end": "09:30",
                                             "feedback": 0,
-                                            "type": "custom",
+                                            "type": "bug",
                                             "cycle": 0,
-                                            "objectID": 0,
+                                            "objectID": 1,
                                             "pri": 3,
-                                            "name": "审批项目预算",
+                                            "name": "光敏元件显示错误",
                                             "desc": "审批项目预算详情",
                                             "status": "wait",
                                             "private": 0,
                                             "config": "",
                                             "assignedTo": "admin",
                                             "assignedBy": "admin",
-                                            "assignedDate": "2026-08-17 10:38:08",
+                                            "assignedDate": "2026-08-18 15:31:20",
                                             "finishedBy": "",
                                             "finishedDate": "",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "vision": "rnd",
-                                            "deleted": 0
+                                            "deleted": 0,
+                                            "object": {
+                                                "id": 1,
+                                                "project": 2,
+                                                "product": 1,
+                                                "injection": "",
+                                                "identify": "",
+                                                "branch": 0,
+                                                "module": 0,
+                                                "execution": 3,
+                                                "plan": 0,
+                                                "story": 0,
+                                                "storyVersion": 0,
+                                                "task": 0,
+                                                "toTask": 0,
+                                                "toStory": 0,
+                                                "title": "光敏元件显示错误",
+                                                "keywords": "",
+                                                "severity": 3,
+                                                "pri": 3,
+                                                "type": "codeerror",
+                                                "os": "",
+                                                "browser": "",
+                                                "hardware": "",
+                                                "found": "",
+                                                "steps": "[步骤] [结果] [期望]",
+                                                "status": "active",
+                                                "subStatus": "",
+                                                "color": "",
+                                                "confirmed": 1,
+                                                "activatedCount": 1,
+                                                "activatedDate": "2026-08-18 15:30:58",
+                                                "feedbackBy": "",
+                                                "notifyEmail": "",
+                                                "mailto": "admin",
+                                                "openedBy": "admin",
+                                                "openedDate": "2026-08-18 15:30:55",
+                                                "openedBuild": "trunk",
+                                                "assignedTo": "admin",
+                                                "assignedDate": "2026-08-18 15:30:58",
+                                                "deadline": "2025-12-12",
+                                                "resolvedBy": "",
+                                                "resolution": "",
+                                                "resolvedBuild": "",
+                                                "resolvedDate": "",
+                                                "closedBy": "",
+                                                "closedDate": "",
+                                                "duplicateBug": 0,
+                                                "relatedBug": "",
+                                                "case": 0,
+                                                "caseVersion": 0,
+                                                "feedback": 0,
+                                                "result": 0,
+                                                "repo": 0,
+                                                "mr": 0,
+                                                "entry": "",
+                                                "lines": "",
+                                                "v1": "",
+                                                "v2": "",
+                                                "repoType": "",
+                                                "issueKey": "",
+                                                "testtask": 0,
+                                                "lastEditedBy": "admin",
+                                                "lastEditedDate": "2026-08-18 15:30:58",
+                                                "deleted": 0
+                                            }
                                         }
                                     ],
                                     "pager": {
@@ -38125,21 +39073,21 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:29",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:33",
+                                            "assignedDate": "2026-08-18 15:30:51",
                                             "approvedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:33",
+                                            "lastEditedDate": "2026-08-18 15:30:51",
                                             "changedBy": "admin",
-                                            "changedDate": "2026-08-17 10:37:31",
+                                            "changedDate": "2026-08-18 15:30:48",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "releasedDate": "",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
-                                            "activatedDate": "2026-08-17 10:37:33",
+                                            "activatedDate": "2026-08-18 15:30:51",
                                             "toBug": 0,
                                             "linkStories": "",
                                             "linkRequirements": "",
@@ -38211,7 +39159,7 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:30",
+                                            "openedDate": "2026-08-18 15:30:47",
                                             "assignedTo": "",
                                             "assignedDate": "",
                                             "approvedDate": "",
@@ -38295,21 +39243,21 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:32",
+                                            "openedDate": "2026-08-18 15:30:49",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:36",
+                                            "assignedDate": "2026-08-18 15:30:53",
                                             "approvedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:36",
+                                            "lastEditedDate": "2026-08-18 15:30:53",
                                             "changedBy": "admin",
-                                            "changedDate": "2026-08-17 10:37:35",
+                                            "changedDate": "2026-08-18 15:30:52",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "releasedDate": "",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
-                                            "activatedDate": "2026-08-17 10:37:36",
+                                            "activatedDate": "2026-08-18 15:30:53",
                                             "toBug": 0,
                                             "linkStories": "",
                                             "linkRequirements": "",
@@ -38379,7 +39327,7 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:55",
+                                            "openedDate": "2026-08-18 15:31:09",
                                             "assignedTo": "",
                                             "assignedDate": "",
                                             "approvedDate": "",
@@ -38463,7 +39411,7 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:57",
+                                            "openedDate": "2026-08-18 15:31:11",
                                             "assignedTo": "",
                                             "assignedDate": "",
                                             "approvedDate": "",
@@ -39013,21 +39961,21 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:34",
+                                            "openedDate": "2026-08-18 15:30:51",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:38",
+                                            "assignedDate": "2026-08-18 15:30:55",
                                             "approvedDate": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:38",
+                                            "lastEditedDate": "2026-08-18 15:30:55",
                                             "changedBy": "admin",
-                                            "changedDate": "2026-08-17 10:37:37",
+                                            "changedDate": "2026-08-18 15:30:54",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "releasedDate": "",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
-                                            "activatedDate": "2026-08-17 10:37:38",
+                                            "activatedDate": "2026-08-18 15:30:55",
                                             "toBug": 0,
                                             "linkStories": "",
                                             "linkRequirements": "",
@@ -39563,9 +40511,9 @@
                                             "fromStory": 0,
                                             "fromVersion": 1,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:36",
+                                            "openedDate": "2026-08-18 15:30:53",
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:36",
+                                            "assignedDate": "2026-08-18 15:30:53",
                                             "approvedDate": "",
                                             "lastEditedBy": "",
                                             "lastEditedDate": "",
@@ -39903,7 +40851,7 @@
                                             "auto": "no",
                                             "subStatus": "",
                                             "createdBy": "admin",
-                                            "createdDate": "2026-08-17 10:38:01",
+                                            "createdDate": "2026-08-18 15:31:14",
                                             "members": "",
                                             "deleted": 0,
                                             "executionName": "智能设备研发3.2版本开发",
@@ -40391,7 +41339,7 @@
                                     "projects": [
                                         {
                                             "role": "PM",
-                                            "join": "2026-08-17",
+                                            "join": "2026-08-18",
                                             "days": 0,
                                             "hours": "7.0",
                                             "id": 2,
@@ -40421,7 +41369,7 @@
                                             "end": "2026-10-01",
                                             "firstEnd": "",
                                             "realBegan": "",
-                                            "realEnd": "2026-08-17",
+                                            "realEnd": "2026-08-18",
                                             "schedule": "",
                                             "status": "closed",
                                             "subStatus": "",
@@ -40438,12 +41386,12 @@
                                             "teamCount": 2,
                                             "market": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:22",
+                                            "openedDate": "2026-08-18 15:30:41",
                                             "openedVersion": "",
                                             "lastEditedBy": "admin",
-                                            "lastEditedDate": "2026-08-17 10:37:24",
+                                            "lastEditedDate": "2026-08-18 15:30:43",
                                             "closedBy": "admin",
-                                            "closedDate": "2026-08-17 10:37:24",
+                                            "closedDate": "2026-08-18 15:30:43",
                                             "closedReason": "",
                                             "canceledBy": "",
                                             "canceledDate": "",
@@ -40770,16 +41718,16 @@
                                             "result": 3,
                                             "faq": 0,
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:54",
+                                            "openedDate": "2026-08-18 15:31:08",
                                             "reviewedBy": "",
                                             "reviewedDate": "",
                                             "processedBy": "admin",
-                                            "processedDate": "2026-08-17 10:37:56",
+                                            "processedDate": "2026-08-18 15:31:10",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:54",
+                                            "editedDate": "2026-08-18 15:31:08",
                                             "assignedTo": "",
                                             "prevAssignedTo": "",
                                             "assignedDate": "",
@@ -41114,7 +42062,7 @@
                                             "left": "0.00",
                                             "status": "wait",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:54",
+                                            "openedDate": "2026-08-18 15:31:08",
                                             "activatedCount": 0,
                                             "activatedBy": "",
                                             "activatedDate": "",
@@ -41146,7 +42094,7 @@
                                             "openedBuild": "trunk",
                                             "feedback": 0,
                                             "assignedTo": "admin",
-                                            "assignedDate": "2026-08-17 10:37:59",
+                                            "assignedDate": "2026-08-18 15:31:12",
                                             "realStarted": "",
                                             "startedBy": "",
                                             "startedDate": "",
@@ -41156,10 +42104,10 @@
                                             "left": "0.00",
                                             "status": "doing",
                                             "openedBy": "admin",
-                                            "openedDate": "2026-08-17 10:37:57",
+                                            "openedDate": "2026-08-18 15:31:10",
                                             "activatedCount": 1,
                                             "activatedBy": "admin",
-                                            "activatedDate": "2026-08-17 10:37:59",
+                                            "activatedDate": "2026-08-18 15:31:12",
                                             "closedBy": "",
                                             "closedDate": "",
                                             "closedReason": "",
@@ -41169,7 +42117,7 @@
                                             "resolvedDate": "",
                                             "resolution": "",
                                             "editedBy": "admin",
-                                            "editedDate": "2026-08-17 10:37:59",
+                                            "editedDate": "2026-08-18 15:31:12",
                                             "keywords": "",
                                             "repeatTicket": 0,
                                             "mailto": "",
@@ -41424,6 +42372,13 @@
                                             "type": "string",
                                             "description": "状态(success 成功 | fail 失败)"
                                         },
+                                        "meetings": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "会议"
+                                        },
                                         "pager": {
                                             "$ref": "#\/components\/schemas\/Pager",
                                             "description": "分页信息"
@@ -41435,6 +42390,7 @@
                                 },
                                 "example": {
                                     "status": "success",
+                                    "meetings": [],
                                     "pager": {
                                         "recTotal": 0,
                                         "recPerPage": 20,
@@ -41454,7 +42410,7 @@
                     {
                         "name": "browseType",
                         "in": "query",
-                        "description": "状态，默认是all。(all 全部 | booked 我预约的 | participate 我参加的)",
+                        "description": "状态，默认是futureMeeting。(futureMeeting 我参加的（未开始） | all 全部 | booked 我预约的 | participate 我参加的（全部）)",
                         "required": false,
                         "schema": {
                             "type": "string",
