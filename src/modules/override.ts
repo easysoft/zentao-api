@@ -175,6 +175,16 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
+  // OpenAPI 使用 JSON 描述 SDK 的本地文件路径入参，但实际请求仍需转换为 multipart/form-data
+  extendModuleAction('file', 'create', (action) => {
+    if (action.requestBody) {
+      action.requestBody.mediaType = 'multipart/form-data';
+      const properties = action.requestBody.schema?.properties as Record<string, Record<string, unknown>>;
+      if (properties?.file) properties.file.format = 'binary';
+    }
+    return action;
+  });
+
   // 修改 BUG 列表选项
   extendModuleAction('bug', 'list', (action) => {
     const params = action.params;
