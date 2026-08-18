@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { randomUUID } from 'node:crypto';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import {
   ZentaoClient,
   request,
@@ -33,6 +36,7 @@ let productName = '';
 let actorAccount: string | undefined;
 
 const created = {
+  fileIDs: [] as number[],
   storyIDs: [] as number[],
   taskIDs: [] as number[],
   bugIDs: [] as number[],
@@ -235,6 +239,7 @@ function summarizeCreatedData(): Record<string, unknown> {
     planID: created.planID,
     projectID: created.projectID,
     executionID: created.executionID,
+    fileIDs: created.fileIDs,
     storyIDs: created.storyIDs,
     taskIDs: created.taskIDs,
     bugIDs: created.bugIDs,
@@ -377,6 +382,7 @@ describe('real ZenTao product API', () => {
       }
 
       logger.info('Cleaning up real environment test data', summarizeCreatedData());
+      await cleanupIDs('file/delete', created.fileIDs);
       await cleanupIDs('task/delete', created.taskIDs);
       await cleanupIDs('bug/delete', created.bugIDs);
       await cleanup('execution/delete', created.executionID);
@@ -475,6 +481,34 @@ describe('real ZenTao product API', () => {
     const firstStoryResponse = await apiRequest('Fetch first story detail', 'story/get', { id: created.storyIDs[0] });
     expectSuccess(firstStoryResponse);
     expect(recordMatchesID(firstStoryResponse.data, created.storyIDs[0])).toBe(true);
+
+    const uploadDir = mkdtempSync(join(tmpdir(), 'zentao-api-real-upload-'));
+    const uploadPath = join(uploadDir, 'real-upload.txt');
+    const uploadContent = `zentao-api real upload ${randomUUID()}`;
+    writeFileSync(uploadPath, uploadContent);
+    try {
+      const uploadResponse = await apiRequest('Upload file to first story', 'file/create', {
+        file: uploadPath,
+        objectType: 'story',
+        objectID: created.storyIDs[0],
+      });
+      expectSuccess(uploadResponse);
+      const fileID = tryExtractID(uploadResponse.data);
+      if (!fileID) {
+        throw new Error(`Could not determine uploaded file id: ${JSON.stringify(uploadResponse.data)}`);
+      }
+      created.fileIDs.push(fileID);
+
+      const uploadedStoryResponse = await apiRequest('Verify uploaded story file', 'story/get', {
+        id: created.storyIDs[0],
+      });
+      expectSuccess(uploadedStoryResponse);
+      const story = unwrapRecord(uploadedStoryResponse.data);
+      const files = isRecord(story.files) ? Object.values(story.files) : [];
+      expect(files.some((file) => recordMatchesID(file, fileID))).toBe(true);
+    } finally {
+      rmSync(uploadDir, { recursive: true, force: true });
+    }
 
     const planTitle = `${productName} plan`;
     created.planID = await createEntity('Create product plan', 'productplan/create', {

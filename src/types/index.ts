@@ -15,3 +15,4 @@ export * from './options.js';
 export * from './profile.js';
 export * from './data.js';
 export * from './module.js';
+export * from './upload.js';

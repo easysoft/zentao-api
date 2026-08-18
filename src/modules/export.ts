@@ -1,4 +1,9 @@
-import type { ModuleAction, ModuleActionParam, ModuleDefinition } from '../types/index.js';
+import type {
+  ModuleAction,
+  ModuleActionParam,
+  ModuleActionRequestMediaType,
+  ModuleDefinition,
+} from '../types/index.js';
 import { getModuleActionParams } from './query.js';
 import { getModuleMapState } from './registry-store.js';
 
@@ -23,6 +28,8 @@ function removeFunctions<T>(value: T): T {
 /** 导出的模块动作定义。 */
 export type ExportedModuleAction = Omit<ModuleAction, 'requestBody'> & {
   bodyParams: ModuleActionParam[];
+  /** 请求体媒体类型；省略时为 `application/json`。 */
+  bodyMediaType?: ModuleActionRequestMediaType;
 };
 
 /** 导出的模块定义。 */
@@ -65,6 +72,7 @@ export function exportRegistry(options: ExportRegistryOptions = {}): Record<stri
             const { requestBody, ...exportedAction } = action;
             return {
               ...exportedAction,
+              ...(requestBody?.mediaType ? { bodyMediaType: requestBody.mediaType } : {}),
               bodyParams: requestBody
                 ? getModuleActionParams(module.name, action.name, { roles: ['body'] })
                 : [],

@@ -91,7 +91,29 @@ const raw = await client.request('/products/1', {
 
 ## 上传附件与下载二进制
 
-底层客户端会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体。普通对象默认按 JSON 发送。
+Node.js/Bun 中，高阶 `request()` 可以直接读取本地文件路径并按 `multipart/form-data` 上传。单个文件的默认大小上限为 50 MiB，可通过 `maxUploadBytes` 调整。
+
+```ts
+await request('file/create', {
+  file: '/tmp/zentao-api-upload.txt',
+  objectType: 'story',
+  objectID: 1001,
+}, {
+  maxUploadBytes: 10 * 1024 * 1024,
+});
+```
+
+浏览器不能读取本地路径，需要传入用户选择的 `File` 或 `Blob`：
+
+```ts
+await request('file/create', {
+  file: fileInput.files![0],
+  objectType: 'bug',
+  objectID: 1001,
+});
+```
+
+也可以直接使用底层客户端。它会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体；普通对象默认按 JSON 发送。
 
 ```ts
 const form = new FormData();

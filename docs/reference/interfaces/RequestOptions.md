@@ -19,6 +19,7 @@
 | <a id="property-filter"></a> `filter?` | `string`[] | 过滤表达式组，如 `["status=active,pri>=2", "assignedTo.id=5"]`；组内 AND、组间 OR，`=` 与 `:` 均表示相等。 | [`ProcessListOptions`](ProcessListOptions.md).[`filter`](ProcessListOptions.md#property-filter) |
 | <a id="property-insecure"></a> `insecure?` | `boolean` | 本次调用 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 | - |
 | <a id="property-limit"></a> `limit?` | `string` | 限制返回列表数量，在排序后、摘取前截断；不改变服务端页大小。 | [`ProcessListOptions`](ProcessListOptions.md).[`limit`](ProcessListOptions.md#property-limit) |
+| <a id="property-maxuploadbytes"></a> `maxUploadBytes?` | `number` | 单个本地文件或 Blob 上传的最大字节数，默认 50 MiB。 | - |
 | <a id="property-pick"></a> `pick?` | `string`[] | 摘取字段路径列表。 | [`ProcessListOptions`](ProcessListOptions.md).[`pick`](ProcessListOptions.md#property-pick) |
 | <a id="property-raw"></a> `raw?` | `boolean` | 是否返回原始响应体，默认 false。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 | - |

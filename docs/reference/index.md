@@ -18,6 +18,9 @@
 | [DataRecordFilterGroup](interfaces/DataRecordFilterGroup.md) | 一组过滤条件，组内按 `operator` 组合；多组之间按 AND 组合。 |
 | [DefineModulesOptions](interfaces/DefineModulesOptions.md) | [defineModules](functions/defineModules.md) 的选项。 |
 | [ExportRegistryOptions](interfaces/ExportRegistryOptions.md) | [exportRegistry](functions/exportRegistry.md) 的选项。 |
+| [FileCreateResult](interfaces/FileCreateResult.md) | `request("file/create")` 归一化后的结果。 |
+| [FileUploadDataInput](interfaces/FileUploadDataInput.md) | 内存数据形式的上传输入。 |
+| [FileUploadPathInput](interfaces/FileUploadPathInput.md) | Node.js/Bun 本地文件路径形式的上传输入。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供高阶 [request](functions/request.md) 调用复用。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
@@ -50,11 +53,14 @@
 | [ErrorCode](type-aliases/ErrorCode.md) | SDK 已知错误码，对应 [ERRORS](variables/ERRORS.md) 的 key。 |
 | [ExportedModuleAction](type-aliases/ExportedModuleAction.md) | 导出的模块动作定义。 |
 | [ExportedModuleDefinition](type-aliases/ExportedModuleDefinition.md) | 导出的模块定义。 |
+| [FileCreateParams](type-aliases/FileCreateParams.md) | `request("file/create")` 的参数。 |
+| [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
 | [ListPagerInfo](type-aliases/ListPagerInfo.md) | 列表分页信息别名。 |
 | [ModuleActionMethod](type-aliases/ModuleActionMethod.md) | 模块动作使用的 HTTP 方法；兼容生成定义中的小写方法。 |
 | [ModuleActionName](type-aliases/ModuleActionName.md) | 模块动作名称，允许除基础动作外的自定义名称。 |
 | [ModuleActionParamOption](type-aliases/ModuleActionParamOption.md) | 模块动作参数可选项。 |
+| [ModuleActionRequestMediaType](type-aliases/ModuleActionRequestMediaType.md) | 高阶请求支持的请求体媒体类型。 |
 | [ModuleActionResultType](type-aliases/ModuleActionResultType.md) | 模块动作结果形态。 |
 | [ModuleActionType](type-aliases/ModuleActionType.md) | 模块动作类型：基础 CRUD 或自定义动作。 |
 | [ModuleName](type-aliases/ModuleName.md) | 内置模块名称，同时允许用户扩展自定义模块名。 |

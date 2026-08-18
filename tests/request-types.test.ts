@@ -25,6 +25,12 @@ async function typedRequestExamples(): Promise<void> {
   await request('product/update', { id: 1, name: '产品 A', acl: 'open' });
   await request('bug/list', { productID: 1, status: 'active', page: 1 });
   await request('testcase/list', { scope: 'products', scopeID: 1 });
+  const uploaded = await request('file/create', {
+    file: '/tmp/report.txt',
+    objectType: 'story',
+    objectID: 1,
+  });
+  uploaded.data?.id.toFixed();
 
   const narrowed = await request<ProductSummary[]>('product/list', {});
   narrowed.data?.forEach((product) => product.name.toUpperCase());

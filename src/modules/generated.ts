@@ -6329,12 +6329,14 @@ export const BUILTIN_MODULES = [
                 requestBody: {
                     required: true,
                     type: 'object',
+                    mediaType: 'multipart/form-data',
                     schema: {
                         "type": "object",
                         "properties": {
                             "file": {
                                 "type": "string",
-                                "description": "本地文件路径，将按 multipart/form-data 上传"
+                                "format": "binary",
+                                "description": "待上传文件；Node.js/Bun 可传本地文件路径，浏览器传 File 或 Blob"
                             },
                             "objectType": {
                                 "type": "string",

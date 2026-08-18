@@ -35,6 +35,8 @@ export interface RequestOptions extends ProcessListOptions {
   timeout?: number;
   /** 本次调用 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 */
   insecure?: boolean;
+  /** 单个本地文件或 Blob 上传的最大字节数，默认 50 MiB。 */
+  maxUploadBytes?: number;
   /** 单条对象转换函数，在字段摘取前执行；列表转换请使用 `convert`。 */
   convertSingle?: ProcessSingleOptions['convert'];
   /**

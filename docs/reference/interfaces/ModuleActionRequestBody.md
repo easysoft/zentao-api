@@ -9,6 +9,7 @@
 | Property | Type | Description |
 | ------ | ------ | ------ |
 | <a id="property-example"></a> `example?` | `unknown` | 请求体示例。 |
+| <a id="property-mediatype"></a> `mediaType?` | [`ModuleActionRequestMediaType`](../type-aliases/ModuleActionRequestMediaType.md) | 请求体媒体类型；省略时按 `application/json` 处理。 |
 | <a id="property-required"></a> `required?` | `boolean` | 请求体是否必填。 |
 | <a id="property-schema"></a> `schema` | `Readonly`\<`Record`\<`string`, `unknown`\>\> | OpenAPI 风格 schema，用于从 params 组装 body。 |
 | <a id="property-type"></a> `type?` | `"string"` \| `"object"` | 请求体类型。 |

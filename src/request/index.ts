@@ -1,10 +1,21 @@
 import { ZentaoError } from '../misc/errors.js';
 import { getGlobalOptions } from '../misc/global-options.js';
-import type { DataRecord, HttpMethod, ModuleAction, ModuleDefinition, ProcessListOptions, RequestOptions, ResponseData } from '../types/index.js';
+import type {
+  DataRecord,
+  FileCreateParams,
+  FileCreateResult,
+  HttpMethod,
+  ModuleAction,
+  ModuleDefinition,
+  ProcessListOptions,
+  RequestOptions,
+  ResponseData,
+} from '../types/index.js';
 import { getModule, getModuleAction } from '../modules/registry.js';
 import type { BuiltinActionMeta, BuiltinModuleName } from '../modules/generated.js';
 import { extractPager, extractResult, resolveActionRequest } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
+import { prepareActionBody } from './prepare-body.js';
 
 type RequestProcessOptions = ProcessListOptions & Pick<RequestOptions, 'convertSingle'>;
 
@@ -32,13 +43,17 @@ type ActionMetaOf<Name extends BuiltinRequestName> =
     : never;
 
 /** 根据内置请求名推导出的参数类型。字段细节以运行时 registry 为准，这里保持可扩展。 */
-export type RequestParamsFor<Name extends BuiltinRequestName> = Record<string, unknown>;
+export type RequestParamsFor<Name extends BuiltinRequestName> = Name extends 'file/create'
+  ? FileCreateParams
+  : Record<string, unknown>;
 /** 根据内置请求名推导出的 `ResponseData.data` 类型。 */
 export type RequestResultFor<Name extends BuiltinRequestName> = ActionMetaOf<Name> extends { resultType: 'list' }
   ? DataRecord[]
-  : ActionMetaOf<Name> extends { resultType: 'object' }
-    ? DataRecord
-    : unknown;
+  : Name extends 'file/create'
+    ? FileCreateResult
+    : ActionMetaOf<Name> extends { resultType: 'object' }
+      ? DataRecord
+      : unknown;
 
 /** 将 `moduleName`、`moduleName/methodName` 或 `moduleName/<objectID>` 请求名拆成模块名、动作名和对象 ID。 */
 function splitRequestName(name: string): { moduleName: string; actionName: string; id?: number } {
@@ -284,10 +299,14 @@ export async function request<T = unknown>(
     : mergedParams;
 
   const command = resolveActionRequest(module, actionName, finalParams);
+  const preparedBody = await prepareActionBody(command, {
+    maxUploadBytes: options.maxUploadBytes,
+  });
   const raw = await client.request(command.path, {
     method: String(command.action.method).toUpperCase() as HttpMethod,
     query: command.query,
-    body: command.data,
+    body: preparedBody.body,
+    bodyType: preparedBody.bodyType,
     timeout: options.timeout ?? globals.timeout,
     insecure: options.insecure ?? globals.insecure,
   });

@@ -11,6 +11,7 @@ describe('browser bundle', () => {
     const injectedBuild = '2026-05-10T01:02:03.000Z';
     const storage = new Map<string, string>();
     let receivedToken: string | undefined;
+    let receivedBody: unknown;
 
     try {
       const result = await Bun.build({
@@ -39,6 +40,8 @@ describe('browser bundle', () => {
         AbortController,
         Headers,
         Response,
+        FormData,
+        Blob,
         localStorage: {
           getItem: (key: string) => storage.get(key) ?? null,
           setItem: (key: string, value: string) => storage.set(key, value),
@@ -52,6 +55,7 @@ describe('browser bundle', () => {
         fetch: (_url: string, init?: RequestInit) => {
           const headers = new Headers(init?.headers);
           receivedToken = headers.get('Token') ?? undefined;
+          receivedBody = init?.body;
           return Promise.resolve(Response.json({ status: 'success' }));
         },
       });
@@ -82,6 +86,22 @@ describe('browser bundle', () => {
       const profileClient = await api.ZentaoClient.fromProfile();
       await profileClient.get('/products');
       expect(receivedToken).toBe('browser-token');
+
+      await api.request('file/create', {
+        file: new Blob(['browser upload'], { type: 'text/plain' }),
+        objectType: 'story',
+        objectID: 1,
+      }, { client: profileClient });
+      expect(receivedBody).toBeInstanceOf(FormData);
+      expect((receivedBody as FormData).get('objectID')).toBe('1');
+      expect((receivedBody as FormData).get('file')).toBeInstanceOf(Blob);
+      expect(((receivedBody as FormData).get('file') as File).name).toBe('file.txt');
+
+      await expect(api.request('file/create', {
+        file: '/tmp/browser-cannot-read.txt',
+        objectType: 'story',
+        objectID: 1,
+      }, { client: profileClient })).rejects.toMatchObject({ code: 'E_UPLOAD_PATH_UNSUPPORTED' });
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

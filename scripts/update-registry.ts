@@ -25,6 +25,16 @@ interface OpenAPIParam {
     schema?: { type?: string };
 }
 
+type OpenAPIRequestMediaType =
+    | 'application/json'
+    | 'multipart/form-data'
+    | 'application/x-www-form-urlencoded';
+
+interface OpenAPIRequestContent {
+    schema?: Record<string, unknown>;
+    example?: unknown;
+}
+
 interface OpenAPIOperation {
     tags?: string[];
     summary?: string;
@@ -32,12 +42,7 @@ interface OpenAPIOperation {
     parameters?: OpenAPIParam[];
     requestBody?: {
         required?: boolean;
-        content?: {
-            'application/json'?: {
-                schema?: Record<string, unknown>;
-                example?: unknown;
-            };
-        };
+        content?: Partial<Record<OpenAPIRequestMediaType, OpenAPIRequestContent>>;
     };
     responses?: Record<string, {
         description?: string;
@@ -552,20 +557,29 @@ function buildParams(parameters: OpenAPIParam[] | undefined): RegistryParam[] | 
 interface RegistryRequestBody {
     required?: boolean;
     type: 'object';
+    mediaType?: OpenAPIRequestMediaType;
     schema: Record<string, unknown>;
 }
 
 function buildRequestBody(op: OpenAPIOperation): RegistryRequestBody | undefined {
     const rb = op.requestBody;
     if (!rb) return undefined;
-    const jsonContent = rb.content?.['application/json'];
-    if (!jsonContent?.schema) return undefined;
+    const mediaTypes: OpenAPIRequestMediaType[] = [
+        'application/json',
+        'multipart/form-data',
+        'application/x-www-form-urlencoded',
+    ];
+    const mediaType = mediaTypes.find((candidate) => rb.content?.[candidate]?.schema);
+    if (!mediaType) return undefined;
+    const content = rb.content?.[mediaType];
+    if (!content?.schema) return undefined;
 
     const result: RegistryRequestBody = {
         type: 'object',
-        schema: jsonContent.schema,
+        schema: content.schema,
     };
     if (rb.required) result.required = true;
+    if (mediaType !== 'application/json') result.mediaType = mediaType;
     return result;
 }
 
@@ -849,6 +863,9 @@ function buildRegistry(): RegistryBuildResult {
                     requestBodyBlock += `                    required: true,\n`;
                 }
                 requestBodyBlock += `                    type: 'object',\n`;
+                if (requestBody.mediaType) {
+                    requestBodyBlock += `                    mediaType: '${requestBody.mediaType}',\n`;
+                }
                 requestBodyBlock += `                    schema: ${indentJson(requestBody.schema, 20)},\n`;
                 requestBodyBlock += `                },\n`;
                 propertyBlocks.set('requestBody', requestBodyBlock);

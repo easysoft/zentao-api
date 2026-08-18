@@ -8,6 +8,7 @@
 
 ## Type Declaration
 
-| Name | Type |
-| ------ | ------ |
-| `bodyParams` | [`ModuleActionParam`](../interfaces/ModuleActionParam.md)[] |
+| Name | Type | Description |
+| ------ | ------ | ------ |
+| `bodyMediaType?` | [`ModuleActionRequestMediaType`](ModuleActionRequestMediaType.md) | 请求体媒体类型；省略时为 `application/json`。 |
+| `bodyParams` | [`ModuleActionParam`](../interfaces/ModuleActionParam.md)[] | - |

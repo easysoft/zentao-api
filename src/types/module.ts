@@ -27,6 +27,8 @@ export interface ModuleActionParam {
   defaultValue?: unknown;
   /** 参数值类型，用于基础类型转换。 */
   type?: 'string' | 'number' | 'boolean';
+  /** OpenAPI schema format，例如 `binary` 或 `int32`。 */
+  format?: string;
   /** 参数可选值。 */
   options?: readonly ModuleActionParamOption[];
 }
@@ -36,12 +38,20 @@ export type ModuleActionResultType = 'text' | 'object' | 'list';
 /** 列表分页信息别名。 */
 export type ListPagerInfo = Pager;
 
+/** 高阶请求支持的请求体媒体类型。 */
+export type ModuleActionRequestMediaType =
+  | 'application/json'
+  | 'multipart/form-data'
+  | 'application/x-www-form-urlencoded';
+
 /** 模块动作请求体定义。 */
 export interface ModuleActionRequestBody {
   /** 请求体类型。 */
   type?: 'object' | 'string';
   /** 请求体是否必填。 */
   required?: boolean;
+  /** 请求体媒体类型；省略时按 `application/json` 处理。 */
+  mediaType?: ModuleActionRequestMediaType;
   /** OpenAPI 风格 schema，用于从 params 组装 body。 */
   schema: Readonly<Record<string, unknown>>;
   /** 请求体示例。 */

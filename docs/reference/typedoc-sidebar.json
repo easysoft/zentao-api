@@ -46,6 +46,18 @@
         "link": "/reference/interfaces/ExportRegistryOptions.md"
       },
       {
+        "text": "FileCreateResult",
+        "link": "/reference/interfaces/FileCreateResult.md"
+      },
+      {
+        "text": "FileUploadDataInput",
+        "link": "/reference/interfaces/FileUploadDataInput.md"
+      },
+      {
+        "text": "FileUploadPathInput",
+        "link": "/reference/interfaces/FileUploadPathInput.md"
+      },
+      {
         "text": "GlobalOptions",
         "link": "/reference/interfaces/GlobalOptions.md"
       },
@@ -160,6 +172,14 @@
         "link": "/reference/type-aliases/ExportedModuleDefinition.md"
       },
       {
+        "text": "FileCreateParams",
+        "link": "/reference/type-aliases/FileCreateParams.md"
+      },
+      {
+        "text": "FileUploadSource",
+        "link": "/reference/type-aliases/FileUploadSource.md"
+      },
+      {
         "text": "HttpMethod",
         "link": "/reference/type-aliases/HttpMethod.md"
       },
@@ -178,6 +198,10 @@
       {
         "text": "ModuleActionParamOption",
         "link": "/reference/type-aliases/ModuleActionParamOption.md"
+      },
+      {
+        "text": "ModuleActionRequestMediaType",
+        "link": "/reference/type-aliases/ModuleActionRequestMediaType.md"
       },
       {
         "text": "ModuleActionResultType",

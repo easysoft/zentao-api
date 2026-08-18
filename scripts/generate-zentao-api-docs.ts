@@ -94,6 +94,7 @@ function schemaExample(schema: Record<string, unknown> | undefined): unknown {
   }
   if (type === 'integer' || type === 'number') return 1;
   if (type === 'boolean') return true;
+  if (type === 'string' && schema.format === 'binary') return '/path/to/file';
   if (type === 'string') return '<string>';
 
   const properties = schema.properties as Record<string, Record<string, unknown>> | undefined;
@@ -117,6 +118,7 @@ function renderRequestBody(action: ModuleAction): string {
 
   return [
     `请求体必填：${required}`,
+    ...(action.requestBody.mediaType ? [`请求媒体类型：\`${action.requestBody.mediaType}\``] : []),
     '',
     'Schema:',
     '',

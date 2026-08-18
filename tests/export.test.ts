@@ -26,6 +26,7 @@ function defineExportFixture(): void {
           recTotal: 1,
         }),
         requestBody: {
+          mediaType: 'multipart/form-data',
           schema: {
             type: 'object',
             transform: () => 'transformed',
@@ -48,6 +49,7 @@ describe('exportRegistry', () => {
     const registry = exportRegistry();
     const [action] = registry['export-fixture'].actions;
 
+    expect(action.bodyMediaType).toBe('multipart/form-data');
     expect(action.bodyParams).toEqual([
       {
         name: 'name',

@@ -87,11 +87,16 @@ try {
     baseUrl: 'https://zentao.example.com',
     token: 'browser-token',
   });
-  const form = new FormData();
-  form.set('file', new Blob(['hello'], { type: 'text/plain' }), 'hello.txt');
-  await client.request('/files', { method: 'POST', body: form });
+  await api.request('file/create', {
+    file: {
+      data: new Blob(['hello'], { type: 'text/plain' }),
+      filename: 'hello.txt',
+    },
+    objectType: 'story',
+    objectID: 1,
+  }, { client });
 
-  assert(receivedBody instanceof FormData, 'Browser global request did not pass FormData through.');
+  assert(receivedBody instanceof FormData, 'Browser global high-level request did not build FormData.');
   assert(receivedToken === 'browser-token', 'Browser global request did not attach Token.');
 } finally {
   rmSync(packageEntry, { force: true });

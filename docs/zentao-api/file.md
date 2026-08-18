@@ -27,6 +27,7 @@
 ### 请求体
 
 请求体必填：是
+请求媒体类型：`multipart/form-data`
 
 Schema:
 
@@ -36,7 +37,8 @@ Schema:
   "properties": {
     "file": {
       "type": "string",
-      "description": "本地文件路径，将按 multipart/form-data 上传"
+      "format": "binary",
+      "description": "待上传文件；Node.js/Bun 可传本地文件路径，浏览器传 File 或 Blob"
     },
     "objectType": {
       "type": "string",
@@ -60,7 +62,7 @@ Schema:
 
 ```json
 {
-  "file": "<string>",
+  "file": "/path/to/file",
   "objectType": "<string>",
   "objectID": 1
 }
@@ -76,7 +78,7 @@ Schema:
 import { request } from 'zentao-api';
 
 const result = await request("file/create", {
-  "file": "<string>",
+  "file": "/path/to/file",
   "objectType": "<string>",
   "objectID": 1
 });

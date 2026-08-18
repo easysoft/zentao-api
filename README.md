@@ -160,6 +160,22 @@ result.data?.forEach((product) => console.log(product.name));
 const raw = await request('product/list', {}, { raw: true });
 ```
 
+### 上传附件
+
+Node.js/Bun 可以直接把本地文件路径交给高阶 `request()`；SDK 会根据模块注册表构造 `multipart/form-data`。浏览器中请传 `File` 或 `Blob`，不能传本地路径。
+
+```ts
+const uploaded = await request('file/create', {
+  file: '/tmp/zentao-api-upload.txt',
+  objectType: 'story',
+  objectID: 1,
+});
+
+console.log(uploaded.data?.id, uploaded.data?.url);
+```
+
+单个本地文件或 Blob 默认限制为 50 MiB；可通过单次调用选项 `maxUploadBytes` 调整。
+
 ### 底层 REST 客户端
 
 `ZentaoClient` 适合直接调用 API v2 路径：
