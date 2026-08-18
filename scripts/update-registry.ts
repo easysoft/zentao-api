@@ -302,13 +302,13 @@ function parseDescriptionOptions(raw: string): {
         }
 
         // Try parenthesized options: "(val1 label1 | val2 label2)"
-        const parenMatch = raw.match(/[(\uff08]([^)\uff09]+)[)\uff09]/);
+        // Labels can contain nested ASCII or full-width parentheses.
+        const parenMatch = findParenthesizedSegment(raw);
         if (parenMatch) {
-            const parsed = parsePipeOptions(parenMatch[1]);
+            const parsed = parsePipeOptions(parenMatch.content);
             if (parsed.length >= 2) {
                 options = parsed;
-                const idx = raw.indexOf(parenMatch[0]);
-                description = raw.slice(0, idx).replace(/[,，。\s]+$/, '');
+                description = raw.slice(0, parenMatch.index).replace(/[,，。\s]+$/, '');
             }
         }
 
@@ -346,6 +346,32 @@ function parseDescriptionOptions(raw: string): {
     } catch {
         return { description: raw };
     }
+}
+
+function findParenthesizedSegment(raw: string): { content: string; index: number } | undefined {
+    const isOpen = (char: string) => char === '(' || char === '\uff08';
+    const isClose = (char: string) => char === ')' || char === '\uff09';
+
+    for (let start = 0; start < raw.length; start += 1) {
+        if (!isOpen(raw[start])) continue;
+
+        let depth = 1;
+        for (let cursor = start + 1; cursor < raw.length; cursor += 1) {
+            const char = raw[cursor];
+            if (isOpen(char)) depth += 1;
+            if (!isClose(char)) continue;
+
+            depth -= 1;
+            if (depth === 0) {
+                return {
+                    content: raw.slice(start + 1, cursor),
+                    index: start,
+                };
+            }
+        }
+    }
+
+    return undefined;
 }
 
 /** Parse "val1 label1 | val2 label2" or "label1 val1 | label2 val2" */
