@@ -166,6 +166,14 @@ function buildQuery(action: ModuleAction, params: Record<string, unknown>): Reco
     if (value === undefined && param.name === 'pageID') {
       value = params.page;
     }
+    // 兼容 CLI 调用惯例：若参数名为 xxxID（如 productID/projectID/executionID），
+    // 但调用方按 xxx 传参（如 product=1），则自动 fallback 到 xxx 取值。
+    if (value === undefined && param.name.endsWith('ID') && param.name.length > 2) {
+      const baseKey = param.name.slice(0, -2);
+      if (params[baseKey] !== undefined) {
+        value = params[baseKey];
+      }
+    }
     if (value === undefined) {
       value = param.defaultValue ?? param.options?.[0]?.value;
     }
