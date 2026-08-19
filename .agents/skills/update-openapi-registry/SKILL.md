@@ -1,6 +1,6 @@
 ---
 name: update-openapi-registry
-description: 处理 zentao-api 的 OpenAPI 与模块注册库更新：比较 operation 契约和示例变化，维护 zentao-api-map.json 的模块、action 名称及 ModuleAction 属性映射，解决命名冲突，核对 GET resultGetter，重新生成并验证 src/modules/generated.ts。用户提出更新 OpenAPI、同步注册库、重新生成模块定义、处理 action 冲突或结果字段、检查 zentao-openapi.json 差异及报告接口变化时使用。
+description: 处理 zentao-api 的 OpenAPI 与模块注册库更新：比较 operation 契约和示例变化，维护 zentao-api-map.json 的模块、action 名称及 ModuleAction 属性映射，解决命名冲突，核对 GET resultGetter，审计每个非 Token operation 的直接或合并覆盖，并重新生成验证 src/modules/generated.ts。用户提出更新 OpenAPI、同步注册库、重新生成模块定义、处理 action 冲突或结果字段、检查 zentao-openapi.json 差异及报告接口变化时使用。
 ---
 
 # 更新 OpenAPI 注册库
@@ -45,6 +45,20 @@ bun run .agents/skills/update-openapi-registry/scripts/report-openapi-changes.ts
 }
 ```
 
+### operation 完整性硬约束
+
+- 除 `Token` tag 的登录类 operation 外，每个 OpenAPI operation 都必须有可核对的最终归宿：生成一个独立 action，或合并进一个实际包含该 scope 的 scoped-list action。不得因为 action 重名、已有顶层 `list`、自动分类失败或生成器限制而跳过、覆盖或静默丢弃 operation。
+- 同一最终模块同时存在顶层 `list` 和 scoped-list 时，不能只保留顶层 `list`，也不能自动把 scoped-list 视为已覆盖。必须逐项在 `scripts/zentao-api-map.json` 中提供语义化 `name`，使其作为独立 action 生成。例如：
+
+```json
+{
+  "get /programs/{programID}/products": {"name": "programProducts"}
+}
+```
+
+- 如果多个 scoped operation 可以安全合并，必须能从最终 action 的 `scope` options 逐项反查每个来源 operation；父级资源或子资源语义不同而无法证明等价时，改用手动 `name` 映射，不能强行合并。
+- 如果暂时无法确定语义化名称，停止在映射阶段并报告待确认项；不得交付部分生成结果。
+
 遵守以下规则：
 
 - `module`、`name` 都是可选字段；省略时保留 OpenAPI tag 和自动分类得到的值。其他字段直接覆盖对应的 `ModuleAction` 属性。
@@ -54,7 +68,7 @@ bun run .agents/skills/update-openapi-registry/scripts/report-openapi-changes.ts
 - 多个 scoped operation 合并为一个 action 时，同一属性的映射值必须一致；不一致时应报出冲突，不能按遍历顺序静默覆盖。
 - 生成器应处理完全部 operation 后，按最终 module/action 分组，一次性列出所有未解决的重名、对应 method/path 和映射状态。不要只修复第一个冲突。
 
-每轮映射后重新生成，阅读完整冲突提示；仍有冲突时继续补充映射，不要把有冲突的生成结果当作完成。
+每轮映射后重新生成并运行 operation 覆盖审计，阅读完整提示；仍有冲突或未覆盖 operation 时继续补充映射，不要把有冲突或覆盖不完整的生成结果当作完成。
 
 ## 4. 重新生成注册库
 
@@ -63,7 +77,10 @@ bun run .agents/skills/update-openapi-registry/scripts/report-openapi-changes.ts
 ```bash
 bun run scripts/update-registry.ts
 git diff -- src/modules/generated.ts
+bun run .agents/skills/update-openapi-registry/scripts/audit-generated-registry.ts
 ```
+
+覆盖审计必须报告 `uncovered: 0`。如果它报告“模块已有顶层 list 的 unmapped scoped list”，在 `scripts/zentao-api-map.json` 为每个接口补充语义化 `name`，重新生成并重复审计。`registry:check` 输出的 operation 数量是生成器输入数量，不能单独证明 operation 已进入最终注册表。
 
 不要手工修改 `src/modules/generated.ts`。如果生成结果错误：
 
@@ -111,6 +128,9 @@ bun test tests/upload.test.ts tests/modules.test.ts tests/resolve.test.ts
 - 映射根据 method/path 找到最终 action，并逐项应用覆盖属性。
 - 每个模块内 action 名称唯一，所有生成 GET action 都有非空 `resultGetter`。
 - scoped-list 的纯属性映射不会改变原有 path、display、pathParams 或合并范围。
+- 每个非 Token OpenAPI operation 都被一个独立 action 直接覆盖，或被 scope options 明确包含的 scoped-list action 合并覆盖；未覆盖数量必须为 0。
+- 同一模块同时存在顶层 `list` 和未命名 scoped-list 时，审计必须失败并要求通过 `zentao-api-map.json` 配置语义化 `name`。
+- operation 缺少 tag、合并组包含不同子资源，或映射后的 action 无法在 `generated.ts` 中找到时，审计必须失败，不能将其计为已处理。
 
 `bun run check` 不包含真实环境测试。只有用户要求且环境配置可用时运行 `bun run test:real`；否则在报告中明确未运行。
 
@@ -126,5 +146,7 @@ bun test tests/upload.test.ts tests/modules.test.ts tests/resolve.test.ts
 6. 实际执行的验证、通过数量、未执行的真实环境验证和剩余风险。
 7. 新增或调整的 API 映射、最终 `<moduleName>-<actionName>`、未解决冲突数量。
 8. GET action 总数、缺失 `resultGetter` 数量，以及真实请求确认和推断确认的范围。
+9. 非 Token operation 总数、独立 action 覆盖数量、合并覆盖数量、未覆盖数量；未覆盖数量不为 0 时不得报告完成。
+10. 被合并的 operation 到 scoped-list action 的对应关系，以及因顶层 `list` 冲突而新增的手动映射。
 
-不要把生成器输出数量与 SDK action 数量混为一谈：多个 scoped OpenAPI operation 可以合并为一个注册 action，Token 类 operation 也可能被生成器排除。
+不要把生成器输出数量与 SDK action 数量混为一谈，也不要把生成器打印的 operation 数量当作覆盖证明：多个 scoped OpenAPI operation 可以合并为一个注册 action，Token 类 operation 可以被生成器排除，但任何非 Token operation 都不能没有可验证的最终归宿。
