@@ -234,13 +234,12 @@ export function applyBuiltinOverrides(): void {
 
       const originalContent = result.content;
       try {
-        const markdown = snapshotToMarkdown(originalContent as string);
         if (wantsRawContent && (result.rawContent === undefined || result.rawContent === '')) {
           result.rawContent = originalContent;
         }
-        if (wantsContent) {
+        if (wantsContent && result.contentType === 'doc') {
+          const markdown = snapshotToMarkdown(originalContent as string);
           result.content = markdown;
-          result.contentType = 'markdown';
         }
       } catch {
         // HTML、纯文本和无法识别的快照保持服务端原始字段不变。
@@ -249,6 +248,4 @@ export function applyBuiltinOverrides(): void {
     };
     return action;
   });
-
-  // 限制
 }

@@ -839,7 +839,7 @@ describe('high-level request', () => {
         title: 'API document',
         content: '# API document\n\nDocument body\n',
         rawContent,
-        contentType: 'markdown',
+        contentType: 'doc',
       };
 
       await expect(request('doc/7', {}, { client })).resolves.toEqual({
