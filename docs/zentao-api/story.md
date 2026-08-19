@@ -92,7 +92,6 @@ const result = await request("story/list", {
 
 - 返回形态：`list`
 - 结果字段：`tree`
-- 分页字段：`pager`
 
 ### SDK 示例
 

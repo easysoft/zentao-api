@@ -1,5 +1,24 @@
 # 变更日志
 
+## 0.6.4 - 2026-08-19
+
+### 新增
+
+- 补充项目集下的产品和项目、项目下的执行，以及项目或执行范围内的问题、风险、会议和成员列表等 11 个 SDK action，确保所有非 Token OpenAPI operation 都有可追溯的注册定义。
+
+### 修复
+
+- 修复模块已有顶层 `list` 时同模块 scoped-list operation 被静默遗漏的问题，改由 `zentao-api-map.json` 提供语义化 action 名称。
+- 仅在列表响应定义包含 `pager` 时生成 `pagerGetter`，避免非分页接口暴露无效的分页映射。
+
+### 测试
+
+- 增加非 Token OpenAPI operation 的独立或合并覆盖审计，以及分页字段生成的回归测试。
+
+### 文档
+
+- 重新生成 SDK 参考和禅道 API 模块文档，补充新增的 scoped-list action。
+
 ## 0.6.3 - 2026-08-19
 
 ### 新增

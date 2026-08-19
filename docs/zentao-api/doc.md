@@ -70,7 +70,6 @@
 
 - 返回形态：`list`
 - 结果字段：`spaces`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -101,7 +100,6 @@ const result = await request("doc/mySpaces");
 
 - 返回形态：`list`
 - 结果字段：`spaces`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -132,7 +130,6 @@ const result = await request("doc/teamSpaces");
 
 - 返回形态：`list`
 - 结果字段：`spaces`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -163,7 +160,6 @@ const result = await request("doc/productSpaces");
 
 - 返回形态：`list`
 - 结果字段：`spaces`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -196,7 +192,6 @@ const result = await request("doc/projectSpaces");
 
 - 返回形态：`list`
 - 结果字段：`libs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -231,7 +226,6 @@ const result = await request("doc/myLibs", {
 
 - 返回形态：`list`
 - 结果字段：`libs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -266,7 +260,6 @@ const result = await request("doc/teamLibs", {
 
 - 返回形态：`list`
 - 结果字段：`libs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -301,7 +294,6 @@ const result = await request("doc/productLibs", {
 
 - 返回形态：`list`
 - 结果字段：`libs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -337,7 +329,6 @@ const result = await request("doc/projectLibs", {
 
 - 返回形态：`list`
 - 结果字段：`docs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -374,7 +365,6 @@ const result = await request("doc/myDocs", {
 
 - 返回形态：`list`
 - 结果字段：`docs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -411,7 +401,6 @@ const result = await request("doc/teamDocs", {
 
 - 返回形态：`list`
 - 结果字段：`docs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -448,7 +437,6 @@ const result = await request("doc/productDocs", {
 
 - 返回形态：`list`
 - 结果字段：`docs`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -485,7 +473,6 @@ const result = await request("doc/projectDocs", {
 
 - 返回形态：`list`
 - 结果字段：`modules`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -522,7 +509,6 @@ const result = await request("doc/myModules", {
 
 - 返回形态：`list`
 - 结果字段：`modules`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -559,7 +545,6 @@ const result = await request("doc/teamModules", {
 
 - 返回形态：`list`
 - 结果字段：`modules`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -596,7 +581,6 @@ const result = await request("doc/productModules", {
 
 - 返回形态：`list`
 - 结果字段：`modules`
-- 分页字段：`pager`
 
 ### SDK 示例
 

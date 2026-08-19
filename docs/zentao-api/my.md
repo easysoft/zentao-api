@@ -572,7 +572,6 @@ const result = await request("my/meetings", {
 
 - 返回形态：`list`
 - 结果字段：`issues`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -615,7 +614,6 @@ const result = await request("my/issues", {
 
 - 返回形态：`list`
 - 结果字段：`risks`
-- 分页字段：`pager`
 
 ### SDK 示例
 

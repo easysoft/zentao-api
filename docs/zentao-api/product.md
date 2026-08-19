@@ -1,12 +1,13 @@
 # 产品 (product)
 
-产品管理，支持获取产品列表、创建产品、关闭产品、创建产品的需求模块、创建产品的Bug模块、创建产品的用例模块、获取产品详情、修改产品、删除产品
+产品管理，支持获取产品列表、获取项目集的产品列表、创建产品、关闭产品、创建产品的需求模块、创建产品的Bug模块、创建产品的用例模块、获取产品详情、修改产品、删除产品
 
 ## 动作概览
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
 | `list` | 获取产品列表 | `GET` | `/products` |
+| `programProducts` | 获取项目集的产品列表 | `GET` | `/programs/{programID}/products` |
 | `create` | 创建产品 | `POST` | `/products` |
 | `close` | 关闭产品 | `POST` | `/products/{productID}/close` |
 | `createStoryModule` | 创建产品的需求模块 | `POST` | `/products/{productID}/story/modules` |
@@ -52,6 +53,50 @@ import { request } from 'zentao-api';
 
 const result = await request("product/list", {
   "browseType": "all",
+  "orderBy": "id_asc",
+  "recPerPage": 1,
+  "pageID": 1
+});
+```
+## 获取项目集的产品列表
+
+- SDK 调用：`request("product/programProducts", params)`
+- HTTP：`GET /programs/{programID}/products`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `programID` | 项目集ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `browseType` | string | 否 | `noclosed` | 状态，默认是noclosed<br>`all` 全部<br>`noclosed` 未关闭<br>`closed` 已结束 |
+| `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`begin_asc` 计划开始 升序<br>`begin_desc` 计划开始 降序<br>`end_asc` 计划结束 升序<br>`end_desc` 计划结束 降序 |
+| `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
+| `pageID` | number | 否 |  | 页码，从第1页开始 |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`products`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("product/programProducts", {
+  "programID": 1,
+  "browseType": "noclosed",
   "orderBy": "id_asc",
   "recPerPage": 1,
   "pageID": 1

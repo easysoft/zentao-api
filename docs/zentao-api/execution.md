@@ -1,13 +1,15 @@
 # 执行 (execution)
 
-执行管理，支持获取执行列表、获取执行团队列表、创建执行（迭代/阶段/看板）、关闭执行、创建执行的任务模块、获取执行详情、修改执行、删除执行、维护执行成员
+执行管理，支持获取执行列表、获取项目的执行列表、获取执行团队列表、获取执行成员列表、创建执行（迭代/阶段/看板）、关闭执行、创建执行的任务模块、获取执行详情、修改执行、删除执行、维护执行成员
 
 ## 动作概览
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
 | `list` | 获取执行列表 | `GET` | `/executions` |
+| `projectExecutions` | 获取项目的执行列表 | `GET` | `/projects/{projectID}/executions` |
 | `team` | 获取执行团队列表 | `GET` | `/executions/team` |
+| `executionMembers` | 获取执行成员列表 | `GET` | `/executions/{executionID}/members` |
 | `create` | 创建执行（迭代/阶段/看板） | `POST` | `/executions` |
 | `close` | 关闭执行 | `POST` | `/executions/{executionID}/close` |
 | `createTaskModule` | 创建执行的任务模块 | `POST` | `/executions/{executionID}/task/modules` |
@@ -61,6 +63,50 @@ const result = await request("execution/list", {
   "groupJoin": "and"
 });
 ```
+## 获取项目的执行列表
+
+- SDK 调用：`request("execution/projectExecutions", params)`
+- HTTP：`GET /projects/{projectID}/executions`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `projectID` | 项目ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `browseType` | string | 否 | `undone` | 执行状态，默认是undone<br>`all` 全部<br>`undone` 未完成<br>`wait` 未开始<br>`doing` 进行中 |
+| `orderBy` | string | 否 |  | 排序<br>`rawID_asc` RAWID 升序<br>`rawID_desc` RAWID 降序<br>`nameCol_asc` 名称 升序<br>`nameCol_desc` 名称 降序<br>`begin_asc` 计划开始 升序<br>`begin_desc` 计划开始 降序<br>`end_asc` 计划结束 升序<br>`end_desc` 计划结束 降序 |
+| `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
+| `pageID` | number | 否 |  | 页码，从第1页开始 |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`executions`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("execution/projectExecutions", {
+  "projectID": 1,
+  "browseType": "undone",
+  "orderBy": "rawID_asc",
+  "recPerPage": 1,
+  "pageID": 1
+});
+```
 ## 获取执行团队列表
 
 - SDK 调用：`request("execution/team", params)`
@@ -85,7 +131,6 @@ const result = await request("execution/list", {
 
 - 返回形态：`list`
 - 结果字段：`members`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -94,6 +139,40 @@ import { request } from 'zentao-api';
 
 const result = await request("execution/team", {
   "executionID": "<string>"
+});
+```
+## 获取执行成员列表
+
+- SDK 调用：`request("execution/executionMembers", params)`
+- HTTP：`GET /executions/{executionID}/members`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `executionID` | 执行ID |
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`members`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("execution/executionMembers", {
+  "executionID": 1
 });
 ```
 ## 创建执行（迭代/阶段/看板）

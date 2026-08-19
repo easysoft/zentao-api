@@ -1,13 +1,15 @@
 # 项目 (project)
 
-项目管理，支持获取项目列表、获取项目团队列表、创建项目、关闭项目、创建项目需求、创建项目Bug、创建项目任务、修改项目、删除项目、维护项目成员
+项目管理，支持获取项目列表、获取项目集的项目列表、获取项目团队列表、获取项目成员列表、创建项目、关闭项目、创建项目需求、创建项目Bug、创建项目任务、修改项目、删除项目、维护项目成员
 
 ## 动作概览
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
 | `list` | 获取项目列表 | `GET` | `/projects` |
+| `programProjects` | 获取项目集的项目列表 | `GET` | `/programs/{programID}/projects` |
 | `team` | 获取项目团队列表 | `GET` | `/projects/team` |
+| `projectMembers` | 获取项目成员列表 | `GET` | `/projects/{projectID}/members` |
 | `create` | 创建项目 | `POST` | `/projects` |
 | `close` | 关闭项目 | `POST` | `/projects/{projectID}/close` |
 | `createStory` | 创建项目需求 | `POST` | `/projects/{projectID}/stories` |
@@ -62,6 +64,50 @@ const result = await request("project/list", {
   "groupJoin": "and"
 });
 ```
+## 获取项目集的项目列表
+
+- SDK 调用：`request("project/programProjects", params)`
+- HTTP：`GET /programs/{programID}/projects`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `programID` | 项目集ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `browseType` | string | 否 | `undone` | 项目状态，默认是undone<br>`all` 全部<br>`undone` 未完成<br>`wait` 未开始<br>`doing` 进行中 |
+| `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`begin_asc` 计划开始 升序<br>`begin_desc` 计划开始 降序<br>`end_asc` 计划结束 升序<br>`end_desc` 计划结束 降序 |
+| `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
+| `pageID` | number | 否 |  | 页码，从第1页开始 |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`projects`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("project/programProjects", {
+  "programID": 1,
+  "browseType": "undone",
+  "orderBy": "id_asc",
+  "recPerPage": 1,
+  "pageID": 1
+});
+```
 ## 获取项目团队列表
 
 - SDK 调用：`request("project/team", params)`
@@ -86,7 +132,6 @@ const result = await request("project/list", {
 
 - 返回形态：`list`
 - 结果字段：`members`
-- 分页字段：`pager`
 
 ### SDK 示例
 
@@ -95,6 +140,40 @@ import { request } from 'zentao-api';
 
 const result = await request("project/team", {
   "projectID": "<string>"
+});
+```
+## 获取项目成员列表
+
+- SDK 调用：`request("project/projectMembers", params)`
+- HTTP：`GET /projects/{projectID}/members`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `projectID` | 项目ID |
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`members`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("project/projectMembers", {
+  "projectID": 1
 });
 ```
 ## 创建项目

@@ -1,12 +1,14 @@
 # 会议 (meeting)
 
-会议管理，支持获取会议列表、创建会议、获取会议详情、修改会议、删除会议、编辑会议纪要
+会议管理，支持获取会议列表、获取项目会议列表、获取执行会议列表、创建会议、获取会议详情、修改会议、删除会议、编辑会议纪要
 
 ## 动作概览
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
 | `list` | 获取会议列表 | `GET` | `/meetings` |
+| `projectMeetings` | 获取项目会议列表 | `GET` | `/projects/{projectID}/meetings` |
+| `executionMeetings` | 获取执行会议列表 | `GET` | `/executions/{executionID}/meetings` |
 | `create` | 创建会议 | `POST` | `/meetings` |
 | `get` | 获取会议详情 | `GET` | `/meetings/{meetingID}` |
 | `update` | 修改会议 | `PUT` | `/meetings/{meetingID}` |
@@ -50,6 +52,102 @@
 import { request } from 'zentao-api';
 
 const result = await request("meeting/list", {
+  "browseType": "all",
+  "orderBy": "id_asc",
+  "recPerPage": 1,
+  "pageID": 1,
+  "filters": "<string>",
+  "groupJoin": "and"
+});
+```
+## 获取项目会议列表
+
+- SDK 调用：`request("meeting/projectMeetings", params)`
+- HTTP：`GET /projects/{projectID}/meetings`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `projectID` | 项目ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `browseType` | string | 否 | `all` | 状态，默认是all<br>`all` 全部<br>`booked` 我预约的<br>`participate` 我参加的 |
+| `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
+| `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
+| `pageID` | number | 否 |  | 页码，从第1页开始 |
+| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
+| `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`meetings`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("meeting/projectMeetings", {
+  "projectID": 1,
+  "browseType": "all",
+  "orderBy": "id_asc",
+  "recPerPage": 1,
+  "pageID": 1,
+  "filters": "<string>",
+  "groupJoin": "and"
+});
+```
+## 获取执行会议列表
+
+- SDK 调用：`request("meeting/executionMeetings", params)`
+- HTTP：`GET /executions/{executionID}/meetings`
+- 动作类型：`list`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `executionID` | 执行ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `browseType` | string | 否 | `all` | 状态，默认是all<br>`all` 全部<br>`booked` 我预约的<br>`participate` 我参加的 |
+| `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
+| `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
+| `pageID` | number | 否 |  | 页码，从第1页开始 |
+| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
+| `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`meetings`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("meeting/executionMeetings", {
+  "executionID": 1,
   "browseType": "all",
   "orderBy": "id_asc",
   "recPerPage": 1,
