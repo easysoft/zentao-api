@@ -161,6 +161,12 @@ describe('module registry', () => {
     }
   });
 
+  test('defines pagerGetter only when the list response contains a pager', () => {
+    expect(getModuleAction('project', 'programProjects')!.pagerGetter).toBe('pager');
+    expect(getModuleAction('project', 'projectMembers')!.pagerGetter).toBeUndefined();
+    expect(getModuleAction('execution', 'executionMembers')!.pagerGetter).toBeUndefined();
+  });
+
   test('getObjectProps returns Chinese labels for OpenAPI object modules', () => {
     const objectModules = [
       'user', 'program', 'product', 'project', 'execution', 'productplan',

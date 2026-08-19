@@ -535,6 +535,12 @@ function inferResultGetter(op: OpenAPIOperation, actionType: string): string | u
     return undefined;
 }
 
+function inferPagerGetter(op: OpenAPIOperation): string | undefined {
+    const schema = op.responses?.['200']?.content?.['application/json']?.schema as Record<string, unknown> | undefined;
+    const props = schema?.properties as Record<string, unknown> | undefined;
+    return props && Object.hasOwn(props, 'pager') ? 'pager' : undefined;
+}
+
 // ---------------------------------------------------------------------------
 // Build params from OpenAPI parameters
 // ---------------------------------------------------------------------------
@@ -742,6 +748,7 @@ function buildRegistry(): RegistryBuildResult {
                 label: SCOPE_LABELS[s.parentResource] ?? s.parentResource,
             }));
             const resultGetter = inferResultGetter(first.operation, 'list');
+            const pagerGetter = inferPagerGetter(first.operation);
             const params = buildParams(first.operation.parameters);
             const summary = first.operation.summary ?? `获取${display}列表`;
             const mappedProperties = new Map<string, unknown>();
@@ -783,7 +790,9 @@ function buildRegistry(): RegistryBuildResult {
                 propertyBlocks.set('path', `                path: '${escapeStr(`/{scope}/{scopeID}/${first.childResource}`)}',\n`);
             }
             propertyBlocks.set('resultType', `                resultType: '${resultType}',\n`);
-            propertyBlocks.set('pagerGetter', `                pagerGetter: 'pager',\n`);
+            if (pagerGetter) {
+                propertyBlocks.set('pagerGetter', `                pagerGetter: '${escapeStr(pagerGetter)}',\n`);
+            }
             if (resultGetter) {
                 propertyBlocks.set('resultGetter', `                resultGetter: '${escapeStr(resultGetter)}',\n`);
             }
@@ -848,6 +857,7 @@ function buildRegistry(): RegistryBuildResult {
 
             const resultGetter = (actionType === 'list' || actionType === 'get')
                 ? inferResultGetter(entry.op, actionType) : undefined;
+            const pagerGetter = actionType === 'list' ? inferPagerGetter(entry.op) : undefined;
 
             const params = (actionType === 'list') ? buildParams(entry.op.parameters) : undefined;
             const requestBody = buildRequestBody(entry.op);
@@ -860,8 +870,8 @@ function buildRegistry(): RegistryBuildResult {
             propertyBlocks.set('path', `                path: '${escapeStr(bracePath)}',\n`);
             propertyBlocks.set('resultType', `                resultType: '${resultType}',\n`);
 
-            if (actionType === 'list') {
-                propertyBlocks.set('pagerGetter', `                pagerGetter: 'pager',\n`);
+            if (pagerGetter) {
+                propertyBlocks.set('pagerGetter', `                pagerGetter: '${escapeStr(pagerGetter)}',\n`);
             }
             if (resultGetter) {
                 propertyBlocks.set('resultGetter', `                resultGetter: '${escapeStr(resultGetter)}',\n`);

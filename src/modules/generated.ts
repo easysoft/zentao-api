@@ -897,7 +897,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/team',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'members',
                 params: [
                     {
@@ -914,7 +913,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/members',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'members',
                 pathParams: {
                     projectID: '项目ID',
@@ -1458,7 +1456,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/team',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'members',
                 params: [
                     {
@@ -1475,7 +1472,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/members',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'members',
                 pathParams: {
                     executionID: '执行ID',
@@ -2085,7 +2081,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/story/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -3133,7 +3128,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/bug/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -3574,7 +3568,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/testcase/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -3863,7 +3856,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/task/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -7163,7 +7155,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'spaces',
             }, {
                 name: 'teamSpaces',
@@ -7172,7 +7163,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'spaces',
             }, {
                 name: 'productSpaces',
@@ -7181,7 +7171,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'spaces',
             }, {
                 name: 'projectSpaces',
@@ -7190,7 +7179,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'spaces',
             }, {
                 name: 'myLibs',
@@ -7199,7 +7187,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'libs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -7211,7 +7198,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'libs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -7223,7 +7209,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'libs',
                 pathParams: {
                     productID: '产品ID',
@@ -7235,7 +7220,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'libs',
                 pathParams: {
                     projectID: '项目ID',
@@ -7247,7 +7231,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -7260,7 +7243,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'docs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -7273,7 +7255,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/docs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     productID: '产品ID',
                     libID: '文档库ID',
@@ -7286,7 +7267,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/docs',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 pathParams: {
                     projectID: '项目ID',
                     libID: '文档库ID',
@@ -7299,7 +7279,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'modules',
                 pathParams: {
                     spaceID: '空间ID',
@@ -7312,7 +7291,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'modules',
                 pathParams: {
                     spaceID: '空间ID',
@@ -7325,7 +7303,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'modules',
                 pathParams: {
                     productID: '产品ID',
@@ -7338,7 +7315,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/modules',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 resultGetter: 'modules',
                 pathParams: {
                     projectID: '项目ID',
@@ -8908,7 +8884,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/issues',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 params: [
                     {
                         name: 'browseType',
@@ -8963,7 +8938,6 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/risks',
                 resultType: 'list',
-                pagerGetter: 'pager',
                 params: [
                     {
                         name: 'browseType',
