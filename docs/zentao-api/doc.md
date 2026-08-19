@@ -1715,7 +1715,7 @@ const result = await request("doc/getLib", {
 ### 返回值
 
 - 返回形态：`object`
-- 结果字段：`doc`
+- 结果字段：`custom`
 
 ### SDK 示例
 
