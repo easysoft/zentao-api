@@ -1,4 +1,7 @@
 import { extendModuleAction, defineModules } from './define.js';
+import { extractResult } from './resolve.js';
+import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
+import { isRecord } from '../utils/index.js';
 
 /**
  * 内置覆盖 / 扩展定义。
@@ -213,4 +216,39 @@ export function applyBuiltinOverrides(): void {
     }
     return action;
   });
+
+  // 获取文档详情时支持将文档原始 JSON 内容转换为 Markdown
+  extendModuleAction('doc', 'get', (action) => {
+    const oldGetter = action.resultGetter;
+    action.resultGetter = (data, params, options = {}) => {
+      const result = oldGetter
+        ? extractResult({ ...action, resultGetter: oldGetter }, data as Record<string, unknown>, params, options)
+        : ((data as Record<string, unknown>).doc ?? data);
+      if (!isRecord(result)) return result;
+
+      const pick = options.pick;
+      const pickAll = !pick?.length;
+      const wantsContent = pickAll || pick.includes('content');
+      const wantsRawContent = pickAll || pick.includes('rawContent');
+      if (!wantsContent && !wantsRawContent) return result;
+
+      const originalContent = result.content;
+      try {
+        const markdown = snapshotToMarkdown(originalContent as string);
+        if (wantsRawContent && (result.rawContent === undefined || result.rawContent === '')) {
+          result.rawContent = originalContent;
+        }
+        if (wantsContent) {
+          result.content = markdown;
+          result.contentType = 'markdown';
+        }
+      } catch {
+        // HTML、纯文本和无法识别的快照保持服务端原始字段不变。
+      }
+      return result;
+    };
+    return action;
+  });
+
+  // 限制
 }

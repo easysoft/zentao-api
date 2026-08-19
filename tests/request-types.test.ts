@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { request, type BuiltinRequestName, type DataRecord } from '../src/index';
+import { getModuleAction, request, type BuiltinRequestName, type DataRecord } from '../src/index';
 
 interface ProductSummary {
   id: number;
@@ -36,8 +36,17 @@ async function typedRequestExamples(): Promise<void> {
   narrowed.data?.forEach((product) => product.name.toUpperCase());
 }
 
+function getterCompatibilityExamples(): void {
+  const getter = getModuleAction('doc', 'get')?.resultGetter;
+  if (typeof getter !== 'function') return;
+
+  getter({}, {});
+  getter({}, {}, { pick: ['content'] });
+}
+
 describe('typed request examples', () => {
   test('compile without running network calls', () => {
     expect(typeof typedRequestExamples).toBe('function');
+    expect(typeof getterCompatibilityExamples).toBe('function');
   });
 });

@@ -29,6 +29,36 @@ function createMockServer(handler: (req: Request) => Response | Promise<Response
   });
 }
 
+function createBlockDocContent(): string {
+  return JSON.stringify({
+    type: 'page',
+    blocks: {
+      type: 'block',
+      flavour: 'affine:page',
+      props: {
+        title: {
+          '$blocksuite:internal:text$': true,
+          delta: [{ insert: 'API document' }],
+        },
+      },
+      children: [{
+        type: 'block',
+        flavour: 'affine:note',
+        children: [{
+          type: 'block',
+          flavour: 'affine:paragraph',
+          props: {
+            text: {
+              '$blocksuite:internal:text$': true,
+              delta: [{ insert: 'Document body' }],
+            },
+          },
+        }],
+      }],
+    },
+  });
+}
+
 afterEach(() => {
   resetModuleDefinitions();
   setGlobalOptions({
@@ -782,6 +812,101 @@ describe('high-level request', () => {
       });
 
       expect(response.data).toEqual({ id: 7, desc: 'detail' });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('converts doc snapshots, keeps the original content, and treats an empty pick as no-op', async () => {
+    const rawContent = createBlockDocContent();
+    const server = createMockServer(() =>
+      Response.json({
+        status: 'success',
+        doc: {
+          id: 7,
+          title: 'API document',
+          content: rawContent,
+          rawContent: '',
+          contentType: 'doc',
+        },
+      }),
+    );
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      const expected = {
+        id: 7,
+        title: 'API document',
+        content: '# API document\n\nDocument body\n',
+        rawContent,
+        contentType: 'markdown',
+      };
+
+      await expect(request('doc/7', {}, { client })).resolves.toEqual({
+        status: 'success',
+        data: expected,
+      });
+      await expect(request('doc/7', {}, { client, pick: [] })).resolves.toEqual({
+        status: 'success',
+        data: expected,
+      });
+      await expect(request('doc/7', {}, { client, pick: ['rawContent'] })).resolves.toEqual({
+        status: 'success',
+        data: { rawContent },
+      });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('leaves non-snapshot document content and existing raw content unchanged', async () => {
+    const server = createMockServer(() =>
+      Response.json({
+        status: 'success',
+        doc: {
+          id: 8,
+          content: '<p>HTML body</p>',
+          rawContent: 'server-raw-content',
+          contentType: 'html',
+        },
+      }),
+    );
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+
+      await expect(request('doc/8', {}, { client })).resolves.toEqual({
+        status: 'success',
+        data: {
+          id: 8,
+          content: '<p>HTML body</p>',
+          rawContent: 'server-raw-content',
+          contentType: 'html',
+        },
+      });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('keeps doc failure responses in the normal failure path', async () => {
+    const server = createMockServer(() =>
+      Response.json({ status: 'fail', message: '文档不存在' }),
+    );
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+
+      await expect(request('doc/404', {}, { client })).resolves.toEqual({
+        status: 'fail',
+        message: '文档不存在',
+        data: undefined,
+        pager: undefined,
+        raw: { status: 'fail', message: '文档不存在' },
+      });
+      await expect(request('doc/404', {}, { client, throwOnFail: true })).rejects.toMatchObject({
+        code: 'E_API_FAILED',
+      });
     } finally {
       server.stop();
     }
