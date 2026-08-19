@@ -386,7 +386,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'product',
         display: '产品',
-        description: '产品管理，支持获取产品列表、创建产品、关闭产品、创建产品的需求模块、创建产品的Bug模块、创建产品的用例模块、获取产品详情、修改产品、删除产品',
+        description: '产品管理，支持获取产品列表、获取项目集的产品列表、创建产品、关闭产品、创建产品的需求模块、创建产品的Bug模块、创建产品的用例模块、获取产品详情、修改产品、删除产品',
         actions: [
             {
                 name: 'list',
@@ -419,6 +419,60 @@ export const BUILTIN_MODULES = [
                             { value: 'id_desc', label: 'ID 降序' },
                             { value: 'title_asc', label: '名称 升序' },
                             { value: 'title_desc', label: '名称 降序' },
+                            { value: 'begin_asc', label: '计划开始 升序' },
+                            { value: 'begin_desc', label: '计划开始 降序' },
+                            { value: 'end_asc', label: '计划结束 升序' },
+                            { value: 'end_desc', label: '计划结束 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                ],
+            }, {
+                name: 'programProducts',
+                display: '获取项目集的产品列表',
+                type: 'list',
+                method: 'get',
+                path: '/programs/{programID}/products',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'products',
+                pathParams: {
+                    programID: '项目集ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是noclosed',
+                        defaultValue: 'noclosed',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'noclosed', label: '未关闭' },
+                            { value: 'closed', label: '已结束' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
                             { value: 'begin_asc', label: '计划开始 升序' },
                             { value: 'begin_desc', label: '计划开始 降序' },
                             { value: 'end_asc', label: '计划结束 升序' },
@@ -711,7 +765,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'project',
         display: '项目',
-        description: '项目管理，支持获取项目列表、获取项目团队列表、创建项目、关闭项目、创建项目需求、创建项目Bug、创建项目任务、修改项目、删除项目、维护项目成员',
+        description: '项目管理，支持获取项目列表、获取项目集的项目列表、获取项目团队列表、获取项目成员列表、创建项目、关闭项目、创建项目需求、创建项目Bug、创建项目任务、修改项目、删除项目、维护项目成员',
         actions: [
             {
                 name: 'list',
@@ -782,6 +836,61 @@ export const BUILTIN_MODULES = [
                     },
                 ],
             }, {
+                name: 'programProjects',
+                display: '获取项目集的项目列表',
+                type: 'list',
+                method: 'get',
+                path: '/programs/{programID}/projects',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'projects',
+                pathParams: {
+                    programID: '项目集ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '项目状态，默认是undone',
+                        defaultValue: 'undone',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'undone', label: '未完成' },
+                            { value: 'wait', label: '未开始' },
+                            { value: 'doing', label: '进行中' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
+                            { value: 'begin_asc', label: '计划开始 升序' },
+                            { value: 'begin_desc', label: '计划开始 降序' },
+                            { value: 'end_asc', label: '计划结束 升序' },
+                            { value: 'end_desc', label: '计划结束 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                ],
+            }, {
                 name: 'team',
                 display: '获取项目团队列表',
                 type: 'list',
@@ -798,6 +907,18 @@ export const BUILTIN_MODULES = [
                         description: '项目ID',
                     },
                 ],
+            }, {
+                name: 'projectMembers',
+                display: '获取项目成员列表',
+                type: 'list',
+                method: 'get',
+                path: '/projects/{projectID}/members',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'members',
+                pathParams: {
+                    projectID: '项目ID',
+                },
             }, {
                 name: 'create',
                 display: '创建项目',
@@ -1205,7 +1326,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'execution',
         display: '执行',
-        description: '执行管理，支持获取执行列表、获取执行团队列表、创建执行（迭代/阶段/看板）、关闭执行、创建执行的任务模块、获取执行详情、修改执行、删除执行、维护执行成员',
+        description: '执行管理，支持获取执行列表、获取项目的执行列表、获取执行团队列表、获取执行成员列表、创建执行（迭代/阶段/看板）、关闭执行、创建执行的任务模块、获取执行详情、修改执行、删除执行、维护执行成员',
         actions: [
             {
                 name: 'list',
@@ -1276,6 +1397,61 @@ export const BUILTIN_MODULES = [
                     },
                 ],
             }, {
+                name: 'projectExecutions',
+                display: '获取项目的执行列表',
+                type: 'list',
+                method: 'get',
+                path: '/projects/{projectID}/executions',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'executions',
+                pathParams: {
+                    projectID: '项目ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '执行状态，默认是undone',
+                        defaultValue: 'undone',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'undone', label: '未完成' },
+                            { value: 'wait', label: '未开始' },
+                            { value: 'doing', label: '进行中' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'rawID_asc', label: 'RAWID 升序' },
+                            { value: 'rawID_desc', label: 'RAWID 降序' },
+                            { value: 'nameCol_asc', label: '名称 升序' },
+                            { value: 'nameCol_desc', label: '名称 降序' },
+                            { value: 'begin_asc', label: '计划开始 升序' },
+                            { value: 'begin_desc', label: '计划开始 降序' },
+                            { value: 'end_asc', label: '计划结束 升序' },
+                            { value: 'end_desc', label: '计划结束 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                ],
+            }, {
                 name: 'team',
                 display: '获取执行团队列表',
                 type: 'list',
@@ -1292,6 +1468,18 @@ export const BUILTIN_MODULES = [
                         description: '执行ID',
                     },
                 ],
+            }, {
+                name: 'executionMembers',
+                display: '获取执行成员列表',
+                type: 'list',
+                method: 'get',
+                path: '/executions/{executionID}/members',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'members',
+                pathParams: {
+                    executionID: '执行ID',
+                },
             }, {
                 name: 'create',
                 display: '创建执行（迭代/阶段/看板）',
@@ -4028,7 +4216,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'issue',
         display: '问题',
-        description: '问题管理，支持获取问题列表、创建问题、获取问题详情',
+        description: '问题管理，支持获取问题列表、获取项目问题列表、获取执行问题列表、创建问题、获取问题详情',
         actions: [
             {
                 name: 'list',
@@ -4039,6 +4227,154 @@ export const BUILTIN_MODULES = [
                 resultType: 'list',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'open', label: '开放' },
+                            { value: 'assignto', label: '指派给我' },
+                            { value: 'assignby', label: '由我指派' },
+                            { value: 'closed', label: '已关闭' },
+                            { value: 'resolved', label: '已解决' },
+                            { value: 'canceled', label: '已取消' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'title_asc', label: '标题 升序' },
+                            { value: 'title_desc', label: '标题 降序' },
+                            { value: 'severity_asc', label: '严重程度 升序' },
+                            { value: 'severity_desc', label: '严重程度 降序' },
+                            { value: 'status_asc', label: '状态 升序' },
+                            { value: 'status_desc', label: '状态 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：assignedDate,assignedTo,closedBy,closedDate,createdBy,createdDate,editedBy,editedDate,execution,id,pri,project,severity,status,title,type',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'projectIssues',
+                display: '获取项目问题列表',
+                type: 'list',
+                method: 'get',
+                path: '/projects/{projectID}/issues',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'issues',
+                pathParams: {
+                    projectID: '项目ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'open', label: '开放' },
+                            { value: 'assignto', label: '指派给我' },
+                            { value: 'assignby', label: '由我指派' },
+                            { value: 'closed', label: '已关闭' },
+                            { value: 'resolved', label: '已解决' },
+                            { value: 'canceled', label: '已取消' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'title_asc', label: '标题 升序' },
+                            { value: 'title_desc', label: '标题 降序' },
+                            { value: 'severity_asc', label: '严重程度 升序' },
+                            { value: 'severity_desc', label: '严重程度 降序' },
+                            { value: 'status_asc', label: '状态 升序' },
+                            { value: 'status_desc', label: '状态 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：assignedDate,assignedTo,closedBy,closedDate,createdBy,createdDate,editedBy,editedDate,execution,id,pri,project,severity,status,title,type',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'executionIssues',
+                display: '获取执行问题列表',
+                type: 'list',
+                method: 'get',
+                path: '/executions/{executionID}/issues',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'issues',
+                pathParams: {
+                    executionID: '执行ID',
+                },
                 params: [
                     {
                         name: 'browseType',
@@ -4191,7 +4527,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'risk',
         display: '风险',
-        description: '风险管理，支持获取风险列表、创建风险、获取风险详情、修改风险',
+        description: '风险管理，支持获取风险列表、获取项目风险列表、获取执行风险列表、创建风险、获取风险详情、修改风险',
         actions: [
             {
                 name: 'list',
@@ -4202,6 +4538,154 @@ export const BUILTIN_MODULES = [
                 resultType: 'list',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'active', label: '开放' },
+                            { value: 'assignTo', label: '指派给我' },
+                            { value: 'assignBy', label: '由我指派' },
+                            { value: 'closed', label: '已关闭' },
+                            { value: 'hangup', label: '已挂起' },
+                            { value: 'canceled', label: '已取消' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
+                            { value: 'status_asc', label: '状态 升序' },
+                            { value: 'status_desc', label: '状态 降序' },
+                            { value: 'pri_asc', label: '优先级 升序' },
+                            { value: 'pri_desc', label: '优先级 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'projectRisks',
+                display: '获取项目风险列表',
+                type: 'list',
+                method: 'get',
+                path: '/projects/{projectID}/risks',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'risks',
+                pathParams: {
+                    projectID: '项目ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'active', label: '开放' },
+                            { value: 'assignTo', label: '指派给我' },
+                            { value: 'assignBy', label: '由我指派' },
+                            { value: 'closed', label: '已关闭' },
+                            { value: 'hangup', label: '已挂起' },
+                            { value: 'canceled', label: '已取消' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
+                            { value: 'status_asc', label: '状态 升序' },
+                            { value: 'status_desc', label: '状态 降序' },
+                            { value: 'pri_asc', label: '优先级 升序' },
+                            { value: 'pri_desc', label: '优先级 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'executionRisks',
+                display: '获取执行风险列表',
+                type: 'list',
+                method: 'get',
+                path: '/executions/{executionID}/risks',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'risks',
+                pathParams: {
+                    executionID: '执行ID',
+                },
                 params: [
                     {
                         name: 'browseType',
@@ -4454,7 +4938,7 @@ export const BUILTIN_MODULES = [
     {
         name: 'meeting',
         display: '会议',
-        description: '会议管理，支持获取会议列表、创建会议、获取会议详情、修改会议、删除会议、编辑会议纪要',
+        description: '会议管理，支持获取会议列表、获取项目会议列表、获取执行会议列表、创建会议、获取会议详情、修改会议、删除会议、编辑会议纪要',
         actions: [
             {
                 name: 'list',
@@ -4465,6 +4949,142 @@ export const BUILTIN_MODULES = [
                 resultType: 'list',
                 pagerGetter: 'pager',
                 resultGetter: 'meetings',
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'booked', label: '我预约的' },
+                            { value: 'participate', label: '我参加的' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
+                            { value: 'date_asc', label: '日期 升序' },
+                            { value: 'date_desc', label: '日期 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'projectMeetings',
+                display: '获取项目会议列表',
+                type: 'list',
+                method: 'get',
+                path: '/projects/{projectID}/meetings',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'meetings',
+                pathParams: {
+                    projectID: '项目ID',
+                },
+                params: [
+                    {
+                        name: 'browseType',
+                        required: false,
+                        type: 'string',
+                        description: '状态，默认是all',
+                        defaultValue: 'all',
+                        options: [
+                            { value: 'all', label: '全部' },
+                            { value: 'booked', label: '我预约的' },
+                            { value: 'participate', label: '我参加的' },
+                        ],
+                    },
+                    {
+                        name: 'orderBy',
+                        required: false,
+                        type: 'string',
+                        description: '排序',
+                        options: [
+                            { value: 'id_asc', label: 'ID 升序' },
+                            { value: 'id_desc', label: 'ID 降序' },
+                            { value: 'name_asc', label: '名称 升序' },
+                            { value: 'name_desc', label: '名称 降序' },
+                            { value: 'date_asc', label: '日期 升序' },
+                            { value: 'date_desc', label: '日期 降序' },
+                        ],
+                    },
+                    {
+                        name: 'recPerPage',
+                        required: false,
+                        type: 'number',
+                        description: '每页数量，不超过1000',
+                    },
+                    {
+                        name: 'pageID',
+                        required: false,
+                        type: 'number',
+                        description: '页码，从第1页开始',
+                    },
+                    {
+                        name: 'filters',
+                        required: false,
+                        type: 'string',
+                        description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room',
+                    },
+                    {
+                        name: 'groupJoin',
+                        required: false,
+                        type: 'string',
+                        description: '条件组之间的连接方式',
+                        options: [
+                            { value: 'and', label: 'and' },
+                            { value: 'or', label: 'or' },
+                        ],
+                    },
+                ],
+            }, {
+                name: 'executionMeetings',
+                display: '获取执行会议列表',
+                type: 'list',
+                method: 'get',
+                path: '/executions/{executionID}/meetings',
+                resultType: 'list',
+                pagerGetter: 'pager',
+                resultGetter: 'meetings',
+                pathParams: {
+                    executionID: '执行ID',
+                },
                 params: [
                     {
                         name: 'browseType',
@@ -8430,6 +9050,7 @@ export type BuiltinActionMeta = {
     };
     product: {
         list: { resultType: 'list' };
+        programProducts: { resultType: 'list' };
         create: { resultType: 'object' };
         close: { resultType: 'text' };
         createStoryModule: { resultType: 'object' };
@@ -8441,7 +9062,9 @@ export type BuiltinActionMeta = {
     };
     project: {
         list: { resultType: 'list' };
+        programProjects: { resultType: 'list' };
         team: { resultType: 'list' };
+        projectMembers: { resultType: 'list' };
         create: { resultType: 'object' };
         close: { resultType: 'text' };
         createStory: { resultType: 'object' };
@@ -8453,7 +9076,9 @@ export type BuiltinActionMeta = {
     };
     execution: {
         list: { resultType: 'list' };
+        projectExecutions: { resultType: 'list' };
         team: { resultType: 'list' };
+        executionMembers: { resultType: 'list' };
         create: { resultType: 'object' };
         close: { resultType: 'text' };
         createTaskModule: { resultType: 'object' };
@@ -8542,17 +9167,23 @@ export type BuiltinActionMeta = {
     };
     issue: {
         list: { resultType: 'list' };
+        projectIssues: { resultType: 'list' };
+        executionIssues: { resultType: 'list' };
         create: { resultType: 'object' };
         get: { resultType: 'object' };
     };
     risk: {
         list: { resultType: 'list' };
+        projectRisks: { resultType: 'list' };
+        executionRisks: { resultType: 'list' };
         create: { resultType: 'object' };
         get: { resultType: 'object' };
         update: { resultType: 'object' };
     };
     meeting: {
         list: { resultType: 'list' };
+        projectMeetings: { resultType: 'list' };
+        executionMeetings: { resultType: 'list' };
         create: { resultType: 'object' };
         get: { resultType: 'object' };
         update: { resultType: 'object' };
