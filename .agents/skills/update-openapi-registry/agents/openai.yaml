@@ -1,4 +1,4 @@
 interface:
   display_name: "更新 OpenAPI 注册库"
-  short_description: "同步 zentao-api OpenAPI 注册库并报告接口契约变化"
-  default_prompt: "使用 $update-openapi-registry 同步最新 OpenAPI 注册库并报告接口变更。"
+  short_description: "同步 OpenAPI 注册库并处理 action 映射、命名冲突与结果字段"
+  default_prompt: "使用 $update-openapi-registry 同步 OpenAPI 注册库，处理 action 映射冲突并核对 GET 结果字段。"
