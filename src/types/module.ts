@@ -1,4 +1,5 @@
 import type { HttpMethod } from './client.js';
+import type { RequestProcessOptions } from './options.js';
 import type { Pager } from './response.js';
 
 /** 模块动作类型：基础 CRUD 或自定义动作。 */
@@ -88,8 +89,13 @@ export type ModuleActionResultFieldMap = Readonly<Record<string, string>>;
  * 从原始响应中提取数据时使用的函数形态。
  * @param data 原始响应对象。
  * @param params 触发本次请求的原始调用参数。
+ * @param options 本次请求的数据处理选项；直接调用 getter 时可以省略。
  */
-export type ModuleActionGetterFn<T> = (data: unknown, params: Record<string, unknown>) => T;
+export type ModuleActionGetterFn<T, O = RequestProcessOptions> = (
+  data: unknown,
+  params: Record<string, unknown>,
+  options?: O,
+) => T;
 
 /** 禅道模块中的单个 API 动作定义。 */
 export interface ModuleAction {

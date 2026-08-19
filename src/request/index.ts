@@ -9,6 +9,7 @@ import type {
   ModuleDefinition,
   ProcessListOptions,
   RequestOptions,
+  RequestProcessOptions,
   ResponseData,
 } from '../types/index.js';
 import { getModule, getModuleAction } from '../modules/registry.js';
@@ -16,8 +17,6 @@ import type { BuiltinActionMeta, BuiltinModuleName } from '../modules/generated.
 import { extractPager, extractResult, resolveActionRequest } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
-
-type RequestProcessOptions = ProcessListOptions & Pick<RequestOptions, 'convertSingle'>;
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
@@ -214,10 +213,10 @@ function normalizeResponse<T>(
 
   const record = raw as Record<string, unknown>;
   const status = record.status === 'fail' ? 'fail' : 'success';
-  const data = applyProcessing(extractResult(command.action, record, command.params), options);
+  const data = applyProcessing(extractResult(command.action, record, command.params, options), options);
   const rawMessage = record.message;
 
-  const pager = extractPager(command.action, record, command.params);
+  const pager = extractPager(command.action, record, command.params, options);
   const response: ResponseData<T> = {
     status,
     message: stringifyMessage(rawMessage),

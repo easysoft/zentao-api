@@ -59,3 +59,5 @@ export interface RequestOptions extends ProcessListOptions {
   /** 是否返回原始响应体，默认 false。 */
   raw?: boolean;
 }
+
+export type RequestProcessOptions = ProcessListOptions & Pick<RequestOptions, 'convertSingle'>;

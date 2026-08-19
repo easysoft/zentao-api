@@ -1,5 +1,5 @@
 import { ZentaoError } from '../misc/errors.js';
-import type { ListPagerInfo, ModuleAction, ModuleActionRequest, ModuleDefinition } from '../types/index.js';
+import type { ListPagerInfo, ModuleAction, ModuleActionRequest, ModuleDefinition, RequestProcessOptions } from '../types/index.js';
 import { getNestedValue, isBlank, isRecord } from '../utils/index.js';
 import { getModuleAction } from './registry.js';
 
@@ -233,10 +233,11 @@ export function extractResult(
   action: ModuleAction,
   response: Record<string, unknown>,
   params: Record<string, unknown> = {},
+  options: RequestProcessOptions = {},
 ): unknown {
   const getter = action.resultGetter;
   if (!getter) return response.data ?? response;
-  if (typeof getter === 'function') return getter(response, params);
+  if (typeof getter === 'function') return getter(response, params, options);
   if (typeof getter === 'string') return getNestedValue(response, getter);
 
   const result: Record<string, unknown> = {};
@@ -251,10 +252,11 @@ export function extractPager(
   action: ModuleAction,
   response: Record<string, unknown>,
   params: Record<string, unknown> = {},
+  options: RequestProcessOptions = {},
 ): ListPagerInfo | undefined {
   const getter = action.pagerGetter;
   if (!getter) return response.pager as ListPagerInfo | undefined;
-  if (typeof getter === 'function') return getter(response, params);
+  if (typeof getter === 'function') return getter(response, params, options);
   if (typeof getter === 'string') return getNestedValue(response, getter) as ListPagerInfo | undefined;
 
   const page = getNestedValue(response, getter.pageID);

@@ -525,6 +525,40 @@ describe('result and pager extraction', () => {
     });
   });
 
+  test('passes request processing options to function getters', () => {
+    const action: ModuleAction = {
+      name: 'computed',
+      type: 'get',
+      method: 'get',
+      path: '/computed',
+      resultType: 'object',
+      resultGetter: (_data, _params, options) => ({
+        picked: options?.pick,
+        hasSingleConverter: typeof options?.convertSingle === 'function',
+      }),
+      pagerGetter: (_data, _params, options) => ({
+        pageID: options?.limit === '5' ? 5 : 1,
+        recPerPage: 10,
+        recTotal: 20,
+      }),
+    };
+    const options = {
+      pick: ['id'],
+      limit: '5',
+      convertSingle: (record: Record<string, unknown>) => record,
+    };
+
+    expect(extractResult(action, {}, {}, options)).toEqual({
+      picked: ['id'],
+      hasSingleConverter: true,
+    });
+    expect(extractPager(action, {}, {}, options)).toEqual({
+      pageID: 5,
+      recPerPage: 10,
+      recTotal: 20,
+    });
+  });
+
   test('extracts mapped result and pager fields from nested paths', () => {
     const action: ModuleAction = {
       name: 'summary',
