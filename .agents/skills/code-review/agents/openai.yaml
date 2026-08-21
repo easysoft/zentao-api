@@ -1,0 +1,4 @@
+interface:
+  display_name: "代码评审"
+  short_description: "评审指定范围或本地未提交、未推送的 zentao-api 变更"
+  default_prompt: "使用 $code-review 评审当前 zentao-api 的代码变更并报告问题。"
