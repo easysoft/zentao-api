@@ -1,6 +1,6 @@
 {
   "name": "zentao-api",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "type": "module",
   "description": "Browser and Node.js SDK for ZenTao API",
   "license": "MIT",
