@@ -1074,7 +1074,11 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用HTML格式；纯文本可直接传递"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+    },
+    "contentType": {
+      "type": "string",
+      "description": "文档格式(doc 按Markdown处理，支持团队协同编辑 | html 旧格式，直接保存HTML，不支持团队协同编辑)"
     }
   },
   "required": [
@@ -1090,7 +1094,8 @@ Schema:
 {
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 }
 ```
 
@@ -1108,7 +1113,8 @@ const result = await request("doc/createMyDoc", {
   "libID": 1,
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 });
 ```
 ## 创建团队文档
@@ -1149,7 +1155,11 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用HTML格式；纯文本可直接传递"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+    },
+    "contentType": {
+      "type": "string",
+      "description": "文档格式(doc 按Markdown处理，支持团队协同编辑 | html 旧格式，直接保存HTML，不支持团队协同编辑)"
     }
   },
   "required": [
@@ -1165,7 +1175,8 @@ Schema:
 {
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 }
 ```
 
@@ -1183,7 +1194,8 @@ const result = await request("doc/createTeamDoc", {
   "libID": 1,
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 });
 ```
 ## 创建产品文档
@@ -1224,7 +1236,11 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用HTML格式；纯文本可直接传递"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+    },
+    "contentType": {
+      "type": "string",
+      "description": "文档格式(doc 按Markdown处理，支持团队协同编辑 | html 旧格式，直接保存HTML，不支持团队协同编辑)"
     }
   },
   "required": [
@@ -1240,7 +1256,8 @@ Schema:
 {
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 }
 ```
 
@@ -1258,7 +1275,8 @@ const result = await request("doc/createProductDoc", {
   "libID": 1,
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 });
 ```
 ## 创建项目文档
@@ -1299,7 +1317,11 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用HTML格式；纯文本可直接传递"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+    },
+    "contentType": {
+      "type": "string",
+      "description": "文档格式(doc 按Markdown处理，支持团队协同编辑 | html 旧格式，直接保存HTML，不支持团队协同编辑)"
     }
   },
   "required": [
@@ -1315,7 +1337,8 @@ Schema:
 {
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 }
 ```
 
@@ -1333,7 +1356,8 @@ const result = await request("doc/createProjectDoc", {
   "libID": 1,
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 });
 ```
 ## 创建我的文档库目录
@@ -1897,7 +1921,11 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用HTML格式；纯文本可直接传递。接口不接受块编辑器的JSON快照，修改块编辑器文档后会保存为HTML格式"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+    },
+    "contentType": {
+      "type": "string",
+      "description": "文档格式(doc 按Markdown处理，支持团队协同编辑 | html 旧格式，直接保存HTML，不支持团队协同编辑)"
     }
   },
   "required": [
@@ -1913,7 +1941,8 @@ Schema:
 {
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 }
 ```
 
@@ -1930,7 +1959,8 @@ const result = await request("doc/update", {
   "docID": 1,
   "moduleID": 1,
   "title": "<string>",
-  "content": "<string>"
+  "content": "<string>",
+  "contentType": "<string>"
 });
 ```
 ## 修改文档库目录

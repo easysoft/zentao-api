@@ -1,5 +1,20 @@
 # 变更日志
 
+## 0.6.5 - 2026-08-21
+
+### 新增
+
+- `doc/createMyDoc`、`doc/createTeamDoc`、`doc/createProductDoc`、`doc/createProjectDoc` 与 `doc/update` 的请求体新增 `contentType`：`doc` 接收 Markdown 并生成支持协同编辑的块内容与 HTML 快照，`html` 保留直接存储 HTML 的旧格式。
+
+### 变更
+
+- 同步文档详情响应契约，以 `content` 表示 Markdown 正文、`html` 表示 HTML 快照，并由 `contentType` 标识文档格式。
+- 补全 `my/meetings` 的会议列表项定义，不再将会议对象描述为字符串。
+
+### 文档
+
+- 刷新 OpenAPI 示例，并重新生成 SDK 参考与禅道 API 模块文档。
+
 ## 0.6.4 - 2026-08-19
 
 ### 新增
