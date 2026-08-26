@@ -16,6 +16,14 @@ assert.match(api.BUILD, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
 
 const client = new api.ZentaoClient('https://zentao.example.com/api.php/v2');
 assert.equal(client.baseUrl, 'https://zentao.example.com/api.php/v2');
+await assert.rejects(
+  client.request('/stream', {
+    method: 'POST',
+    bodyType: 'raw',
+    body: new ReadableStream(),
+  }),
+  (error) => error?.code === 'E_INVALID_PARAM',
+);
 
 const uploadDir = mkdtempSync(join(tmpdir(), 'zentao-api-node-smoke-'));
 const uploadPath = join(uploadDir, 'node-smoke.txt');
@@ -41,6 +49,24 @@ try {
   const address = server.address();
   assert(address && typeof address === 'object');
   const uploadClient = new api.ZentaoClient(`http://127.0.0.1:${address.port}`);
+  const rawResponse = await uploadClient.request('/raw', { responseType: 'response' });
+  const rawClone = rawResponse.clone();
+  assert.equal(rawClone.url, rawResponse.url);
+  assert.equal(rawClone.type, rawResponse.type);
+  assert.throws(() => rawResponse.headers.set('X-Smoke-Test', 'changed'));
+  const rawReader = rawResponse.body.getReader({ mode: 'byob' });
+  const rawChunks = [];
+  while (true) {
+    const { value, done } = await rawReader.read(new Uint8Array(256));
+    if (done) break;
+    rawChunks.push(value);
+  }
+  const [rawBody, rawCloneBody] = await Promise.all([
+    Promise.resolve(Buffer.concat(rawChunks).toString('utf8')),
+    rawClone.text(),
+  ]);
+  assert.equal(rawBody, rawCloneBody);
+
   const uploaded = await api.request('file/create', {
     file: uploadPath,
     objectType: 'story',

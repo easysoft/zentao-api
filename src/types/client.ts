@@ -29,12 +29,12 @@ export interface ClientRequestOptions {
   body?: unknown;
   /** 请求体序列化方式。默认 `json`；传入 `FormData` 等原生 body 时会自动按 `raw` 处理。 */
   bodyType?: ClientRequestBodyType;
-  /** 响应体解析方式。默认 `auto`，会优先尝试 JSON，失败后回落为文本。 */
+  /** 响应体解析方式。默认 `auto`，会优先尝试 JSON，失败后回落为文本；`response` 会让 signal 和 timeout 继续控制响应体。 */
   responseType?: ClientResponseType;
   /** 额外请求头；会与 SDK 自动注入的 `Token` / `Content-Type` 合并。 */
   headers?: HeadersInit;
-  /** URL 查询参数；`undefined` 值会被跳过。 */
-  query?: Record<string, string | number | boolean | undefined>;
+  /** URL 查询参数；对象和数组使用 deepObject 风格序列化，`undefined` 值会被跳过。 */
+  query?: Record<string, unknown>;
   /** 外部取消信号；会与 SDK 自身的超时控制合并。 */
   signal?: AbortSignal;
   /** 单次请求超时时间，优先级高于全局和客户端默认值。 */

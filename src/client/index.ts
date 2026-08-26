@@ -15,14 +15,28 @@ import type {
 
 const DEFAULT_TIMEOUT = 10000;
 
-/** 拼接 API 路径与查询参数，跳过值为 `undefined` 的查询项。 */
+function appendQueryValue(search: URLSearchParams, key: string, value: unknown): void {
+  if (value === undefined) return;
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => appendQueryValue(search, `${key}[${index}]`, item));
+    return;
+  }
+  if (isPlainObject(value)) {
+    for (const [childKey, childValue] of Object.entries(value)) {
+      appendQueryValue(search, `${key}[${childKey}]`, childValue);
+    }
+    return;
+  }
+  search.append(key, value === null ? '' : String(value));
+}
+
+/** 拼接 API 路径与查询参数；结构化值使用 deepObject 风格的方括号键。 */
 function buildUrl(baseUrl: string, path: string, query?: ClientRequestOptions['query']): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const url = new URL(`${baseUrl}${normalizedPath}`);
 
   for (const [key, value] of Object.entries(query ?? {})) {
-    if (value === undefined) continue;
-    url.searchParams.set(key, String(value));
+    appendQueryValue(url.searchParams, key, value);
   }
 
   return url.toString();
@@ -55,6 +69,10 @@ function appendFormValue(form: URLSearchParams, key: string, value: unknown): vo
 function serializeBody(body: unknown, bodyType: ClientRequestOptions['bodyType'], headers: Headers): BodyInit | undefined {
   if (body === undefined || body === null) return undefined;
 
+  if (isInstanceOfGlobal(body, 'ReadableStream')) {
+    throw new ZentaoError('E_INVALID_PARAM', { param: 'body', value: 'ReadableStream' });
+  }
+
   if (bodyType === 'form') {
     const form = body instanceof URLSearchParams ? body : new URLSearchParams();
     if (!(body instanceof URLSearchParams) && isPlainObject(body)) {
@@ -74,8 +92,7 @@ function serializeBody(body: unknown, bodyType: ClientRequestOptions['bodyType']
     isArrayBufferBody(body) ||
     isInstanceOfGlobal(body, 'FormData') ||
     isInstanceOfGlobal(body, 'URLSearchParams') ||
-    isInstanceOfGlobal(body, 'Blob') ||
-    isInstanceOfGlobal(body, 'ReadableStream')
+    isInstanceOfGlobal(body, 'Blob')
   ) {
     return body as BodyInit;
   }
@@ -86,10 +103,31 @@ function serializeBody(body: unknown, bodyType: ClientRequestOptions['bodyType']
   return JSON.stringify(body);
 }
 
-function createRequestSignal(timeout: number, externalSignal?: AbortSignal): { signal: AbortSignal; cleanup: () => void } {
+function createRequestSignal(timeout: number, externalSignal?: AbortSignal): {
+  signal: AbortSignal;
+  cleanup: () => void;
+  didTimeout: () => boolean;
+} {
   const controller = new AbortController();
-  const abortFromExternal = () => controller.abort(externalSignal?.reason);
-  const timer = setTimeout(() => controller.abort(), timeout);
+  let timedOut = false;
+  let cleaned = false;
+  let timer: ReturnType<typeof setTimeout>;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    clearTimeout(timer);
+    externalSignal?.removeEventListener('abort', abortFromExternal);
+  };
+  const abortFromExternal = () => {
+    controller.abort(externalSignal?.reason);
+    cleanup();
+  };
+  timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+    cleanup();
+  }, timeout);
+  timer.unref?.();
 
   if (externalSignal?.aborted) {
     abortFromExternal();
@@ -99,11 +137,152 @@ function createRequestSignal(timeout: number, externalSignal?: AbortSignal): { s
 
   return {
     signal: controller.signal,
-    cleanup: () => {
-      clearTimeout(timer);
-      externalSignal?.removeEventListener('abort', abortFromExternal);
-    },
+    cleanup,
+    didTimeout: () => timedOut,
   };
+}
+
+interface ResponseCleanupState {
+  readonly branches: Set<symbol>;
+  readonly cleanup: () => void;
+  complete: boolean;
+}
+
+function keepResponseSignalUntilBodyEnds(
+  response: Response,
+  cleanup: () => void,
+  state: ResponseCleanupState = { branches: new Set(), cleanup, complete: false },
+): Response {
+  const branch = Symbol();
+  state.branches.add(branch);
+  let branchFinished = false;
+  const finishBranch = (bodyComplete: boolean) => {
+    if (branchFinished) return;
+    branchFinished = true;
+    state.branches.delete(branch);
+    if (!state.complete && (bodyComplete || state.branches.size === 0)) {
+      state.complete = true;
+      state.cleanup();
+    }
+  };
+
+  let prototype: object | null = response;
+  let nativeBodyGetter: (() => ReadableStream<Uint8Array> | null) | undefined;
+  while (prototype && !nativeBodyGetter) {
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, 'body');
+    if (descriptor?.get) {
+      nativeBodyGetter = descriptor.get.bind(response) as () => ReadableStream<Uint8Array> | null;
+    }
+    prototype = Object.getPrototypeOf(prototype);
+  }
+  if (!nativeBodyGetter) {
+    finishBranch(true);
+    return response;
+  }
+  if (!nativeBodyGetter()) {
+    finishBranch(true);
+    return response;
+  }
+
+  let wrappedBody: ReadableStream<Uint8Array> | null | undefined;
+  Object.defineProperty(response, 'body', {
+    configurable: true,
+    get() {
+      const nativeBody = nativeBodyGetter();
+      if (!nativeBody) {
+        wrappedBody = null;
+        finishBranch(true);
+        return null;
+      }
+      if (wrappedBody === undefined) {
+        let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+        const getReader = () => reader ??= nativeBodyGetter!()!.getReader();
+        wrappedBody = new ReadableStream<Uint8Array>({
+          type: 'bytes',
+          async pull(controller) {
+            let activeReader: ReadableStreamDefaultReader<Uint8Array>;
+            try {
+              activeReader = getReader();
+            } catch (error) {
+              controller.error(error);
+              return;
+            }
+            try {
+              const chunk = await activeReader.read();
+              if (chunk.done) {
+                finishBranch(true);
+                const byobRequest = 'byobRequest' in controller ? controller.byobRequest : null;
+                controller.close();
+                byobRequest?.respond(0);
+              } else {
+                const value = new Uint8Array(chunk.value.byteLength);
+                value.set(chunk.value);
+                controller.enqueue(value);
+              }
+            } catch (error) {
+              finishBranch(true);
+              controller.error(error);
+            }
+          },
+          async cancel(reason) {
+            const activeReader = getReader();
+            try {
+              await activeReader.cancel(reason);
+            } finally {
+              finishBranch(false);
+            }
+          },
+        }, { highWaterMark: 0 });
+      }
+      return wrappedBody;
+    },
+  });
+
+  for (const name of ['arrayBuffer', 'blob', 'formData', 'json', 'text', 'bytes']) {
+    const original = Reflect.get(response, name) as unknown;
+    if (typeof original !== 'function') continue;
+    Object.defineProperty(response, name, {
+      configurable: true,
+      value: (...args: unknown[]) => {
+        if (wrappedBody?.locked) {
+          return Promise.reject(new TypeError('Response body is locked.'));
+        }
+        const nativeBody = nativeBodyGetter();
+        const canConsume = !response.bodyUsed && !nativeBody?.locked;
+        const wrapperReader = canConsume ? response.body?.getReader() : undefined;
+        let result: Promise<unknown>;
+        try {
+          result = Reflect.apply(original, response, args) as Promise<unknown>;
+        } catch (error) {
+          wrapperReader?.releaseLock();
+          throw error;
+        }
+        if (!canConsume) return result;
+        return result.then(
+          (value) => {
+            wrapperReader?.releaseLock();
+            finishBranch(true);
+            return value;
+          },
+          (error) => {
+            wrapperReader?.releaseLock();
+            if (response.bodyUsed) finishBranch(true);
+            throw error;
+          },
+        );
+      },
+    });
+  }
+
+  const clone = response.clone.bind(response);
+  Object.defineProperty(response, 'clone', {
+    configurable: true,
+    value: () => {
+      if (wrappedBody?.locked) throw new TypeError('Response body is locked.');
+      return keepResponseSignalUntilBodyEnds(clone(), cleanup, state);
+    },
+  });
+  return response;
 }
 
 /** 按指定策略解析响应；默认优先 JSON，失败后保留原始文本。 */
@@ -180,6 +359,7 @@ export class ZentaoClient {
    *
    * 特殊处理：
    * - 默认 HTTP 方法为 `GET`，`GET` 请求即使提供了 `options.body` 也不会发送，避免被部分代理/浏览器拒绝。
+   * - 不自动跟随重定向，避免把 `Token` 或请求体转发到另一个地址。
    * - 非空响应优先按 JSON 解析；解析失败时回落为字符串原文。
    * - 业务层失败（即响应体 `{ status: "fail" }`）不会抛出，仍按原样返回；只有 HTTP/网络/超时等传输层错误才会抛错。
    * - `insecure` 仅在 Node.js 下可用，浏览器中传入会抛 `E_INSECURE_BROWSER`。
@@ -188,7 +368,9 @@ export class ZentaoClient {
    * @param options - 单次请求选项，参见 {@link ClientRequestOptions}。
    * @returns 解析后的响应体；当响应为空字符串时返回 `undefined`。
    * @throws {ZentaoError} 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
-   *   `E_TIMEOUT`（超过 `timeout`）或 `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）。
+   *   `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
+   *   `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
+   *   `E_INVALID_PARAM`。
    */
   async request(path: string, options: ClientRequestOptions & { responseType: 'response' }): Promise<Response>;
   async request(path: string, options: ClientRequestOptions & { responseType: 'arrayBuffer' }): Promise<ArrayBuffer>;
@@ -206,18 +388,21 @@ export class ZentaoClient {
     if (this.token) {
       headers.set('Token', this.token);
     }
-    const { signal, cleanup } = createRequestSignal(timeout, options.signal);
-
     const init: RequestInit = {
       method,
       headers,
-      signal,
+      redirect: 'manual',
     };
     // GET 请求不携带 body，避免浏览器和部分代理拒绝请求。
     if (options.body !== undefined && method !== 'GET') {
       init.body = serializeBody(options.body, options.bodyType, headers);
     }
 
+    // 先完成同步序列化，再启动计时器，避免序列化失败遗留活动 timer。
+    const { signal, cleanup, didTimeout } = createRequestSignal(timeout, options.signal);
+    init.signal = signal;
+
+    let keepResponseSignal = false;
     try {
       const response = await fetchWithInsecureTls(insecure, url, init);
       if (!response.ok) {
@@ -231,15 +416,22 @@ export class ZentaoClient {
           body: await response.text().catch(() => undefined),
         });
       }
-      return parseResponse(response, options.responseType);
+      if (options.responseType === 'response') {
+        keepResponseSignal = true;
+        return keepResponseSignalUntilBodyEnds(response, cleanup);
+      }
+      return await parseResponse(response, options.responseType);
     } catch (error) {
+      if (signal.aborted) {
+        throw new ZentaoError(didTimeout() ? 'E_TIMEOUT' : 'E_ABORTED', undefined, error);
+      }
       if (error instanceof ZentaoError) throw error;
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new ZentaoError('E_TIMEOUT');
+        throw new ZentaoError('E_ABORTED', undefined, error);
       }
       throw new ZentaoError('E_NETWORK_ERROR', { message: (error as Error).message ?? String(error) }, error);
     } finally {
-      cleanup();
+      if (!keepResponseSignal) cleanup();
     }
   }
 

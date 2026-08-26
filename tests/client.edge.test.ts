@@ -1,12 +1,24 @@
 import { afterEach, describe, expect, test } from 'bun:test';
+import { createServer, type Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { ZentaoClient, ZentaoError, setGlobalOptions } from '../src/index';
-import { withInsecureTls } from '../src/misc/environment';
 
 function createMockServer(handler: (req: Request) => Response | Promise<Response>) {
   return Bun.serve({
     port: 0,
     fetch: handler,
   });
+}
+
+async function listen(server: Server): Promise<string> {
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address() as AddressInfo;
+  return `http://127.0.0.1:${address.port}`;
+}
+
+async function closeServer(server: Server): Promise<void> {
+  server.closeAllConnections();
+  await new Promise<void>((resolve) => server.close(() => resolve()));
 }
 
 afterEach(() => {
@@ -155,6 +167,164 @@ describe('ZentaoClient edge cases', () => {
     }
   });
 
+  test('external cancellation rejects with E_ABORTED', async () => {
+    const server = createMockServer(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      return Response.json({ status: 'success' });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      const controller = new AbortController();
+      const request = client.request('/slow', { signal: controller.signal });
+      controller.abort();
+
+      await expect(request).rejects.toMatchObject({ code: 'E_ABORTED' });
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('external cancellation still controls a raw response body', async () => {
+    let streamTimer: ReturnType<typeof setTimeout> | undefined;
+    const server = createMockServer(() => new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('partial'));
+        streamTimer = setTimeout(() => {
+          controller.enqueue(new TextEncoder().encode(' response'));
+          controller.close();
+        }, 100);
+      },
+      cancel() {
+        if (streamTimer) clearTimeout(streamTimer);
+      },
+    })));
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      const controller = new AbortController();
+      const response = await client.request('/stream', {
+        responseType: 'response',
+        signal: controller.signal,
+        timeout: 1_000,
+      });
+      const body = response.text();
+      controller.abort();
+
+      await expect(body).rejects.toBeDefined();
+    } finally {
+      if (streamTimer) clearTimeout(streamTimer);
+      server.stop(true);
+    }
+  });
+
+  test('cleans external cancellation forwarding when a raw response body completes', async () => {
+    const server = createMockServer(() => new Response('complete', {
+      headers: { 'X-Response-Test': 'value' },
+    }));
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      const controller = new AbortController();
+      let removeCalls = 0;
+      const removeEventListener = controller.signal.removeEventListener.bind(controller.signal);
+      Object.defineProperty(controller.signal, 'removeEventListener', {
+        value(...args: Parameters<AbortSignal['removeEventListener']>) {
+          removeCalls += 1;
+          return removeEventListener(...args);
+        },
+      });
+
+      const response = await client.request('/stream', {
+        responseType: 'response',
+        signal: controller.signal,
+        timeout: 60_000,
+      });
+      const responseBody = response.body;
+      const clone = response.clone();
+
+      expect(response.body).toBe(responseBody);
+      expect(clone.url).toBe(response.url);
+      expect(clone.type).toBe(response.type);
+      await expect(Promise.all([response.text(), clone.text()]))
+        .resolves.toEqual(['complete', 'complete']);
+      expect(removeCalls).toBe(1);
+    } finally {
+      server.stop(true);
+    }
+  });
+
+  test('keeps raw response cancellation active when a saved body cannot acquire the reader', async () => {
+    let streamTimer: ReturnType<typeof setTimeout> | undefined;
+    const server = createMockServer(() => new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('partial'));
+        streamTimer = setTimeout(() => controller.close(), 1_000);
+      },
+      cancel() {
+        if (streamTimer) clearTimeout(streamTimer);
+      },
+    })));
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      const controller = new AbortController();
+      let removeCalls = 0;
+      const removeEventListener = controller.signal.removeEventListener.bind(controller.signal);
+      Object.defineProperty(controller.signal, 'removeEventListener', {
+        value(...args: Parameters<AbortSignal['removeEventListener']>) {
+          removeCalls += 1;
+          return removeEventListener(...args);
+        },
+      });
+
+      const response = await client.request('/stream', {
+        responseType: 'response',
+        signal: controller.signal,
+        timeout: 60_000,
+      });
+      const savedBody = response.body!;
+      const responseBody = response.text();
+
+      expect(savedBody.locked).toBe(true);
+      expect(() => savedBody.getReader()).toThrow(TypeError);
+      await expect(savedBody.cancel()).rejects.toBeInstanceOf(TypeError);
+      expect(removeCalls).toBe(0);
+      controller.abort();
+
+      await expect(responseBody).rejects.toBeDefined();
+      expect(removeCalls).toBe(1);
+    } finally {
+      if (streamTimer) clearTimeout(streamTimer);
+      server.stop(true);
+    }
+  });
+
+  test('does not follow redirects with credentials or request bodies', async () => {
+    let targetRequests = 0;
+    const target = createMockServer(() => {
+      targetRequests += 1;
+      return Response.json({ status: 'success' });
+    });
+    const source = createMockServer(() => new Response(null, {
+      status: 307,
+      headers: { Location: new URL('/target', target.url).toString() },
+    }));
+
+    try {
+      const client = new ZentaoClient({ baseUrl: source.url.toString(), token: 'secret-token' });
+
+      await expect(client.post('/redirect', { password: 'secret' })).rejects.toMatchObject({
+        code: 'E_HTTP_ERROR',
+        details: expect.objectContaining({ status: 307 }),
+      });
+      expect(targetRequests).toBe(0);
+    } finally {
+      source.stop();
+      target.stop();
+    }
+  });
+
   test('login rejects when the API does not return a token', async () => {
     const server = createMockServer(() => Response.json({ status: 'fail', message: 'bad account' }));
 
@@ -198,22 +368,74 @@ describe('insecure TLS environment handling', () => {
     }
   });
 
-  test('withInsecureTls leaves existing NODE_TLS_REJECT_UNAUTHORIZED values untouched', async () => {
-    const previous = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+  test('uses identity encoding because the custom transport does not decompress responses', async () => {
+    const received: { acceptEncoding: string | null } = { acceptEncoding: null };
+    const server = createMockServer((req) => {
+      received.acceptEncoding = req.headers.get('Accept-Encoding');
+      return Response.json({ status: 'success' });
+    });
 
     try {
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
 
-      const valueDuringRequest = await withInsecureTls(true, async () => process.env.NODE_TLS_REJECT_UNAUTHORIZED);
+      await client.request('/products', { insecure: true });
 
-      expect(valueDuringRequest).toBe('1');
-      expect(process.env.NODE_TLS_REJECT_UNAUTHORIZED).toBe('1');
+      expect(received.acceptEncoding).toBe('identity');
     } finally {
-      if (previous === undefined) {
-        delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-      } else {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = previous;
+      server.stop();
+    }
+  });
+
+  test('rejects ReadableStream bodies on both native and custom transports', async () => {
+    let requests = 0;
+    const server = createMockServer(() => {
+      requests += 1;
+      return Response.json({ status: 'success' });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      for (const insecure of [undefined, true]) {
+        const body = new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('payload'));
+            controller.close();
+          },
+        });
+
+        await expect(client.request('/stream', {
+          method: 'POST',
+          bodyType: 'raw',
+          body,
+          insecure,
+        })).rejects.toMatchObject({ code: 'E_INVALID_PARAM' });
       }
+      expect(requests).toBe(0);
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('rejects when a response closes before its declared body is complete', async () => {
+    const server = createServer((_request, response) => {
+      response.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Content-Length': '100',
+      });
+      response.write('{"status":"partial');
+      setTimeout(() => response.destroy(), 10);
+    });
+    const baseUrl = await listen(server);
+
+    try {
+      const client = new ZentaoClient({ baseUrl });
+
+      await expect(client.request('/partial', {
+        insecure: true,
+        timeout: 500,
+      })).rejects.toMatchObject({ code: 'E_NETWORK_ERROR' });
+    } finally {
+      await closeServer(server);
     }
   });
 });

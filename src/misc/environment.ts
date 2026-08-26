@@ -65,6 +65,9 @@ async function toNodeBody(
     }
     return body.toString();
   }
+  if (typeof ReadableStream !== 'undefined' && body instanceof ReadableStream) {
+    throw new ZentaoError('E_INVALID_PARAM', { param: 'body', value: 'ReadableStream' });
+  }
   return String(body);
 }
 
@@ -89,6 +92,9 @@ async function nodeFetchWithTlsOptions(url: string, init: RequestInit, rejectUna
     ? await importNodeModule<typeof import('node:https')>('node:https')
     : await importNodeModule<typeof import('node:http')>('node:http');
   const headers = toNodeRequestHeaders(init.headers);
+  if (!hasHeader(headers, 'accept-encoding')) {
+    headers['accept-encoding'] = 'identity';
+  }
   const body = await toNodeBody(init.body, headers);
 
   return new Promise<Response>((resolve, reject) => {
@@ -97,19 +103,47 @@ async function nodeFetchWithTlsOptions(url: string, init: RequestInit, rejectUna
       return;
     }
 
+    let settled = false;
+    let activeResponse: { destroy(error?: Error): void } | undefined;
+
+    const cleanup = () => {
+      init.signal?.removeEventListener('abort', abortHandler);
+    };
+    const rejectOnce = (error: unknown) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+    const resolveOnce = (response: Response) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(response);
+    };
+
     const request = transport.request(parsed, {
       method: init.method ?? 'GET',
       headers,
       rejectUnauthorized,
     }, (response) => {
+      activeResponse = response;
       const chunks: Uint8Array[] = [];
+      let ended = false;
 
       response.on('data', (chunk: Uint8Array | string) => {
         chunks.push(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk);
       });
 
-      response.on('end', () => {
-        cleanup();
+      response.once('aborted', () => {
+        rejectOnce(new Error('HTTP response was aborted before completion.'));
+      });
+      response.once('error', rejectOnce);
+      response.once('close', () => {
+        if (!ended) rejectOnce(new Error('HTTP response closed before completion.'));
+      });
+      response.once('end', () => {
+        ended = true;
         const responseBody = chunks.length > 0 ? concatenateChunks(chunks) : undefined;
         const fetchResponse = new Response(responseBody, {
           status: response.statusCode ?? 200,
@@ -117,22 +151,18 @@ async function nodeFetchWithTlsOptions(url: string, init: RequestInit, rejectUna
           headers: toResponseHeaders(response.headers),
         });
         Object.defineProperty(fetchResponse, 'url', { value: url });
-        resolve(fetchResponse);
+        resolveOnce(fetchResponse);
       });
     });
 
-    const cleanup = () => {
-      init.signal?.removeEventListener('abort', abortHandler);
-    };
     const abortHandler = () => {
-      cleanup();
-      request.destroy(abortError());
+      const error = abortError();
+      rejectOnce(error);
+      activeResponse?.destroy(error);
+      request.destroy(error);
     };
 
-    request.on('error', (error) => {
-      cleanup();
-      reject(error);
-    });
+    request.once('error', rejectOnce);
 
     init.signal?.addEventListener('abort', abortHandler, { once: true });
     if (body !== undefined) request.write(body);
@@ -156,11 +186,4 @@ export async function fetchWithInsecureTls(
   if (!enabled) return fetch(url, init);
   assertInsecureSupported(enabled);
   return nodeFetchWithTlsOptions(url, init, false);
-}
-
-/** 保留给内部测试和兼容调用：校验 TLS 选项，但不再改写进程级环境变量。 */
-export async function withInsecureTls<T>(enabled: boolean | undefined, fn: () => Promise<T>): Promise<T> {
-  if (!enabled) return fn();
-  assertInsecureSupported(enabled);
-  return fn();
 }

@@ -64,6 +64,37 @@ describe('ZentaoClient', () => {
     }
   });
 
+  test('serializes structured query values with deepObject bracket keys', async () => {
+    let receivedUrl = '';
+    const server = createMockServer((req) => {
+      receivedUrl = req.url;
+      return Response.json({ status: 'success' });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      await client.request('/bugs', {
+        query: {
+          filters: [
+            { field: 'status', operator: '=', value: 'active' },
+            { field: 'title', operator: 'include', value: 'crash' },
+          ],
+        },
+      });
+
+      const search = new URL(receivedUrl).searchParams;
+      expect(search.get('filters[0][field]')).toBe('status');
+      expect(search.get('filters[0][operator]')).toBe('=');
+      expect(search.get('filters[0][value]')).toBe('active');
+      expect(search.get('filters[1][field]')).toBe('title');
+      expect(search.get('filters[1][operator]')).toBe('include');
+      expect(search.get('filters[1][value]')).toBe('crash');
+      expect([...search.keys()]).toHaveLength(6);
+    } finally {
+      server.stop();
+    }
+  });
+
   test('does not throw for ZenTao status fail payloads', async () => {
     const server = createMockServer(() => Response.json({ status: 'fail', message: 'bad params' }));
 

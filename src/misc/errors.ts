@@ -10,6 +10,7 @@ export const ERRORS = {
   E_HTTP_ERROR: 'HTTP request failed: {status} {statusText}',
   E_NETWORK_ERROR: 'Network request failed: {message}',
   E_TIMEOUT: 'Request timed out.',
+  E_ABORTED: 'Request was aborted.',
   E_INSECURE_BROWSER: 'The insecure option is only supported in Node.js runtimes.',
   E_LOGIN_FAILED: 'ZenTao login failed.',
   E_INVALID_PROFILE: 'Invalid ZenTao profile.',
