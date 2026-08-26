@@ -1,4 +1,4 @@
-import { extendModuleAction, defineModules } from './define.js';
+import { extendModuleAction, defineModules, defineModuleActions } from './define.js';
 import { extractResult } from './resolve.js';
 import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
 import { isRecord } from '../utils/index.js';
@@ -180,6 +180,29 @@ export function applyBuiltinOverrides(): void {
       }
       return result;
     };
+    return action;
+  });
+
+  // 定义获取需求层级操作
+  defineModuleActions('story', {
+    name: 'getGrades',
+    display: '获取需求层级选项',
+    type: 'list',
+    method: 'get',
+    path: '/storygrades',
+    resultType: 'list',
+    resultGetter: 'grades',
+  });
+
+  // 需求创建时支持设置需求层级
+  extendModuleAction('story', 'create', (action) => {
+    const properties = action.requestBody!.schema?.properties as Record<string, unknown>;
+    if(properties && !properties.grade) {
+      properties.grade = {
+        type: 'integer',
+        description: '需求层级，可用的需求层级可以通过 story-getGrades 操作获取',
+      };
+    }
     return action;
   });
 }
