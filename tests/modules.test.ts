@@ -579,10 +579,10 @@ describe('builtin overrides (override.ts)', () => {
     expect(properties.category).toEqual({ type: 'string', description: '类别' });
   });
 
-  test('task/list points at the execution-scoped path and keeps the executionID param', () => {
+  test('task/list keeps the generated execution-scoped contract', () => {
     const action = getModuleAction('task', 'list')!;
     expect(action.path).toBe('/executions/{executionID}/tasks');
-    expect(action.pathParams?.executionID).toBe('执行ID');
+    expect(action.pathParams?.executionID).toBe('所属执行ID');
   });
 
   test.each([
@@ -604,7 +604,7 @@ describe('builtin overrides (override.ts)', () => {
 
     resetModuleDefinitions();
 
-    // 重置触发 post-reset 钩子重新应用内置覆盖，task/list 回到 override.ts 定义的路径。
+    // 重置恢复生成注册表，并重新应用仍需保留的内置覆盖。
     expect(getModuleAction('task', 'list')!.path).toBe('/executions/{executionID}/tasks');
   });
 });

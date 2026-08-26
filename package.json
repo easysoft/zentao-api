@@ -47,6 +47,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
     "registry:check": "bun run scripts/update-registry.ts --check",
+    "registry:audit": "bun run .agents/skills/update-openapi-registry/scripts/audit-generated-registry.ts",
     "build": "rm -rf dist && tsc -p tsconfig.json && bun run scripts/build-browser.ts",
     "smoke:node": "node scripts/smoke-node.mjs",
     "smoke:browser": "bun run scripts/smoke-browser-bundler.ts",
@@ -57,7 +58,7 @@
     "docs:dev": "bun run docs:generate && vitepress dev docs",
     "docs:build": "bun run docs:generate && vitepress build docs",
     "docs:preview": "bun run docs:build && vitepress preview docs",
-    "check": "bun run test:coverage && bun run typecheck && bun run typecheck:tests && bun run registry:check && bun run build && bun run smoke:node && bun run smoke:browser && bun run smoke:package",
+    "check": "bun run test:coverage && bun run typecheck && bun run typecheck:tests && bun run registry:check && bun run registry:audit && bun run build && bun run smoke:node && bun run smoke:browser && bun run smoke:package",
     "prepublishOnly": "bun run check"
   },
   "devDependencies": {

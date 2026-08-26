@@ -4,12 +4,8 @@
 // - ./define         —— 定义/写入模块（defineModules / defineModuleActions / resetModuleDefinitions）。
 // - ./override       —— 内置覆盖/扩展（基于 define，随 SDK 发布并在加载/重置时自动应用）。
 // - ./query          —— 获取模块信息（getModule / getModuleAction / getModuleNames / isModuleName）。
-import { BUILTIN_MODULES } from './generated.js';
 import { applyBuiltinOverrides } from './override.js';
 import { setPostResetHook } from './registry-store.js';
-
-export { BUILTIN_MODULES };
-export const MODULES = BUILTIN_MODULES;
 
 export {
   type DefineModulesOptions,
@@ -18,8 +14,6 @@ export {
   extendModuleAction,
   resetModuleDefinitions,
 } from './define.js';
-
-export { applyBuiltinOverrides };
 
 // 内置覆盖接线：避免 define ↔ override 之间的循环依赖。
 // - 加载时应用一次；

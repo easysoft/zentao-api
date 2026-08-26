@@ -21,8 +21,6 @@ export function getModule(moduleName: string): ModuleDefinition | undefined {
  * 解析顺序：
  * 1. `actionName === 'ls'` 时映射为 `list`（仅作为别名，不会修改注册表）。
  * 2. 在该模块的动作中按名称大小写不敏感匹配。
- * 3. 当请求的动作不是基础 CRUD（`list`/`get`/`create`/`update`/`delete`）时，
- *    额外允许命中 `type === 'action'` 的自定义动作（即使名字不在基础 CRUD 中）。
  *
  * 返回值同样是已深冻结的引用，请勿尝试修改。
  *
@@ -34,16 +32,7 @@ export function getModuleAction(moduleName: string, actionName: string): ModuleA
   const module = getModule(moduleName);
   if (!module) return undefined;
   const normalized = actionName === 'ls' ? 'list' : actionName;
-  const direct = module.actions.find((action) => String(action.name).toLowerCase() === normalized.toLowerCase());
-  if (direct) return direct;
-
-  const crud = new Set(['list', 'get', 'create', 'update', 'delete']);
-  if (!crud.has(normalized)) {
-    const custom = module.actions.find((action) => action.type === 'action' && String(action.name).toLowerCase() === normalized.toLowerCase());
-    if (custom) return custom;
-  }
-
-  return undefined;
+  return module.actions.find((action) => String(action.name).toLowerCase() === normalized.toLowerCase());
 }
 
 /**
@@ -85,12 +74,13 @@ export function getModuleActionParams(moduleName: string, actionName: string, op
     if (schema.type === 'object') {
       const requiredSet = new Set(schema.required ? (schema.required as string[]).map(x => x.toLowerCase()) : []);
       Object.entries(schema.properties as Record<string, Partial<ModuleActionParam>>).forEach(([name, property]) => {
+        const propertyType = property.type as ModuleActionParam['type'] | 'integer' | undefined;
         params.push({
+          ...property,
           name,
           role: 'body',
           required: property.required ?? requiredSet.has(name.toLowerCase()),
-          type: ((property.type as string) === 'integer' ? 'number' : property.type) ?? 'string',
-          ...property,
+          type: propertyType === 'integer' ? 'number' : propertyType ?? 'string',
         });
       });
     } else {
@@ -133,5 +123,5 @@ export function isModuleName(moduleName: string): boolean {
  * @returns 对象属性。
  */
 export function getObjectProps(objectType: string): Record<string, string> {
-  return objectProps[objectType];
+  return objectProps[objectType] ?? {};
 }

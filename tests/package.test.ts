@@ -18,6 +18,7 @@ describe('package exports', () => {
 
     expect(packageJson.scripts).toEqual(expect.objectContaining({
       check: expect.stringContaining('typecheck:tests'),
+      'registry:audit': 'bun run .agents/skills/update-openapi-registry/scripts/audit-generated-registry.ts',
       'registry:check': 'bun run scripts/update-registry.ts --check',
       'smoke:browser': 'bun run scripts/smoke-browser-bundler.ts',
       'smoke:node': 'node scripts/smoke-node.mjs',
@@ -26,6 +27,7 @@ describe('package exports', () => {
       'typecheck:tests': 'tsc -p tsconfig.test.json --noEmit',
     }));
     expect(packageJson.scripts.check).toContain('registry:check');
+    expect(packageJson.scripts.check).toContain('registry:audit');
     expect(packageJson.scripts.check).toContain('smoke:node');
     expect(packageJson.scripts.check).toContain('smoke:browser');
     expect(packageJson.scripts.check).toContain('smoke:package');

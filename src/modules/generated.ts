@@ -62,8 +62,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：realname(姓名，示例：admin)；email(邮箱，示例：关键字)；dept(部门，示例：all)；account(用户名，示例：admin)；role(职位，枚举：dev 研发 | qa 测试 | pm 项目经理 | po 产品经理 | td 研发主管 | pd 产品主管 | qd 测试主管 | top 高层管理 | others 其他)；phone(电话，示例：关键字)；visions(界面类型，枚举：rnd 研发综合界面 | lite 运营管理界面)；join(入职日期，示例：2026-01-01)；id(用户编号，示例：1)；commiter(源代码帐号，示例：all)；gender(性别，枚举：m 男 | f 女)；qq(QQ，示例：关键字)；skype(Skype，示例：关键字)；dingding(钉钉，示例：关键字)；weixin(微信，示例：关键字)；slack(Slack，示例：关键字)；whatsapp(WhatsApp，示例：关键字)；address(通讯地址，示例：关键字)；zipcode(邮编，示例：关键字)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -107,6 +109,11 @@ export const BUILTIN_MODULES = [
                             "realname",
                             "password"
                         ]
+                    },
+                    example: {
+                        "account": "productmanager",
+                        "realname": "产品经理",
+                        "password": "123Qwe!@#"
                     },
                 },
             }, {
@@ -180,6 +187,21 @@ export const BUILTIN_MODULES = [
                                 "description": "密码"
                             }
                         }
+                    },
+                    example: {
+                        "realname": "技术经理",
+                        "dept": "0",
+                        "join": "2025-01-01",
+                        "group": [
+                            1
+                        ],
+                        "email": "test@test.com",
+                        "visions": [
+                            "rnd"
+                        ],
+                        "mobile": "13812345678",
+                        "weixin": "15512345678",
+                        "password": "P@ssw0rd"
                     },
                 },
             }, {
@@ -258,8 +280,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(项目集名称，示例：关键字)；PM(负责人，用户，示例：admin)；openedDate(创建时间，示例：2026-01-01)；status(状态，枚举：wait 未开始 | doing 进行中 | suspended 已挂起 | closed 已关闭)；openedBy(创建者，用户，示例：admin)；begin(计划开始，示例：2026-01-01)；end(计划完成，示例：2026-01-01)；realBegan(实际开始，示例：2026-01-01)；realEnd(实际完成，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后编辑日期，示例：2026-01-01)；desc(项目集描述，示例：关键字)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -311,6 +335,13 @@ export const BUILTIN_MODULES = [
                             "begin",
                             "end"
                         ]
+                    },
+                    example: {
+                        "name": "智能睡眠",
+                        "begin": "2025-01-01",
+                        "end": "2026-12-01",
+                        "PM": "productManager",
+                        "desc": "智能家居项目集"
                     },
                 },
             }, {
@@ -366,6 +397,13 @@ export const BUILTIN_MODULES = [
                             "begin",
                             "end"
                         ]
+                    },
+                    example: {
+                        "name": "智能家居",
+                        "begin": "2025-01-01",
+                        "end": "2026-12-01",
+                        "PM": "productManager",
+                        "desc": "智能家居项目集"
                     },
                 },
             }, {
@@ -558,6 +596,20 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "智能头枕",
+                        "program": 1,
+                        "line": 0,
+                        "type": "normal",
+                        "PO": "normal",
+                        "reviewer": [
+                            "productManager"
+                        ],
+                        "desc": "智能健康头枕",
+                        "QD": "productManager",
+                        "RD": "productManager",
+                        "acl": "open"
+                    },
                 },
             }, {
                 name: 'close',
@@ -609,6 +661,10 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "name": "需求模块",
+                        "parentID": "0"
+                    },
                 },
             }, {
                 name: 'createBugModule',
@@ -637,6 +693,10 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "name": "Bug模块",
+                        "parentID": "0"
+                    },
                 },
             }, {
                 name: 'createTestcaseModule',
@@ -664,6 +724,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "用例模块",
+                        "parentID": "0"
                     },
                 },
             }, {
@@ -746,6 +810,20 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "智能照明",
+                        "program": 1,
+                        "line": 0,
+                        "type": "normal",
+                        "PO": "normal",
+                        "reviewer": [
+                            "productManager"
+                        ],
+                        "desc": "智能家庭照明",
+                        "QD": "productManager",
+                        "RD": "productManager",
+                        "acl": "open"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -821,8 +899,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(项目名称，示例：关键字)；code(项目代号，示例：关键字)；id(项目ID，示例：1)；model(项目管理方式，枚举：scrum Scrum | waterfall 瀑布 | kanban 看板 | agileplus 融合敏捷 | waterfallplus 融合瀑布)；hasProduct(项目类型，枚举：1 产品型 | 0 项目型)；parent(所属项目集，示例：all)；status(状态，枚举：wait 未开始 | doing 进行中 | suspended 已挂起 | closed 已关闭 | delay 已延期)；desc(项目描述，示例：关键字)；PM(负责人，用户，示例：admin)；openedDate(创建日期，示例：2026-01-01)；begin(计划开始，示例：2026-01-01)；end(计划完成，示例：2026-01-01)；realBegan(实际开始，示例：2026-01-01)；realEnd(实际完成，示例：2026-01-01)；openedBy(由谁创建，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedDate(最后编辑日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -902,7 +982,7 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'projectID',
                         required: true,
-                        type: 'string',
+                        type: 'number',
                         description: '项目ID',
                     },
                 ],
@@ -976,6 +1056,18 @@ export const BUILTIN_MODULES = [
                             "workflowGroup"
                         ]
                     },
+                    example: {
+                        "name": "智能设备研发",
+                        "model": "scrum",
+                        "begin": "2025-01-01",
+                        "end": "2026-10-01",
+                        "products": [
+                            1
+                        ],
+                        "parent": 1,
+                        "workflowGroup": 13,
+                        "PM": "projectManager"
+                    },
                 },
             }, {
                 name: 'close',
@@ -1005,6 +1097,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "realEnd"
                         ]
+                    },
+                    example: {
+                        "realEnd": "2026-08-19"
                     },
                 },
             }, {
@@ -1055,6 +1150,16 @@ export const BUILTIN_MODULES = [
                         },
                         "required": [
                             "title"
+                        ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "项目型项目的需求",
+                        "spec": "需求描述",
+                        "pri": 3,
+                        "category": "feature",
+                        "reviewer": [
+                            "productManager"
                         ]
                     },
                 },
@@ -1113,6 +1218,16 @@ export const BUILTIN_MODULES = [
                             "title",
                             "openedBuild"
                         ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "项目型项目的Bug",
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "severity": 3,
+                        "pri": 3,
+                        "type": "codeerror"
                     },
                 },
             }, {
@@ -1185,6 +1300,18 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "无执行项目任务",
+                        "executionID": 3,
+                        "type": "devel",
+                        "assignedTo": "admin",
+                        "estStarted": "2026-01-01",
+                        "deadline": "2026-01-10",
+                        "pri": 1,
+                        "estimate": 1,
+                        "module": 0,
+                        "story": 0
+                    },
                 },
             }, {
                 name: 'update',
@@ -1247,6 +1374,18 @@ export const BUILTIN_MODULES = [
                             "end",
                             "workflowGroup"
                         ]
+                    },
+                    example: {
+                        "name": "智能设备研发",
+                        "model": "scrum",
+                        "begin": "2025-01-01",
+                        "end": "2026-10-01",
+                        "products": [
+                            1
+                        ],
+                        "parent": 1,
+                        "workflowGroup": 13,
+                        "PM": "projectManager"
                     },
                 },
             }, {
@@ -1315,6 +1454,28 @@ export const BUILTIN_MODULES = [
                             "account"
                         ]
                     },
+                    example: {
+                        "account": [
+                            "admin",
+                            "dev1"
+                        ],
+                        "role": [
+                            "PM",
+                            "dev"
+                        ],
+                        "days": [
+                            5,
+                            3
+                        ],
+                        "hours": [
+                            7,
+                            7
+                        ],
+                        "limited": [
+                            "no",
+                            "no"
+                        ]
+                    },
                 },
             }
         ],
@@ -1380,8 +1541,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedDate,assignedDate,assignedTo,canceledBy,canceledDate,closedBy,closedDate,closedReason,consumed,deadline,desc,estStarted,estimate,execution,finishedBy,finishedDate,fromBug,id,keywords,lastEditedBy,lastEditedDate,left,mailto,module,name,openedBy,openedDate,pri,project,realStarted,status,story,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -1461,7 +1624,7 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'executionID',
                         required: true,
-                        type: 'string',
+                        type: 'number',
                         description: '执行ID',
                     },
                 ],
@@ -1570,6 +1733,29 @@ export const BUILTIN_MODULES = [
                             "end"
                         ]
                     },
+                    example: {
+                        "project": 2,
+                        "name": "智能设备研发3.1版本开发",
+                        "type": "sprint",
+                        "parent": 0,
+                        "lifetime": "short",
+                        "begin": "2026-01-01",
+                        "end": "2026-01-21",
+                        "days": 16,
+                        "products": [
+                            1
+                        ],
+                        "plans": {
+                            "1": [
+                                0
+                            ]
+                        },
+                        "PO": "productManager",
+                        "QD": "testManager",
+                        "PM": "executionManager",
+                        "RD": "productManager",
+                        "acl": "open"
+                    },
                 },
             }, {
                 name: 'close',
@@ -1600,6 +1786,9 @@ export const BUILTIN_MODULES = [
                             "realEnd"
                         ]
                     },
+                    example: {
+                        "realEnd": "2026-01-21"
+                    },
                 },
             }, {
                 name: 'createTaskModule',
@@ -1627,6 +1816,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "任务模块",
+                        "parentID": "0"
                     },
                 },
             }, {
@@ -1723,6 +1916,27 @@ export const BUILTIN_MODULES = [
                             "end"
                         ]
                     },
+                    example: {
+                        "project": 2,
+                        "name": "智能设备研发3.2版本开发",
+                        "lifetime": "short",
+                        "begin": "2026-01-01",
+                        "end": "2026-01-21",
+                        "days": 16,
+                        "products": [
+                            1
+                        ],
+                        "plans": {
+                            "1": [
+                                1
+                            ]
+                        },
+                        "PO": "productManager",
+                        "QD": "testManager",
+                        "PM": "executionManager",
+                        "RD": "productManager",
+                        "acl": "open"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -1788,6 +2002,28 @@ export const BUILTIN_MODULES = [
                         },
                         "required": [
                             "account"
+                        ]
+                    },
+                    example: {
+                        "account": [
+                            "admin",
+                            "dev1"
+                        ],
+                        "role": [
+                            "PM",
+                            "dev"
+                        ],
+                        "days": [
+                            5,
+                            3
+                        ],
+                        "hours": [
+                            7,
+                            7
+                        ],
+                        "limited": [
+                            "no",
+                            "no"
                         ]
                     },
                 },
@@ -1859,8 +2095,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,branch,end,id,status,title',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -1923,6 +2161,15 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "V1.0计划",
+                        "parent": 0,
+                        "begin": "2026-01-01",
+                        "end": "2026-01-31",
+                        "branchID": 1,
+                        "desc": "初版计划"
+                    },
                 },
             }, {
                 name: 'get',
@@ -1982,6 +2229,14 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "title": "V1.1计划",
+                        "parent": 0,
+                        "begin": "2026-01-01",
+                        "end": "2026-01-31",
+                        "branchID": 1,
+                        "desc": "初版计划"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -2021,8 +2276,7 @@ export const BUILTIN_MODULES = [
                         name: 'browseType',
                         required: false,
                         type: 'string',
-                        description: '状态，默认是allstory',
-                        defaultValue: 'allstory',
+                        description: '状态',
                         options: [
                             { value: 'allstory', label: '全部' },
                             { value: 'assignedtome', label: '指派给我' },
@@ -2060,8 +2314,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -2106,7 +2362,7 @@ export const BUILTIN_MODULES = [
                             "title": {
                                 "type": "string"
                             },
-                            "pri": {
+                            "pri": { 
                                 "type": "integer",
                                 "description": "优先级，默认是3",
                                 "format": "int32"
@@ -2169,6 +2425,22 @@ export const BUILTIN_MODULES = [
                             "productID",
                             "title"
                         ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "智能头枕的压敏单元设计",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin",
+                        "reviewer": [
+                            "productManager"
+                        ],
+                        "project": 2,
+                        "execution": 0
                     },
                 },
             }, {
@@ -2239,6 +2511,16 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "title": "智能照明的光敏单元设计",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'updateModule',
@@ -2266,6 +2548,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "需求新模块",
+                        "parent": "0"
                     },
                 },
             }, {
@@ -2314,6 +2600,9 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'change',
@@ -2355,6 +2644,14 @@ export const BUILTIN_MODULES = [
                             "reviewer"
                         ]
                     },
+                    example: {
+                        "title": "智能照明的定时",
+                        "reviewer": [
+                            "admin"
+                        ],
+                        "spec": "描述",
+                        "verify": "验收标准"
+                    },
                 },
             }, {
                 name: 'close',
@@ -2384,6 +2681,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "closedReason"
                         ]
+                    },
+                    example: {
+                        "closedReason": "done"
                     },
                 },
             }
@@ -2452,8 +2752,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -2541,6 +2843,20 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "智能头枕颈椎检测",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin",
+                        "reviewer": [
+                            "productManager"
+                        ]
+                    },
                 },
             }, {
                 name: 'get',
@@ -2611,6 +2927,16 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "title": "智能头枕颈椎检测",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -2647,6 +2973,9 @@ export const BUILTIN_MODULES = [
                                 "description": "备注"
                             }
                         }
+                    },
+                    example: {
+                        "assignedTo": "admin"
                     },
                 },
             }, {
@@ -2689,6 +3018,14 @@ export const BUILTIN_MODULES = [
                             "reviewer"
                         ]
                     },
+                    example: {
+                        "title": "智能头枕颈椎检测",
+                        "reviewer": [
+                            "admin"
+                        ],
+                        "spec": "描述",
+                        "verify": "验收标准"
+                    },
                 },
             }, {
                 name: 'close',
@@ -2718,6 +3055,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "closedReason"
                         ]
+                    },
+                    example: {
+                        "closedReason": "done"
                     },
                 },
             }
@@ -2786,8 +3126,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -2875,6 +3217,20 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "智能头枕的颈椎保护",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin",
+                        "reviewer": [
+                            "productManager"
+                        ]
+                    },
                 },
             }, {
                 name: 'get',
@@ -2944,6 +3300,16 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "title": "智能头枕的颈椎保护",
+                        "pri": 3,
+                        "module": 0,
+                        "parent": 0,
+                        "estimate": 1,
+                        "category": "feature",
+                        "source": "customer",
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -2981,6 +3347,9 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'change',
@@ -3012,6 +3381,11 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "title": "智能头枕的颈椎保护",
+                        "spec": "描述",
+                        "verify": "验收标准"
+                    },
                 },
             }, {
                 name: 'close',
@@ -3042,6 +3416,9 @@ export const BUILTIN_MODULES = [
                             "closedReason"
                         ]
                     },
+                    example: {
+                        "closedReason": "done"
+                    },
                 },
             }
         ],
@@ -3071,12 +3448,7 @@ export const BUILTIN_MODULES = [
                         name: 'browseType',
                         required: false,
                         type: 'string',
-                        description: '状态，默认是all',
-                        defaultValue: 'all',
-                        options: [
-                            { value: 'all', label: '全部' },
-                            { value: 'unresolved', label: '未关闭' },
-                        ],
+                        description: '状态',
                     },
                     {
                         name: 'orderBy',
@@ -3107,8 +3479,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(Bug标题，示例：关键字)；module(所属模块，模块，示例：0)；keywords(关键词，示例：关键字)；steps(重现步骤，示例：关键字)；assignedTo(指派给，用户，示例：admin)；resolvedBy(解决者，用户，示例：admin)；status(Bug状态，枚举：active 激活 | resolved 已解决 | closed 已关闭)；confirmed(是否确认，枚举：1 已确认 | 0 未确认)；story(相关需求，示例：关键字)；project(所属项目，示例：all)；product(所属产品，示例：all)；branch(branch，示例：all)；plan(所属计划，示例：all)；id(Bug编号，示例：1)；execution(所属执行，执行，示例：3)；severity(严重程度，枚举：1 | 2 | 3 | 4)；pri(优先级，枚举：1 | 2 | 3 | 4)；type(Bug类型，枚举：codeerror 代码错误 | config 配置相关 | install 安装部署 | security 安全相关 | performance 性能问题 | standard 标准规范 | automation 测试脚本 | designdefect 设计缺陷 | codeimprovement 代码改进 | others 其他)；os(操作系统，枚举：all 全部 | windows Windows | win11 Windows 11 | win10 Windows 10 | win8 Windows 8 | win7 Windows 7 | winxp Windows XP | osx Mac OS | android Android | ios IOS | linux Linux | ubuntu Ubuntu | chromeos Chrome OS | fedora Fedora | unix Unix | others 其他)；browser(浏览器，枚举：all 全部 | chrome Chrome | edge Edge | ie IE系列 | ie11 IE11 | ie10 IE10 | ie9 IE9 | ie8 IE8 | firefox firefox系列 | opera Opera系列 | safari | 360 360浏览器 | qq QQ浏览器 | other 其他)；resolution(解决方案，枚举：bydesign 设计如此 | duplicate 重复Bug | external 外部原因 | fixed 已解决 | notrepro 无法重现 | postponed 延期处理 | willnotfix 不予解决 | tostory 转为用户故事)；activatedCount(激活次数，示例：关键字)；toTask(转任务，示例：关键字)；toStory(转用户故事，示例：关键字)；openedBy(由谁创建，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(修改者，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；openedBuild(影响版本，示例：builds)；resolvedBuild(解决版本，示例：builds)；openedDate(创建日期，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；resolvedDate(解决日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(修改日期，示例：2026-01-01)；deadline(截止日期，示例：2026-01-01)；activatedDate(激活时间，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -3205,6 +3579,21 @@ export const BUILTIN_MODULES = [
                             "openedBuild"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "压敏元件显示错误",
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "project": 2,
+                        "execution": 3,
+                        "severity": 3,
+                        "pri": 3,
+                        "type": "codeerror",
+                        "steps": "[步骤] [结果] [期望]",
+                        "story": 0,
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'get',
@@ -3283,6 +3672,20 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "title": "光敏元件显示错误",
+                        "severity": 3,
+                        "pri": 3,
+                        "type": "codeerror",
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "steps": "[步骤] [结果] [期望]",
+                        "project": 2,
+                        "execution": 3,
+                        "story": 0,
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'updateModule',
@@ -3310,6 +3713,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "Bug新模块",
+                        "parent": "0"
                     },
                 },
             }, {
@@ -3364,6 +3771,12 @@ export const BUILTIN_MODULES = [
                                 "description": "备注"
                             }
                         }
+                    },
+                    example: {
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "assignedTo": "admin"
                     },
                 },
             }, {
@@ -3439,6 +3852,15 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "assignedTo": "admin",
+                        "type": "codeerror",
+                        "pri": 3,
+                        "deadline": "2025-12-12",
+                        "mailto": [
+                            "admin"
+                        ]
+                    },
                 },
             }, {
                 name: 'resolve',
@@ -3480,6 +3902,12 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "resolution"
                         ]
+                    },
+                    example: {
+                        "resolution": "fixed",
+                        "resolvedDate": "2025-12-12",
+                        "resolvedBuild": "trunk",
+                        "assignedTo": "admin"
                     },
                 },
             }
@@ -3523,14 +3951,6 @@ export const BUILTIN_MODULES = [
                         required: false,
                         type: 'string',
                         description: '排序',
-                        options: [
-                            { value: 'id_asc', label: 'ID 升序' },
-                            { value: 'id_desc', label: 'ID 降序' },
-                            { value: 'title_asc', label: '标题 升序' },
-                            { value: 'title_desc', label: '标题 降序' },
-                            { value: 'status_asc', label: '状态 升序' },
-                            { value: 'status_desc', label: '状态 降序' },
-                        ],
                     },
                     {
                         name: 'recPerPage',
@@ -3547,8 +3967,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(用例名称，示例：关键字)；story(关联需求，示例：all)；id(用例编号，示例：1)；keywords(关键词，示例：关键字)；lastEditedBy(修改者，用户，示例：admin)；type(用例类型，枚举：unit 单元测试 | interface 接口测试 | feature 功能测试 | install 安装部署 | config 配置相关 | performance 性能测试 | security 安全相关 | other 其他)；auto(自动化，枚举：auto 是 | no 否)；openedBy(由谁创建，用户，示例：admin)；status(用例状态，枚举：wait 待评审 | normal 正常 | blocked 被阻塞 | investigate 研究中)；product(所属产品，示例：all)；branch(branch，示例：all)；stage(适用环节，枚举：unittest 单元测试环节 | feature 功能测试环节 | intergrate 集成测试环节 | system 系统测试环节 | smoke 冒烟测试环节 | bvt 版本验证环节)；module(所属模块，模块，示例：0)；pri(优先级，枚举：3 | 1 | 2 | 4)；lib(所属库，示例：all)；lastRunner(执行人，用户，示例：admin)；lastRunResult(结果，枚举：pass 通过 | fail 失败 | blocked 阻塞 | null 未执行)；lastRunDate(执行时间，示例：2026-01-01)；openedDate(创建日期，示例：2026-01-01)；lastEditedDate(修改日期，示例：2026-01-01)；scene(所属场景，示例：all)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -3654,6 +4076,28 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "测试压敏模块显示是否正常",
+                        "module": 0,
+                        "story": 0,
+                        "pri": 3,
+                        "type": "feature",
+                        "steps": [
+                            "步骤1",
+                            "步骤2"
+                        ],
+                        "expects": [
+                            "期望1",
+                            "期望2"
+                        ],
+                        "stepType": [
+                            "step",
+                            "step"
+                        ],
+                        "project": 2,
+                        "execution": 3
+                    },
                 },
             }, {
                 name: 'get',
@@ -3735,6 +4179,25 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "title": "测试光敏模块显示是否正常",
+                        "module": 0,
+                        "story": 0,
+                        "pri": 3,
+                        "type": "feature",
+                        "steps": [
+                            "步骤1",
+                            "步骤2"
+                        ],
+                        "expects": [
+                            "期望1",
+                            "期望2"
+                        ],
+                        "stepType": [
+                            "step",
+                            "step"
+                        ]
+                    },
                 },
             }, {
                 name: 'updateModule',
@@ -3762,6 +4225,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "用例新模块",
+                        "parent": "0"
                     },
                 },
             }, {
@@ -3928,6 +4395,18 @@ export const BUILTIN_MODULES = [
                             "executionID"
                         ]
                     },
+                    example: {
+                        "name": "开发电容压力监测模块",
+                        "executionID": 3,
+                        "type": "devel",
+                        "assignedTo": "admin",
+                        "estStarted": "2025-12-25",
+                        "deadline": "2025-12-30",
+                        "pri": 1,
+                        "estimate": 1,
+                        "module": 1,
+                        "story": 1
+                    },
                 },
             }, {
                 name: 'get',
@@ -4002,6 +4481,17 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "name": "开发电容光敏监测模块",
+                        "type": "devel",
+                        "assignedTo": "admin",
+                        "estStarted": "2025-12-25",
+                        "deadline": "2025-12-30",
+                        "pri": 1,
+                        "estimate": 1,
+                        "module": 1,
+                        "story": 1
+                    },
                 },
             }, {
                 name: 'updateModule',
@@ -4029,6 +4519,10 @@ export const BUILTIN_MODULES = [
                                 "format": "int32"
                             }
                         }
+                    },
+                    example: {
+                        "name": "任务新模块",
+                        "parent": "0"
                     },
                 },
             }, {
@@ -4081,6 +4575,10 @@ export const BUILTIN_MODULES = [
                                 "description": "备注"
                             }
                         }
+                    },
+                    example: {
+                        "left": 1,
+                        "assignedTo": "admin"
                     },
                 },
             }, {
@@ -4155,6 +4653,13 @@ export const BUILTIN_MODULES = [
                             "finishedDate"
                         ]
                     },
+                    example: {
+                        "currentConsumed": 1,
+                        "assignedTo": "admin",
+                        "consumed": 1,
+                        "realStarted": "2025-12-25 09:00:00",
+                        "finishedDate": "2025-12-30 17:30:00"
+                    },
                 },
             }, {
                 name: 'start',
@@ -4198,6 +4703,12 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "realStarted"
                         ]
+                    },
+                    example: {
+                        "assignedTo": "admin",
+                        "realStarted": "2025-12-26 09:00:00",
+                        "consumed": 1,
+                        "left": 1
                     },
                 },
             }
@@ -4267,8 +4778,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：assignedDate,assignedTo,closedBy,closedDate,createdBy,createdDate,editedBy,editedDate,execution,id,pri,project,severity,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4341,8 +4854,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：assignedDate,assignedTo,closedBy,closedDate,createdBy,createdDate,editedBy,editedDate,execution,id,pri,project,severity,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4415,8 +4930,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：assignedDate,assignedTo,closedBy,closedDate,createdBy,createdDate,editedBy,editedDate,execution,id,pri,project,severity,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4499,6 +5016,18 @@ export const BUILTIN_MODULES = [
                             "severity"
                         ]
                     },
+                    example: {
+                        "objectID": 2,
+                        "from": 0,
+                        "title": "关键路径延期",
+                        "type": "design",
+                        "severity": 3,
+                        "pri": 3,
+                        "execution": 3,
+                        "assignedTo": "admin",
+                        "owner": "admin",
+                        "deadline": "2026-03-01"
+                    },
                 },
             }, {
                 name: 'get',
@@ -4578,8 +5107,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4652,8 +5183,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4726,8 +5259,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -4828,6 +5363,21 @@ export const BUILTIN_MODULES = [
                             "pri"
                         ]
                     },
+                    example: {
+                        "project": 2,
+                        "name": "关键路径延期",
+                        "execution": 3,
+                        "source": "business",
+                        "category": "technical",
+                        "strategy": "avoidance",
+                        "impact": 3,
+                        "probability": 3,
+                        "rate": 9,
+                        "pri": 2,
+                        "identifiedDate": "2026-01-01",
+                        "plannedClosedDate": "2026-03-01",
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'get',
@@ -4921,6 +5471,19 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "关键路径延期",
+                        "source": "business",
+                        "category": "technical",
+                        "strategy": "avoidance",
+                        "impact": 3,
+                        "probability": 3,
+                        "rate": 9,
+                        "pri": 2,
+                        "identifiedDate": "2026-01-01",
+                        "plannedClosedDate": "2026-03-01",
+                        "assignedTo": "admin"
+                    },
                 },
             }
         ],
@@ -4983,8 +5546,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -5051,8 +5616,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -5119,8 +5686,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -5213,6 +5782,21 @@ export const BUILTIN_MODULES = [
                             "participant"
                         ]
                     },
+                    example: {
+                        "project": 2,
+                        "execution": 3,
+                        "name": "项目周会",
+                        "begin": "2026-08-20 09:00",
+                        "end": "2026-08-20 10:00",
+                        "mode": "online",
+                        "host": "admin",
+                        "participant": [
+                            "admin"
+                        ],
+                        "room": 0,
+                        "dept": 0,
+                        "objectID": 0
+                    },
                 },
             }, {
                 name: 'get',
@@ -5297,6 +5881,19 @@ export const BUILTIN_MODULES = [
                             "participant"
                         ]
                     },
+                    example: {
+                        "name": "项目周会",
+                        "begin": "2026-08-20 09:30",
+                        "end": "2026-08-20 10:30",
+                        "mode": "online",
+                        "host": "admin",
+                        "participant": [
+                            "admin"
+                        ],
+                        "room": 0,
+                        "dept": 0,
+                        "objectID": 0
+                    },
                 },
             }, {
                 name: 'delete',
@@ -5329,6 +5926,9 @@ export const BUILTIN_MODULES = [
                                 "description": "会议纪要"
                             }
                         }
+                    },
+                    example: {
+                        "minutes": "会议纪要内容"
                     },
                 },
             }
@@ -5399,8 +5999,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedDate,assignedTo,closedBy,closedDate,closedReason,desc,feedbackBy,id,keywords,mailto,module,notifyEmail,openedBy,openedDate,pri,processedBy,processedDate,product,public,reviewedBy,solution,source,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -5462,6 +6064,15 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "product": 1,
+                        "title": "电容压力监测灵敏度不够",
+                        "module": 0,
+                        "type": "story",
+                        "desc": "监测灵敏度不够",
+                        "feedbackBy": "客户对接人",
+                        "source": "XX技术有限公司"
+                    },
                 },
             }, {
                 name: 'createBug',
@@ -5520,6 +6131,17 @@ export const BUILTIN_MODULES = [
                             "openedBuild"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "title": "从反馈创建的Bug",
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "severity": 3,
+                        "pri": 3,
+                        "type": "codeerror",
+                        "steps": "反馈转Bug"
+                    },
                 },
             }, {
                 name: 'createTicket',
@@ -5566,6 +6188,13 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "product": 1,
+                        "module": 1,
+                        "title": "从反馈创建的工单",
+                        "type": "code",
+                        "desc": "反馈转工单"
+                    },
                 },
             }, {
                 name: 'createTodo',
@@ -5596,6 +6225,10 @@ export const BUILTIN_MODULES = [
                             "date",
                             "name"
                         ]
+                    },
+                    example: {
+                        "date": "2026-08-19",
+                        "name": "从反馈创建的待办"
                     },
                 },
             }, {
@@ -5641,6 +6274,13 @@ export const BUILTIN_MODULES = [
                             "productID",
                             "title"
                         ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "从反馈创建的需求",
+                        "spec": "反馈转需求",
+                        "pri": 3,
+                        "category": "feature"
                     },
                 },
             }, {
@@ -5693,6 +6333,15 @@ export const BUILTIN_MODULES = [
                             "executionID",
                             "name"
                         ]
+                    },
+                    example: {
+                        "executionID": 3,
+                        "name": "从反馈创建的任务",
+                        "type": "devel",
+                        "assignedTo": "admin",
+                        "estStarted": "2026-01-01",
+                        "deadline": "2026-01-10",
+                        "desc": "反馈转任务"
                     },
                 },
             }, {
@@ -5758,6 +6407,15 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "product": 1,
+                        "module": 0,
+                        "title": "光敏元件灵敏度不够",
+                        "type": "story",
+                        "desc": "监测灵敏度不够",
+                        "feedbackBy": "客户对接人",
+                        "source": "XX技术有限公司"
+                    },
                 },
             }, {
                 name: 'delete',
@@ -5795,6 +6453,9 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'close',
@@ -5828,6 +6489,10 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "closedReason"
                         ]
+                    },
+                    example: {
+                        "closedReason": "done",
+                        "confirmClose": "yes"
                     },
                 },
             }
@@ -5899,8 +6564,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedCount,activatedDate,assignedTo,closedBy,closedDate,closedReason,contact,customer,deadline,desc,editedBy,editedDate,feedback,id,keywords,mailto,module,notifyEmail,openedBuild,openedBy,openedDate,pri,product,resolution,resolvedBy,resolvedDate,startedBy,startedDate,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -5969,6 +6636,18 @@ export const BUILTIN_MODULES = [
                             "title"
                         ]
                     },
+                    example: {
+                        "product": 1,
+                        "module": 1,
+                        "title": "电容压力监测灵敏度不够",
+                        "type": "code",
+                        "desc": "监测灵敏度不够",
+                        "assignedTo": "admin",
+                        "deadline": "2026-01-10",
+                        "openedBuild": [
+                            "trunk"
+                        ]
+                    },
                 },
             }, {
                 name: 'createStory',
@@ -6013,6 +6692,13 @@ export const BUILTIN_MODULES = [
                             "productID",
                             "title"
                         ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "从工单创建的需求",
+                        "spec": "工单转需求",
+                        "pri": 3,
+                        "category": "feature"
                     },
                 },
             }, {
@@ -6071,6 +6757,17 @@ export const BUILTIN_MODULES = [
                             "title",
                             "openedBuild"
                         ]
+                    },
+                    example: {
+                        "productID": 1,
+                        "title": "从工单创建的Bug",
+                        "openedBuild": [
+                            "trunk"
+                        ],
+                        "severity": 3,
+                        "pri": 3,
+                        "type": "codeerror",
+                        "steps": "工单转Bug"
                     },
                 },
             }, {
@@ -6139,6 +6836,18 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "product": 1,
+                        "module": 1,
+                        "title": "电容压力监测灵敏度不够",
+                        "type": "code",
+                        "desc": "监测灵敏度不够",
+                        "assignedTo": "admin",
+                        "deadline": "2026-01-10",
+                        "openedBuild": [
+                            "trunk"
+                        ]
+                    },
                 },
             }, {
                 name: 'delete',
@@ -6176,6 +6885,9 @@ export const BUILTIN_MODULES = [
                             }
                         }
                     },
+                    example: {
+                        "assignedTo": "admin"
+                    },
                 },
             }, {
                 name: 'close',
@@ -6206,6 +6918,9 @@ export const BUILTIN_MODULES = [
                             "closedReason",
                             "comment"
                         ]
+                    },
+                    example: {
+                        "closedReason": "done"
                     },
                 },
             }
@@ -6304,6 +7019,13 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "integrated": 0,
+                        "children": [],
+                        "name": "smart-20260819093823",
+                        "desc": "smart-20260819093823"
+                    },
                 },
             }, {
                 name: 'update',
@@ -6341,6 +7063,11 @@ export const BUILTIN_MODULES = [
                             "name",
                             "children"
                         ]
+                    },
+                    example: {
+                        "name": "smart-20260819093823-updated",
+                        "children": [],
+                        "desc": "smart-20260819093823-updated"
                     },
                 },
             }
@@ -6408,8 +7135,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(名称，示例：关键字)；system(所属应用，示例：all)；id(ID，示例：1)；product(所属产品，产品，示例：1)；scmPath(源代码地址，示例：关键字)；filePath(下载地址，示例：关键字)；date(打包日期，示例：2026-01-01)；builder(构建者，用户，示例：admin)；desc(描述，示例：关键字)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -6484,6 +7213,17 @@ export const BUILTIN_MODULES = [
                             "date"
                         ]
                     },
+                    example: {
+                        "executionID": 3,
+                        "product": 1,
+                        "name": "v1.0",
+                        "system": 1,
+                        "builder": "admin",
+                        "date": "2026-01-01",
+                        "scmPath": "http://test.com/git",
+                        "filePath": "http://test.com/download",
+                        "desc": "test"
+                    },
                 },
             }, {
                 name: 'update',
@@ -6549,6 +7289,17 @@ export const BUILTIN_MODULES = [
                             "builder",
                             "date"
                         ]
+                    },
+                    example: {
+                        "execution": 3,
+                        "product": 1,
+                        "name": "版本v1.0",
+                        "system": 1,
+                        "builder": "admin",
+                        "date": "2026-01-01",
+                        "scmPath": "http://test.com/git",
+                        "filePath": "http://test.com/download",
+                        "desc": "test"
                     },
                 },
             }, {
@@ -6694,6 +7445,20 @@ export const BUILTIN_MODULES = [
                             "end"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "name": "智能家居V1.0测试单",
+                        "build": 1,
+                        "execution": 3,
+                        "type": [
+                            "integrate"
+                        ],
+                        "owner": "admin",
+                        "status": "wait",
+                        "begin": "2026-01-01",
+                        "end": "2026-02-01",
+                        "desc": "test"
+                    },
                 },
             }, {
                 name: 'update',
@@ -6759,6 +7524,19 @@ export const BUILTIN_MODULES = [
                             "begin",
                             "end"
                         ]
+                    },
+                    example: {
+                        "name": "智能家居V1.0测试单",
+                        "build": 1,
+                        "execution": 3,
+                        "type": [
+                            "integrate"
+                        ],
+                        "owner": "admin",
+                        "status": "wait",
+                        "begin": "2026-01-01",
+                        "end": "2026-02-01",
+                        "desc": "test"
                     },
                 },
             }, {
@@ -6839,8 +7617,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(应用版本号，示例：关键字)；branch(平台/分支，示例：all)；id(ID，示例：1)；build(包含构建，示例：all)；status(发布状态，枚举：wait 未开始 | normal 已发布 | fail 发布失败 | terminate 停止维护)；date(计划发布日期，示例：2026-01-01)；marker(里程碑，枚举：1 是 | 0 否)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -6908,6 +7688,17 @@ export const BUILTIN_MODULES = [
                             "date"
                         ]
                     },
+                    example: {
+                        "productID": 1,
+                        "system": 1,
+                        "name": "v1",
+                        "build": [
+                            1
+                        ],
+                        "status": "wait",
+                        "date": "2026-02-10",
+                        "desc": "release 1.0"
+                    },
                 },
             }, {
                 name: 'update',
@@ -6960,6 +7751,16 @@ export const BUILTIN_MODULES = [
                             "build",
                             "date"
                         ]
+                    },
+                    example: {
+                        "system": 1,
+                        "name": "v1.0",
+                        "build": [
+                            1
+                        ],
+                        "status": "wait",
+                        "date": "2026-02-10",
+                        "desc": "release 1.0"
                     },
                 },
             }, {
@@ -7015,6 +7816,11 @@ export const BUILTIN_MODULES = [
                             "objectID"
                         ]
                     },
+                    example: {
+                        "file": "/tmp/zentao-apidoc-test.txt",
+                        "objectType": "story",
+                        "objectID": 1
+                    },
                 },
             }, {
                 name: 'update',
@@ -7040,6 +7846,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "fileName"
                         ]
+                    },
+                    example: {
+                        "fileName": "test2.txt"
                     },
                 },
             }, {
@@ -7101,6 +7910,9 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "test"
+                    },
                 },
             }, {
                 name: 'update',
@@ -7126,6 +7938,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "contract1"
                     },
                 },
             }, {
@@ -7342,6 +8157,9 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "我的文档空间"
+                    },
                 },
             }, {
                 name: 'createTeamSpace',
@@ -7364,6 +8182,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "团队文档空间"
                     },
                 },
             }, {
@@ -7390,6 +8211,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "新增我的文档库"
                     },
                 },
             }, {
@@ -7433,6 +8257,16 @@ export const BUILTIN_MODULES = [
                         },
                         "required": [
                             "name"
+                        ]
+                    },
+                    example: {
+                        "name": "新增团队文档库",
+                        "acl": "open",
+                        "groups": [
+                            1
+                        ],
+                        "users": [
+                            "admin"
                         ]
                     },
                 },
@@ -7479,6 +8313,16 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "新增产品文档库",
+                        "acl": "default",
+                        "groups": [
+                            1
+                        ],
+                        "users": [
+                            "admin"
+                        ]
+                    },
                 },
             }, {
                 name: 'createProjectLib',
@@ -7523,6 +8367,16 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "新增项目文档库",
+                        "acl": "default",
+                        "groups": [
+                            1
+                        ],
+                        "users": [
+                            "admin"
+                        ]
+                    },
                 },
             }, {
                 name: 'createMyDoc',
@@ -7563,6 +8417,12 @@ export const BUILTIN_MODULES = [
                             "title",
                             "content"
                         ]
+                    },
+                    example: {
+                        "moduleID": 1,
+                        "title": "演示文档",
+                        "content": "# 演示文档\n\n**这是文章正文**",
+                        "contentType": "doc"
                     },
                 },
             }, {
@@ -7605,6 +8465,12 @@ export const BUILTIN_MODULES = [
                             "content"
                         ]
                     },
+                    example: {
+                        "moduleID": 1,
+                        "title": "演示文档",
+                        "content": "# 演示文档\n\n**这是文章正文**",
+                        "contentType": "doc"
+                    },
                 },
             }, {
                 name: 'createProductDoc',
@@ -7645,6 +8511,12 @@ export const BUILTIN_MODULES = [
                             "title",
                             "content"
                         ]
+                    },
+                    example: {
+                        "moduleID": 1,
+                        "title": "演示文档",
+                        "content": "# 演示文档\n\n**这是文章正文**",
+                        "contentType": "doc"
                     },
                 },
             }, {
@@ -7687,6 +8559,12 @@ export const BUILTIN_MODULES = [
                             "content"
                         ]
                     },
+                    example: {
+                        "moduleID": 1,
+                        "title": "演示文档",
+                        "content": "# 演示文档\n\n**这是文章正文**",
+                        "contentType": "doc"
+                    },
                 },
             }, {
                 name: 'createMyModule',
@@ -7718,6 +8596,10 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "CMMI资料",
+                        "parentID": "0"
                     },
                 },
             }, {
@@ -7751,6 +8633,10 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "CMMI资料",
+                        "parentID": "0"
+                    },
                 },
             }, {
                 name: 'createProductModule',
@@ -7783,6 +8669,10 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "CMMI资料",
+                        "parentID": "0"
+                    },
                 },
             }, {
                 name: 'createProjectModule',
@@ -7814,6 +8704,10 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "CMMI资料",
+                        "parentID": "0"
                     },
                 },
             }, {
@@ -7874,6 +8768,9 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "新的空间"
+                    },
                 },
             }, {
                 name: 'updateLib',
@@ -7918,6 +8815,16 @@ export const BUILTIN_MODULES = [
                             "name"
                         ]
                     },
+                    example: {
+                        "name": "新文档库",
+                        "acl": "default",
+                        "groups": [
+                            1
+                        ],
+                        "users": [
+                            "admin"
+                        ]
+                    },
                 },
             }, {
                 name: 'update',
@@ -7958,6 +8865,12 @@ export const BUILTIN_MODULES = [
                             "content"
                         ]
                     },
+                    example: {
+                        "moduleID": 1,
+                        "title": "API修改演示文档",
+                        "content": "**这是修改后的文章正文**",
+                        "contentType": "doc"
+                    },
                 },
             }, {
                 name: 'updateModule',
@@ -7983,6 +8896,9 @@ export const BUILTIN_MODULES = [
                         "required": [
                             "name"
                         ]
+                    },
+                    example: {
+                        "name": "文档目录1"
                     },
                 },
             }, {
@@ -8087,6 +9003,15 @@ export const BUILTIN_MODULES = [
                             "type"
                         ]
                     },
+                    example: {
+                        "date": "2026-12-10",
+                        "type": "bug",
+                        "objectID": 1,
+                        "begin": "0900",
+                        "end": "0930",
+                        "assignedTo": "admin",
+                        "desc": "审批项目预算详情"
+                    },
                 },
             }, {
                 name: 'update',
@@ -8142,6 +9067,15 @@ export const BUILTIN_MODULES = [
                             "date",
                             "type"
                         ]
+                    },
+                    example: {
+                        "date": "2026-12-10",
+                        "type": "bug",
+                        "objectID": 1,
+                        "begin": "0900",
+                        "end": "0930",
+                        "assignedTo": "admin",
+                        "desc": "审批项目预算详情"
                     },
                 },
             }, {
@@ -8263,8 +9197,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(任务名称，示例：关键字)；keywords(关键词，示例：关键字)；id(编号，示例：1)；status(任务状态，枚举：wait 未开始 | doing 进行中 | done 已完成 | pause 已暂停 | cancel 已取消 | closed 已关闭)；desc(任务描述，示例：关键字)；assignedTo(指派给，用户，示例：admin)；pri(优先级，枚举：1 | 2 | 3 | 4)；project(所属项目，示例：all)；execution(所属执行，示例：all)；module(所属模块，示例：all)；estimate(最初预计，示例：关键字)；left(预计剩余，示例：关键字)；consumed(总计消耗，示例：关键字)；type(任务类型，枚举：design 设计 | devel 开发 | request 需求 | test 测试 | study 研究 | discuss 讨论 | ui 界面 | affair 事务 | misc 其他)；story(相关用户故事，示例：all)；fromBug(来源Bug编号，枚举：design 设计 | devel 开发 | request 需求 | test 测试 | study 研究 | discuss 讨论 | ui 界面 | affair 事务 | misc 其他)；closedReason(关闭原因，枚举：done 已完成 | cancel 已取消)；openedBy(由谁创建，用户，示例：admin)；finishedBy(由谁完成，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；canceledBy(由谁取消，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；openedDate(创建日期，示例：2026-01-01)；deadline(截止日期，示例：2026-01-01)；estStarted(预计开始，示例：2026-01-01)；realStarted(实际开始，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；finishedDate(实际完成，示例：2026-01-01)；closedDate(关闭时间，示例：2026-01-01)；canceledDate(取消时间，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8332,8 +9268,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(Bug标题，示例：关键字)；module(所属模块，模块，示例：0)；keywords(关键词，示例：关键字)；steps(重现步骤，示例：关键字)；assignedTo(指派给，用户，示例：admin)；resolvedBy(解决者，用户，示例：admin)；status(Bug状态，枚举：active 激活 | resolved 已解决 | closed 已关闭)；confirmed(是否确认，枚举：1 已确认 | 0 未确认)；story(相关需求，示例：关键字)；project(所属项目，示例：all)；product(所属产品，示例：all)；branch(branch，示例：all)；plan(所属计划，示例：all)；id(Bug编号，示例：1)；execution(所属执行，执行，示例：3)；severity(严重程度，枚举：1 | 2 | 3 | 4)；pri(优先级，枚举：1 | 2 | 3 | 4)；type(Bug类型，枚举：codeerror 代码错误 | config 配置相关 | install 安装部署 | security 安全相关 | performance 性能问题 | standard 标准规范 | automation 测试脚本 | designdefect 设计缺陷 | codeimprovement 代码改进 | others 其他)；os(操作系统，枚举：all 全部 | windows Windows | win11 Windows 11 | win10 Windows 10 | win8 Windows 8 | win7 Windows 7 | winxp Windows XP | osx Mac OS | android Android | ios IOS | linux Linux | ubuntu Ubuntu | chromeos Chrome OS | fedora Fedora | unix Unix | others 其他)；browser(浏览器，枚举：all 全部 | chrome Chrome | edge Edge | ie IE系列 | ie11 IE11 | ie10 IE10 | ie9 IE9 | ie8 IE8 | firefox firefox系列 | opera Opera系列 | safari | 360 360浏览器 | qq QQ浏览器 | other 其他)；resolution(解决方案，枚举：bydesign 设计如此 | duplicate 重复Bug | external 外部原因 | fixed 已解决 | notrepro 无法重现 | postponed 延期处理 | willnotfix 不予解决 | tostory 转为用户故事)；activatedCount(激活次数，示例：关键字)；toTask(转任务，示例：关键字)；toStory(转用户故事，示例：关键字)；openedBy(由谁创建，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(修改者，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；openedBuild(影响版本，示例：builds)；resolvedBuild(解决版本，示例：builds)；openedDate(创建日期，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；resolvedDate(解决日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(修改日期，示例：2026-01-01)；deadline(截止日期，示例：2026-01-01)；activatedDate(激活时间，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8399,8 +9337,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8466,8 +9406,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8533,8 +9475,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(需求名称，示例：关键字)；id(编号，示例：1)；keywords(关键词，示例：关键字)；status(当前状态，枚举：draft 草稿 | reviewing 评审中 | active 激活 | changing 变更中 | closed 已关闭)；pri(优先级，枚举：1 | 2 | 3 | 4)；module(所属模块，示例：all)；stage(所处阶段，枚举：wait 未开始 | planned 已计划 | projected 研发立项 | designing 设计中 | designed 设计完毕 | developing 研发中 | developed 研发完毕 | testing 测试中 | tested 测试完毕 | verified 已验收 | rejected 验收失败 | delivering 交付中 | delivered 已交付 | released 已发布 | closed 已关闭)；product(所属产品，示例：all)；branch(branch，示例：all)；grade(需求层级，示例：all)；plan(所属计划，示例：all)；estimate(预计小时，示例：关键字)；source(来源，枚举：customer 客户 | user 用户 | po 产品经理 | market 市场 | service 客服 | operation 运营 | support 技术支持 | competitor 竞争对手 | partner 合作伙伴 | dev 开发人员 | tester 测试人员 | bug Bug | forum 论坛 | other 其他)；sourceNote(来源备注，示例：关键字)；fromBug(来源Bug，示例：关键字)；category(类别，枚举：feature 功能 | interface 接口 | performance 性能 | safe 安全 | experience 体验 | improve 改进 | other 其他)；openedBy(由谁创建，用户，示例：admin)；reviewedBy(已评审人，用户，示例：admin)；result(评审结果，枚举：pass 确认通过 | revert 撤销变更 | clarify 有待明确 | reject 拒绝)；assignedTo(指派给，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedBy(最后修改，用户，示例：admin)；mailto(抄送给，用户，示例：admin)；closedReason(关闭原因，枚举：done 已完成 | subdivided 已拆分 | duplicate 重复 | postponed 延期 | willnotdo 不做 | cancel 已取消 | bydesign 设计如此)；version(版本号，示例：关键字)；openedDate(创建日期，示例：2026-01-01)；reviewedDate(评审时间，示例：2026-01-01)；assignedDate(指派日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01)；lastEditedDate(最后修改日期，示例：2026-01-01)；activatedDate(激活日期，示例：2026-01-01)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8699,8 +9643,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedDate,assignedTo,closedBy,closedDate,closedReason,desc,feedbackBy,id,keywords,mailto,module,notifyEmail,openedBy,openedDate,pri,processedBy,processedDate,product,public,reviewedBy,solution,source,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8766,8 +9712,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedCount,activatedDate,assignedTo,closedBy,closedDate,closedReason,contact,customer,deadline,desc,editedBy,editedDate,feedback,id,keywords,mailto,module,notifyEmail,openedBuild,openedBy,openedDate,pri,product,resolution,resolvedBy,resolvedDate,startedBy,startedDate,status,title,type',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -8833,8 +9781,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：title(用例名称，示例：关键字)；story(关联需求，示例：all)；id(用例编号，示例：1)；keywords(关键词，示例：关键字)；lastEditedBy(修改者，用户，示例：admin)；type(用例类型，枚举：unit 单元测试 | interface 接口测试 | feature 功能测试 | install 安装部署 | config 配置相关 | performance 性能测试 | security 安全相关 | other 其他)；auto(自动化，枚举：auto 是 | no 否)；openedBy(由谁创建，用户，示例：admin)；status(用例状态，枚举：wait 待评审 | normal 正常 | blocked 被阻塞 | investigate 研究中)；product(所属产品，示例：all)；branch(branch，示例：all)；stage(适用环节，枚举：unittest 单元测试环节 | feature 功能测试环节 | intergrate 集成测试环节 | system 系统测试环节 | smoke 冒烟测试环节 | bvt 版本验证环节)；module(所属模块，模块，示例：0)；pri(优先级，枚举：3 | 1 | 2 | 4)；lib(所属库，示例：all)；lastRunner(执行人，用户，示例：admin)；lastRunResult(结果，枚举：pass 通过 | fail 失败 | blocked 阻塞 | null 未执行)；lastRunDate(执行时间，示例：2026-01-01)；openedDate(创建日期，示例：2026-01-01)；lastEditedDate(修改日期，示例：2026-01-01)；scene(所属场景，示例：all)',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',
@@ -9006,8 +9956,10 @@ export const BUILTIN_MODULES = [
                     {
                         name: 'filters',
                         required: false,
-                        type: 'string',
+                        type: 'array',
                         description: '搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy',
+                        style: 'deepObject',
+                        explode: true,
                     },
                     {
                         name: 'groupJoin',

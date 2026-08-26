@@ -29,6 +29,9 @@ describe('ZenTao API docs generator', () => {
               required: true,
               type: 'object',
               mediaType: 'multipart/form-data',
+              example: {
+                resolution: 'fixed',
+              },
               schema: {
                 type: 'object',
                 properties: {
@@ -56,6 +59,6 @@ describe('ZenTao API docs generator', () => {
     expect(docs.pages[0].content).toContain('| `bugID` | Bug ID |');
     expect(docs.pages[0].content).toContain('| `comment` | string | 否 |  | 备注 |');
     expect(docs.pages[0].content).toContain('请求媒体类型：`multipart/form-data`');
-    expect(docs.pages[0].content).toContain('"resolution": "<string>"');
+    expect(docs.pages[0].content).toContain('"resolution": "fixed"');
   });
 });

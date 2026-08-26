@@ -22,7 +22,9 @@ interface OpenAPIParam {
     in: string;
     description?: string;
     required?: boolean;
-    schema?: { type?: string };
+    schema?: { type?: string; format?: string };
+    style?: string;
+    explode?: boolean;
 }
 
 type OpenAPIRequestMediaType =
@@ -225,15 +227,6 @@ function findActionNameConflicts(moduleName: string, actions: GeneratedActionRec
         }
     }
     return conflicts;
-}
-
-/** Determine the "resource name" (last non-param segment) for a path */
-function resourceSegment(path: string): string {
-    const segments = path.split('/').filter(Boolean);
-    for (let i = segments.length - 1; i >= 0; i--) {
-        if (!segments[i].startsWith(':')) return segments[i];
-    }
-    return segments[0] ?? '';
 }
 
 const PARAM_DESCRIPTION: Record<string, string> = {
@@ -463,7 +456,7 @@ function resolveActionResultType(
     throw new Error(`Invalid resultType in action mapping "${mappingKey}".`);
 }
 
-function classifyOperation(httpMethod: string, path: string, tag: string): ClassifiedAction {
+function classifyOperation(httpMethod: string, path: string): ClassifiedAction {
     const method = httpMethod.toLowerCase() as ClassifiedAction['method'];
     const segments = path.split('/').filter(Boolean);
     const lastSeg = segments[segments.length - 1];
@@ -548,8 +541,11 @@ function inferPagerGetter(op: OpenAPIOperation): string | undefined {
 interface RegistryParam {
     name: string;
     required: boolean;
-    type: 'string' | 'number' | 'boolean';
+    type: 'string' | 'number' | 'boolean' | 'array' | 'object';
     description: string;
+    format?: string;
+    style?: string;
+    explode?: boolean;
     defaultValue?: string;
     options?: { value: string; label: string }[];
 }
@@ -570,12 +566,21 @@ function buildParams(parameters: OpenAPIParam[] | undefined): RegistryParam[] | 
     return queryParams.map(p => {
         const parsed = parseDescriptionOptions(p.description ?? p.name);
         const desc = parsed.description || PARAM_DESC_FALLBACK[p.name] || p.name;
+        const schemaType = p.schema?.type;
+        const type: RegistryParam['type'] = schemaType === 'integer' || schemaType === 'number'
+            ? 'number'
+            : schemaType === 'boolean' || schemaType === 'array' || schemaType === 'object'
+                ? schemaType
+                : 'string';
         const param: RegistryParam = {
             name: p.name,
             required: p.required ?? false,
-            type: (p.name === 'recPerPage' || p.name === 'pageID') ? 'number' : 'string',
+            type,
             description: desc,
         };
+        if (p.schema?.format) param.format = p.schema.format;
+        if (p.style) param.style = p.style;
+        if (p.explode !== undefined) param.explode = p.explode;
         if (parsed.defaultValue !== undefined) param.defaultValue = parsed.defaultValue;
         if (parsed.options && parsed.options.length > 0) param.options = parsed.options;
         return param;
@@ -591,6 +596,7 @@ interface RegistryRequestBody {
     type: 'object';
     mediaType?: OpenAPIRequestMediaType;
     schema: Record<string, unknown>;
+    example?: unknown;
 }
 
 function buildRequestBody(op: OpenAPIOperation): RegistryRequestBody | undefined {
@@ -612,6 +618,7 @@ function buildRequestBody(op: OpenAPIOperation): RegistryRequestBody | undefined
     };
     if (rb.required) result.required = true;
     if (mediaType !== 'application/json') result.mediaType = mediaType;
+    if (content.example !== undefined) result.example = content.example;
     return result;
 }
 
@@ -639,6 +646,55 @@ function parseScopedListPath(path: string): ScopedListInfo | null {
         originalPath: path,
         operation: {} as OpenAPIOperation, // filled later
     };
+}
+
+function mergeScopedListParams(scopedLists: ScopedListInfo[], moduleName: string): RegistryParam[] | undefined {
+    const sources = scopedLists.map((scoped) => buildParams(scoped.operation.parameters) ?? []);
+    const first = sources[0];
+    if (sources.some((params) => params.length !== first.length)) {
+        throw new Error(`Incompatible query parameters for merged ${moduleName}/list action.`);
+    }
+    if (first.length === 0) return undefined;
+
+    const contractKeys = ['required', 'type', 'format', 'style', 'explode'] as const;
+    return first.map((base) => {
+        const peers = sources.map((params) => params.find((param) => param.name === base.name));
+        if (peers.some((param) => !param)) {
+            throw new Error(`Incompatible query parameters for merged ${moduleName}/list action.`);
+        }
+
+        for (const key of contractKeys) {
+            if (peers.some((param) => JSON.stringify(param?.[key]) !== JSON.stringify(base[key]))) {
+                throw new Error(
+                    `Conflicting query parameter contract "${base.name}.${key}" for merged ${moduleName}/list action.`,
+                );
+            }
+        }
+
+        const merged = { ...base };
+        if (peers.some((param) => JSON.stringify(param?.defaultValue) !== JSON.stringify(base.defaultValue))) {
+            delete merged.defaultValue;
+            merged.description = merged.description
+                .replace(/[,，]?\s*默认(?:是|为)?\s*\S+\s*$/, '')
+                .trim();
+        }
+        if (peers.some((param) => JSON.stringify(param?.options) !== JSON.stringify(base.options))) {
+            delete merged.options;
+        }
+        return merged;
+    });
+}
+
+export function requireMatchingScopedListValue(
+    values: readonly (string | undefined)[],
+    moduleName: string,
+    property: 'resultGetter' | 'pagerGetter',
+): string | undefined {
+    const first = values[0];
+    if (values.some((value) => value !== first)) {
+        throw new Error(`Conflicting ${property} for merged ${moduleName}/list action.`);
+    }
+    return first;
 }
 
 // ---------------------------------------------------------------------------
@@ -705,7 +761,7 @@ function buildRegistry(): RegistryBuildResult {
         let topLevelListOp: OpEntry | undefined;
 
         for (const entry of ops) {
-            const classification = classifyOperation(entry.method, entry.path, moduleName);
+            const classification = classifyOperation(entry.method, entry.path);
             const mappingKey = actionMapKey(entry.method, entry.path);
             const actionType = resolveActionType(entry.mapping, classification.type, mappingKey);
 
@@ -747,10 +803,17 @@ function buildRegistry(): RegistryBuildResult {
                 value: s.parentResource,
                 label: SCOPE_LABELS[s.parentResource] ?? s.parentResource,
             }));
-            const resultGetter = inferResultGetter(first.operation, 'list');
-            const pagerGetter = inferPagerGetter(first.operation);
-            const params = buildParams(first.operation.parameters);
-            const summary = first.operation.summary ?? `获取${display}列表`;
+            const resultGetter = requireMatchingScopedListValue(
+                scopedLists.map((scoped) => inferResultGetter(scoped.operation, 'list')),
+                moduleName,
+                'resultGetter',
+            );
+            const pagerGetter = requireMatchingScopedListValue(
+                scopedLists.map((scoped) => inferPagerGetter(scoped.operation)),
+                moduleName,
+                'pagerGetter',
+            );
+            const params = mergeScopedListParams(scopedLists, moduleName);
             const mappedProperties = new Map<string, unknown>();
             for (const scoped of scopedLists) {
                 for (const [property, value] of Object.entries(scoped.mapping ?? {})) {
@@ -826,8 +889,8 @@ function buildRegistry(): RegistryBuildResult {
         // Sort: list, get, create, update, delete, then actions alphabetically
         const typeOrder: Record<string, number> = { list: 0, create: 1, get: 2, update: 3, delete: 4 };
         const sorted = [...directOps].sort((a, b) => {
-            const ca = classifyOperation(a.method, a.path, moduleName);
-            const cb = classifyOperation(b.method, b.path, moduleName);
+            const ca = classifyOperation(a.method, a.path);
+            const cb = classifyOperation(b.method, b.path);
             const oa = typeOrder[ca.type] ?? 5;
             const ob = typeOrder[cb.type] ?? 5;
             if (oa !== ob) return oa - ob;
@@ -835,7 +898,7 @@ function buildRegistry(): RegistryBuildResult {
         });
 
         for (const entry of sorted) {
-            const classification = classifyOperation(entry.method, entry.path, moduleName);
+            const classification = classifyOperation(entry.method, entry.path);
             const reference = operationReference(entry.method, entry.path, entry.mapping);
             const actionType = resolveActionType(entry.mapping, classification.type, reference.mappingKey);
             const actionMethod = classification.method;
@@ -903,6 +966,9 @@ function buildRegistry(): RegistryBuildResult {
                     requestBodyBlock += `                    mediaType: '${requestBody.mediaType}',\n`;
                 }
                 requestBodyBlock += `                    schema: ${indentJson(requestBody.schema, 20)},\n`;
+                if (requestBody.example !== undefined) {
+                    requestBodyBlock += `                    example: ${indentJson(requestBody.example, 20)},\n`;
+                }
                 requestBodyBlock += `                },\n`;
                 propertyBlocks.set('requestBody', requestBodyBlock);
             }
@@ -988,6 +1054,15 @@ function formatParam(p: RegistryParam): string {
     s += `                        required: ${p.required},\n`;
     s += `                        type: '${p.type}',\n`;
     s += `                        description: '${escapeStr(p.description)}',\n`;
+    if (p.format) {
+        s += `                        format: '${escapeStr(p.format)}',\n`;
+    }
+    if (p.style) {
+        s += `                        style: '${escapeStr(p.style)}',\n`;
+    }
+    if (p.explode !== undefined) {
+        s += `                        explode: ${p.explode},\n`;
+    }
     if (p.defaultValue !== undefined) {
         s += `                        defaultValue: '${escapeStr(p.defaultValue)}',\n`;
     }
@@ -1048,25 +1123,28 @@ function reportActionNameConflicts(result: RegistryBuildResult): void {
 function main() {
     const result = buildRegistry();
 
+    if (result.actionNameConflicts.length > 0) {
+        reportActionNameConflicts(result);
+        process.exitCode = 1;
+        return;
+    }
+
     if (process.argv.includes('--check')) {
         const current = readFileSync(result.outputPath, 'utf-8');
         if (current !== result.output) {
             console.error('Generated module registry is out of date.');
             console.error('Run: bun run scripts/update-registry.ts');
-            reportActionNameConflicts(result);
             process.exitCode = 1;
             return;
         }
         console.log(`✅ Registry is up to date: ${result.outputPath}`);
         console.log(`   ${result.moduleCount} modules, ${result.operationCount} operations`);
-        reportActionNameConflicts(result);
         return;
     }
 
     writeFileSync(result.outputPath, result.output, 'utf-8');
     console.log(`✅ Generated ${result.outputPath}`);
     console.log(`   ${result.moduleCount} modules, ${result.operationCount} operations`);
-    reportActionNameConflicts(result);
 }
 
-main();
+if (import.meta.main) main();

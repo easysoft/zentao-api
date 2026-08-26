@@ -95,15 +95,6 @@ export function applyBuiltinOverrides(): void {
     return action;
   });
 
-  // 修改 task/list URL 定义
-  extendModuleAction('task', 'list', (action) => {
-    action.path = '/executions/{executionID}/tasks';
-    action.pathParams = {
-      executionID: '执行ID',
-    };
-    return action;
-  });
-
   // 修改 acl 字段默认值为 open
   [
     ['product', 'create'],
@@ -120,42 +111,14 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
-  // execution-create 支持创建阶段
+  // execution/create 补充 OpenAPI 尚未声明的里程碑字段
   extendModuleAction('execution', 'create', (action) => {
     const properties = action.requestBody!.schema?.properties as Record<string, unknown>;
     if(properties) {
-      if (!properties.type) {
-        properties.type = {
-          type: 'string',
-          description: '类型(sprint 迭代，敏捷项目用 | stage 阶段，瀑布/IPD 用 | kanban 看板)',
-        };
-      }
-      if (!properties.attribute) {
-        properties.attribute = {
-          type: 'string',
-          description: [
-            '阶段属性：mix - 综合（父阶段可挂不同类型子阶段）',
-            'request - 需求（不关联需求、不测、不构建、不导入 Bug）',
-            'design - 设计（不测、不构建、不 DevOps）',
-            'dev - 开发（功能完整，可需求、任务、测试、构建）',
-            'qa - 测试（同上，偏测试）',
-            'release - 发布（同上，偏发布）',
-            'review - 总结评审（最严：不关联需求、不测、不构建）',
-            'other - 其他（无上述专项限制）'
-          ].join(' | '),
-        };
-      }
       if (!properties.milestone) {
         properties.milestone = {
           type: 'integer',
           description: '是否里程碑(0 否| 1 是)',
-          format: 'int32'
-        };
-      }
-      if (!properties.parent) {
-        properties.parent = {
-          type: 'integer',
-          description: '父级项目',
           format: 'int32'
         };
       }
@@ -184,35 +147,6 @@ export function applyBuiltinOverrides(): void {
       action.requestBody.mediaType = 'multipart/form-data';
       const properties = action.requestBody.schema?.properties as Record<string, Record<string, unknown>>;
       if (properties?.file) properties.file.format = 'binary';
-    }
-    return action;
-  });
-
-  // 修改 BUG 列表选项
-  extendModuleAction('bug', 'list', (action) => {
-    const params = action.params;
-    const browseTypeParam = params?.find((param) => param.name === 'browseType');
-    if (browseTypeParam && browseTypeParam.options?.length) {
-      const options = browseTypeParam.options;
-      const assignedtomeOption = options.find(x => x.value === 'assignedtome');
-      if (assignedtomeOption) {
-        browseTypeParam.options = [
-          ...options.filter(x => x !== assignedtomeOption),
-          {
-            ...assignedtomeOption,
-            value: 'assigntome',
-          }
-        ];
-      }
-      if (!browseTypeParam.options.some(x => x.value === 'resolvedbyme')) {
-        browseTypeParam.options = [
-          ...browseTypeParam.options,
-          {
-            value: 'resolvedbyme',
-            label: '由我解决',
-          }
-        ];
-      }
     }
     return action;
   });

@@ -159,21 +159,21 @@ function resolvePathValues(
 }
 
 /** 仅从 action.params 中声明过的字段生成查询参数，避免把 body 字段误放到 URL 上。 */
-function buildQuery(action: ModuleAction, params: Record<string, unknown>): Record<string, string | number> {
-  const query: Record<string, string | number> = {};
+function buildQuery(action: ModuleAction, params: Record<string, unknown>): Record<string, unknown> {
+  const query: Record<string, unknown> = {};
   for (const param of action.params ?? []) {
     let value = params[param.name];
     if (value === undefined && param.name === 'pageID') {
       value = params.page;
     }
     if (value === undefined) {
-      value = param.defaultValue ?? param.options?.[0]?.value;
+      value = param.defaultValue;
     }
     if (value === undefined && param.required) {
       throw new ZentaoError('E_MISSING_PARAM', { param: param.name });
     }
     if (value !== undefined) {
-      query[param.name] = value as string | number;
+      query[param.name] = value;
     }
   }
   return query;

@@ -2,6 +2,9 @@ import { afterEach, describe, expect, test } from 'bun:test';
 import {
   defineModules,
   getModule,
+  getModuleAction,
+  getModuleActionParams,
+  getObjectProps,
   type ModuleAction,
   type ModuleDefinition,
 } from '../src/index';
@@ -63,8 +66,57 @@ describe('resolveActionRequest', () => {
     expect(command.path).toBe('/executions/3/workitems');
     expect(command.query).toEqual({
       pageID: '4',
-      status: 'open',
     });
+  });
+
+  test('does not treat the first query option as an implicit default', () => {
+    defineModules({
+      name: 'widget',
+      actions: [{
+        name: 'list',
+        type: 'list',
+        method: 'get',
+        path: '/widgets',
+        params: [{
+          name: 'status',
+          type: 'string',
+          options: [{ value: 'open', label: 'Open' }],
+        }],
+      }],
+    });
+
+    expect(resolveActionRequest(getModule('widget')!, 'list').query).toEqual({});
+  });
+
+  test('omits a scoped-list default when source operations disagree', () => {
+    const action = getModuleAction('story', 'list')!;
+    const browseType = action.params?.find((param) => param.name === 'browseType');
+
+    expect(browseType?.defaultValue).toBeUndefined();
+    expect(browseType?.description).toBe('状态');
+    expect(browseType?.options?.[0]?.value).toBe('allstory');
+    expect(resolveActionRequest(getModule('story')!, 'list', { productID: 1 }).query)
+      .not.toHaveProperty('browseType');
+  });
+
+  test('preserves structured query parameter metadata and values', () => {
+    const action = getModuleAction('user', 'list')!;
+    const filtersParam = action.params?.find((param) => param.name === 'filters');
+    const filters = [{ field: 'account', operator: 'include', value: 'admin', join: 'and', group: 1 }];
+
+    expect(filtersParam).toEqual(expect.objectContaining({
+      type: 'array',
+      style: 'deepObject',
+      explode: true,
+    }));
+    expect(resolveActionRequest(getModule('user')!, 'list', { filters }).query).toEqual({ filters });
+  });
+
+  test('preserves generated request body examples', () => {
+    expect(getModuleAction('user', 'create')?.requestBody?.example).toEqual(expect.objectContaining({
+      account: 'productmanager',
+      realname: '产品经理',
+    }));
   });
 
   test('resolves scoped list paths from explicit scope and scopeID', () => {
@@ -267,6 +319,8 @@ describe('resolveActionRequest', () => {
       tags: ['api', 'sdk'],
       priority: 2,
     });
+    expect(getModuleActionParams('form', 'create', { roles: ['body'] })
+      .find((param) => param.name === 'estimate')?.type).toBe('number');
   });
 
   test('coerces common boolean string values without treating every non-empty string as true', () => {
@@ -440,6 +494,12 @@ describe('resolveActionRequest', () => {
     });
 
     expect(() => resolveActionRequest(getModule('requiredform')!, 'create', {})).toThrow('name');
+  });
+});
+
+describe('module queries', () => {
+  test('returns an empty object for an unknown object type', () => {
+    expect(getObjectProps('unknown')).toEqual({});
   });
 });
 

@@ -27,9 +27,13 @@ export interface ModuleActionParam {
   /** 未显式传入时使用的默认值。 */
   defaultValue?: unknown;
   /** 参数值类型，用于基础类型转换。 */
-  type?: 'string' | 'number' | 'boolean';
+  type?: 'string' | 'number' | 'boolean' | 'array' | 'object';
   /** OpenAPI schema format，例如 `binary` 或 `int32`。 */
   format?: string;
+  /** OpenAPI 查询参数序列化样式，例如 `deepObject`。 */
+  style?: string;
+  /** OpenAPI 查询参数是否展开序列化。 */
+  explode?: boolean;
   /** 参数可选值。 */
   options?: readonly ModuleActionParamOption[];
 }
@@ -185,7 +189,7 @@ export interface ModuleActionRequest {
   /** 已替换路径参数后的 API 路径。 */
   path: string;
   /** 已组装的查询参数。 */
-  query?: Record<string, string | number>;
+  query?: Record<string, unknown>;
   /** 已组装的请求体。 */
   data?: Record<string, unknown>;
   /** 从 `id` 或 `{module}ID` 推断出的对象 ID。 */
