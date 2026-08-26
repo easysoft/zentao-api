@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'bun:test';
-import { getModuleAction, request, type BuiltinRequestName, type DataRecord } from '../src/index';
+import { describe, expect, expectTypeOf, test } from 'bun:test';
+import { getModuleAction, request, type BuiltinRequestName, type DataRecord, type RequestOptions } from '../src/index';
 
 interface ProductSummary {
   id: number;
@@ -34,6 +34,16 @@ async function typedRequestExamples(): Promise<void> {
 
   const narrowed = await request<ProductSummary[]>('product/list', {});
   narrowed.data?.forEach((product) => product.name.toUpperCase());
+
+  const raw = await request('product/list', {}, { raw: true });
+  expectTypeOf(raw).toEqualTypeOf<unknown>();
+
+  const widenedRawOptions: RequestOptions = { raw: true };
+  const widenedRaw = await request('product/list', {}, widenedRawOptions);
+  expectTypeOf(widenedRaw).toEqualTypeOf<unknown>();
+
+  const normalized = await request('product/list', {}, { raw: false });
+  expectTypeOf(normalized.data).toEqualTypeOf<DataRecord[] | undefined>();
 }
 
 function getterCompatibilityExamples(): void {

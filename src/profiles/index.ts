@@ -1,6 +1,6 @@
 import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
-import { normalizeSiteUrl } from '../utils/index.js';
+import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type { ZentaoProfile, ZentaoProfileRecord, ZentaoProfilesStore } from '../types/index.js';
 
 /**
@@ -11,10 +11,6 @@ import type { ZentaoProfile, ZentaoProfileRecord, ZentaoProfilesStore } from '..
 export const ZENTAO_PROFILES_STORAGE_KEY = 'ZENTAO_PROFILES';
 
 const PROFILE_FILE_PARTS = ['.config', 'zentao', 'zentao.json'];
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
 
 function cloneJson<T>(value: T): T {
   if (value === undefined) return value;

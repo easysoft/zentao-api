@@ -30,7 +30,7 @@ interface RealEnvConfig {
 }
 
 let client: ZentaoClient | undefined;
-let requestOptions: RequestOptions = {};
+let requestOptions: RequestOptions & { raw?: false } = {};
 let productID: number | undefined;
 let productName = '';
 let actorAccount: string | undefined;

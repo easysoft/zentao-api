@@ -1067,6 +1067,89 @@ describe('high-level request', () => {
     }
   });
 
+  test('autoFill selects the getter with the same path as the update action', async () => {
+    const requests: Array<{ method: string; pathname: string; body?: unknown }> = [];
+    const server = createMockServer(async (req) => {
+      const request = {
+        method: req.method,
+        pathname: new URL(req.url).pathname,
+        body: req.method === 'PUT' ? await req.json() : undefined,
+      };
+      requests.push(request);
+      if (req.method === 'GET') {
+        return Response.json({
+          status: 'success',
+          doc: {
+            id: 7,
+            moduleID: 3,
+            title: 'old title',
+            content: 'old content',
+            contentType: 'doc',
+          },
+        });
+      }
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await request(
+        'doc/update',
+        { docID: 7, title: 'new title', content: 'new content' },
+        { autoFill: true },
+      );
+
+      expect(requests).toEqual([
+        {
+          method: 'GET',
+          pathname: '/api.php/v2/doc/docs/7',
+          body: undefined,
+        },
+        {
+          method: 'PUT',
+          pathname: '/api.php/v2/doc/docs/7',
+          body: {
+            moduleID: 3,
+            title: 'new title',
+            content: 'new content',
+            contentType: 'doc',
+          },
+        },
+      ]);
+    } finally {
+      server.stop();
+    }
+  });
+
+  test('autoFill skips updates without a getter for the same path', async () => {
+    const requests: Array<{ method: string; pathname: string; body: unknown }> = [];
+    const server = createMockServer(async (req) => {
+      requests.push({
+        method: req.method,
+        pathname: new URL(req.url).pathname,
+        body: await req.json(),
+      });
+      return Response.json({ status: 'success', data: { id: 7 } });
+    });
+
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString() });
+      setGlobalOptions({ client });
+
+      await request('bug/updateModule', { moduleID: 7, name: 'new module' }, { autoFill: true });
+
+      expect(requests).toEqual([{
+        method: 'PUT',
+        pathname: '/api.php/v2/bug/modules/7',
+        body: { name: 'new module' },
+      }]);
+    } finally {
+      server.stop();
+    }
+  });
+
   test('autoFill aborts update when the prefill GET returns fail', async () => {
     const methods: string[] = [];
     const server = createMockServer(async (req) => {

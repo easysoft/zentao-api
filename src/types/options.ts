@@ -52,6 +52,7 @@ export interface RequestOptions extends ProcessListOptions {
    * 动作 body schema 中声明的字段用现值补齐，再发起 PUT，避免禅道用空值覆盖未提交字段。
    * 因此只需传想修改的字段即可。仅对 `type: 'update'` 且模块存在 `type: 'get'` 动作时生效。
    *
+   * 只有模块中存在与 update 路径相同的 GET 动作时才会预取；否则直接发送更新请求。
    * 不传时回落到全局 `autoFill`，默认 false。
    */
   autoFill?: boolean;

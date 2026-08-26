@@ -103,7 +103,7 @@ function getExplicitDataKeys(data: unknown): Set<string> {
 /**
  * 在执行 `update` 动作前，用当前对象的现值填充用户未显式传入的 body 字段。
  *
- * 仅当模块存在 `type: 'get'` 动作且 update 动作声明了对象类型 body schema 时生效；
+ * 仅当模块存在与 update 路径相同的 `type: 'get'` 动作，且 update 动作声明了对象类型 body schema 时生效；
  * 否则原样返回参数。GET 返回失败状态时会抛出 `E_API_FAILED`，避免继续发送未补齐的 PUT；
  * GET 成功但返回非对象时跳过填充，交由后续 PUT 正常处理。
  *
@@ -117,7 +117,9 @@ async function autoFillUpdateParams(
   options: RequestOptions,
 ): Promise<Record<string, unknown>> {
   const properties = (action.requestBody?.schema as { properties?: Record<string, unknown> } | undefined)?.properties;
-  const getAction = module.actions.find((candidate) => candidate.type === 'get');
+  const getAction = module.actions.find(
+    (candidate) => candidate.type === 'get' && candidate.path === action.path,
+  );
   if (!properties || !getAction) return params;
 
   const current = (await request(`${module.name}/${getAction.name}`, params, {
@@ -246,28 +248,39 @@ function normalizeResponse<T>(
  * 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
  * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
  *
- * @typeParam T 期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
+ * @typeParam T 归一化响应中期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
  * @param name - 请求名，例如 `product`、`product/list` 或 `product/1`。
  * @param params - 请求参数。
  * @param options - 请求选项。
- * @returns 归一化后的禅道 API 响应。
+ * @returns 默认返回归一化后的禅道 API 响应；`options.raw` 为 true 时返回未经归一化的原始响应。
  * @throws {ZentaoError} 传输层错误、参数缺失或 `throwOnFail` 启用时的业务失败。
  */
+export async function request(
+  name: string,
+  params: Record<string, unknown> | undefined,
+  options: RequestOptions & { raw: true },
+): Promise<unknown>;
 export async function request<Name extends BuiltinRequestName>(
   name: Name,
   params?: RequestParamsFor<Name>,
-  options?: RequestOptions,
+  options?: RequestOptions & { raw?: false },
 ): Promise<ResponseData<RequestResultFor<Name>>>;
 export async function request<T = unknown>(
   name: string,
   params?: Record<string, unknown>,
-  options?: RequestOptions,
+  options?: RequestOptions & { raw?: false },
 ): Promise<ResponseData<T>>;
+// raw 被宽化为 boolean 时，运行时结果无法静态判定，必须由调用方自行收窄。
+export async function request(
+  name: string,
+  params?: Record<string, unknown>,
+  options?: RequestOptions,
+): Promise<unknown>;
 export async function request<T = unknown>(
   name: string,
   params: Record<string, unknown> = {},
   options: RequestOptions = {},
-): Promise<ResponseData<T>> {
+): Promise<unknown> {
   const globals = getGlobalOptions();
   const client = options.client ?? globals.client;
   if (!client) {
@@ -311,7 +324,7 @@ export async function request<T = unknown>(
   });
 
   if (options.raw) {
-    return raw as ResponseData<T>;
+    return raw;
   }
 
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
