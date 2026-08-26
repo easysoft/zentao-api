@@ -1,4 +1,3 @@
-export { snapshotToHtml } from './html.js';
 export { snapshotToMarkdown } from './markdown.js';
 export type {
   BlockRenderer,
@@ -8,10 +7,8 @@ export type {
   DocSnapshot,
   DocSnapshotMeta,
   DocumentReference,
-  HtmlOptions,
   JsonRecord,
   MarkdownOptions,
-  OutputFormat,
   RenderBlockContext,
   SliceSnapshot,
   Snapshot,

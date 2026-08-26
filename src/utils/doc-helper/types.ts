@@ -49,7 +49,6 @@ export type SnapshotInput =
   | SnapshotEnvelope
   | string;
 
-export type OutputFormat = 'markdown' | 'html';
 export type UnknownBlockStrategy = 'children' | 'omit' | 'throw';
 
 export interface DocumentReference {
@@ -59,7 +58,7 @@ export interface DocumentReference {
 }
 
 export interface RenderBlockContext {
-  format: OutputFormat;
+  format: 'markdown';
   renderChildren(children?: readonly BlockSnapshot[]): string;
   renderInline(text: unknown): string;
 }
@@ -112,16 +111,3 @@ export interface ConvertOptions {
 }
 
 export type MarkdownOptions = ConvertOptions;
-
-export interface HtmlOptions extends ConvertOptions {
-  /**
-   * Defaults to true for a DocSnapshot/page root and false for block/slice input.
-   */
-  fullDocument?: boolean;
-
-  /**
-   * Render stored HTML from affine:embed-zui-html or zui-custom as trusted HTML.
-   * Disabled by default.
-   */
-  allowUnsafeHtml?: boolean;
-}

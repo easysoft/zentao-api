@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test';
 import {
-  snapshotToHtml,
   snapshotToMarkdown,
   type BlockSnapshot,
   type DeltaInsert,
@@ -184,8 +183,6 @@ describe('doc-helper Markdown conversion', () => {
     ]);
 
     const markdown = snapshotToMarkdown(snapshot);
-    const html = snapshotToHtml(snapshot, { fullDocument: false });
-
     expect(markdown).toContain('##### Inventory');
     expect(markdown).toContain('| Name');
     expect(markdown).toContain('Task A');
@@ -195,10 +192,6 @@ describe('doc-helper Markdown conversion', () => {
     expect(markdown).toContain('[Details](https://example.com/details)');
     expect(markdown).toContain('Expanded body');
 
-    expect(html).toContain('affine-database-block-container');
-    expect(html).toContain('<th>Key</th>');
-    expect(html).toContain('<h3>Custom title</h3>');
-    expect(html).toContain('<details class="affine-zui-expand" open>');
   });
 
   test('renders media, embeds, containers, and inline editor metadata', () => {
@@ -310,8 +303,6 @@ describe('doc-helper Markdown conversion', () => {
     };
 
     const markdown = snapshotToMarkdown(snapshot, options);
-    const html = snapshotToHtml(snapshot, { ...options, fullDocument: false });
-
     expect(markdown).toContain('Hello @Alice');
     expect(markdown).toContain('$x+y$');
     expect(markdown).toContain('* [x] Finished');
@@ -325,25 +316,9 @@ describe('doc-helper Markdown conversion', () => {
     expect(markdown).toContain('Plain custom content');
     expect(markdown).toContain('##### Remote widget');
 
-    expect(html).toContain('class="affine-zui-mention-label"');
-    expect(html).toContain('class="affine-zui-holder"');
-    expect(html).toContain('<ul class="todo-list">');
-    expect(html).toContain('<code class="language-js">console.log(1);</code>');
-    expect(html).toContain('<figure class="affine-image-block-container">');
-    expect(html).toContain('class="affine-attachment-block-container"');
-    expect(html).toContain('class="affine-zui-holder-block-container"');
-    expect(html).toContain('class="affine-zui-layout"');
-    expect(html).toContain('class="affine-zui-panel"');
-    expect(html).toContain('class="affine-whiteboard-block-image"');
-    expect(html).toContain('sandbox="allow-scripts allow-popups"');
-    expect(html).not.toContain('allow-same-origin');
-    expect(html).toContain('class="affine-zui-component-placeholder"');
-    expect(html).toContain('class="affine-synced-doc-link"');
-    expect(html).toContain('Plain custom content');
-    expect(html).toContain('<h5>Remote widget</h5>');
   });
 
-  test('supports custom renderers in Markdown and HTML', () => {
+  test('supports custom Markdown renderers', () => {
     const block: BlockSnapshot = {
       type: 'block',
       flavour: 'custom:callout',
@@ -355,61 +330,16 @@ describe('doc-helper Markdown conversion', () => {
         ? `> ${context.renderChildren()}`
         : undefined,
     });
-    const html = snapshotToHtml(block, {
-      fullDocument: false,
-      renderBlock: (current, context) => current.flavour === 'custom:callout'
-        ? `<aside>${context.renderChildren()}</aside>`
-        : undefined,
-    });
-
     expect(markdown).toContain('> Custom child');
-    expect(html).toContain('<aside><div class="affine-paragraph-block-container">');
-    expect(html).toContain('Custom child');
   });
 });
 
-describe('doc-helper HTML and input safety', () => {
-  test('escapes content, filters unsafe URLs, and gates stored HTML', () => {
-    const snapshot = createDoc([
-      paragraph([
-        { insert: '<script>alert(1)</script>' },
-        { insert: ' unsafe', attributes: { link: 'javascript:alert(1)' } },
-      ]),
-      {
-        type: 'block',
-        flavour: 'affine:embed-zui-html',
-        props: { html: '<img src=x onerror=alert(1)>' },
-      },
-      {
-        type: 'block',
-        flavour: 'affine:embed-zui-iframe',
-        props: { src: 'javascript:alert(1)' },
-      },
-    ]);
-
-    const safe = snapshotToHtml(snapshot);
-    expect(safe).toStartWith('<!doctype html>');
-    expect(safe).toContain('<title>Metadata &amp; title</title>');
-    expect(safe).toContain('<h1>Metadata &amp; title</h1>');
-    expect(safe).toContain('&lt;script&gt;alert(1)&lt;/script&gt; unsafe');
-    expect(safe).not.toContain('href="javascript:');
-    expect(safe).toContain('&lt;img src=x onerror=alert(1)&gt;');
-    expect(safe).not.toContain('<iframe');
-
-    const trusted = snapshotToHtml(snapshot, {
-      allowUnsafeHtml: true,
-      fullDocument: false,
-      includeTitle: false,
-    });
-    expect(trusted).toContain('<img src=x onerror=alert(1)>');
-  });
-
+describe('doc-helper input safety', () => {
   test('normalizes wrapped and repeatedly encoded snapshots', () => {
     const wrapped = { snapshot: [paragraph('Wrapped content')] };
     const encoded = JSON.stringify(JSON.stringify(wrapped));
 
     expect(snapshotToMarkdown(encoded)).toBe('Wrapped content\n');
-    expect(snapshotToHtml(wrapped, { fullDocument: false })).toContain('Wrapped content');
   });
 
   test('supports unknown-block policies and validates input limits', () => {

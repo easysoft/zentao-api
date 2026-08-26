@@ -221,25 +221,6 @@ export function pageTitleDelta(normalized: NormalizedSnapshot): DeltaInsert[] {
   return typeof metaTitle === 'string' ? [{ insert: metaTitle }] : [];
 }
 
-export function pageTitleText(normalized: NormalizedSnapshot): string {
-  const metaTitle = normalized.meta?.title;
-  if (typeof metaTitle === 'string') return metaTitle;
-  return plainText(toRecord(normalized.root?.props).title);
-}
-
-export function escapeHtml(value: unknown): string {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-export function escapeHtmlAttribute(value: unknown): string {
-  return escapeHtml(value)
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 export function sanitizeUrl(
   value: unknown,
   kind: 'link' | 'image' = 'link'
@@ -375,25 +356,4 @@ export function escapeMarkdownMath(value: unknown): string {
         '%3A'
       )}`;
     });
-}
-
-export function safeCssColor(value: unknown): string {
-  if (typeof value !== 'string') return '';
-  const color = value.trim();
-  if (
-    /^(#[\da-f]{3,8}|(?:rgb|hsl)a?\([\d\s.,%+-]+\)|var\(--[\w-]+\)|[a-z]+)$/i.test(
-      color
-    )
-  ) {
-    return color;
-  }
-  return '';
-}
-
-export function safeFontSize(value: unknown): string {
-  if (typeof value !== 'string') return '';
-  const size = value.trim();
-  return /^(?:\d+(?:\.\d+)?(?:px|em|rem|%|pt)|var\(--[\w-]+\))$/i.test(size)
-    ? size
-    : '';
 }

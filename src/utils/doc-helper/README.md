@@ -13,7 +13,6 @@ bun run check
 ## 内部 API
 
 - `snapshotToMarkdown(snapshot, options?)`
-- `snapshotToHtml(snapshot, options?)`
 
 输入可以是 `DocSnapshot`、`BlockSnapshot`、`SliceSnapshot`、block 数组、
 `{ snapshot }` 包装对象或 JSON 字符串。为了兼容产品读取逻辑，也支持最多三层重复
@@ -47,7 +46,6 @@ panel、expand、ZUI image、whiteboard、iframe、HTML、component 和 custom b
 
 - 未知容器默认继续转换 `children`；可通过 `unknownBlock: 'omit' | 'throw'` 调整。
 - 默认限制 256 层、50,000 个 block；可通过 `maxDepth` 和 `maxBlocks` 调整。
-- HTML 文本和属性会转义，危险 URL 会被过滤。
-- stored/custom HTML 默认作为源码输出；只有可信内容才能设置 `allowUnsafeHtml: true`。
+- stored/custom HTML 会作为 Markdown 代码块输出。
 - Markdown 表格无法无损表达 `rowspan`、`colspan` 和单元格对齐。
 - 图片和附件不会隐式请求资源；没有 resolver 时，标准图片会省略，附件保留名称。
