@@ -186,20 +186,18 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
+  "name": "智能头枕",
   "program": 1,
-  "line": 1,
-  "type": "<string>",
-  "PO": "<string>",
+  "line": 0,
+  "type": "normal",
+  "PO": "normal",
   "reviewer": [
-    "<string>"
+    "productManager"
   ],
-  "desc": [
-    "<string>"
-  ],
-  "QD": "<string>",
-  "RD": "<string>",
-  "acl": "<string>"
+  "desc": "智能健康头枕",
+  "QD": "productManager",
+  "RD": "productManager",
+  "acl": "open"
 }
 ```
 
@@ -328,8 +326,8 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "parentID": 1
+  "name": "需求模块",
+  "parentID": "0"
 }
 ```
 
@@ -391,8 +389,8 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "parentID": 1
+  "name": "Bug模块",
+  "parentID": "0"
 }
 ```
 
@@ -454,8 +452,8 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "parentID": 1
+  "name": "用例模块",
+  "parentID": "0"
 }
 ```
 
@@ -594,20 +592,18 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
+  "name": "智能照明",
   "program": 1,
-  "line": 1,
-  "type": "<string>",
-  "PO": "<string>",
+  "line": 0,
+  "type": "normal",
+  "PO": "normal",
   "reviewer": [
-    "<string>"
+    "productManager"
   ],
-  "desc": [
-    "<string>"
-  ],
-  "QD": "<string>",
-  "RD": "<string>",
-  "acl": "<string>"
+  "desc": "智能家庭照明",
+  "QD": "productManager",
+  "RD": "productManager",
+  "acl": "open"
 }
 ```
 

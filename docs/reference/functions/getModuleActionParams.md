@@ -12,8 +12,8 @@
 | ------ | ------ | ------ |
 | `moduleName` | `string` | 模块名（大小写不敏感）。 |
 | `actionName` | `string` | 动作名（大小写不敏感）；支持 `ls` 作为 `list` 的别名。 |
-| `options?` | \{ `roles?`: `ModuleActionParamRole`[]; \} | 选项。 |
-| `options.roles?` | `ModuleActionParamRole`[] | 角色，可选 `path`、`query`、`body`。 |
+| `options?` | \{ `roles?`: [`ModuleActionParamRole`](../type-aliases/ModuleActionParamRole.md)[]; \} | 选项。 |
+| `options.roles?` | [`ModuleActionParamRole`](../type-aliases/ModuleActionParamRole.md)[] | 角色，可选 `path`、`query`、`body`。 |
 
 ## Returns
 

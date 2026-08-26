@@ -234,6 +234,7 @@
 
 特殊处理：
 - 默认 HTTP 方法为 `GET`，`GET` 请求即使提供了 `options.body` 也不会发送，避免被部分代理/浏览器拒绝。
+- 不自动跟随重定向，避免把 `Token` 或请求体转发到另一个地址。
 - 非空响应优先按 JSON 解析；解析失败时回落为字符串原文。
 - 业务层失败（即响应体 `{ status: "fail" }`）不会抛出，仍按原样返回；只有 HTTP/网络/超时等传输层错误才会抛错。
 - `insecure` 仅在 Node.js 下可用，浏览器中传入会抛 `E_INSECURE_BROWSER`。
@@ -254,7 +255,9 @@
 ##### Throws
 
 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
-  `E_TIMEOUT`（超过 `timeout`）或 `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）。
+  `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
+  `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
+  `E_INVALID_PARAM`。
 
 #### Call Signature
 
@@ -266,6 +269,7 @@
 
 特殊处理：
 - 默认 HTTP 方法为 `GET`，`GET` 请求即使提供了 `options.body` 也不会发送，避免被部分代理/浏览器拒绝。
+- 不自动跟随重定向，避免把 `Token` 或请求体转发到另一个地址。
 - 非空响应优先按 JSON 解析；解析失败时回落为字符串原文。
 - 业务层失败（即响应体 `{ status: "fail" }`）不会抛出，仍按原样返回；只有 HTTP/网络/超时等传输层错误才会抛错。
 - `insecure` 仅在 Node.js 下可用，浏览器中传入会抛 `E_INSECURE_BROWSER`。
@@ -286,7 +290,9 @@
 ##### Throws
 
 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
-  `E_TIMEOUT`（超过 `timeout`）或 `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）。
+  `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
+  `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
+  `E_INVALID_PARAM`。
 
 #### Call Signature
 
@@ -298,6 +304,7 @@
 
 特殊处理：
 - 默认 HTTP 方法为 `GET`，`GET` 请求即使提供了 `options.body` 也不会发送，避免被部分代理/浏览器拒绝。
+- 不自动跟随重定向，避免把 `Token` 或请求体转发到另一个地址。
 - 非空响应优先按 JSON 解析；解析失败时回落为字符串原文。
 - 业务层失败（即响应体 `{ status: "fail" }`）不会抛出，仍按原样返回；只有 HTTP/网络/超时等传输层错误才会抛错。
 - `insecure` 仅在 Node.js 下可用，浏览器中传入会抛 `E_INSECURE_BROWSER`。
@@ -318,7 +325,9 @@
 ##### Throws
 
 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
-  `E_TIMEOUT`（超过 `timeout`）或 `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）。
+  `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
+  `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
+  `E_INVALID_PARAM`。
 
 #### Call Signature
 
@@ -330,6 +339,7 @@
 
 特殊处理：
 - 默认 HTTP 方法为 `GET`，`GET` 请求即使提供了 `options.body` 也不会发送，避免被部分代理/浏览器拒绝。
+- 不自动跟随重定向，避免把 `Token` 或请求体转发到另一个地址。
 - 非空响应优先按 JSON 解析；解析失败时回落为字符串原文。
 - 业务层失败（即响应体 `{ status: "fail" }`）不会抛出，仍按原样返回；只有 HTTP/网络/超时等传输层错误才会抛错。
 - `insecure` 仅在 Node.js 下可用，浏览器中传入会抛 `E_INSECURE_BROWSER`。
@@ -356,7 +366,9 @@
 ##### Throws
 
 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
-  `E_TIMEOUT`（超过 `timeout`）或 `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）。
+  `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
+  `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
+  `E_INVALID_PARAM`。
 
 ***
 

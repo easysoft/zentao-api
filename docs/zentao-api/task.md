@@ -29,7 +29,7 @@
 
 | 参数 | 说明 |
 | --- | --- |
-| `executionID` | 执行ID |
+| `executionID` | 所属执行ID |
 
 ### 查询参数
 
@@ -187,18 +187,16 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "executionID": 1,
-  "type": "<string>",
-  "assignedTo": "<string>",
-  "estStarted": "<string>",
-  "deadline": "<string>",
+  "name": "开发电容压力监测模块",
+  "executionID": 3,
+  "type": "devel",
+  "assignedTo": "admin",
+  "estStarted": "2025-12-25",
+  "deadline": "2025-12-30",
   "pri": 1,
   "estimate": 1,
   "module": 1,
-  "story": 1,
-  "desc": "<string>",
-  "parent": 1
+  "story": 1
 }
 ```
 
@@ -343,17 +341,15 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "type": "<string>",
-  "assignedTo": "<string>",
-  "estStarted": "<string>",
-  "deadline": "<string>",
+  "name": "开发电容光敏监测模块",
+  "type": "devel",
+  "assignedTo": "admin",
+  "estStarted": "2025-12-25",
+  "deadline": "2025-12-30",
   "pri": 1,
   "estimate": 1,
   "module": 1,
-  "story": 1,
-  "desc": "<string>",
-  "parent": 1
+  "story": 1
 }
 ```
 
@@ -424,8 +420,8 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "parent": 1
+  "name": "任务新模块",
+  "parent": "0"
 }
 ```
 
@@ -558,8 +554,7 @@ Schema:
 ```json
 {
   "left": 1,
-  "assignedTo": "<string>",
-  "comment": "<string>"
+  "assignedTo": "admin"
 }
 ```
 
@@ -701,11 +696,10 @@ Schema:
 ```json
 {
   "currentConsumed": 1,
-  "assignedTo": "<string>",
+  "assignedTo": "admin",
   "consumed": 1,
-  "realStarted": "<string>",
-  "finishedDate": "<string>",
-  "comment": "<string>"
+  "realStarted": "2025-12-25 09:00:00",
+  "finishedDate": "2025-12-30 17:30:00"
 }
 ```
 
@@ -787,11 +781,10 @@ Schema:
 
 ```json
 {
-  "assignedTo": "<string>",
-  "realStarted": "<string>",
+  "assignedTo": "admin",
+  "realStarted": "2025-12-26 09:00:00",
   "consumed": 1,
-  "left": 1,
-  "comment": "<string>"
+  "left": 1
 }
 ```
 

@@ -32,7 +32,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`title_asc` 名称 升序<br>`title_desc` 名称 降序<br>`begin_asc` 开始日期 升序<br>`begin_desc` 开始日期 降序<br>`end_asc` 结束日期 升序<br>`end_desc` 结束日期 降序<br>`status_asc` 状态 升序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,branch,end,id,status,title |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,branch,end,id,status,title |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -128,12 +128,12 @@ Schema:
 ```json
 {
   "productID": 1,
-  "title": "<string>",
-  "parent": 1,
-  "begin": "<string>",
-  "end": "<string>",
+  "title": "V1.0计划",
+  "parent": 0,
+  "begin": "2026-01-01",
+  "end": "2026-01-31",
   "branchID": 1,
-  "desc": "<string>"
+  "desc": "初版计划"
 }
 ```
 
@@ -253,12 +253,12 @@ Schema:
 
 ```json
 {
-  "title": "<string>",
-  "parent": 1,
-  "begin": "<string>",
-  "end": "<string>",
+  "title": "V1.1计划",
+  "parent": 0,
+  "begin": "2026-01-01",
+  "end": "2026-01-31",
   "branchID": 1,
-  "desc": "<string>"
+  "desc": "初版计划"
 }
 ```
 

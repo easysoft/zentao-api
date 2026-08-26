@@ -33,7 +33,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -80,7 +80,7 @@ const result = await request("meeting/list", {
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -128,7 +128,7 @@ const result = await request("meeting/projectMeetings", {
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：begin,createdBy,createdDate,date,dept,editedBy,editedDate,end,execution,host,id,minutedBy,minutedDate,mode,name,project,room |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -253,20 +253,19 @@ Schema:
 
 ```json
 {
-  "project": 1,
-  "execution": 1,
-  "name": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "mode": "<string>",
-  "host": "<string>",
+  "project": 2,
+  "execution": 3,
+  "name": "项目周会",
+  "begin": "2026-08-20 09:00",
+  "end": "2026-08-20 10:00",
+  "mode": "online",
+  "host": "admin",
   "participant": [
-    "<string>"
+    "admin"
   ],
-  "room": 1,
-  "dept": 1,
-  "objectType": "<string>",
-  "objectID": 1
+  "room": 0,
+  "dept": 0,
+  "objectID": 0
 }
 ```
 
@@ -418,18 +417,17 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "mode": "<string>",
-  "host": "<string>",
+  "name": "项目周会",
+  "begin": "2026-08-20 09:30",
+  "end": "2026-08-20 10:30",
+  "mode": "online",
+  "host": "admin",
   "participant": [
-    "<string>"
+    "admin"
   ],
-  "room": 1,
-  "dept": 1,
-  "objectType": "<string>",
-  "objectID": 1
+  "room": 0,
+  "dept": 0,
+  "objectID": 0
 }
 ```
 
@@ -529,7 +527,7 @@ Schema:
 
 ```json
 {
-  "minutes": "<string>"
+  "minutes": "会议纪要内容"
 }
 ```
 

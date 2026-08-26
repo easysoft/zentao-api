@@ -79,14 +79,13 @@ Schema:
 
 ```json
 {
-  "date": "<string>",
-  "type": "<string>",
-  "name": "<string>",
+  "date": "2026-12-10",
+  "type": "bug",
   "objectID": 1,
-  "begin": "<string>",
-  "end": "<string>",
-  "assignedTo": "<string>",
-  "desc": "<string>"
+  "begin": "0900",
+  "end": "0930",
+  "assignedTo": "admin",
+  "desc": "审批项目预算详情"
 }
 ```
 
@@ -181,14 +180,13 @@ Schema:
 
 ```json
 {
-  "date": "<string>",
-  "type": "<string>",
-  "name": "<string>",
+  "date": "2026-12-10",
+  "type": "bug",
   "objectID": 1,
-  "begin": "<string>",
-  "end": "<string>",
-  "assignedTo": "<string>",
-  "desc": "<string>"
+  "begin": "0900",
+  "end": "0930",
+  "assignedTo": "admin",
+  "desc": "审批项目预算详情"
 }
 ```
 

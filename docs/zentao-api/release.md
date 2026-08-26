@@ -31,7 +31,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`date_asc` 日期 升序<br>`date_desc` 日期 降序<br>`status_asc` 状态 升序<br>`status_desc` 状态 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(应用版本号，示例：关键字)；branch(平台/分支，示例：all)；id(ID，示例：1)；build(包含构建，示例：all)；status(发布状态，枚举：wait 未开始 \| normal 已发布 \| fail 发布失败 \| terminate 停止维护)；date(计划发布日期，示例：2026-01-01)；marker(里程碑，枚举：1 是 \| 0 否) |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(应用版本号，示例：关键字)；branch(平台/分支，示例：all)；id(ID，示例：1)；build(包含构建，示例：all)；status(发布状态，枚举：wait 未开始 \| normal 已发布 \| fail 发布失败 \| terminate 停止维护)；date(计划发布日期，示例：2026-01-01)；marker(里程碑，枚举：1 是 \| 0 否) |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -133,13 +133,13 @@ Schema:
 {
   "productID": 1,
   "system": 1,
-  "name": "<string>",
+  "name": "v1",
   "build": [
-    "<string>"
+    1
   ],
-  "status": "<string>",
-  "date": "<string>",
-  "desc": "<string>"
+  "status": "wait",
+  "date": "2026-02-10",
+  "desc": "release 1.0"
 }
 ```
 
@@ -233,13 +233,13 @@ Schema:
 ```json
 {
   "system": 1,
-  "name": "<string>",
+  "name": "v1.0",
   "build": [
-    "<string>"
+    1
   ],
-  "status": "<string>",
-  "date": "<string>",
-  "desc": "<string>"
+  "status": "wait",
+  "date": "2026-02-10",
+  "desc": "release 1.0"
 }
 ```
 

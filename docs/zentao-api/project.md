@@ -37,7 +37,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`begin_asc` 计划开始 升序<br>`begin_desc` 计划开始 降序<br>`end_asc` 计划结束 升序<br>`end_desc` 计划结束 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(项目名称，示例：关键字)；code(项目代号，示例：关键字)；id(项目ID，示例：1)；model(项目管理方式，枚举：scrum Scrum \| waterfall 瀑布 \| kanban 看板 \| agileplus 融合敏捷 \| waterfallplus 融合瀑布)；hasProduct(项目类型，枚举：1 产品型 \| 0 项目型)；parent(所属项目集，示例：all)；status(状态，枚举：wait 未开始 \| doing 进行中 \| suspended 已挂起 \| closed 已关闭 \| delay 已延期)；desc(项目描述，示例：关键字)；PM(负责人，用户，示例：admin)；openedDate(创建日期，示例：2026-01-01)；begin(计划开始，示例：2026-01-01)；end(计划完成，示例：2026-01-01)；realBegan(实际开始，示例：2026-01-01)；realEnd(实际完成，示例：2026-01-01)；openedBy(由谁创建，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedDate(最后编辑日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01) |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：name(项目名称，示例：关键字)；code(项目代号，示例：关键字)；id(项目ID，示例：1)；model(项目管理方式，枚举：scrum Scrum \| waterfall 瀑布 \| kanban 看板 \| agileplus 融合敏捷 \| waterfallplus 融合瀑布)；hasProduct(项目类型，枚举：1 产品型 \| 0 项目型)；parent(所属项目集，示例：all)；status(状态，枚举：wait 未开始 \| doing 进行中 \| suspended 已挂起 \| closed 已关闭 \| delay 已延期)；desc(项目描述，示例：关键字)；PM(负责人，用户，示例：admin)；openedDate(创建日期，示例：2026-01-01)；begin(计划开始，示例：2026-01-01)；end(计划完成，示例：2026-01-01)；realBegan(实际开始，示例：2026-01-01)；realEnd(实际完成，示例：2026-01-01)；openedBy(由谁创建，用户，示例：admin)；closedBy(由谁关闭，用户，示例：admin)；lastEditedDate(最后编辑日期，示例：2026-01-01)；closedDate(关闭日期，示例：2026-01-01) |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -122,7 +122,7 @@ const result = await request("project/programProjects", {
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `projectID` | string | 是 |  | 项目ID |
+| `projectID` | number | 是 |  | 项目ID |
 
 ### 请求体
 
@@ -139,7 +139,7 @@ const result = await request("project/programProjects", {
 import { request } from 'zentao-api';
 
 const result = await request("project/team", {
-  "projectID": "<string>"
+  "projectID": 1
 });
 ```
 ## 获取项目成员列表
@@ -252,16 +252,16 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "model": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
+  "name": "智能设备研发",
+  "model": "scrum",
+  "begin": "2025-01-01",
+  "end": "2026-10-01",
   "products": [
-    "<string>"
+    1
   ],
   "parent": 1,
-  "workflowGroup": 1,
-  "PM": "<string>"
+  "workflowGroup": 13,
+  "PM": "projectManager"
 }
 ```
 
@@ -332,8 +332,7 @@ Schema:
 
 ```json
 {
-  "realEnd": "<string>",
-  "comment": "<string>"
+  "realEnd": "2026-08-19"
 }
 ```
 
@@ -419,12 +418,12 @@ Schema:
 ```json
 {
   "productID": 1,
-  "title": "<string>",
-  "spec": "<string>",
-  "pri": 1,
-  "category": "<string>",
+  "title": "项目型项目的需求",
+  "spec": "需求描述",
+  "pri": 3,
+  "category": "feature",
   "reviewer": [
-    "<string>"
+    "productManager"
   ]
 }
 ```
@@ -523,14 +522,13 @@ Schema:
 ```json
 {
   "productID": 1,
-  "title": "<string>",
+  "title": "项目型项目的Bug",
   "openedBuild": [
-    "<string>"
+    "trunk"
   ],
-  "severity": 1,
-  "pri": 1,
-  "type": "<string>",
-  "steps": "<string>"
+  "severity": 3,
+  "pri": 3,
+  "type": "codeerror"
 }
 ```
 
@@ -642,17 +640,16 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "executionID": 1,
-  "type": "<string>",
-  "assignedTo": "<string>",
-  "estStarted": "<string>",
-  "deadline": "<string>",
+  "name": "无执行项目任务",
+  "executionID": 3,
+  "type": "devel",
+  "assignedTo": "admin",
+  "estStarted": "2026-01-01",
+  "deadline": "2026-01-10",
   "pri": 1,
   "estimate": 1,
-  "module": 1,
-  "story": 1,
-  "desc": "<string>"
+  "module": 0,
+  "story": 0
 }
 ```
 
@@ -758,16 +755,16 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "model": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
+  "name": "智能设备研发",
+  "model": "scrum",
+  "begin": "2025-01-01",
+  "end": "2026-10-01",
   "products": [
-    "<string>"
+    1
   ],
   "parent": 1,
-  "workflowGroup": 1,
-  "PM": "<string>"
+  "workflowGroup": 13,
+  "PM": "projectManager"
 }
 ```
 
@@ -900,19 +897,24 @@ Schema:
 ```json
 {
   "account": [
-    "<string>"
+    "admin",
+    "dev1"
   ],
   "role": [
-    "<string>"
+    "PM",
+    "dev"
   ],
   "days": [
-    "<string>"
+    5,
+    3
   ],
   "hours": [
-    "<string>"
+    7,
+    7
   ],
   "limited": [
-    "<string>"
+    "no",
+    "no"
   ]
 }
 ```

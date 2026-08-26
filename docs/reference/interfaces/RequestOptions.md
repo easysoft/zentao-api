@@ -12,7 +12,7 @@
 
 | Property | Type | Description | Inherited from |
 | ------ | ------ | ------ | ------ |
-| <a id="property-autofill"></a> `autoFill?` | `boolean` | 是否在执行 `update` 操作时自动填充未传入的字段。 设为 `true` 后，会先 GET 当前对象，把用户未显式传入（含 `params.data`）且 动作 body schema 中声明的字段用现值补齐，再发起 PUT，避免禅道用空值覆盖未提交字段。 因此只需传想修改的字段即可。仅对 `type: 'update'` 且模块存在 `type: 'get'` 动作时生效。 不传时回落到全局 `autoFill`，默认 false。 | - |
+| <a id="property-autofill"></a> `autoFill?` | `boolean` | 是否在执行 `update` 操作时自动填充未传入的字段。 设为 `true` 后，会先 GET 当前对象，把用户未显式传入（含 `params.data`）且 动作 body schema 中声明的字段用现值补齐，再发起 PUT，避免禅道用空值覆盖未提交字段。 因此只需传想修改的字段即可。仅对 `type: 'update'` 且模块存在 `type: 'get'` 动作时生效。 只有模块中存在与 update 路径相同的 GET 动作时才会预取；否则直接发送更新请求。 不传时回落到全局 `autoFill`，默认 false。 | - |
 | <a id="property-client"></a> `client?` | [`ZentaoClient`](../classes/ZentaoClient.md) | 本次调用使用的客户端；优先级高于全局客户端。 | - |
 | <a id="property-convert"></a> `convert?` | (`records`) => [`DataRecord`](../type-aliases/DataRecord.md)[] | 列表转换函数，在过滤前对记录数组整体执行。 | [`ProcessListOptions`](ProcessListOptions.md).[`convert`](ProcessListOptions.md#property-convert) |
 | <a id="property-convertsingle"></a> `convertSingle?` | (`record`) => [`DataRecord`](../type-aliases/DataRecord.md) | 单条对象转换函数，在字段摘取前执行；列表转换请使用 `convert`。 | - |

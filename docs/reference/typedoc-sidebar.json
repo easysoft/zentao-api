@@ -188,6 +188,10 @@
         "link": "/reference/type-aliases/ListPagerInfo.md"
       },
       {
+        "text": "ModuleActionGetterFn",
+        "link": "/reference/type-aliases/ModuleActionGetterFn.md"
+      },
+      {
         "text": "ModuleActionMethod",
         "link": "/reference/type-aliases/ModuleActionMethod.md"
       },
@@ -200,8 +204,16 @@
         "link": "/reference/type-aliases/ModuleActionParamOption.md"
       },
       {
+        "text": "ModuleActionParamRole",
+        "link": "/reference/type-aliases/ModuleActionParamRole.md"
+      },
+      {
         "text": "ModuleActionRequestMediaType",
         "link": "/reference/type-aliases/ModuleActionRequestMediaType.md"
+      },
+      {
+        "text": "ModuleActionResultFieldMap",
+        "link": "/reference/type-aliases/ModuleActionResultFieldMap.md"
       },
       {
         "text": "ModuleActionResultType",
@@ -218,6 +230,10 @@
       {
         "text": "RequestParamsFor",
         "link": "/reference/type-aliases/RequestParamsFor.md"
+      },
+      {
+        "text": "RequestProcessOptions",
+        "link": "/reference/type-aliases/RequestProcessOptions.md"
       },
       {
         "text": "RequestResultFor",

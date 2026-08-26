@@ -112,7 +112,7 @@ Schema:
 
 ```json
 {
-  "name": "<string>"
+  "name": "test"
 }
 ```
 
@@ -170,7 +170,7 @@ Schema:
 
 ```json
 {
-  "name": "<string>"
+  "name": "contract1"
 }
 ```
 

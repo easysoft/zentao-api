@@ -116,12 +116,10 @@ Schema:
 ```json
 {
   "productID": 1,
-  "integrated": 1,
-  "children": [
-    "<string>"
-  ],
-  "name": "<string>",
-  "desc": "<string>"
+  "integrated": 0,
+  "children": [],
+  "name": "smart-20260819093823",
+  "desc": "smart-20260819093823"
 }
 ```
 
@@ -197,11 +195,9 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "children": [
-    "<string>"
-  ],
-  "desc": "<string>"
+  "name": "smart-20260819093823-updated",
+  "children": [],
+  "desc": "smart-20260819093823-updated"
 }
 ```
 

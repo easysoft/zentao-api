@@ -31,7 +31,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`status_asc` 状态 升序<br>`status_desc` 状态 降序<br>`pri_asc` 优先级 升序<br>`pri_desc` 优先级 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -78,7 +78,7 @@ const result = await request("risk/list", {
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`status_asc` 状态 升序<br>`status_desc` 状态 降序<br>`pri_asc` 优先级 升序<br>`pri_desc` 优先级 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -126,7 +126,7 @@ const result = await request("risk/projectRisks", {
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`name_asc` 名称 升序<br>`name_desc` 名称 降序<br>`status_asc` 状态 升序<br>`status_desc` 状态 降序<br>`pri_asc` 优先级 升序<br>`pri_desc` 优先级 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activateBy,actualClosedDate,assignedTo,cancelBy,category,createdBy,createdDate,editedBy,editedDate,hangupBy,id,identifiedDate,impact,name,plannedClosedDate,prevention,pri,probability,project,rate,remedy,resolution,resolvedBy,source,status,strategy,trackedBy |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -259,21 +259,19 @@ Schema:
 
 ```json
 {
-  "project": 1,
-  "name": "<string>",
-  "execution": 1,
-  "source": "<string>",
-  "category": "<string>",
-  "strategy": "<string>",
-  "impact": 1,
-  "probability": 1,
-  "rate": 1,
-  "pri": 1,
-  "identifiedDate": "<string>",
-  "plannedClosedDate": "<string>",
-  "assignedTo": "<string>",
-  "prevention": "<string>",
-  "remedy": "<string>"
+  "project": 2,
+  "name": "关键路径延期",
+  "execution": 3,
+  "source": "business",
+  "category": "technical",
+  "strategy": "avoidance",
+  "impact": 3,
+  "probability": 3,
+  "rate": 9,
+  "pri": 2,
+  "identifiedDate": "2026-01-01",
+  "plannedClosedDate": "2026-03-01",
+  "assignedTo": "admin"
 }
 ```
 
@@ -435,20 +433,17 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "source": "<string>",
-  "category": "<string>",
-  "strategy": "<string>",
-  "impact": 1,
-  "probability": 1,
-  "rate": 1,
-  "pri": 1,
-  "identifiedDate": "<string>",
-  "plannedClosedDate": "<string>",
-  "assignedTo": "<string>",
-  "prevention": "<string>",
-  "remedy": "<string>",
-  "resolution": "<string>"
+  "name": "关键路径延期",
+  "source": "business",
+  "category": "technical",
+  "strategy": "avoidance",
+  "impact": 3,
+  "probability": 3,
+  "rate": 9,
+  "pri": 2,
+  "identifiedDate": "2026-01-01",
+  "plannedClosedDate": "2026-03-01",
+  "assignedTo": "admin"
 }
 ```
 

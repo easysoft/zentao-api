@@ -62,8 +62,8 @@ Schema:
 
 ```json
 {
-  "file": "/path/to/file",
-  "objectType": "<string>",
+  "file": "/tmp/zentao-apidoc-test.txt",
+  "objectType": "story",
   "objectID": 1
 }
 ```
@@ -124,7 +124,7 @@ Schema:
 
 ```json
 {
-  "fileName": "<string>"
+  "fileName": "test2.txt"
 }
 ```
 

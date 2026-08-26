@@ -57,14 +57,18 @@
 | [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
 | [ListPagerInfo](type-aliases/ListPagerInfo.md) | 列表分页信息别名。 |
+| [ModuleActionGetterFn](type-aliases/ModuleActionGetterFn.md) | 从原始响应中提取数据时使用的函数形态。 |
 | [ModuleActionMethod](type-aliases/ModuleActionMethod.md) | 模块动作使用的 HTTP 方法；兼容生成定义中的小写方法。 |
 | [ModuleActionName](type-aliases/ModuleActionName.md) | 模块动作名称，允许除基础动作外的自定义名称。 |
 | [ModuleActionParamOption](type-aliases/ModuleActionParamOption.md) | 模块动作参数可选项。 |
+| [ModuleActionParamRole](type-aliases/ModuleActionParamRole.md) | 模块动作参数角色。 |
 | [ModuleActionRequestMediaType](type-aliases/ModuleActionRequestMediaType.md) | 高阶请求支持的请求体媒体类型。 |
+| [ModuleActionResultFieldMap](type-aliases/ModuleActionResultFieldMap.md) | 从原始响应中重映射业务数据字段的映射表。 键为输出字段名，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
 | [ModuleActionResultType](type-aliases/ModuleActionResultType.md) | 模块动作结果形态。 |
 | [ModuleActionType](type-aliases/ModuleActionType.md) | 模块动作类型：基础 CRUD 或自定义动作。 |
 | [ModuleName](type-aliases/ModuleName.md) | 内置模块名称，同时允许用户扩展自定义模块名。 |
 | [RequestParamsFor](type-aliases/RequestParamsFor.md) | 根据内置请求名推导出的参数类型。字段细节以运行时 registry 为准，这里保持可扩展。 |
+| [RequestProcessOptions](type-aliases/RequestProcessOptions.md) | - |
 | [RequestResultFor](type-aliases/RequestResultFor.md) | 根据内置请求名推导出的 `ResponseData.data` 类型。 |
 | [SortExpr](type-aliases/SortExpr.md) | 排序表达式；推荐 `字段:asc|desc`，兼容 `字段_asc|desc`。 |
 | [SortFn](type-aliases/SortFn.md) | 自定义排序比较函数。 |

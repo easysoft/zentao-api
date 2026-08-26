@@ -39,7 +39,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`id_asc` ID 升序<br>`id_desc` ID 降序<br>`title_asc` 标题 升序<br>`title_desc` 标题 降序<br>`status_asc` 状态 升序<br>`status_desc` 状态 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedDate,assignedTo,closedBy,closedDate,closedReason,desc,feedbackBy,id,keywords,mailto,module,notifyEmail,openedBy,openedDate,pri,processedBy,processedDate,product,public,reviewedBy,solution,source,status,title,type |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedBy,activatedDate,assignedTo,closedBy,closedDate,closedReason,desc,feedbackBy,id,keywords,mailto,module,notifyEmail,openedBy,openedDate,pri,processedBy,processedDate,product,public,reviewedBy,solution,source,status,title,type |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -134,12 +134,12 @@ Schema:
 ```json
 {
   "product": 1,
-  "title": "<string>",
-  "module": 1,
-  "type": "<string>",
-  "desc": "<string>",
-  "feedbackBy": "<string>",
-  "source": "<string>"
+  "title": "电容压力监测灵敏度不够",
+  "module": 0,
+  "type": "story",
+  "desc": "监测灵敏度不够",
+  "feedbackBy": "客户对接人",
+  "source": "XX技术有限公司"
 }
 ```
 
@@ -236,14 +236,14 @@ Schema:
 ```json
 {
   "productID": 1,
-  "title": "<string>",
+  "title": "从反馈创建的Bug",
   "openedBuild": [
-    "<string>"
+    "trunk"
   ],
-  "severity": 1,
-  "pri": 1,
-  "type": "<string>",
-  "steps": "<string>"
+  "severity": 3,
+  "pri": 3,
+  "type": "codeerror",
+  "steps": "反馈转Bug"
 }
 ```
 
@@ -332,9 +332,9 @@ Schema:
 {
   "product": 1,
   "module": 1,
-  "title": "<string>",
-  "type": "<string>",
-  "desc": "<string>"
+  "title": "从反馈创建的工单",
+  "type": "code",
+  "desc": "反馈转工单"
 }
 ```
 
@@ -402,8 +402,8 @@ Schema:
 
 ```json
 {
-  "date": "<string>",
-  "name": "<string>"
+  "date": "2026-08-19",
+  "name": "从反馈创建的待办"
 }
 ```
 
@@ -483,10 +483,10 @@ Schema:
 ```json
 {
   "productID": 1,
-  "title": "<string>",
-  "spec": "<string>",
-  "pri": 1,
-  "category": "<string>"
+  "title": "从反馈创建的需求",
+  "spec": "反馈转需求",
+  "pri": 3,
+  "category": "feature"
 }
 ```
 
@@ -575,13 +575,13 @@ Schema:
 
 ```json
 {
-  "executionID": 1,
-  "name": "<string>",
-  "type": "<string>",
-  "assignedTo": "<string>",
-  "estStarted": "<string>",
-  "deadline": "<string>",
-  "desc": "<string>"
+  "executionID": 3,
+  "name": "从反馈创建的任务",
+  "type": "devel",
+  "assignedTo": "admin",
+  "estStarted": "2026-01-01",
+  "deadline": "2026-01-10",
+  "desc": "反馈转任务"
 }
 ```
 
@@ -708,12 +708,12 @@ Schema:
 ```json
 {
   "product": 1,
-  "module": 1,
-  "title": "<string>",
-  "type": "<string>",
-  "desc": "<string>",
-  "feedbackBy": "<string>",
-  "source": "<string>"
+  "module": 0,
+  "title": "光敏元件灵敏度不够",
+  "type": "story",
+  "desc": "监测灵敏度不够",
+  "feedbackBy": "客户对接人",
+  "source": "XX技术有限公司"
 }
 ```
 
@@ -812,8 +812,7 @@ Schema:
 
 ```json
 {
-  "assignedTo": "<string>",
-  "comment": "<string>"
+  "assignedTo": "admin"
 }
 ```
 
@@ -881,9 +880,8 @@ Schema:
 
 ```json
 {
-  "closedReason": "<string>",
-  "comment": "<string>",
-  "confirmClose": "<string>"
+  "closedReason": "done",
+  "confirmClose": "yes"
 }
 ```
 

@@ -13,6 +13,7 @@ SDK 已知错误码到默认消息的映射表。
 
 | Name | Type | Default value |
 | ------ | ------ | ------ |
+| <a id="property-e_aborted"></a> `E_ABORTED` | `"Request was aborted."` | `'Request was aborted.'` |
 | <a id="property-e_api_failed"></a> `E_API_FAILED` | `"ZenTao API returned failure: {message}"` | `'ZenTao API returned failure: {message}'` |
 | <a id="property-e_http_error"></a> `E_HTTP_ERROR` | `"HTTP request failed: {status} {statusText}"` | `'HTTP request failed: {status} {statusText}'` |
 | <a id="property-e_indeterminate_action_method"></a> `E_INDETERMINATE_ACTION_METHOD` | "Cannot infer HTTP method for action \"\{action\}\" from type \"\{type\}\"; specify \"method\" explicitly." | `'Cannot infer HTTP method for action "{action}" from type "{type}"; specify "method" explicitly.'` |

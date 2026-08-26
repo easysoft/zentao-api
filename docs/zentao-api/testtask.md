@@ -143,17 +143,17 @@ Schema:
 ```json
 {
   "productID": 1,
-  "name": "<string>",
+  "name": "智能家居V1.0测试单",
   "build": 1,
-  "execution": 1,
+  "execution": 3,
   "type": [
-    "<string>"
+    "integrate"
   ],
-  "owner": "<string>",
-  "status": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "desc": "<string>"
+  "owner": "admin",
+  "status": "wait",
+  "begin": "2026-01-01",
+  "end": "2026-02-01",
+  "desc": "test"
 }
 ```
 
@@ -262,17 +262,17 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
+  "name": "智能家居V1.0测试单",
   "build": 1,
-  "execution": 1,
+  "execution": 3,
   "type": [
-    "<string>"
+    "integrate"
   ],
-  "owner": "<string>",
-  "status": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "desc": "<string>"
+  "owner": "admin",
+  "status": "wait",
+  "begin": "2026-01-01",
+  "end": "2026-02-01",
+  "desc": "test"
 }
 ```
 

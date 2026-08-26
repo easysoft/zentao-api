@@ -36,7 +36,7 @@
 | `orderBy` | string | 否 |  | 排序<br>`rawID_asc` RAWID 升序<br>`rawID_desc` RAWID 降序<br>`nameCol_asc` 名称 升序<br>`nameCol_desc` 名称 降序<br>`begin_asc` 计划开始 升序<br>`begin_desc` 计划开始 降序<br>`end_asc` 计划结束 升序<br>`end_desc` 计划结束 降序 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
-| `filters` | string | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedDate,assignedDate,assignedTo,canceledBy,canceledDate,closedBy,closedDate,closedReason,consumed,deadline,desc,estStarted,estimate,execution,finishedBy,finishedDate,fromBug,id,keywords,lastEditedBy,lastEditedDate,left,mailto,module,name,openedBy,openedDate,pri,project,realStarted,status,story,type |
+| `filters` | array | 否 |  | 搜索条件数组，每项包含 field/operator/value/join/group；field 必须是该接口支持的搜索字段，operator 使用该接口搜索配置支持的操作符。支持搜索字段：activatedDate,assignedDate,assignedTo,canceledBy,canceledDate,closedBy,closedDate,closedReason,consumed,deadline,desc,estStarted,estimate,execution,finishedBy,finishedDate,fromBug,id,keywords,lastEditedBy,lastEditedDate,left,mailto,module,name,openedBy,openedDate,pri,project,realStarted,status,story,type |
 | `groupJoin` | string | 否 |  | 条件组之间的连接方式<br>`and` and<br>`or` or |
 
 ### 请求体
@@ -121,7 +121,7 @@ const result = await request("execution/projectExecutions", {
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `executionID` | string | 是 |  | 执行ID |
+| `executionID` | number | 是 |  | 执行ID |
 
 ### 请求体
 
@@ -138,7 +138,7 @@ const result = await request("execution/projectExecutions", {
 import { request } from 'zentao-api';
 
 const result = await request("execution/team", {
-  "executionID": "<string>"
+  "executionID": 1
 });
 ```
 ## 获取执行成员列表
@@ -293,27 +293,27 @@ Schema:
 
 ```json
 {
-  "project": 1,
-  "name": "<string>",
-  "type": "<string>",
-  "parent": 1,
-  "attribute": "<string>",
-  "lifetime": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "days": 1,
+  "project": 2,
+  "name": "智能设备研发3.1版本开发",
+  "type": "sprint",
+  "parent": 0,
+  "lifetime": "short",
+  "begin": "2026-01-01",
+  "end": "2026-01-21",
+  "days": 16,
   "products": [
-    "<string>"
+    1
   ],
-  "plans": [
-    "<string>"
-  ],
-  "PO": "<string>",
-  "QD": "<string>",
-  "PM": "<string>",
-  "RD": "<string>",
-  "acl": "<string>",
-  "milestone": 1
+  "plans": {
+    "1": [
+      0
+    ]
+  },
+  "PO": "productManager",
+  "QD": "testManager",
+  "PM": "executionManager",
+  "RD": "productManager",
+  "acl": "open"
 }
 ```
 
@@ -395,8 +395,7 @@ Schema:
 
 ```json
 {
-  "realEnd": "<string>",
-  "comment": "<string>"
+  "realEnd": "2026-01-21"
 }
 ```
 
@@ -458,8 +457,8 @@ Schema:
 
 ```json
 {
-  "name": "<string>",
-  "parentID": 1
+  "name": "任务模块",
+  "parentID": "0"
 }
 ```
 
@@ -612,23 +611,25 @@ Schema:
 
 ```json
 {
-  "project": 1,
-  "name": "<string>",
-  "lifetime": "<string>",
-  "begin": "<string>",
-  "end": "<string>",
-  "days": 1,
+  "project": 2,
+  "name": "智能设备研发3.2版本开发",
+  "lifetime": "short",
+  "begin": "2026-01-01",
+  "end": "2026-01-21",
+  "days": 16,
   "products": [
-    "<string>"
+    1
   ],
-  "plans": [
-    "<string>"
-  ],
-  "PO": "<string>",
-  "QD": "<string>",
-  "PM": "<string>",
-  "RD": "<string>",
-  "acl": "<string>"
+  "plans": {
+    "1": [
+      1
+    ]
+  },
+  "PO": "productManager",
+  "QD": "testManager",
+  "PM": "executionManager",
+  "RD": "productManager",
+  "acl": "open"
 }
 ```
 
@@ -768,19 +769,24 @@ Schema:
 ```json
 {
   "account": [
-    "<string>"
+    "admin",
+    "dev1"
   ],
   "role": [
-    "<string>"
+    "PM",
+    "dev"
   ],
   "days": [
-    "<string>"
+    5,
+    3
   ],
   "hours": [
-    "<string>"
+    7,
+    7
   ],
   "limited": [
-    "<string>"
+    "no",
+    "no"
   ]
 }
 ```

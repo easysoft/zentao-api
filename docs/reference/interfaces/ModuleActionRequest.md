@@ -14,4 +14,4 @@
 | <a id="property-module"></a> `module` | `string` | 模块名称。 |
 | <a id="property-params"></a> `params` | `Record`\<`string`, `unknown`\> | 原始调用参数。 |
 | <a id="property-path"></a> `path` | `string` | 已替换路径参数后的 API 路径。 |
-| <a id="property-query"></a> `query?` | `Record`\<`string`, `string` \| `number`\> | 已组装的查询参数。 |
+| <a id="property-query"></a> `query?` | `Record`\<`string`, `unknown`\> | 已组装的查询参数。 |
