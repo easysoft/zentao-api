@@ -15,6 +15,7 @@ function assert(condition: unknown, message: string): asserts condition {
 function readPackageJson(): {
   exports: Record<string, unknown>;
   main: string;
+  name: string;
   types: string;
   version: string;
 } {
@@ -68,7 +69,9 @@ assert(typeof browserApi.ZentaoClient === 'function', 'Browser module entry does
 assert(browserApi.VERSION === api.VERSION, 'Browser module VERSION does not match package main.');
 assert(browserApi.BUILD === api.BUILD, 'Browser module BUILD does not match package main.');
 
-const browserSubpathApi = await import('zentao-api/browser');
+// Keep this runtime smoke independent of pre-existing dist declarations: a
+// clean `bun run check` type-checks scripts before it builds the package.
+const browserSubpathApi = await import(`${packageJson.name}/browser`);
 assert(typeof browserSubpathApi.ZentaoClient === 'function', 'Package ./browser subpath does not export ZentaoClient.');
 assert(browserSubpathApi.VERSION === api.VERSION, 'Package ./browser VERSION does not match package main.');
 
