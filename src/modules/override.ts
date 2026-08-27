@@ -205,4 +205,18 @@ export function applyBuiltinOverrides(): void {
     }
     return action;
   });
+
+  // 创建和修改任务时，任务类型字段
+  ['create', 'update'].forEach((actionName) => {
+    extendModuleAction('task', actionName, (action) => {
+      const properties = action.requestBody!.schema?.properties as Record<string, unknown>;
+      if(properties && !properties.type) {
+        properties.type = {
+          type: 'string',
+          description: '任务类型（枚举：design 设计 | devel 开发 | request 需求 | test 测试 | study 研究 | discuss 讨论 | ui 界面 | affair 事务 | misc 其他）',
+        };
+      }
+      return action;
+    });
+  });
 }
