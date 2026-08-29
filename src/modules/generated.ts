@@ -2362,7 +2362,7 @@ export const BUILTIN_MODULES = [
                             "title": {
                                 "type": "string"
                             },
-                            "pri": { 
+                            "pri": {
                                 "type": "integer",
                                 "description": "优先级，默认是3",
                                 "format": "int32"
