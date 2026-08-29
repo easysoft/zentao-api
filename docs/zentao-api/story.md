@@ -17,6 +17,7 @@
 | `activate` | 激活需求 | `PUT` | `/stories/{storyID}/activate` |
 | `change` | 变更需求 | `PUT` | `/stories/{storyID}/change` |
 | `close` | 关闭需求 | `PUT` | `/stories/{storyID}/close` |
+| `getGrades` | 获取需求层级选项 | `GET` | `/storygrades` |
 
 ## 获取需求列表，支持获取项目/产品/执行下的需求
 
@@ -191,6 +192,10 @@ Schema:
       "type": "integer",
       "description": "所属执行",
       "format": "int32"
+    },
+    "grade": {
+      "type": "integer",
+      "description": "需求层级，可用的需求层级可以通过 story-getGrades 操作获取"
     }
   },
   "required": [
@@ -246,7 +251,8 @@ const result = await request("story/create", {
     "<string>"
   ],
   "project": 1,
-  "execution": 1
+  "execution": 1,
+  "grade": 1
 });
 ```
 ## 获取需求详情
@@ -730,4 +736,34 @@ const result = await request("story/close", {
   "closedReason": "<string>",
   "comment": "<string>"
 });
+```
+## 获取需求层级选项
+
+- SDK 调用：`request("story/getGrades", params)`
+- HTTP：`GET /storygrades`
+- 动作类型：`list`
+
+### 路径参数
+
+无路径参数。
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`grades`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("story/getGrades");
 ```
