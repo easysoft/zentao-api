@@ -72,6 +72,43 @@ export function applyBuiltinOverrides(): void {
     return action;
   });
 
+  // 修复 story/create、bug/create 等产品级创建接口的 productID 传递问题：
+  // 服务端要求 productID 放在 URL 查询参数里，而不是请求体里，
+  // 但 OpenAPI 定义将 productID 放在了 requestBody 中，且 action.params 为空。
+  // 修复动作：
+  //   1. 在 action.params 中补充 productID，让 buildQuery 把它拼到 URL query 上；
+  //   2. 从 requestBody.schema 中移除 productID，避免 buildRequestBody 因缺少该字段而抛错。
+  [
+    ['story', 'create'],
+    ['bug', 'create'],
+  ].forEach(([moduleName, actionName]) => {
+    extendModuleAction(moduleName, actionName, (action) => {
+      const existing = action.params ?? [];
+      const hasProductID = existing.some((p) => p.name === 'productID');
+      if (!hasProductID) {
+        const params = [{
+          name: 'productID',
+          required: true,
+          type: 'number' as const,
+          description: '产品ID（查询参数）',
+        }, ...existing];
+        action.params = params;
+      }
+      // 将 productID 从 requestBody 移到 query，避免 buildRequestBody 校验失败
+      const schema = action.requestBody?.schema as {
+        required?: string[];
+        properties?: Record<string, unknown>;
+      } | undefined;
+      if (schema?.properties && 'productID' in schema.properties) {
+        if (Array.isArray(schema.required)) {
+          schema.required = schema.required.filter((key) => key !== 'productID');
+        }
+        delete schema.properties.productID;
+      }
+      return action;
+    });
+  });
+
   // 修改 story/update 字段定义
   extendModuleAction('story', 'update', (action) => {
     const properties = action.requestBody!.schema?.properties as Record<string, unknown>;
