@@ -1,5 +1,27 @@
 # 变更日志
 
+## 0.6.7 - 2026-09-05
+
+### 新增
+
+- 为内置 Action 标注开源版、企业版、旗舰版与 IPD 版的最低禅道版本，模块查询 API 支持通过 `version` 筛选可用模块与动作，并从包入口导出 `isModuleName`。
+- 新增 `ZentaoClient.getZentaoConfig()`，支持 24 小时配置缓存、强制刷新、并发请求合并与取消；启用 profile 持久化后保存配置及获取时间，并在 `fromProfile()` 时恢复缓存。
+- 高阶 `request()` 支持全局 `version`、单次 `forceRefreshConfig` 与 `skipVersionCheckOnConfigError`，并在 `autoFill` 预读时复用本次解析的版本或跳过状态。
+
+### 变更
+
+- **兼容性变更**：完整的自定义 Action 定义必须包含非空 `minVersion` 数组，同一禅道系列不能重复，未列出的系列视为不支持。
+- **兼容性变更**：登录成功前强制获取服务器配置，高阶请求发送前检查 Action 的最低版本；配置获取失败默认中止调用，可通过 `skipVersionCheckOnConfigError` 允许继续，但不能忽略版本不匹配或版本格式错误。
+- 包内容检查改用 Bun 打包并检查归档文件。
+
+### 测试
+
+- 增加各禅道系列版本比较、模块过滤、请求拦截、配置缓存过期与并发刷新、取消、profile 持久化及失败重试的回归覆盖。
+
+### 文档
+
+- 补充版本检查、配置缓存与自定义 Action 迁移说明，重新生成 SDK 参考及各 Action 的最低版本文档。
+
 ## 0.6.6 - 2026-08-29
 
 ### 新增
