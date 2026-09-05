@@ -42,3 +42,9 @@ export interface ClientRequestOptions {
   /** 单次请求 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 */
   insecure?: boolean;
 }
+
+/** {@link ZentaoClient.getZentaoConfig} 的选项。 */
+export interface GetZentaoConfigOptions extends Pick<ClientRequestOptions, 'timeout' | 'insecure' | 'signal'> {
+  /** 忽略已有缓存并重新获取配置，默认 false；同一客户端的并发获取会合并。 */
+  forceRefresh?: boolean;
+}

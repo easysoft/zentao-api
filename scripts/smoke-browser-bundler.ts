@@ -64,6 +64,7 @@ try {
     console,
     setTimeout,
     clearTimeout,
+    structuredClone,
     URL,
     URLSearchParams,
     AbortController,
@@ -72,6 +73,11 @@ try {
     FormData,
     Blob,
     fetch: (_url: string, init?: RequestInit) => {
+      if (new URL(_url).searchParams.get('mode') === 'getconfig') {
+        assert(!new Headers(init?.headers).has('Token'), 'Configuration request must not attach Token.');
+        assert(init?.cache === 'no-store', 'Configuration request must bypass the HTTP cache.');
+        return Promise.resolve(Response.json({ version: '22.5' }));
+      }
       const headers = new Headers(init?.headers);
       receivedToken = headers.get('Token') ?? undefined;
       receivedBody = init?.body;

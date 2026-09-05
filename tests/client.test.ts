@@ -109,6 +109,7 @@ describe('ZentaoClient', () => {
   test('login stores token on the instance and returns it', async () => {
     const tokens: Array<string | null> = [];
     const server = createMockServer((req) => {
+      if (new URL(req.url).searchParams.get('mode') === 'getconfig') return Response.json({ version: '22.5' });
       if (new URL(req.url).pathname.endsWith('/users/login')) {
         return Response.json({ status: 'success', token: 'login-token' });
       }

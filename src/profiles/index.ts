@@ -1,7 +1,7 @@
 import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
-import type { ZentaoProfile, ZentaoProfileRecord, ZentaoProfilesStore } from '../types/index.js';
+import type { ServerConfig, ZentaoProfile, ZentaoProfileRecord, ZentaoProfilesStore } from '../types/index.js';
 
 /**
  * 浏览器环境下用于在 `localStorage` 中保存 profile 数据的 key。
@@ -260,6 +260,18 @@ export function addProfile(profile: ZentaoProfile): Promise<ZentaoProfileRecord>
     store.currentProfile = profileKey;
     await writeStore(store);
     return toRecord(normalized);
+  });
+}
+
+/** 只刷新已有 profile 的服务器配置，不切换当前账号或重建已删除的记录。 @internal */
+export function updateProfileServerConfig(profileKey: string, serverConfig: ServerConfig, fetchedAt: string): Promise<void> {
+  return withStoreMutex(async () => {
+    const store = await readStore();
+    const profile = findProfile(store, profileKey);
+    if (!profile) return;
+    profile.serverConfig = cloneJson(serverConfig);
+    profile.serverConfigFetchedAt = fetchedAt;
+    await writeStore(store);
   });
 }
 

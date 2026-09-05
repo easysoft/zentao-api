@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync, readFileSync, statSync } from 'node:fs';
+import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import { mkdtempSync, rmSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -8,8 +8,10 @@ import {
   deleteProfile,
   getAllProfiles,
   getProfile,
+  request,
   setGlobalOptions,
   switchProfile,
+  type ServerConfig,
 } from '../src/index';
 
 function createMockServer(handler: (req: Request) => Response | Promise<Response>) {
@@ -33,6 +35,8 @@ beforeEach(async () => {
     timeout: undefined,
     insecure: undefined,
     persistProfiles: undefined,
+    version: undefined,
+    skipVersionCheckOnConfigError: undefined,
   });
 });
 
@@ -44,6 +48,8 @@ afterEach(() => {
     timeout: undefined,
     insecure: undefined,
     persistProfiles: undefined,
+    version: undefined,
+    skipVersionCheckOnConfigError: undefined,
   });
   if (previousHome === undefined) {
     delete process.env.HOME;
@@ -146,6 +152,7 @@ describe('persistent profiles', () => {
           user: { id: 1, account: 'admin', realname: 'Admin' },
         });
       }
+      if (new URL(req.url).searchParams.get('mode') === 'getconfig') return Response.json({ version: '22.5' });
       return Response.json({ status: 'success' });
     });
 
@@ -160,9 +167,155 @@ describe('persistent profiles', () => {
         token: 'login-token',
         user: { id: 1, account: 'admin', realname: 'Admin' },
         config: expect.objectContaining({ timeout: 3210 }),
+        serverConfig: { version: '22.5' },
+        serverConfigFetchedAt: expect.any(String),
       }));
     } finally {
       server.stop();
     }
+  });
+});
+
+function savedConfig(version: string): ServerConfig {
+  return { version, systemMode: 'ALM', sprintConcept: '0', requestType: 'GET', requestFix: '-',
+    moduleVar: 'm', methodVar: 'f', viewVar: 't', sessionVar: 'zentaosid' };
+}
+
+describe('profile server configuration cache', () => {
+  test.each([
+    ['fresh', 1000, 0],
+    ['exactly one day', 86_400_000, 0],
+    ['older than one day', 86_400_001, 1],
+    ['future timestamp', -1000, 1],
+    ['missing timestamp', undefined, 1],
+    ['invalid timestamp', 'invalid', 1],
+  ] as const)('restores profiles with %s', async (_label, age, expectedFetches) => {
+    const now = Date.now();
+    const clock = spyOn(Date, 'now').mockReturnValue(now);
+    const fetchedAt = typeof age === 'number' ? new Date(now - age).toISOString() : age;
+    let configs = 0;
+    const server = createMockServer(req => {
+      if (new URL(req.url).searchParams.has('mode')) {
+        configs++;
+        return Response.json(savedConfig('biz13.5'));
+      }
+      return Response.json({ status: 'success', products: [] });
+    });
+    try {
+      setGlobalOptions({ persistProfiles: true });
+      await addProfile({ server: server.url.toString(), account: 'admin', token: 'token',
+        serverConfig: savedConfig('biz13.0'), serverConfigFetchedAt: fetchedAt });
+      const client = await ZentaoClient.fromProfile();
+      await request('product/list', {}, { client });
+      expect(configs).toBe(expectedFetches);
+      expect((await getProfile())!.serverConfig!.version).toBe(expectedFetches ? 'biz13.5' : 'biz13.0');
+      if (!expectedFetches) expect((await getProfile())!.serverConfigFetchedAt).toBe(fetchedAt);
+    } finally { clock.mockRestore(); server.stop(true); }
+  });
+
+  test('missing config refreshes despite a recent timestamp', async () => {
+    let configs = 0;
+    const server = createMockServer(() => { configs++; return Response.json(savedConfig('22.5')); });
+    try {
+      await addProfile({ server: server.url.toString(), account: 'admin', token: 'token',
+        serverConfigFetchedAt: new Date().toISOString() });
+      const client = await ZentaoClient.fromProfile();
+      await expect(client.getZentaoConfig()).resolves.toMatchObject({ version: '22.5' });
+      expect(configs).toBe(1);
+    } finally { server.stop(true); }
+  });
+
+  test('updates only the bound profile, respects persistence and does not recreate deleted profiles', async () => {
+    let version = 'biz13.5';
+    const server = createMockServer(() => Response.json(savedConfig(version)));
+    try {
+      const first = await addProfile({ server: server.url.toString(), account: 'admin', token: 'first',
+        serverConfig: savedConfig('biz13.0'), serverConfigFetchedAt: '2020-01-01T00:00:00.000Z',
+        config: { lang: 'zh-cn' }, custom: { keep: true }, user: { id: 1 } });
+      const second = await addProfile({ server: server.url.toString(), account: 'dev', token: 'second',
+        serverConfig: savedConfig('biz13.0'), serverConfigFetchedAt: '2020-01-02T00:00:00.000Z' });
+      const client = await ZentaoClient.fromProfile(first.key);
+      await switchProfile(second.key);
+      const beforeFirst = (await getProfile(first.key))!;
+      const beforeSecond = (await getProfile(second.key))!;
+      setGlobalOptions({ persistProfiles: true });
+      await Promise.all([client.getZentaoConfig(), client.getZentaoConfig()]);
+      expect(await getProfile()).toEqual(beforeSecond);
+      expect(await getProfile(first.key)).toEqual({ ...beforeFirst,
+        serverConfig: savedConfig('biz13.5'), serverConfigFetchedAt: expect.any(String) });
+      const refreshed = await getProfile(first.key);
+      setGlobalOptions({ persistProfiles: false });
+      version = 'biz13.6';
+      expect((await client.getZentaoConfig({ forceRefresh: true })).version).toBe('biz13.6');
+      expect(await getProfile(first.key)).toEqual(refreshed);
+      setGlobalOptions({ persistProfiles: true });
+      await deleteProfile(first.key);
+      await client.getZentaoConfig({ forceRefresh: true });
+      expect(await getProfile(first.key)).toBeUndefined();
+      expect(await getProfile()).toEqual(beforeSecond);
+    } finally { server.stop(true); }
+  });
+
+  test('leaves an expired timestamp unchanged on discovery failure and retries successfully', async () => {
+    let unavailable = true;
+    let configs = 0;
+    const server = createMockServer(req => {
+      if (new URL(req.url).searchParams.has('mode')) {
+        configs++;
+        return unavailable ? new Response('Unavailable', { status: 503 }) : Response.json(savedConfig('22.5'));
+      }
+      return Response.json({ status: 'success', products: [] });
+    });
+    try {
+      setGlobalOptions({ persistProfiles: true });
+      const profile = await addProfile({ server: server.url.toString(), account: 'admin', token: 'token',
+        serverConfig: savedConfig('22.0'), serverConfigFetchedAt: '2020-01-01T00:00:00.000Z' });
+      const client = await ZentaoClient.fromProfile();
+      await request('product/list', {}, { client, skipVersionCheckOnConfigError: true });
+      expect((await getProfile())!.serverConfigFetchedAt).toBe(profile.serverConfigFetchedAt);
+      unavailable = false;
+      await request('product/list', {}, { client });
+      expect(configs).toBe(2);
+      expect((await getProfile())!.serverConfig!.version).toBe('22.5');
+    } finally { server.stop(true); }
+  });
+
+  test('does not swallow profile storage errors when discovery failures may be skipped', async () => {
+    let businessCalls = 0;
+    const server = createMockServer(req => {
+      if (!new URL(req.url).searchParams.has('mode')) businessCalls++;
+      return Response.json(savedConfig('22.5'));
+    });
+    try {
+      setGlobalOptions({ persistProfiles: true, skipVersionCheckOnConfigError: true });
+      await addProfile({ server: server.url.toString(), account: 'admin', token: 'token' });
+      const client = await ZentaoClient.fromProfile();
+      writeFileSync(join(tempHome, '.config/zentao/zentao.json'), '{invalid');
+      await expect(request('product/list', {}, { client })).rejects.toMatchObject({ code: 'E_PROFILE_STORAGE_INVALID' });
+      expect(businessCalls).toBe(0);
+    } finally { server.stop(true); }
+  });
+
+  test('does not save failed logins or update a previously bound account during another login', async () => {
+    let unavailable = true;
+    const server = createMockServer(req => {
+      if (new URL(req.url).pathname.endsWith('/users/login')) return Response.json({ status: 'success', token: 'new-token' });
+      return unavailable ? new Response('Unavailable', { status: 503 }) : Response.json(savedConfig('max8.5'));
+    });
+    try {
+      setGlobalOptions({ persistProfiles: true, version: '22.5' });
+      const first = await addProfile({ server: server.url.toString(), account: 'first', token: 'old-token',
+        serverConfig: savedConfig('max8.0'), serverConfigFetchedAt: '2020-01-01T00:00:00.000Z' });
+      const client = await ZentaoClient.fromProfile(first.key);
+      const before = await getProfile(first.key);
+      await expect(client.login('second', 'password')).rejects.toMatchObject({ code: 'E_HTTP_ERROR' });
+      expect(await getAllProfiles()).toHaveLength(1);
+      expect(await getProfile(first.key)).toEqual(before);
+      unavailable = false;
+      await client.login('second', 'password');
+      expect(await getProfile(first.key)).toEqual(before);
+      expect(await getProfile()).toMatchObject({ account: 'second', token: 'new-token',
+        serverConfig: savedConfig('max8.5'), serverConfigFetchedAt: expect.any(String) });
+    } finally { server.stop(true); }
   });
 });

@@ -35,6 +35,7 @@ describe('browser bundle', () => {
         console,
         setTimeout,
         clearTimeout,
+        structuredClone,
         URL,
         URLSearchParams,
         AbortController,
@@ -53,6 +54,11 @@ describe('browser bundle', () => {
           },
         },
         fetch: (_url: string, init?: RequestInit) => {
+          if (new URL(_url).searchParams.get('mode') === 'getconfig') {
+            expect(new Headers(init?.headers).has('Token')).toBe(false);
+            expect(init?.cache).toBe('no-store');
+            return Promise.resolve(Response.json({ version: 'biz13.5' }));
+          }
           const headers = new Headers(init?.headers);
           receivedToken = headers.get('Token') ?? undefined;
           receivedBody = init?.body;

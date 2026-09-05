@@ -1,4 +1,5 @@
-import { ZentaoError } from '../misc/errors.js';
+import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
+import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
 import { getGlobalOptions } from '../misc/global-options.js';
 import type {
   DataRecord,
@@ -115,6 +116,7 @@ async function autoFillUpdateParams(
   action: ModuleAction,
   params: Record<string, unknown>,
   options: RequestOptions,
+  version: string | null,
 ): Promise<Record<string, unknown>> {
   const properties = (action.requestBody?.schema as { properties?: Record<string, unknown> } | undefined)?.properties;
   const getAction = module.actions.find(
@@ -122,12 +124,12 @@ async function autoFillUpdateParams(
   );
   if (!properties || !getAction) return params;
 
-  const current = (await request(`${module.name}/${getAction.name}`, params, {
+  const current = (await requestInternal(`${module.name}/${getAction.name}`, params, {
     client: options.client,
     timeout: options.timeout,
     insecure: options.insecure,
     throwOnFail: true,
-  })).data;
+  }, version) as ResponseData).data;
   if (!isRecord(current)) return params;
 
   const explicitDataKeys = getExplicitDataKeys(params.data);
@@ -244,6 +246,9 @@ function normalizeResponse<T>(
  * 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
  * 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
  * 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+ * 请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
+ * `forceRefreshConfig` 则强制使用实际版本。无法获取配置时默认抛错，
+ * `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
  *
  * 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
  * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
@@ -281,6 +286,16 @@ export async function request<T = unknown>(
   params: Record<string, unknown> = {},
   options: RequestOptions = {},
 ): Promise<unknown> {
+  return requestInternal<T>(name, params, options);
+}
+
+/** version 为 undefined 时解析一次，null 表示本次调用已选择跳过版本检查。 */
+async function requestInternal<T = unknown>(
+  name: string,
+  params: Record<string, unknown>,
+  options: RequestOptions,
+  version?: string | null,
+): Promise<unknown> {
   const globals = getGlobalOptions();
   const client = options.client ?? globals.client;
   if (!client) {
@@ -306,8 +321,32 @@ export async function request<T = unknown>(
   if (!action) {
     throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });
   }
+  if (version === undefined) {
+    if (!options.forceRefreshConfig && globals.version !== undefined) {
+      version = globals.version;
+    } else {
+      try {
+        version = (await client.getZentaoConfig({
+          forceRefresh: options.forceRefreshConfig,
+          timeout: options.timeout ?? globals.timeout,
+          insecure: options.insecure ?? globals.insecure,
+        })).version;
+      } catch (error) {
+        if (!(options.skipVersionCheckOnConfigError ?? globals.skipVersionCheckOnConfigError)
+          || !isZentaoConfigFetchError(error)) throw error;
+        version = null;
+      }
+    }
+  }
+  if (version !== null && !supportsZentaoVersion(parseZentaoVersion(version), action.minVersion)) {
+    throw new ZentaoError('E_UNSUPPORTED_ZENTAO_VERSION', {
+      action: `${module.name}/${action.name}`,
+      version,
+      minVersion: action.minVersion.join(', '),
+    }, { action: `${module.name}/${action.name}`, version, minVersion: action.minVersion });
+  }
   const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
-    ? await autoFillUpdateParams(module, action, mergedParams, options)
+    ? await autoFillUpdateParams(module, action, mergedParams, { ...options, client }, version)
     : mergedParams;
 
   const command = resolveActionRequest(module, actionName, finalParams);

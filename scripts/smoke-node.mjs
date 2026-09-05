@@ -31,6 +31,12 @@ writeFileSync(uploadPath, 'node upload smoke');
 let receivedContentType = '';
 let receivedBody = '';
 const server = createServer((request, response) => {
+  if (request.url === '/?mode=getconfig') {
+    assert.equal(request.headers.token, undefined);
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify({ version: '22.5' }));
+    return;
+  }
   receivedContentType = String(request.headers['content-type'] ?? '');
   const chunks = [];
   request.on('data', (chunk) => chunks.push(chunk));

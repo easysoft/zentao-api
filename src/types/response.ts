@@ -63,6 +63,13 @@ export interface LoginResponse extends ApiResponse {
 
 /** 禅道 `?mode=getconfig` 返回的服务端配置。 */
 export interface ServerConfig {
+  /**
+   * 禅道版本，不同系列以不同的前缀表示，下面为例子：
+   * - `22.5`：开源版 22.5
+   * - `biz13.5`：企业版 13.5
+   * - `max8.5`：旗舰版 8.5
+   * - `ipd5.5`：IPD 5.5
+   */
   version: string;
   systemMode: string;
   sprintConcept: string;
@@ -72,4 +79,6 @@ export interface ServerConfig {
   methodVar: string;
   viewVar: string;
   sessionVar: string;
+  /** 保留服务端返回的其他配置字段。 */
+  [key: string]: unknown;
 }

@@ -1,11 +1,13 @@
-import { ZentaoError } from '../misc/errors.js';
+import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
+import { parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
-import { addProfile, switchProfile } from '../profiles/index.js';
+import { addProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
   ClientRequestOptions,
   ClientResponseType,
+  GetZentaoConfigOptions,
   HttpMethod,
   LoginResponse,
   ServerConfig,
@@ -14,6 +16,11 @@ import type {
 } from '../types/index.js';
 
 const DEFAULT_TIMEOUT = 10000;
+const CONFIG_MAX_AGE = 24 * 60 * 60 * 1000;
+
+function isServerConfig(value: unknown): value is ServerConfig {
+  return isRecord(value) && typeof value.version === 'string' && value.version.trim().length > 0;
+}
 
 function appendQueryValue(search: URLSearchParams, key: string, value: unknown): void {
   if (value === undefined) return;
@@ -327,6 +334,10 @@ export class ZentaoClient {
   private token?: string;
   private readonly timeout?: number;
   private readonly insecure?: boolean;
+  private profileKey?: string;
+  private serverConfig?: ServerConfig;
+  private serverConfigFetchedAt?: string;
+  private configRequest?: Promise<ServerConfig>;
 
   /**
    * 使用完整配置创建客户端。
@@ -377,21 +388,25 @@ export class ZentaoClient {
   async request(path: string, options: ClientRequestOptions & { responseType: 'blob' }): Promise<Blob>;
   async request<T = unknown>(path: string, options?: ClientRequestOptions): Promise<T>;
   async request(path: string, options: ClientRequestOptions = {}): Promise<unknown> {
+    return this.fetchUrl(buildUrl(this.baseUrl, path, options.query), options, this.token);
+  }
+
+  /** API 与站点配置共用的传输层；配置请求不传入 Token。 */
+  private async fetchUrl(url: string, options: ClientRequestOptions, token?: string, cache?: RequestCache): Promise<unknown> {
     const globals = getGlobalOptions();
     const method: HttpMethod = options.method ?? 'GET';
     const timeout = options.timeout ?? globals.timeout ?? this.timeout ?? DEFAULT_TIMEOUT;
     const insecure = options.insecure ?? globals.insecure ?? this.insecure;
     assertInsecureSupported(insecure);
-    const url = buildUrl(this.baseUrl, path, options.query);
-
     const headers = new Headers(options.headers);
-    if (this.token) {
-      headers.set('Token', this.token);
+    if (token) {
+      headers.set('Token', token);
     }
     const init: RequestInit = {
       method,
       headers,
       redirect: 'manual',
+      cache,
     };
     // GET 请求不携带 body，避免浏览器和部分代理拒绝请求。
     if (options.body !== undefined && method !== 'GET') {
@@ -432,6 +447,69 @@ export class ZentaoClient {
       throw new ZentaoError('E_NETWORK_ERROR', { message: (error as Error).message ?? String(error) }, error);
     } finally {
       if (!keepResponseSignal) cleanup();
+    }
+  }
+
+  /**
+   * 获取禅道站点 `/?mode=getconfig` 配置，不发送 API Token。
+   *
+   * 默认复用不超过 24 小时的缓存；缺失、过期或时间异常时重新获取。
+   * `forceRefresh: true` 忽略缓存。同一客户端的并发刷新共用首次调用的传输选项；
+   * 后加入的调用仍可通过自己的 signal 取消等待。
+   * 成功后更新实例缓存；启用 `persistProfiles` 且绑定了 profile 时仅更新其配置和获取时间。
+   * 返回独立副本，修改返回值不会改变缓存。此方法不会忽略配置获取错误。
+   *
+   * @param options - 缓存、超时、TLS 与取消选项。
+   * @returns 服务器配置。
+   * @throws {ZentaoError} 传输错误、`E_INVALID_ZENTAO_CONFIG`、`E_INVALID_ZENTAO_VERSION` 或 profile 存储错误。
+   */
+  async getZentaoConfig(options: GetZentaoConfigOptions = {}): Promise<ServerConfig> {
+    const config = await this.loadZentaoConfig(options, getGlobalOptions().persistProfiles ? this.profileKey : undefined);
+    return structuredClone(config);
+  }
+
+  private async loadZentaoConfig(options: GetZentaoConfigOptions, profileKey?: string): Promise<ServerConfig> {
+    if (options.signal?.aborted) throw new ZentaoError('E_ABORTED');
+    // 刷新进行中时等待其结果，避免同一批调用混用旧缓存和新配置。
+    if (this.configRequest) return this.waitForConfig(this.configRequest, options.signal);
+    const fetchedAt = typeof this.serverConfigFetchedAt === 'string' ? Date.parse(this.serverConfigFetchedAt) : NaN;
+    const age = Date.now() - fetchedAt;
+    if (!options.forceRefresh && isServerConfig(this.serverConfig) && age >= 0 && age <= CONFIG_MAX_AGE) {
+      parseZentaoVersion(this.serverConfig.version);
+      return this.serverConfig;
+    }
+
+    const pending = this.fetchUrl(buildUrl(this.siteUrl, '/', { mode: 'getconfig' }), {
+      method: 'GET', timeout: options.timeout, insecure: options.insecure, signal: options.signal,
+    }, undefined, 'no-store').then(async (config) => {
+      if (!isServerConfig(config)) throw new ZentaoError('E_INVALID_ZENTAO_CONFIG');
+      parseZentaoVersion(config.version);
+      const timestamp = new Date().toISOString();
+      if (profileKey) await updateProfileServerConfig(profileKey, config, timestamp);
+      this.serverConfig = config;
+      this.serverConfigFetchedAt = timestamp;
+      return config;
+    });
+    this.configRequest = pending;
+    try {
+      return await pending;
+    } finally {
+      this.configRequest = undefined;
+    }
+  }
+
+  private async waitForConfig(pending: Promise<ServerConfig>, signal?: AbortSignal): Promise<ServerConfig> {
+    if (!signal) return pending;
+    let onAbort: () => void;
+    const aborted = new Promise<never>((_, reject) => {
+      onAbort = () => reject(new ZentaoError('E_ABORTED'));
+      signal.addEventListener('abort', onAbort, { once: true });
+      if (signal.aborted) onAbort();
+    });
+    try {
+      return await Promise.race([pending, aborted]);
+    } finally {
+      signal.removeEventListener('abort', onAbort!);
     }
   }
 
@@ -488,7 +566,9 @@ export class ZentaoClient {
   /**
    * 使用账号密码登录禅道。
    *
-   * 成功后会把返回的 Token 写入当前客户端实例（后续请求自动带上 `Token` 头）；
+   * 验证成功后强制获取一次站点配置，再把返回的 Token 写入当前客户端实例；
+   * 配置获取失败默认阻断登录，只有全局 `skipVersionCheckOnConfigError` 可允许继续。
+   * 全局 `version` 不跳过登录时的配置获取。
    * 当全局 `persistProfiles` 为真时，会同时把账号、Token、用户信息、服务端配置和
    * 客户端偏好（仅在显式设置过 `timeout` / `insecure` 时）持久化为本地 profile，
    * 并切换为当前 profile，方便下次通过 {@link ZentaoClient.fromProfile} 直接登录态恢复。
@@ -504,8 +584,15 @@ export class ZentaoClient {
     if (response.status !== 'success' || !response.token) {
       throw new ZentaoError('E_LOGIN_FAILED');
     }
-    this.token = response.token;
     const globals = getGlobalOptions();
+    let serverConfig: ServerConfig | undefined;
+    try {
+      // 共用 getZentaoConfig 的获取流程，但登录确认前不能刷新之前绑定的账号。
+      serverConfig = await this.loadZentaoConfig({ forceRefresh: true });
+    } catch (error) {
+      if (!globals.skipVersionCheckOnConfigError || !isZentaoConfigFetchError(error)) throw error;
+    }
+    let profileKey: string | undefined;
     if (globals.persistProfiles) {
       const config: ZentaoProfileConfig = {};
       const timeout = this.timeout ?? globals.timeout;
@@ -513,15 +600,19 @@ export class ZentaoClient {
       if (timeout !== undefined) config.timeout = timeout;
       if (insecure !== undefined) config.insecure = insecure;
 
-      await addProfile({
+      const profile = await addProfile({
         server: this.siteUrl,
         account,
         token: response.token,
         user: isRecord(response.user) ? response.user : undefined,
-        serverConfig: isRecord(response.serverConfig) ? response.serverConfig as ServerConfig : undefined,
+        serverConfig: serverConfig ? structuredClone(serverConfig) : undefined,
+        serverConfigFetchedAt: serverConfig ? this.serverConfigFetchedAt : undefined,
         config: Object.keys(config).length > 0 ? config : undefined,
       });
+      profileKey = profile.key;
     }
+    this.token = response.token;
+    this.profileKey = profileKey;
     return response.token;
   }
 
@@ -567,11 +658,15 @@ export class ZentaoClient {
     // switchProfile 会在内部读取存储、校验 key 并刷新 lastUsedTime 后写回，
     // 若 key 不存在会抛出 E_PROFILE_NOT_FOUND；不传 key 时由 switchCurrentProfile 处理。
     const activeProfile = await switchProfile(profileKey);
-    return new ZentaoClient({
+    const client = new ZentaoClient({
       baseUrl: activeProfile.server,
       token: activeProfile.token,
       timeout: typeof activeProfile.config?.timeout === 'number' ? activeProfile.config.timeout : undefined,
       insecure: typeof activeProfile.config?.insecure === 'boolean' ? activeProfile.config.insecure : undefined,
     });
+    client.profileKey = activeProfile.key;
+    client.serverConfig = activeProfile.serverConfig;
+    client.serverConfigFetchedAt = activeProfile.serverConfigFetchedAt;
+    return client;
   }
 }

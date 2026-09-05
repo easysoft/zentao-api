@@ -38,6 +38,8 @@ export interface ZentaoProfile {
   lastUsedTime?: string;
   /** 禅道服务端配置。 */
   serverConfig?: ServerConfig;
+  /** 成功从 `?mode=getconfig` 获取配置的本地 ISO 时间；缺失时缓存需要刷新。 */
+  serverConfigFetchedAt?: string;
   /** 客户端自定义配置。 */
   config?: ZentaoProfileConfig;
   /** 允许上层应用保存额外字段。 */
