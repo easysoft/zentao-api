@@ -55,7 +55,7 @@ const client = new ZentaoClient({
 });
 ```
 
-如果需要显式选用浏览器入口（例如在 SSR 工程里强制走浏览器代码路径），可以使用 `zentao-api/browser` 子路径，它带有同样的 TypeScript 类型定义。
+如果需要显式选用浏览器打包入口，可以使用 `zentao-api/browser` 子路径，它带有同样的 TypeScript 类型定义。该入口不会改变运行时检测：SSR 的 Node.js 进程仍使用文件存储，在浏览器执行时才使用 localStorage。
 
 ```ts
 import { ZentaoClient } from 'zentao-api/browser';
