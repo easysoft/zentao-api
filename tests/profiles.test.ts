@@ -175,6 +175,27 @@ describe('persistent profiles', () => {
     }
   });
 
+  test('persists effective transport preferences with the same precedence as requests', async () => {
+    const server = createMockServer(req => new URL(req.url).pathname.endsWith('/users/login')
+      ? Response.json({ status: 'success', token: 'token' })
+      : Response.json({ version: '22.5' }));
+    try {
+      setGlobalOptions({ persistProfiles: true, timeout: 5000, insecure: false });
+      const client = new ZentaoClient({ baseUrl: server.url.toString(), timeout: 1, insecure: true });
+      await client.login('admin', 'secret');
+      expect((await getProfile())!.config).toEqual({ timeout: 5000, insecure: false });
+
+      // Disabling the timeout and TLS bypass must survive persistence as explicit values.
+      setGlobalOptions({ timeout: 0 });
+      await client.login('admin', 'secret');
+      expect((await getProfile())!.config).toEqual({ timeout: 0, insecure: false });
+      setGlobalOptions({ timeout: undefined, insecure: undefined });
+      const restored = await ZentaoClient.fromProfile();
+      await restored.login('admin', 'secret');
+      expect((await getProfile())!.config).toEqual({ timeout: 0, insecure: false });
+    } finally { server.stop(true); }
+  });
+
   test('relogin preserves application preferences and replaces session data without changing other profiles', async () => {
     let provideDetails = true;
     const server = createMockServer(req => new URL(req.url).pathname.endsWith('/users/login')

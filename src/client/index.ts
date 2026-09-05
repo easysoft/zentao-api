@@ -573,6 +573,7 @@ export class ZentaoClient {
    * 客户端偏好（仅在显式设置过 `timeout` / `insecure` 时）持久化为本地 profile，
    * 并切换为当前 profile，方便下次通过 {@link ZentaoClient.fromProfile} 直接登录态恢复。
    * 重新登录同一账号时保留已有自定义字段，以及未被显式覆盖的客户端偏好。
+   * 保存的 `timeout` / `insecure` 与请求一致：全局显式值优先于实例默认值。
    *
    * @param account - 禅道用户账号。
    * @param password - 禅道用户密码（明文，仅在传输层 TLS 内使用）。
@@ -596,8 +597,8 @@ export class ZentaoClient {
     let profileKey: string | undefined;
     if (globals.persistProfiles) {
       const config: ZentaoProfileConfig = {};
-      const timeout = this.timeout ?? globals.timeout;
-      const insecure = this.insecure ?? globals.insecure;
+      const timeout = globals.timeout ?? this.timeout;
+      const insecure = globals.insecure ?? this.insecure;
       if (timeout !== undefined) config.timeout = timeout;
       if (insecure !== undefined) config.insecure = insecure;
 

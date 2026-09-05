@@ -170,6 +170,7 @@
 客户端偏好（仅在显式设置过 `timeout` / `insecure` 时）持久化为本地 profile，
 并切换为当前 profile，方便下次通过 [ZentaoClient.fromProfile](#fromprofile) 直接登录态恢复。
 重新登录同一账号时保留已有自定义字段，以及未被显式覆盖的客户端偏好。
+保存的 `timeout` / `insecure` 与请求一致：全局显式值优先于实例默认值。
 
 #### Parameters
 
