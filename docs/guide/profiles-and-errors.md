@@ -86,6 +86,10 @@ await addProfile({
 await deleteProfile('admin@https://zentao.example.com');
 ```
 
+所有修改操作都保护完整的读取、修改和写回过程。Node.js / Bun 使用文件锁，支持同主机、本地文件系统中采用相同锁协议的进程；只回收已确认退出的本机进程留下的锁，不会按锁的年龄抢占仍存活的进程。等待约 5 秒仍未取得锁会抛出 `E_PROFILE_STORAGE_UNAVAILABLE`，profile 数据保持不变。网络共享目录、旧版本 SDK 和直接改写文件的外部程序不在并发保护范围。
+
+浏览器支持 Web Locks 时，同源标签页和 Worker 共用写锁；不支持时只保证当前 SDK 实例内串行。等待 Web Lock 也有约 5 秒上限，已经取得锁的操作会继续完成。
+
 ## 错误处理
 
 SDK 会把 HTTP、网络、超时、环境限制和模块解析错误包装为 `ZentaoError`。

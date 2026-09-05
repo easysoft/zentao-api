@@ -1,6 +1,7 @@
 import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
+import { withProfileFileLock } from './file-lock.js';
 import type { ServerConfig, ZentaoProfile, ZentaoProfileRecord, ZentaoProfilesStore } from '../types/index.js';
 
 /**
@@ -27,12 +28,26 @@ function importNodeModule<T>(specifier: string): Promise<T> {
   return import(specifier) as Promise<T>;
 }
 
-// 进程内串行锁：所有 read-modify-write 类的 profile 操作都通过这个队列，
-// 避免并发 `addProfile`/`switchProfile` 出现 lost update（写文件本身是原子
-// rename，但 read→modify→write 之间没有跨步保护）。跨进程并发不在保证范围内。
+// 所有 read-modify-write 都先进入实例队列，再取得文件锁或浏览器 Web Lock。
 let storeMutex: Promise<unknown> = Promise.resolve();
 function withStoreMutex<T>(operation: () => Promise<T>): Promise<T> {
-  const next = storeMutex.then(operation, operation);
+  const run = () => withStorageErrors(async () => {
+    if (isNodeRuntime()) return withProfileFileLock(await getProfileFilePath(), operation);
+    const locks = globalThis.navigator?.locks;
+    // ponytail: 没有 Web Locks 时仅保证实例内串行；需要跨标签保证的应用应使用支持 Web Locks 的环境。
+    if (!locks) return operation();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      return await locks.request(`${ZENTAO_PROFILES_STORAGE_KEY}:write`, { signal: controller.signal }, () => {
+        clearTimeout(timeout);
+        return operation();
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
+  const next = storeMutex.then(run, run);
   storeMutex = next.catch(() => undefined);
   return next;
 }
@@ -235,7 +250,8 @@ export async function getProfile(profileKey?: string): Promise<ZentaoProfileReco
  * 行为细节：
  * - 同 key（`account@server`）已存在时会**整体覆盖**而非合并字段。
  * - 写入时会自动补齐 `loginTime` 与 `lastUsedTime`（若调用方未提供则使用当前 ISO 时间）。
- * - 操作通过进程内串行锁保护 read-modify-write，避免并发调用导致的 lost update；跨进程并发不在保证范围。
+ * - Node.js 通过文件锁保护同主机本地文件系统的 read-modify-write；浏览器在支持 Web Locks 时保护同源上下文，其他环境仅保证实例内串行。
+ * - 跨进程或上下文等待锁超过约 5 秒时抛出存储不可用错误，不修改 profile 数据。
  * - 实际写入使用临时文件 + `rename` 的原子方式，并将文件与目录权限收紧到 `0600`/`0700`（Node.js 下）。
  *
  * @param profile - 要写入的 profile，必须至少包含 `server`、`account`、`token`。

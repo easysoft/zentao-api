@@ -72,7 +72,7 @@ describe('persistent profiles', () => {
     const writeError = await addProfile({ server: 'https://audit.example.com', account: 'admin', token: 'token' })
       .catch(error => error);
     expect(writeError.code).toBe('E_PROFILE_STORAGE_UNAVAILABLE');
-    expect(writeError.details.code).toBe('ENOTDIR');
+    expect(['ENOTDIR', 'EEXIST']).toContain(writeError.details.code);
     expect(readFileSync(join(tempHome, '.config/zentao'), 'utf8')).toBe('blocked');
   });
 
@@ -140,6 +140,33 @@ describe('persistent profiles', () => {
     expect(stored.profiles[0].key).toBeUndefined();
     expect(statSync(join(tempHome, '.config/zentao')).mode & 0o777).toBe(0o700);
     expect(statSync(join(tempHome, '.config/zentao/zentao.json')).mode & 0o777).toBe(0o600);
+  });
+
+  test('concurrent SDK processes preserve profiles in the shared store', async () => {
+    const script = join(tempHome, 'profile-worker.ts');
+    writeFileSync(script, `
+      import { addProfile } from ${JSON.stringify(new URL('../src/index.ts', import.meta.url).href)};
+      const [prefix, expectedHome] = process.argv.slice(2);
+      if (process.env.HOME !== expectedHome) throw new Error('Profile test storage is not isolated.');
+      for (let index = 0; index < 10; index++) await addProfile({
+        server: 'https://audit.example.com', account: prefix + index, token: 'test-token',
+      });
+    `);
+    const children = ['first-', 'second-'].map(prefix => Bun.spawn({
+      cmd: [process.execPath, script, prefix, tempHome], env: { ...process.env },
+      stdin: 'ignore', stdout: 'pipe', stderr: 'pipe',
+    }));
+    try {
+      const results = await Promise.all(children.map(async child => ({
+        code: await child.exited, error: await new Response(child.stderr).text(),
+      })));
+      expect(results).toEqual([{ code: 0, error: '' }, { code: 0, error: '' }]);
+      const accounts = (await getAllProfiles()).map(profile => profile.account);
+      expect(new Set(accounts).size).toBe(20);
+    } finally {
+      for (const child of children) if (child.exitCode === null) child.kill();
+      await Promise.all(children.map(child => child.exited));
+    }
   });
 
   test('switches and deletes the current profile', async () => {
