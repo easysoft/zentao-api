@@ -2,7 +2,7 @@ import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
 import { parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
-import { addProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
+import { saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
   ClientRequestOptions,
@@ -572,6 +572,7 @@ export class ZentaoClient {
    * 当全局 `persistProfiles` 为真时，会同时把账号、Token、用户信息、服务端配置和
    * 客户端偏好（仅在显式设置过 `timeout` / `insecure` 时）持久化为本地 profile，
    * 并切换为当前 profile，方便下次通过 {@link ZentaoClient.fromProfile} 直接登录态恢复。
+   * 重新登录同一账号时保留已有自定义字段，以及未被显式覆盖的客户端偏好。
    *
    * @param account - 禅道用户账号。
    * @param password - 禅道用户密码（明文，仅在传输层 TLS 内使用）。
@@ -600,7 +601,7 @@ export class ZentaoClient {
       if (timeout !== undefined) config.timeout = timeout;
       if (insecure !== undefined) config.insecure = insecure;
 
-      const profile = await addProfile({
+      const profile = await saveLoginProfile({
         server: this.siteUrl,
         account,
         token: response.token,

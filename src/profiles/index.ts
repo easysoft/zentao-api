@@ -240,10 +240,19 @@ export async function getProfile(profileKey?: string): Promise<ZentaoProfileReco
  *   `E_INVALID_BASE_URL`、`E_PROFILE_STORAGE_INVALID`、`E_PROFILE_STORAGE_UNAVAILABLE`。
  */
 export function addProfile(profile: ZentaoProfile): Promise<ZentaoProfileRecord> {
+  return saveProfile(profile);
+}
+
+/** 登录只更新会话字段和显式偏好，保留同账号的应用数据。 @internal */
+export function saveLoginProfile(profile: ZentaoProfile): Promise<ZentaoProfileRecord> {
+  return saveProfile(profile, true);
+}
+
+function saveProfile(profile: ZentaoProfile, preservePreferences = false): Promise<ZentaoProfileRecord> {
   return withStoreMutex(async () => {
     const store = await readStore();
     const timestamp = nowString();
-    const normalized = normalizeProfile({
+    let normalized = normalizeProfile({
       ...profile,
       loginTime: profile.loginTime ?? timestamp,
       lastUsedTime: profile.lastUsedTime ?? timestamp,
@@ -252,6 +261,12 @@ export function addProfile(profile: ZentaoProfile): Promise<ZentaoProfileRecord>
     const index = store.profiles.findIndex((item) => getProfileKey(item) === profileKey);
 
     if (index >= 0) {
+      if (preservePreferences) {
+        const previous = store.profiles[index];
+        const config = { ...(isRecord(previous.config) ? previous.config : {}), ...normalized.config };
+        normalized = normalizeProfile({ ...previous, ...profile, ...normalized,
+          config: Object.keys(config).length ? config : undefined });
+      }
       store.profiles[index] = normalized;
     } else {
       store.profiles.push(normalized);

@@ -174,6 +174,44 @@ describe('persistent profiles', () => {
       server.stop();
     }
   });
+
+  test('relogin preserves application preferences and replaces session data without changing other profiles', async () => {
+    let provideDetails = true;
+    const server = createMockServer(req => new URL(req.url).pathname.endsWith('/users/login')
+      ? Response.json({ status: 'success', token: 'new-token', user: provideDetails ? { id: 2 } : undefined })
+      : provideDetails ? Response.json({ version: '22.5' }) : new Response('Unavailable', { status: 503 }));
+    try {
+      const first = await addProfile({ server: server.url.toString(), account: 'admin', token: 'old-token',
+        user: { id: 1 }, loginTime: '2020-01-01T00:00:00.000Z', serverConfig: savedConfig('22.0'),
+        config: { lang: 'zh-cn', pagers: { bug: 20 }, timeout: 1000, insecure: false }, custom: { keep: true } });
+      const second = await addProfile({ server: server.url.toString(), account: 'dev', token: 'other-token' });
+      setGlobalOptions({ persistProfiles: true });
+      const client = new ZentaoClient({ baseUrl: server.url.toString(), timeout: 5000 });
+      await client.login('admin', 'secret');
+      const saved = (await getProfile())!;
+      expect(saved).toMatchObject({ key: first.key, token: 'new-token', user: { id: 2 },
+        serverConfig: { version: '22.5' }, custom: { keep: true },
+        config: { lang: 'zh-cn', pagers: { bug: 20 }, timeout: 5000, insecure: false } });
+      expect(saved.loginTime).not.toBe(first.loginTime);
+      expect(await getProfile(second.key)).toEqual(second);
+
+      provideDetails = false;
+      setGlobalOptions({ skipVersionCheckOnConfigError: true });
+      await client.login('admin', 'secret');
+      const withoutDetails = (await getProfile(first.key))!;
+      expect(withoutDetails.user).toBeUndefined();
+      expect(withoutDetails.serverConfig).toBeUndefined();
+      expect(withoutDetails.serverConfigFetchedAt).toBeUndefined();
+      expect(withoutDetails.config).toEqual(saved.config);
+      expect(withoutDetails.custom).toEqual(saved.custom);
+
+      // Explicit addProfile still replaces the entire record.
+      await addProfile({ server: first.server, account: first.account, token: 'replacement' });
+      const replacement = (await getProfile(first.key))!;
+      expect(replacement.config).toBeUndefined();
+      expect(replacement.custom).toBeUndefined();
+    } finally { server.stop(true); }
+  });
 });
 
 function savedConfig(version: string): ServerConfig {
