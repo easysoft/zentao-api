@@ -266,6 +266,11 @@ setGlobalOptions({ client });
 const another = await ZentaoClient.fromProfile(
   'admin@https://zentao.example.com',
 );
+
+// 只读取并恢复，不切换当前 Profile、不更新使用时间、不写存储。
+const isolated = await ZentaoClient.fromProfile(
+  'admin@https://zentao.example.com', { activate: false },
+);
 ```
 
 | 环境 | 存储位置 |

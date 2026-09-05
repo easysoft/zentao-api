@@ -1,5 +1,11 @@
 import type { ZentaoClient } from '../client/index.js';
 
+/** 从本地 profile 恢复客户端时的选项。 */
+export interface FromProfileOptions {
+  /** 是否切换为当前 profile 并更新使用时间，默认 true；false 时恢复过程只读存储。 */
+  activate?: boolean;
+}
+
 /** 创建 {@link ZentaoClient} 时使用的配置。 */
 export interface ZentaoClientOptions {
   /** 禅道站点根地址，例如 `https://zentao.example.com`；SDK 会自动拼接 `/api.php/v2`。 */

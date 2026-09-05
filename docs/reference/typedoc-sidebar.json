@@ -58,6 +58,10 @@
         "link": "/reference/interfaces/FileUploadPathInput.md"
       },
       {
+        "text": "FromProfileOptions",
+        "link": "/reference/interfaces/FromProfileOptions.md"
+      },
+      {
         "text": "GetZentaoConfigOptions",
         "link": "/reference/interfaces/GetZentaoConfigOptions.md"
       },

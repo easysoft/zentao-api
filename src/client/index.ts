@@ -2,11 +2,12 @@ import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
 import { parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
-import { saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
+import { getProfile, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
   ClientRequestOptions,
   ClientResponseType,
+  FromProfileOptions,
   GetZentaoConfigOptions,
   HttpMethod,
   LoginResponse,
@@ -648,18 +649,22 @@ export class ZentaoClient {
   /**
    * 根据本地持久化 profile 创建客户端。
    *
-   * 实际会调用 {@link switchProfile}：若 `profileKey` 存在则刷新其 `lastUsedTime` 并设为当前 profile；
+   * 默认调用 {@link switchProfile}：若 `profileKey` 存在则刷新其 `lastUsedTime` 并设为当前 profile；
    * 不传 `profileKey` 时使用当前 profile。Profile 中保存的 `timeout` / `insecure` 偏好也会被带回到客户端实例。
+   * `activate: false` 时只读存储，不切换账号、不更新时间，支持可读但不可写的存储。
+   * 两种模式均不替换全局客户端；后续配置刷新是否写回仍由全局 `persistProfiles` 控制。
    *
    * @param profileKey - 可选的 profile key，格式为 `account@server`；不传时使用当前 profile。
+   * @param options - 恢复选项；默认保持切换当前 profile 的行为。
    * @returns 用 profile 还原后的客户端实例。
    * @throws {ZentaoError} `E_NO_PROFILE`（无任何 profile 且未传 key）、`E_PROFILE_NOT_FOUND`（指定 key 不存在）、
    *   `E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问持久化存储）。
    */
-  static async fromProfile(profileKey?: string): Promise<ZentaoClient> {
-    // switchProfile 会在内部读取存储、校验 key 并刷新 lastUsedTime 后写回，
-    // 若 key 不存在会抛出 E_PROFILE_NOT_FOUND；不传 key 时由 switchCurrentProfile 处理。
-    const activeProfile = await switchProfile(profileKey);
+  static async fromProfile(profileKey?: string, options: FromProfileOptions = {}): Promise<ZentaoClient> {
+    const activeProfile = options.activate === false ? await getProfile(profileKey) : await switchProfile(profileKey);
+    if (!activeProfile) {
+      throw new ZentaoError(profileKey === undefined ? 'E_NO_PROFILE' : 'E_PROFILE_NOT_FOUND', { profileKey: profileKey ?? '' });
+    }
     const client = new ZentaoClient({
       baseUrl: activeProfile.server,
       token: activeProfile.token,

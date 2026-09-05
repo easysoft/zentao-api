@@ -432,18 +432,21 @@
 
 ### fromProfile()
 
-> `static` **fromProfile**(`profileKey?`): `Promise`\<`ZentaoClient`\>
+> `static` **fromProfile**(`profileKey?`, `options?`): `Promise`\<`ZentaoClient`\>
 
 根据本地持久化 profile 创建客户端。
 
-实际会调用 [switchProfile](../functions/switchProfile.md)：若 `profileKey` 存在则刷新其 `lastUsedTime` 并设为当前 profile；
+默认调用 [switchProfile](../functions/switchProfile.md)：若 `profileKey` 存在则刷新其 `lastUsedTime` 并设为当前 profile；
 不传 `profileKey` 时使用当前 profile。Profile 中保存的 `timeout` / `insecure` 偏好也会被带回到客户端实例。
+`activate: false` 时只读存储，不切换账号、不更新时间，支持可读但不可写的存储。
+两种模式均不替换全局客户端；后续配置刷新是否写回仍由全局 `persistProfiles` 控制。
 
 #### Parameters
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `profileKey?` | `string` | 可选的 profile key，格式为 `account@server`；不传时使用当前 profile。 |
+| `options?` | [`FromProfileOptions`](../interfaces/FromProfileOptions.md) | 恢复选项；默认保持切换当前 profile 的行为。 |
 
 #### Returns
 

@@ -21,6 +21,23 @@ function createApi(localStorage: PropertyDescriptor): typeof import('../src/inde
 }
 
 describe('browser profile storage errors', () => {
+  test('restores clients from read-only storage when activation is disabled', async () => {
+    const key = 'admin@https://zentao.example.com';
+    let writes = 0;
+    const api = createApi({ value: {
+      getItem: () => JSON.stringify({ currentProfile: key, profiles: [
+        { server: 'https://zentao.example.com', account: 'admin', token: 'token' },
+      ] }),
+      setItem: () => { writes++; throw new DOMException('Read-only storage', 'QuotaExceededError'); },
+    } });
+    const client = await api.ZentaoClient.fromProfile(undefined, { activate: false });
+    expect(client.siteUrl).toBe('https://zentao.example.com');
+    expect(writes).toBe(0);
+    await expect(api.ZentaoClient.fromProfile()).rejects.toMatchObject({ code: 'E_PROFILE_STORAGE_UNAVAILABLE' });
+    const empty = createApi({ value: { getItem: () => null } });
+    await expect(empty.ZentaoClient.fromProfile(undefined, { activate: false })).rejects.toMatchObject({ code: 'E_NO_PROFILE' });
+  });
+
   test('distinguishes missing storage from a malformed empty value', async () => {
     const missing = createApi({ value: { getItem: () => null } });
     await expect(missing.getAllProfiles()).resolves.toEqual([]);

@@ -21,6 +21,7 @@
 | [FileCreateResult](interfaces/FileCreateResult.md) | `request("file/create")` 归一化后的结果。 |
 | [FileUploadDataInput](interfaces/FileUploadDataInput.md) | 内存数据形式的上传输入。 |
 | [FileUploadPathInput](interfaces/FileUploadPathInput.md) | Node.js/Bun 本地文件路径形式的上传输入。 |
+| [FromProfileOptions](interfaces/FromProfileOptions.md) | 从本地 profile 恢复客户端时的选项。 |
 | [GetZentaoConfigOptions](interfaces/GetZentaoConfigOptions.md) | [ZentaoClient.getZentaoConfig](classes/ZentaoClient.md#getzentaoconfig) 的选项。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供高阶 [request](functions/request.md) 调用复用。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |

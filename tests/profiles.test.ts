@@ -7,6 +7,7 @@ import {
   addProfile,
   deleteProfile,
   getAllProfiles,
+  getGlobalOptions,
   getProfile,
   request,
   setGlobalOptions,
@@ -183,6 +184,31 @@ describe('persistent profiles', () => {
     } finally {
       server.stop();
     }
+  });
+
+  test('restores a profile without changing storage or the global client when activation is disabled', async () => {
+    let receivedToken: string | null = null;
+    const server = createMockServer(req => {
+      receivedToken = req.headers.get('Token');
+      return Response.json({ status: 'success' });
+    });
+    try {
+      const first = await addProfile({ server: server.url.toString(), account: 'first', token: 'first-token',
+        serverConfig: savedConfig('22.5'), serverConfigFetchedAt: new Date().toISOString(), config: { timeout: 3000 } });
+      const second = await addProfile({ server: server.url.toString(), account: 'second', token: 'second-token' });
+      const globalClient = ZentaoClient.init({ baseUrl: server.url.toString(), token: 'global-token' });
+      const file = join(tempHome, '.config/zentao/zentao.json');
+      const before = readFileSync(file, 'utf8');
+      const client = await ZentaoClient.fromProfile(first.key, { activate: false });
+      expect(getGlobalOptions().client).toBe(globalClient);
+      expect((await getProfile())!.key).toBe(second.key);
+      expect(await client.getZentaoConfig()).toEqual(first.serverConfig!);
+      await client.get('/products');
+      expect(receivedToken ?? '').toBe('first-token');
+      expect(readFileSync(file, 'utf8')).toBe(before);
+      await expect(ZentaoClient.fromProfile('missing', { activate: false }))
+        .rejects.toMatchObject({ code: 'E_PROFILE_NOT_FOUND' });
+    } finally { server.stop(true); }
   });
 
   test('persists successful logins when enabled in global options', async () => {

@@ -25,6 +25,15 @@ const client = await ZentaoClient.fromProfile();
 const client = await ZentaoClient.fromProfile('admin@https://zentao.example.com');
 ```
 
+默认恢复会切换持久化的当前账号、更新 `lastUsedTime` 并写回存储。只读取并恢复客户端时，使用 `activate: false`：
+
+```ts
+const client = await ZentaoClient.fromProfile('admin@https://zentao.example.com', { activate: false });
+setGlobalOptions({ client }); // 需要让高阶 request() 使用该客户端时显式设置。
+```
+
+只读恢复支持可读但不可写的存储，不改变已有客户端。两种恢复模式都不会自动替换全局客户端；后续调用 `getZentaoConfig()` 是否写回缓存，仍由 `persistProfiles` 控制。
+
 ## 服务器配置与版本检查
 
 登录验证成功后会请求一次站点根地址的 `/?mode=getconfig`，即使已经设置全局 `version`。配置成功获取后才更新登录状态；失败时默认抛错，全局 `skipVersionCheckOnConfigError: true` 可允许登录继续。
