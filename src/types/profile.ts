@@ -1,24 +1,28 @@
 import type { ServerConfig } from './response.js';
 
-/** 保存到本地 profile 中的客户端偏好配置。 */
+/**
+ * 保存到本地 profile 中的客户端偏好配置。
+ * SDK 自动恢复 `timeout` / `insecure`；其余字段仅供上层应用读取和解释。
+ * 自定义值应使用 JSON 数据，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。
+ */
 export interface ZentaoProfileConfig {
   /** 默认输出格式，供 CLI 等上层应用复用。 */
   defaultOutputFormat?: 'markdown' | 'json' | 'raw';
-  /** 界面语言。 */
+  /** 上层应用的界面语言，SDK 不自动应用。 */
   lang?: string;
-  /** 默认分页大小。 */
+  /** 上层应用的默认分页大小；SDK 请求分页使用 `recPerPage` 选项。 */
   defaultRecPerPage?: number;
   /** 是否跳过 TLS 证书验证；仅 Node.js 运行时支持。 */
   insecure?: boolean;
   /** 请求超时时间，单位毫秒。 */
   timeout?: number;
-  /** 是否在批量操作出错时停止执行后续操作。 */
+  /** 上层应用是否在批量操作出错时停止执行后续操作。 */
   batchFailFast?: boolean;
-  /** JSON 格式化时是否添加缩进。 */
+  /** 上层应用格式化 JSON 时是否添加缩进。 */
   jsonPretty?: boolean;
-  /** 模块级分页偏好。 */
+  /** 上层应用的模块级分页偏好，SDK 不自动应用。 */
   pagers?: Record<string, number>;
-  /** 允许上层应用保存自定义配置。 */
+  /** 允许上层应用保存 JSON 格式的自定义配置。 */
   [key: string]: unknown;
 }
 
@@ -42,7 +46,7 @@ export interface ZentaoProfile {
   serverConfigFetchedAt?: string;
   /** 客户端自定义配置。 */
   config?: ZentaoProfileConfig;
-  /** 允许上层应用保存额外字段。 */
+  /** 允许上层应用保存 JSON 格式的额外字段，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。 */
   [key: string]: unknown;
 }
 

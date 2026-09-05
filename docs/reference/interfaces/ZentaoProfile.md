@@ -12,7 +12,7 @@
 
 > \[`key`: `string`\]: `unknown`
 
-允许上层应用保存额外字段。
+允许上层应用保存 JSON 格式的额外字段，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。
 
 ## Properties
 

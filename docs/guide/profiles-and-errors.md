@@ -4,6 +4,8 @@
 
 启用 `persistProfiles` 后，`login()` 成功时会保存站点、账号、token、客户端配置，以及服务器配置 `serverConfig` 和获取时间 `serverConfigFetchedAt`。
 
+重新登录同一账号会更新会话数据，保留已有自定义字段和未被显式覆盖的偏好。`timeout` / `insecure` 保存时与实际请求一致，全局显式值优先于实例默认值。显式调用 `addProfile()` 仍会整体替换同 key 的记录。
+
 ```ts
 import { ZentaoClient, setGlobalOptions } from 'zentao-api';
 
@@ -64,6 +66,14 @@ await request('product/list', {}, { skipVersionCheckOnConfigError: true });
 
 ## 管理 profile
 
+Profile 的 `config` 同时保存 SDK 和上层应用的偏好：
+
+| 字段 | 使用方式 |
+| --- | --- |
+| `timeout`、`insecure` | `fromProfile()` 自动恢复到客户端，仍受全局和单次请求选项覆盖。 |
+| `defaultOutputFormat`、`lang`、`defaultRecPerPage`、`batchFailFast`、`jsonPretty`、`pagers` | 供 CLI 等上层应用读取和解释，SDK 不自动应用；SDK 分页使用 `recPerPage` 选项。 |
+| 自定义配置及额外字段 | 只保存 JSON 数据，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。 |
+
 ```ts
 import {
   addProfile,
@@ -88,7 +98,9 @@ await deleteProfile('admin@https://zentao.example.com');
 
 所有修改操作都保护完整的读取、修改和写回过程。Node.js / Bun 使用文件锁，支持同主机、本地文件系统中采用相同锁协议的进程；只回收已确认退出的本机进程留下的锁，不会按锁的年龄抢占仍存活的进程。等待约 5 秒仍未取得锁会抛出 `E_PROFILE_STORAGE_UNAVAILABLE`，profile 数据保持不变。网络共享目录、旧版本 SDK 和直接改写文件的外部程序不在并发保护范围。
 
-浏览器支持 Web Locks 时，同源标签页和 Worker 共用写锁；不支持时只保证当前 SDK 实例内串行。等待 Web Lock 也有约 5 秒上限，已经取得锁的操作会继续完成。
+浏览器支持 Web Locks 时，可访问同一 localStorage 的同源页面上下文共用写锁；不支持时只保证当前 SDK 实例内串行。等待 Web Lock 也有约 5 秒上限，已经取得锁的操作会继续完成。
+
+不存在的存储会视为空库。JSON 或根结构损坏时，读取和修改都抛出 `E_PROFILE_STORAGE_INVALID`，不覆盖原内容；合法列表中不完整的单条 profile 会被忽略。存储权限、容量及其他读写错误统一抛出 `E_PROFILE_STORAGE_UNAVAILABLE`，原始异常保存在 `details` 中。
 
 ## 错误处理
 

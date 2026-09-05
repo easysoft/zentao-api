@@ -242,7 +242,7 @@ const freshConfig = await client.getZentaoConfig({ forceRefresh: true });
 
 ### 持久化 Profile
 
-Profile 默认不会写入。先启用 `persistProfiles`，登录成功后才会保存站点、账号、token、客户端配置，以及 `serverConfig` 和获取时间 `serverConfigFetchedAt`：
+`login()` 默认不会自动写入 Profile。先启用 `persistProfiles`，登录成功后才会保存站点、账号、token、客户端配置，以及 `serverConfig` 和获取时间 `serverConfigFetchedAt`：
 
 ```ts
 import { ZentaoClient, setGlobalOptions } from 'zentao-api';
