@@ -17,5 +17,5 @@ Node.js 下从 `~/.config/zentao/zentao.json` 读取；浏览器下从 `localSto
 
 ## Throws
 
-`E_PROFILE_STORAGE_INVALID`（存储内容不是合法 JSON）或
+`E_PROFILE_STORAGE_INVALID`（存储内容不是合法 JSON 或根结构不合法）或
   `E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问存储）。

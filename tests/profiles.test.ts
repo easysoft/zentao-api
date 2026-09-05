@@ -60,6 +60,33 @@ afterEach(() => {
 });
 
 describe('persistent profiles', () => {
+  test('isolates malformed entries without blocking valid profiles', async () => {
+    const valid = await addProfile({ server: 'https://audit.example.com', account: 'admin', token: 'valid' });
+    const file = join(tempHome, '.config/zentao/zentao.json');
+    writeFileSync(file, JSON.stringify({ currentProfile: valid.key, profiles: [
+      { ...valid, account: '   ' }, { ...valid, token: '' }, null, valid,
+    ] }));
+    expect(await getAllProfiles()).toEqual([valid]);
+    expect(await getProfile(valid.key)).toEqual(valid);
+    expect((await switchProfile(valid.key)).key).toBe(valid.key);
+    await addProfile({ server: valid.server, account: 'dev', token: 'second' });
+    expect(await deleteProfile(valid.key)).toBe(true);
+    expect((await getAllProfiles()).map(profile => profile.account)).toEqual(['dev']);
+    await expect(addProfile({ server: valid.server, account: ' ', token: 'invalid' }))
+      .rejects.toMatchObject({ code: 'E_INVALID_PROFILE' });
+  });
+
+  test.each(['{invalid', 'null', '[]', '{}', '{"profiles":{}}', '{"profiles":[],"currentProfile":false}'])(
+    'rejects invalid storage without overwriting it: %s', async text => {
+      const valid = await addProfile({ server: 'https://audit.example.com', account: 'admin', token: 'valid' });
+      const file = join(tempHome, '.config/zentao/zentao.json');
+      writeFileSync(file, text);
+      await expect(getAllProfiles()).rejects.toMatchObject({ code: 'E_PROFILE_STORAGE_INVALID' });
+      await expect(addProfile(valid)).rejects.toMatchObject({ code: 'E_PROFILE_STORAGE_INVALID' });
+      expect(readFileSync(file, 'utf8')).toBe(text);
+    },
+  );
+
   test('stores profiles on disk and uses account@server as profile key', async () => {
     await expect(getAllProfiles()).resolves.toEqual([]);
 

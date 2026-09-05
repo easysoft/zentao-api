@@ -71,30 +71,32 @@ function normalizeProfile(profile: ZentaoProfile): ZentaoProfile {
   }
 
   const token = profile.token.trim();
-  if (!token) throw new ZentaoError('E_INVALID_PROFILE');
+  const account = profile.account.trim();
+  if (!token || !account) throw new ZentaoError('E_INVALID_PROFILE');
 
   const copy = cloneJson(profile) as ZentaoProfile & { key?: string };
   delete copy.key;
   return {
     ...copy,
     server: normalizeSiteUrl(profile.server),
-    account: profile.account.trim(),
+    account,
     token,
   };
 }
 
 function normalizeStore(raw: unknown): ZentaoProfilesStore {
-  if (!isRecord(raw)) return { profiles: [] };
+  if (!isRecord(raw) || !Array.isArray(raw.profiles)
+    || (raw.currentProfile !== undefined && typeof raw.currentProfile !== 'string')) {
+    throw new ZentaoError('E_PROFILE_STORAGE_INVALID');
+  }
 
-  const profiles = Array.isArray(raw.profiles)
-    ? raw.profiles.flatMap((profile) => {
-      try {
-        return [normalizeProfile(profile as ZentaoProfile)];
-      } catch {
-        return [];
-      }
-    })
-    : [];
+  const profiles = raw.profiles.flatMap((profile) => {
+    try {
+      return [normalizeProfile(profile as ZentaoProfile)];
+    } catch {
+      return [];
+    }
+  });
 
   const currentProfile = typeof raw.currentProfile === 'string' ? raw.currentProfile : undefined;
   return currentProfile ? { currentProfile, profiles } : { profiles };
@@ -202,7 +204,7 @@ export function getProfileKey(profile: Pick<ZentaoProfile, 'account' | 'server'>
  * 读取过程不会写回存储；存储中无法解析的条目会被静默忽略，不会影响其余 profile。
  *
  * @returns 当前存储中的所有 profile（带 `key` 字段），文件不存在时返回空数组。
- * @throws {ZentaoError} `E_PROFILE_STORAGE_INVALID`（存储内容不是合法 JSON）或
+ * @throws {ZentaoError} `E_PROFILE_STORAGE_INVALID`（存储内容不是合法 JSON 或根结构不合法）或
  *   `E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问存储）。
  */
 export async function getAllProfiles(): Promise<ZentaoProfileRecord[]> {

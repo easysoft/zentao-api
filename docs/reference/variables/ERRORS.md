@@ -36,7 +36,7 @@ SDK 已知错误码到默认消息的映射表。
 | <a id="property-e_no_global_client"></a> `E_NO_GLOBAL_CLIENT` | `"No global client configured. Call ZentaoClient.init() or pass options.client."` | `'No global client configured. Call ZentaoClient.init() or pass options.client.'` |
 | <a id="property-e_no_profile"></a> `E_NO_PROFILE` | `"No ZenTao profile is configured."` | `'No ZenTao profile is configured.'` |
 | <a id="property-e_profile_not_found"></a> `E_PROFILE_NOT_FOUND` | `"ZenTao profile not found: {profileKey}"` | `'ZenTao profile not found: {profileKey}'` |
-| <a id="property-e_profile_storage_invalid"></a> `E_PROFILE_STORAGE_INVALID` | `"ZenTao profile storage is not valid JSON."` | `'ZenTao profile storage is not valid JSON.'` |
+| <a id="property-e_profile_storage_invalid"></a> `E_PROFILE_STORAGE_INVALID` | `"ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string."` | `'ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string.'` |
 | <a id="property-e_profile_storage_unavailable"></a> `E_PROFILE_STORAGE_UNAVAILABLE` | `"ZenTao profile storage is unavailable in this runtime."` | `'ZenTao profile storage is unavailable in this runtime.'` |
 | <a id="property-e_timeout"></a> `E_TIMEOUT` | `"Request timed out."` | `'Request timed out.'` |
 | <a id="property-e_unsupported_zentao_version"></a> `E_UNSUPPORTED_ZENTAO_VERSION` | `"Action {action} does not support ZenTao {version}; minimum versions: {minVersion}"` | `'Action {action} does not support ZenTao {version}; minimum versions: {minVersion}'` |

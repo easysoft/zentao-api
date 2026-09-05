@@ -19,7 +19,7 @@ export const ERRORS = {
   E_INVALID_PROFILE: 'Invalid ZenTao profile.',
   E_NO_PROFILE: 'No ZenTao profile is configured.',
   E_PROFILE_NOT_FOUND: 'ZenTao profile not found: {profileKey}',
-  E_PROFILE_STORAGE_INVALID: 'ZenTao profile storage is not valid JSON.',
+  E_PROFILE_STORAGE_INVALID: 'ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string.',
   E_PROFILE_STORAGE_UNAVAILABLE: 'ZenTao profile storage is unavailable in this runtime.',
   E_INVALID_MODULE: 'Unknown module: {module}',
   E_INVALID_ACTION: 'Unknown action: {module}-{action}',
