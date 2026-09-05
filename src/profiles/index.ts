@@ -193,6 +193,14 @@ function findProfile(store: ZentaoProfilesStore, profileKey: string): ZentaoProf
   return store.profiles.find((profile) => getProfileKey(profile) === profileKey);
 }
 
+function requireProfile(store: ZentaoProfilesStore, profileKey?: string): ZentaoProfile {
+  const key = profileKey ?? store.currentProfile;
+  if (!key) throw new ZentaoError('E_NO_PROFILE');
+  const profile = findProfile(store, key);
+  if (!profile) throw new ZentaoError('E_PROFILE_NOT_FOUND', { profileKey: key });
+  return profile;
+}
+
 function setFallbackCurrentProfile(store: ZentaoProfilesStore): void {
   if (!store.currentProfile || !findProfile(store, store.currentProfile)) {
     const fallback = store.profiles.at(-1);
@@ -242,6 +250,11 @@ export async function getProfile(profileKey?: string): Promise<ZentaoProfileReco
   if (!key) return undefined;
   const profile = findProfile(store, key);
   return profile ? toRecord(profile) : undefined;
+}
+
+/** 只读恢复与账号切换共用相同的 key 解析和错误语义。 @internal */
+export async function getProfileOrThrow(profileKey?: string): Promise<ZentaoProfileRecord> {
+  return toRecord(requireProfile(await readStore(), profileKey));
 }
 
 /**
@@ -348,17 +361,9 @@ export function deleteProfile(profileKey: string): Promise<boolean> {
 export function switchProfile(profileKey?: string): Promise<ZentaoProfileRecord> {
   return withStoreMutex(async () => {
     const store = await readStore();
-    const key = profileKey ?? store.currentProfile;
-    if (!key) {
-      throw new ZentaoError('E_NO_PROFILE');
-    }
-    const profile = findProfile(store, key);
-    if (!profile) {
-      throw new ZentaoError('E_PROFILE_NOT_FOUND', { profileKey: key });
-    }
-
+    const profile = requireProfile(store, profileKey);
     profile.lastUsedTime = nowString();
-    store.currentProfile = key;
+    store.currentProfile = getProfileKey(profile);
     await writeStore(store);
     return toRecord(profile);
   });

@@ -21,6 +21,20 @@ function createApi(localStorage: PropertyDescriptor): typeof import('../src/inde
 }
 
 describe('browser profile storage errors', () => {
+  test('read-only and default restoration report the same dangling current profile', async () => {
+    const api = createApi({ value: {
+      getItem: () => JSON.stringify({ currentProfile: 'missing', profiles: [
+        { server: 'https://zentao.example.com', account: 'admin', token: 'token' },
+      ] }),
+      setItem: () => { throw new Error('A missing profile must not write storage.'); },
+    } });
+    await expect(api.ZentaoClient.fromProfile()).rejects.toMatchObject({ code: 'E_PROFILE_NOT_FOUND' });
+    await expect(api.ZentaoClient.fromProfile(undefined, { activate: false }))
+      .rejects.toMatchObject({ code: 'E_PROFILE_NOT_FOUND', message: 'ZenTao profile not found: missing' });
+    await expect(api.getProfile()).resolves.toBeUndefined();
+    await expect(api.getAllProfiles()).resolves.toHaveLength(1);
+  });
+
   test('restores clients from read-only storage when activation is disabled', async () => {
     const key = 'admin@https://zentao.example.com';
     let writes = 0;

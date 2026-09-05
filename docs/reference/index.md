@@ -41,7 +41,7 @@
 | [ServerConfig](interfaces/ServerConfig.md) | 禅道 `?mode=getconfig` 返回的服务端配置。 |
 | [ZentaoClientOptions](interfaces/ZentaoClientOptions.md) | 创建 [ZentaoClient](classes/ZentaoClient.md) 时使用的配置。 |
 | [ZentaoProfile](interfaces/ZentaoProfile.md) | 本地持久化的禅道账号 profile。 |
-| [ZentaoProfileConfig](interfaces/ZentaoProfileConfig.md) | 保存到本地 profile 中的客户端偏好配置。 |
+| [ZentaoProfileConfig](interfaces/ZentaoProfileConfig.md) | 保存到本地 profile 中的客户端偏好配置。 SDK 自动恢复 `timeout` / `insecure`；其余字段仅供上层应用读取和解释。 自定义值应使用 JSON 数据，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。 |
 | [ZentaoProfileRecord](interfaces/ZentaoProfileRecord.md) | 运行时返回的 profile，会额外带上 `account@server` 形式的 key。 |
 | [ZentaoProfilesStore](interfaces/ZentaoProfilesStore.md) | 本地 profile 存储文件或浏览器 localStorage 中的 JSON 结构。 |
 

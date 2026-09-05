@@ -2,7 +2,7 @@ import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
 import { parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
-import { getProfile, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
+import { getProfileOrThrow, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
   ClientRequestOptions,
@@ -658,13 +658,10 @@ export class ZentaoClient {
    * @param options - 恢复选项；默认保持切换当前 profile 的行为。
    * @returns 用 profile 还原后的客户端实例。
    * @throws {ZentaoError} `E_NO_PROFILE`（无任何 profile 且未传 key）、`E_PROFILE_NOT_FOUND`（指定 key 不存在）、
-   *   `E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问持久化存储）。
+   *   `E_PROFILE_STORAGE_INVALID`（存储内容不合法）、`E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问持久化存储）。
    */
   static async fromProfile(profileKey?: string, options: FromProfileOptions = {}): Promise<ZentaoClient> {
-    const activeProfile = options.activate === false ? await getProfile(profileKey) : await switchProfile(profileKey);
-    if (!activeProfile) {
-      throw new ZentaoError(profileKey === undefined ? 'E_NO_PROFILE' : 'E_PROFILE_NOT_FOUND', { profileKey: profileKey ?? '' });
-    }
+    const activeProfile = options.activate === false ? await getProfileOrThrow(profileKey) : await switchProfile(profileKey);
     const client = new ZentaoClient({
       baseUrl: activeProfile.server,
       token: activeProfile.token,

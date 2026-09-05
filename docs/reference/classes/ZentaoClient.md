@@ -457,7 +457,7 @@
 #### Throws
 
 `E_NO_PROFILE`（无任何 profile 且未传 key）、`E_PROFILE_NOT_FOUND`（指定 key 不存在）、
-  `E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问持久化存储）。
+  `E_PROFILE_STORAGE_INVALID`（存储内容不合法）、`E_PROFILE_STORAGE_UNAVAILABLE`（运行时无法访问持久化存储）。
 
 ***
 
