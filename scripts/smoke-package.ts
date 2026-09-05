@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -75,22 +74,22 @@ const browserSubpathApi = await import(`${packageJson.name}/browser`);
 assert(typeof browserSubpathApi.ZentaoClient === 'function', 'Package ./browser subpath does not export ZentaoClient.');
 assert(browserSubpathApi.VERSION === api.VERSION, 'Package ./browser VERSION does not match package main.');
 
-const npmCache = mkdtempSync(join(tmpdir(), 'zentao-api-npm-cache-'));
-let packOutput: string;
+const packDir = mkdtempSync(join(tmpdir(), 'zentao-api-package-smoke-'));
+let packedFiles: Set<string>;
 try {
-  packOutput = execFileSync('npm', ['pack', '--dry-run', '--json'], {
+  const archive = join(packDir, 'package.tgz');
+  const pack = Bun.spawnSync({
+    cmd: ['bun', 'pm', 'pack', '--filename', archive, '--ignore-scripts', '--quiet'],
     cwd: root,
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      npm_config_cache: npmCache,
-    },
   });
+  assert(pack.exitCode === 0, `Bun package creation failed: ${new TextDecoder().decode(pack.stderr)}`);
+  const listing = Bun.spawnSync(['tar', '-tzf', archive]);
+  assert(listing.exitCode === 0, `Cannot inspect package: ${new TextDecoder().decode(listing.stderr)}`);
+  packedFiles = new Set(new TextDecoder().decode(listing.stdout).trim().split('\n')
+    .filter(file => !file.endsWith('/')).map(file => file.replace(/^package\//, '')));
 } finally {
-  rmSync(npmCache, { recursive: true, force: true });
+  rmSync(packDir, { recursive: true, force: true });
 }
-const [pack] = JSON.parse(packOutput) as Array<{ files: Array<{ path: string }> }>;
-const packedFiles = new Set(pack.files.map((file) => file.path));
 
 for (const file of [
   toPackedPath(packageJson.main),
