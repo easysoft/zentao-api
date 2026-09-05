@@ -7,16 +7,19 @@ import {
   defineModules,
   getModuleAction,
   request,
+  setGlobalOptions,
   type FileCreateResult,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
 
 function createMockServer(handler: (req: Request) => Response | Promise<Response>) {
-  return Bun.serve({ port: 0, fetch: handler });
+  return Bun.serve({ port: 0, fetch: req => new URL(req.url).searchParams.get('mode') === 'getconfig'
+    ? Response.json({ version: '22.5' }) : handler(req) });
 }
 
 afterEach(() => {
   resetModuleDefinitions();
+  setGlobalOptions({ version: undefined });
 });
 
 describe('high-level file uploads', () => {
@@ -128,6 +131,7 @@ describe('high-level file uploads', () => {
     defineModules({
       name: 'artifact',
       actions: [{
+        minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
         name: 'publish',
         type: 'action',
         method: 'post',
@@ -176,6 +180,7 @@ describe('high-level file uploads', () => {
   });
 
   test('normalizes missing files and size-limit failures', async () => {
+    setGlobalOptions({ version: '22.5' });
     const dir = mkdtempSync(join(tmpdir(), 'zentao-api-upload-errors-'));
     const path = join(dir, 'too-large.txt');
     writeFileSync(path, '1234');

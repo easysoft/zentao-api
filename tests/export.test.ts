@@ -16,6 +16,7 @@ function defineExportFixture(): void {
     name: 'export-fixture',
     actions: [
       {
+        minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
         name: 'create',
         type: 'create',
         path: '/export-fixtures',

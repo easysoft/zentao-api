@@ -188,6 +188,7 @@ function renderAction(module: ModuleDefinition, action: ModuleAction): string {
     `- SDK 调用：\`request("${module.name}/${action.name}", params)\``,
     `- HTTP：\`${String(action.method).toUpperCase()} ${action.path}\``,
     `- 动作类型：\`${action.type}\``,
+    `- 最低禅道版本：${action.minVersion.map(version => `\`${version}\``).join(' / ')}`,
     '',
     '### 路径参数',
     '',

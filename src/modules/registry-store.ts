@@ -1,4 +1,5 @@
 import { ZentaoError } from '../misc/errors.js';
+import { validateMinVersion } from '../misc/zentao-version.js';
 import type {
   ModuleAction,
   ModuleActionMethod,
@@ -112,6 +113,7 @@ export function normalizeAction(action: ModuleAction): ModuleAction {
 }
 
 export function freezeAction(action: ModuleAction): ModuleAction {
+  validateAction(action);
   return deepFreeze(normalizeAction(action));
 }
 
@@ -166,6 +168,7 @@ export function validateAction(action: ModuleAction): void {
   if (!action || typeof action.name !== 'string' || typeof action.path !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
+  validateMinVersion(action.minVersion);
   // method / resultType 可省略（由 normalizeAction 按 type 推导），但显式给出时必须是字符串。
   if (action.method !== undefined && typeof action.method !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');

@@ -13,6 +13,9 @@ export const ERRORS = {
   E_ABORTED: 'Request was aborted.',
   E_INSECURE_BROWSER: 'The insecure option is only supported in Node.js runtimes.',
   E_LOGIN_FAILED: 'ZenTao login failed.',
+  E_INVALID_ZENTAO_CONFIG: 'ZenTao configuration must be an object with a non-empty version.',
+  E_INVALID_ZENTAO_VERSION: 'Invalid ZenTao version: {version}',
+  E_UNSUPPORTED_ZENTAO_VERSION: 'Action {action} does not support ZenTao {version}; minimum versions: {minVersion}',
   E_INVALID_PROFILE: 'Invalid ZenTao profile.',
   E_NO_PROFILE: 'No ZenTao profile is configured.',
   E_PROFILE_NOT_FOUND: 'ZenTao profile not found: {profileKey}',
@@ -37,6 +40,14 @@ export const ERRORS = {
 
 /** SDK 已知错误码，对应 {@link ERRORS} 的 key。 */
 export type ErrorCode = keyof typeof ERRORS;
+
+/** 仅配置获取失败可选择跳过；取消、版本错误和持久化错误仍须抛出。 @internal */
+export function isZentaoConfigFetchError(error: unknown): boolean {
+  return error instanceof ZentaoError && (
+    error.code === 'E_HTTP_ERROR' || error.code === 'E_NETWORK_ERROR'
+    || error.code === 'E_TIMEOUT' || error.code === 'E_INVALID_ZENTAO_CONFIG'
+  );
+}
 
 /**
  * SDK 统一错误类型。

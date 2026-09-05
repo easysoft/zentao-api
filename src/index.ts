@@ -20,6 +20,7 @@ export {
   exportRegistry,
   extendModuleAction,
   getModuleNames,
+  isModuleName,
   getModule,
   getModuleAction,
   getModuleActionParams,

@@ -25,6 +25,7 @@ import { isRecord } from '../utils/index.js';
  * ```ts
  * defineModuleActions('bug', {
  *   name: 'assignTo',
+ *   minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
  *   display: '指派 Bug',
  *   type: 'action',
  *   method: 'put',
@@ -49,6 +50,7 @@ import { isRecord } from '../utils/index.js';
  *   actions: [
  *     {
  *       name: 'list',
+ *       minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
  *       type: 'list',
  *       method: 'get',
  *       path: '/customs',
@@ -186,6 +188,7 @@ export function applyBuiltinOverrides(): void {
   // 定义获取需求层级操作
   defineModuleActions('story', {
     name: 'getGrades',
+    minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
     display: '获取需求层级选项',
     type: 'list',
     method: 'get',

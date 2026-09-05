@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateMinVersion } from '../src/misc/zentao-version.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -729,6 +730,11 @@ function buildRegistry(): RegistryBuildResult {
             if (!tag || tag === 'Token') continue;
             const tagLower = tag.toLowerCase();
             const mapping = actionMap[actionMapKey(method, path)];
+            try {
+                validateMinVersion(mapping?.minVersion);
+            } catch (error) {
+                throw new Error(`Invalid or missing minVersion for ${actionMapKey(method, path)}.`, { cause: error });
+            }
             const moduleName = mapping?.module ?? tagLower;
             if (!moduleOps.has(moduleName)) moduleOps.set(moduleName, []);
             moduleOps.get(moduleName)!.push({ path, method, op, ...(mapping ? { mapping } : {}) });
@@ -843,6 +849,7 @@ function buildRegistry(): RegistryBuildResult {
 
             const propertyBlocks = new Map<string, string>();
             propertyBlocks.set('name', `                name: 'list',\n`);
+            propertyBlocks.set('minVersion', formatMappedActionProperty('minVersion', mergedMapping.minVersion));
             propertyBlocks.set('display', `                display: '${escapeStr(listDisplay)}',\n`);
             propertyBlocks.set('type', `                type: 'list',\n`);
             propertyBlocks.set('method', `                method: 'get',\n`);
@@ -927,6 +934,7 @@ function buildRegistry(): RegistryBuildResult {
 
             const propertyBlocks = new Map<string, string>();
             propertyBlocks.set('name', `                name: '${escapeStr(actionName)}',\n`);
+            propertyBlocks.set('minVersion', formatMappedActionProperty('minVersion', entry.mapping?.minVersion));
             propertyBlocks.set('display', `                display: '${escapeStr(summary)}',\n`);
             propertyBlocks.set('type', `                type: '${actionType}',\n`);
             propertyBlocks.set('method', `                method: '${actionMethod}',\n`);
@@ -1087,6 +1095,10 @@ function formatTypePropertyName(name: string): string {
 
 function formatMappedActionProperty(property: string, value: unknown): string {
     const key = formatTypePropertyName(property);
+    if (property === 'minVersion') {
+        validateMinVersion(value);
+        return `                minVersion: [${value.map(version => `'${escapeStr(version)}'`).join(', ')}],\n`;
+    }
     const literal = typeof value === 'string'
         ? `'${escapeStr(value)}'`
         : indentJson(value, 16);

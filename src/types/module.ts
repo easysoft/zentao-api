@@ -105,6 +105,8 @@ export type ModuleActionGetterFn<T, O = RequestProcessOptions> = (
 export interface ModuleAction {
   /** 动作名称，例如 `list`、`get`、`close`。 */
   name: ModuleActionName;
+  /** 各系列支持的最低禅道正式版本，例如 `['22.0', 'biz13.0', 'max8.0', 'ipd5.0']`；不能为空或重复系列，未列出的系列不支持。 */
+  minVersion: readonly string[];
   /** 动作类型，决定高阶 request 的路径/参数解析策略，并在 `method`、`resultType` 省略时作为推导依据。 */
   type: ModuleActionType;
   /** 面向用户展示的动作名称。 */
@@ -176,6 +178,12 @@ export interface ModuleDefinition {
   description?: string;
   /** 模块支持的动作集合。 */
   actions: readonly ModuleAction[];
+}
+
+/** 注册库查询选项；不传版本时返回完整的当前定义，不使用全局版本。 */
+export interface ModuleQueryOptions {
+  /** 仅返回该禅道版本支持的动作，以及至少含有一个支持动作的模块。 */
+  version?: string;
 }
 
 /** 将模块动作和参数解析后的可执行请求描述。 */

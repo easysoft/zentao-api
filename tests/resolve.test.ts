@@ -21,6 +21,7 @@ describe('resolveActionRequest', () => {
       name: 'workitem',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'get',
@@ -73,6 +74,7 @@ describe('resolveActionRequest', () => {
     defineModules({
       name: 'widget',
       actions: [{
+        minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
         name: 'list',
         type: 'list',
         method: 'get',
@@ -124,6 +126,7 @@ describe('resolveActionRequest', () => {
       name: 'workitem',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'get',
@@ -157,6 +160,7 @@ describe('resolveActionRequest', () => {
       name: 'workitem',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'get',
@@ -191,6 +195,7 @@ describe('resolveActionRequest', () => {
       name: 'workitem',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'get',
@@ -224,6 +229,7 @@ describe('resolveActionRequest', () => {
       name: 'workitem',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'get',
@@ -255,6 +261,7 @@ describe('resolveActionRequest', () => {
       name: 'widget',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'transition',
           type: 'action',
           method: 'put',
@@ -282,6 +289,7 @@ describe('resolveActionRequest', () => {
       name: 'form',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'create',
           method: 'post',
@@ -328,6 +336,7 @@ describe('resolveActionRequest', () => {
       name: 'flagform',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'create',
           method: 'post',
@@ -366,6 +375,7 @@ describe('resolveActionRequest', () => {
       name: 'strictflagform',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'create',
           method: 'post',
@@ -394,6 +404,7 @@ describe('resolveActionRequest', () => {
       name: 'iteration',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'create',
           method: 'post',
@@ -432,6 +443,7 @@ describe('resolveActionRequest', () => {
       name: 'nullableform',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'update',
           type: 'update',
           method: 'put',
@@ -474,6 +486,7 @@ describe('resolveActionRequest', () => {
       name: 'requiredform',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'create',
           method: 'post',
@@ -506,6 +519,7 @@ describe('module queries', () => {
 describe('result and pager extraction', () => {
   test('extracts mapped result fields and mapped pager fields', () => {
     const action: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'summary',
       type: 'get',
       method: 'get',
@@ -541,6 +555,7 @@ describe('result and pager extraction', () => {
 
   test('supports function result and pager getters', () => {
     const action: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'computed',
       type: 'get',
       method: 'get',
@@ -564,6 +579,7 @@ describe('result and pager extraction', () => {
 
   test('passes call params to function getters', () => {
     const action: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'computed',
       type: 'get',
       method: 'get',
@@ -587,6 +603,7 @@ describe('result and pager extraction', () => {
 
   test('passes request processing options to function getters', () => {
     const action: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'computed',
       type: 'get',
       method: 'get',
@@ -621,6 +638,7 @@ describe('result and pager extraction', () => {
 
   test('extracts mapped result and pager fields from nested paths', () => {
     const action: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'summary',
       type: 'get',
       method: 'get',

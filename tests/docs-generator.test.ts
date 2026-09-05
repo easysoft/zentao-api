@@ -11,6 +11,7 @@ describe('ZenTao API docs generator', () => {
         description: 'Bug 管理',
         actions: [
           {
+            minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
             name: 'resolve',
             display: '解决Bug',
             type: 'action',

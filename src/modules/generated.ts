@@ -15,6 +15,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取用户列表',
                 type: 'list',
                 method: 'get',
@@ -80,6 +81,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建用户',
                 type: 'create',
                 method: 'post',
@@ -118,6 +120,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取用户详情',
                 type: 'get',
                 method: 'get',
@@ -129,6 +132,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改用户信息',
                 type: 'update',
                 method: 'put',
@@ -206,6 +210,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除用户',
                 type: 'delete',
                 method: 'delete',
@@ -226,6 +231,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取项目集列表',
                 type: 'list',
                 method: 'get',
@@ -298,6 +304,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建项目集',
                 type: 'create',
                 method: 'post',
@@ -346,6 +353,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取项目集详情',
                 type: 'get',
                 method: 'get',
@@ -357,6 +365,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改项目集',
                 type: 'update',
                 method: 'put',
@@ -408,6 +417,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除项目集',
                 type: 'delete',
                 method: 'delete',
@@ -428,6 +438,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取产品列表',
                 type: 'list',
                 method: 'get',
@@ -478,6 +489,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'programProducts',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目集的产品列表',
                 type: 'list',
                 method: 'get',
@@ -532,6 +544,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建产品',
                 type: 'create',
                 method: 'post',
@@ -613,6 +626,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '关闭产品',
                 type: 'action',
                 method: 'post',
@@ -636,6 +650,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createStoryModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品的需求模块',
                 type: 'create',
                 method: 'post',
@@ -668,6 +683,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createBugModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品的Bug模块',
                 type: 'create',
                 method: 'post',
@@ -700,6 +716,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTestcaseModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品的用例模块',
                 type: 'create',
                 method: 'post',
@@ -732,6 +749,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取产品详情',
                 type: 'get',
                 method: 'get',
@@ -743,6 +761,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改产品',
                 type: 'update',
                 method: 'put',
@@ -827,6 +846,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除产品',
                 type: 'delete',
                 method: 'delete',
@@ -847,6 +867,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取项目列表',
                 type: 'list',
                 method: 'get',
@@ -917,6 +938,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'programProjects',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目集的项目列表',
                 type: 'list',
                 method: 'get',
@@ -972,6 +994,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'team',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目团队列表',
                 type: 'list',
                 method: 'get',
@@ -988,6 +1011,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projectMembers',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目成员列表',
                 type: 'list',
                 method: 'get',
@@ -999,6 +1023,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建项目',
                 type: 'create',
                 method: 'post',
@@ -1071,6 +1096,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '关闭项目',
                 type: 'action',
                 method: 'post',
@@ -1104,6 +1130,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createStory',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目需求',
                 type: 'create',
                 method: 'post',
@@ -1165,6 +1192,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createBug',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目Bug',
                 type: 'create',
                 method: 'post',
@@ -1232,6 +1260,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTask',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目任务',
                 type: 'create',
                 method: 'post',
@@ -1315,6 +1344,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改项目',
                 type: 'update',
                 method: 'put',
@@ -1390,6 +1420,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除项目',
                 type: 'delete',
                 method: 'delete',
@@ -1400,6 +1431,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'members',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '维护项目成员',
                 type: 'action',
                 method: 'put',
@@ -1489,6 +1521,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取执行列表',
                 type: 'list',
                 method: 'get',
@@ -1559,6 +1592,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projectExecutions',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目的执行列表',
                 type: 'list',
                 method: 'get',
@@ -1614,6 +1648,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'team',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取执行团队列表',
                 type: 'list',
                 method: 'get',
@@ -1630,6 +1665,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'executionMembers',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取执行成员列表',
                 type: 'list',
                 method: 'get',
@@ -1641,6 +1677,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建执行（迭代/阶段/看板）',
                 type: 'create',
                 method: 'post',
@@ -1759,6 +1796,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '关闭执行',
                 type: 'action',
                 method: 'post',
@@ -1792,6 +1830,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTaskModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建执行的任务模块',
                 type: 'create',
                 method: 'post',
@@ -1824,6 +1863,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取执行详情',
                 type: 'get',
                 method: 'get',
@@ -1835,6 +1875,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改执行',
                 type: 'update',
                 method: 'put',
@@ -1940,6 +1981,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除执行',
                 type: 'delete',
                 method: 'delete',
@@ -1950,6 +1992,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'members',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '维护执行成员',
                 type: 'action',
                 method: 'put',
@@ -2039,6 +2082,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取产品计划列表，支持获取产品下的产品计划',
                 type: 'list',
                 method: 'get',
@@ -2113,6 +2157,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建产品计划',
                 type: 'create',
                 method: 'post',
@@ -2173,6 +2218,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取产品计划详情',
                 type: 'get',
                 method: 'get',
@@ -2184,6 +2230,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改产品计划',
                 type: 'update',
                 method: 'put',
@@ -2240,6 +2287,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除产品计划',
                 type: 'delete',
                 method: 'delete',
@@ -2260,6 +2308,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取需求列表，支持获取项目/产品/执行下的需求',
                 type: 'list',
                 method: 'get',
@@ -2332,6 +2381,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'modules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '产品的需求模块树',
                 type: 'list',
                 method: 'get',
@@ -2343,6 +2393,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'tree',
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建需求',
                 type: 'create',
                 method: 'post',
@@ -2445,6 +2496,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取需求详情',
                 type: 'get',
                 method: 'get',
@@ -2456,6 +2508,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改需求',
                 type: 'update',
                 method: 'put',
@@ -2524,6 +2577,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改需求模块',
                 type: 'update',
                 method: 'put',
@@ -2556,6 +2610,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除需求',
                 type: 'delete',
                 method: 'delete',
@@ -2566,6 +2621,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除需求模块',
                 type: 'delete',
                 method: 'delete',
@@ -2576,6 +2632,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活需求',
                 type: 'action',
                 method: 'put',
@@ -2606,6 +2663,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'change',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '变更需求',
                 type: 'action',
                 method: 'put',
@@ -2655,6 +2713,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭需求',
                 type: 'action',
                 method: 'put',
@@ -2698,6 +2757,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取业务需求列表，支持获取产品下的业务需求',
                 type: 'list',
                 method: 'get',
@@ -2770,6 +2830,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建业务需求',
                 type: 'create',
                 method: 'post',
@@ -2860,6 +2921,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取业务需求详情',
                 type: 'get',
                 method: 'get',
@@ -2871,6 +2933,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'epic',
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改业务需求',
                 type: 'update',
                 method: 'put',
@@ -2940,6 +3003,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除业务需求',
                 type: 'delete',
                 method: 'delete',
@@ -2950,6 +3014,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活业务需求',
                 type: 'action',
                 method: 'put',
@@ -2980,6 +3045,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'change',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '变更业务需求',
                 type: 'action',
                 method: 'put',
@@ -3029,6 +3095,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭业务需求',
                 type: 'action',
                 method: 'put',
@@ -3072,6 +3139,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取用户需求列表，支持获取产品下的用户需求',
                 type: 'list',
                 method: 'get',
@@ -3144,6 +3212,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建用户需求',
                 type: 'create',
                 method: 'post',
@@ -3234,6 +3303,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取用户需求详情',
                 type: 'get',
                 method: 'get',
@@ -3245,6 +3315,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'requirement',
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改用户需求',
                 type: 'update',
                 method: 'put',
@@ -3313,6 +3384,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除用户需求',
                 type: 'delete',
                 method: 'delete',
@@ -3323,6 +3395,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活用户需求',
                 type: 'action',
                 method: 'put',
@@ -3353,6 +3426,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'change',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '变更用户需求',
                 type: 'action',
                 method: 'put',
@@ -3389,6 +3463,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭用户需求',
                 type: 'action',
                 method: 'put',
@@ -3432,6 +3507,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取Bug列表，支持获取项目/产品/执行下的Bug',
                 type: 'list',
                 method: 'get',
@@ -3497,6 +3573,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'modules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '产品的Bug模块树',
                 type: 'list',
                 method: 'get',
@@ -3508,6 +3585,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'tree',
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建Bug',
                 type: 'create',
                 method: 'post',
@@ -3597,6 +3675,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取Bug详情',
                 type: 'get',
                 method: 'get',
@@ -3608,6 +3687,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改Bug',
                 type: 'update',
                 method: 'put',
@@ -3689,6 +3769,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改Bug模块',
                 type: 'update',
                 method: 'put',
@@ -3721,6 +3802,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除Bug',
                 type: 'delete',
                 method: 'delete',
@@ -3731,6 +3813,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除Bug模块',
                 type: 'delete',
                 method: 'delete',
@@ -3741,6 +3824,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活Bug',
                 type: 'action',
                 method: 'put',
@@ -3781,6 +3865,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭Bug',
                 type: 'action',
                 method: 'put',
@@ -3804,6 +3889,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'confirm',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '确认Bug',
                 type: 'action',
                 method: 'put',
@@ -3864,6 +3950,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'resolve',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '解决Bug',
                 type: 'action',
                 method: 'put',
@@ -3922,6 +4009,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取测试用例列表，支持获取产品/项目/执行下的测试用例',
                 type: 'list',
                 method: 'get',
@@ -3985,6 +4073,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'modules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '产品的用例模块树',
                 type: 'list',
                 method: 'get',
@@ -3996,6 +4085,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'tree',
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建测试用例',
                 type: 'create',
                 method: 'post',
@@ -4101,6 +4191,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取测试用例详情',
                 type: 'get',
                 method: 'get',
@@ -4112,6 +4203,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改测试用例',
                 type: 'update',
                 method: 'put',
@@ -4201,6 +4293,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改用例模块',
                 type: 'update',
                 method: 'put',
@@ -4233,6 +4326,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除测试用例',
                 type: 'delete',
                 method: 'delete',
@@ -4243,6 +4337,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除用例模块',
                 type: 'delete',
                 method: 'delete',
@@ -4263,6 +4358,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取任务列表，支持获取执行下的任务',
                 type: 'list',
                 method: 'get',
@@ -4318,6 +4414,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'modules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '执行的任务模块树',
                 type: 'list',
                 method: 'get',
@@ -4329,6 +4426,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'tree',
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建任务',
                 type: 'create',
                 method: 'post',
@@ -4410,6 +4508,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取任务详情',
                 type: 'get',
                 method: 'get',
@@ -4421,6 +4520,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'task',
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改任务',
                 type: 'update',
                 method: 'put',
@@ -4495,6 +4595,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改任务模块',
                 type: 'update',
                 method: 'put',
@@ -4527,6 +4628,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除任务',
                 type: 'delete',
                 method: 'delete',
@@ -4537,6 +4639,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除任务模块',
                 type: 'delete',
                 method: 'delete',
@@ -4547,6 +4650,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活任务',
                 type: 'action',
                 method: 'put',
@@ -4583,6 +4687,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭任务',
                 type: 'action',
                 method: 'put',
@@ -4606,6 +4711,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'finish',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '完成任务',
                 type: 'action',
                 method: 'put',
@@ -4663,6 +4769,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'start',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '启动任务',
                 type: 'action',
                 method: 'put',
@@ -4723,6 +4830,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取问题列表',
                 type: 'list',
                 method: 'get',
@@ -4796,6 +4904,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projectIssues',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目问题列表',
                 type: 'list',
                 method: 'get',
@@ -4872,6 +4981,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'executionIssues',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取执行问题列表',
                 type: 'list',
                 method: 'get',
@@ -4948,6 +5058,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建问题',
                 type: 'create',
                 method: 'post',
@@ -5031,6 +5142,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取问题详情',
                 type: 'get',
                 method: 'get',
@@ -5052,6 +5164,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取风险列表',
                 type: 'list',
                 method: 'get',
@@ -5125,6 +5238,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projectRisks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目风险列表',
                 type: 'list',
                 method: 'get',
@@ -5201,6 +5315,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'executionRisks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取执行风险列表',
                 type: 'list',
                 method: 'get',
@@ -5277,6 +5392,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建风险',
                 type: 'create',
                 method: 'post',
@@ -5381,6 +5497,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取风险详情',
                 type: 'get',
                 method: 'get',
@@ -5392,6 +5509,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改风险',
                 type: 'update',
                 method: 'put',
@@ -5497,6 +5615,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取会议列表',
                 type: 'list',
                 method: 'get',
@@ -5564,6 +5683,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projectMeetings',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目会议列表',
                 type: 'list',
                 method: 'get',
@@ -5634,6 +5754,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'executionMeetings',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取执行会议列表',
                 type: 'list',
                 method: 'get',
@@ -5704,6 +5825,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建会议',
                 type: 'create',
                 method: 'post',
@@ -5800,6 +5922,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取会议详情',
                 type: 'get',
                 method: 'get',
@@ -5811,6 +5934,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改会议',
                 type: 'update',
                 method: 'put',
@@ -5897,6 +6021,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除会议',
                 type: 'delete',
                 method: 'delete',
@@ -5907,6 +6032,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'minutes',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '编辑会议纪要',
                 type: 'action',
                 method: 'put',
@@ -5943,6 +6069,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取反馈列表，支持获取产品下的反馈',
                 type: 'list',
                 method: 'get',
@@ -6017,6 +6144,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建反馈',
                 type: 'create',
                 method: 'post',
@@ -6076,6 +6204,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createBug',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '反馈转Bug',
                 type: 'create',
                 method: 'post',
@@ -6145,6 +6274,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTicket',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '反馈转工单',
                 type: 'create',
                 method: 'post',
@@ -6198,6 +6328,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTodo',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '反馈转待办',
                 type: 'create',
                 method: 'post',
@@ -6233,6 +6364,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createStory',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '反馈转需求',
                 type: 'create',
                 method: 'post',
@@ -6285,6 +6417,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTask',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '反馈转任务',
                 type: 'create',
                 method: 'post',
@@ -6346,6 +6479,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取反馈详情',
                 type: 'get',
                 method: 'get',
@@ -6357,6 +6491,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改反馈',
                 type: 'update',
                 method: 'put',
@@ -6419,6 +6554,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除反馈',
                 type: 'delete',
                 method: 'delete',
@@ -6429,6 +6565,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活反馈',
                 type: 'action',
                 method: 'put',
@@ -6459,6 +6596,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭反馈',
                 type: 'action',
                 method: 'put',
@@ -6507,6 +6645,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取工单列表，支持获取产品下的工单',
                 type: 'list',
                 method: 'get',
@@ -6582,6 +6721,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建工单',
                 type: 'create',
                 method: 'post',
@@ -6651,6 +6791,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createStory',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '工单转需求',
                 type: 'create',
                 method: 'post',
@@ -6703,6 +6844,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createBug',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '工单转Bug',
                 type: 'create',
                 method: 'post',
@@ -6772,6 +6914,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取工单详情',
                 type: 'get',
                 method: 'get',
@@ -6783,6 +6926,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改工单',
                 type: 'update',
                 method: 'put',
@@ -6851,6 +6995,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除工单',
                 type: 'delete',
                 method: 'delete',
@@ -6861,6 +7006,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'activate',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '激活工单',
                 type: 'action',
                 method: 'put',
@@ -6891,6 +7037,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'close',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '关闭工单',
                 type: 'action',
                 method: 'put',
@@ -6935,6 +7082,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取应用列表，支持获取产品下的应用',
                 type: 'list',
                 method: 'get',
@@ -6975,6 +7123,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'systems',
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建应用',
                 type: 'create',
                 method: 'post',
@@ -7029,6 +7178,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改应用',
                 type: 'update',
                 method: 'put',
@@ -7082,6 +7232,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取版本列表，支持获取项目/执行下的版本',
                 type: 'list',
                 method: 'get',
@@ -7153,6 +7304,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建版本/构建',
                 type: 'create',
                 method: 'post',
@@ -7227,6 +7379,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改版本',
                 type: 'update',
                 method: 'put',
@@ -7304,6 +7457,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除版本',
                 type: 'delete',
                 method: 'delete',
@@ -7324,6 +7478,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取测试单列表，支持获取产品/项目/执行下的测试单',
                 type: 'list',
                 method: 'get',
@@ -7379,6 +7534,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建测试单',
                 type: 'create',
                 method: 'post',
@@ -7462,6 +7618,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改测试单',
                 type: 'update',
                 method: 'put',
@@ -7541,6 +7698,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除测试单',
                 type: 'delete',
                 method: 'delete',
@@ -7561,6 +7719,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '获取发布列表，支持获取产品下的发布',
                 type: 'list',
                 method: 'get',
@@ -7635,6 +7794,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '创建发布',
                 type: 'create',
                 method: 'post',
@@ -7702,6 +7862,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '修改发布',
                 type: 'update',
                 method: 'put',
@@ -7765,6 +7926,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除发布',
                 type: 'delete',
                 method: 'delete',
@@ -7785,6 +7947,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'create',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '上传附件，使用【表单formdata】方式提交，不支持json',
                 type: 'create',
                 method: 'post',
@@ -7824,6 +7987,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '编辑附件，修改附件的名称',
                 type: 'update',
                 method: 'put',
@@ -7853,6 +8017,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
                 display: '删除附件',
                 type: 'delete',
                 method: 'delete',
@@ -7873,6 +8038,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'list',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取工作流数据列表(以合同为例)',
                 type: 'list',
                 method: 'get',
@@ -7882,6 +8048,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'dataList',
             }, {
                 name: 'getContract',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取工作流数据详情(以合同为例)',
                 type: 'get',
                 method: 'get',
@@ -7890,6 +8057,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'data',
             }, {
                 name: 'create',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建工作流数据(以合同为例)',
                 type: 'create',
                 method: 'post',
@@ -7916,6 +8084,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改工作流数据(以合同为例)',
                 type: 'update',
                 method: 'put',
@@ -7945,6 +8114,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除工作流事项(以合同为例)',
                 type: 'delete',
                 method: 'delete',
@@ -7965,6 +8135,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'mySpaces',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取我的文档空间列表',
                 type: 'list',
                 method: 'get',
@@ -7973,6 +8144,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'spaces',
             }, {
                 name: 'teamSpaces',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取团队文档空间列表',
                 type: 'list',
                 method: 'get',
@@ -7981,6 +8153,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'spaces',
             }, {
                 name: 'productSpaces',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取产品文档空间列表',
                 type: 'list',
                 method: 'get',
@@ -7989,6 +8162,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'spaces',
             }, {
                 name: 'projectSpaces',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目文档空间列表',
                 type: 'list',
                 method: 'get',
@@ -7997,6 +8171,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'spaces',
             }, {
                 name: 'myLibs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取我的文档库列表',
                 type: 'list',
                 method: 'get',
@@ -8008,6 +8183,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'teamLibs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取团队文档库列表',
                 type: 'list',
                 method: 'get',
@@ -8019,6 +8195,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'productLibs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取产品文档库列表',
                 type: 'list',
                 method: 'get',
@@ -8030,6 +8207,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'projectLibs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目文档库列表',
                 type: 'list',
                 method: 'get',
@@ -8041,6 +8219,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'myDocs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取我的文档列表',
                 type: 'list',
                 method: 'get',
@@ -8053,6 +8232,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'docs',
             }, {
                 name: 'teamDocs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取团队文档列表',
                 type: 'list',
                 method: 'get',
@@ -8065,6 +8245,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'productDocs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取产品文档列表',
                 type: 'list',
                 method: 'get',
@@ -8077,6 +8258,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'docs',
             }, {
                 name: 'projectDocs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目文档列表',
                 type: 'list',
                 method: 'get',
@@ -8089,6 +8271,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'docs',
             }, {
                 name: 'myModules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取我的文档库目录列表',
                 type: 'list',
                 method: 'get',
@@ -8101,6 +8284,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'teamModules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取团队文档库目录列表',
                 type: 'list',
                 method: 'get',
@@ -8113,6 +8297,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'productModules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取产品文档库目录列表',
                 type: 'list',
                 method: 'get',
@@ -8125,6 +8310,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'projectModules',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取项目文档库目录列表',
                 type: 'list',
                 method: 'get',
@@ -8137,6 +8323,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createMySpace',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建我的文档空间',
                 type: 'create',
                 method: 'post',
@@ -8163,6 +8350,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTeamSpace',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建团队文档空间',
                 type: 'create',
                 method: 'post',
@@ -8189,6 +8377,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createMyLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建我的文档库',
                 type: 'create',
                 method: 'post',
@@ -8218,6 +8407,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTeamLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建团队文档库',
                 type: 'create',
                 method: 'post',
@@ -8272,6 +8462,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProductLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品文档库',
                 type: 'create',
                 method: 'post',
@@ -8326,6 +8517,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProjectLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目文档库',
                 type: 'create',
                 method: 'post',
@@ -8380,6 +8572,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createMyDoc',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建我的文档',
                 type: 'create',
                 method: 'post',
@@ -8427,6 +8620,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTeamDoc',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建团队文档',
                 type: 'create',
                 method: 'post',
@@ -8474,6 +8668,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProductDoc',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品文档',
                 type: 'create',
                 method: 'post',
@@ -8521,6 +8716,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProjectDoc',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目文档',
                 type: 'create',
                 method: 'post',
@@ -8568,6 +8764,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createMyModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建我的文档库目录',
                 type: 'create',
                 method: 'post',
@@ -8604,6 +8801,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createTeamModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建团队文档库目录',
                 type: 'create',
                 method: 'post',
@@ -8640,6 +8838,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProductModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建产品文档库目录',
                 type: 'create',
                 method: 'post',
@@ -8676,6 +8875,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'createProjectModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建项目文档库目录',
                 type: 'create',
                 method: 'post',
@@ -8712,6 +8912,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'getSpace',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取文档空间详情',
                 type: 'get',
                 method: 'get',
@@ -8723,6 +8924,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'getLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取文档库详情',
                 type: 'get',
                 method: 'get',
@@ -8734,6 +8936,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'get',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '获取文档详情',
                 type: 'get',
                 method: 'get',
@@ -8745,6 +8948,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateSpace',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改文档空间',
                 type: 'update',
                 method: 'put',
@@ -8774,6 +8978,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改文档库',
                 type: 'update',
                 method: 'put',
@@ -8828,6 +9033,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改文档',
                 type: 'update',
                 method: 'put',
@@ -8874,6 +9080,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'updateModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '修改文档库目录',
                 type: 'update',
                 method: 'put',
@@ -8903,6 +9110,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteSpace',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除文档空间',
                 type: 'delete',
                 method: 'delete',
@@ -8913,6 +9121,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteLib',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除文档库',
                 type: 'delete',
                 method: 'delete',
@@ -8923,6 +9132,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除文档',
                 type: 'delete',
                 method: 'delete',
@@ -8933,6 +9143,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'deleteModule',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除文档库目录',
                 type: 'delete',
                 method: 'delete',
@@ -8953,6 +9164,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'create',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '创建待办',
                 type: 'create',
                 method: 'post',
@@ -9015,6 +9227,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'update',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '编辑待办',
                 type: 'update',
                 method: 'put',
@@ -9080,6 +9293,7 @@ export const BUILTIN_MODULES = [
                 },
             }, {
                 name: 'delete',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '删除待办',
                 type: 'delete',
                 method: 'delete',
@@ -9100,6 +9314,7 @@ export const BUILTIN_MODULES = [
         actions: [
             {
                 name: 'todos',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '我的待办',
                 type: 'list',
                 method: 'get',
@@ -9143,6 +9358,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'tasks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的任务',
                 type: 'list',
                 method: 'get',
@@ -9215,6 +9431,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'bugs',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的Bug',
                 type: 'list',
                 method: 'get',
@@ -9286,6 +9503,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'stories',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的研发需求',
                 type: 'list',
                 method: 'get',
@@ -9355,6 +9573,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'epics',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的业务需求',
                 type: 'list',
                 method: 'get',
@@ -9424,6 +9643,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'requirements',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的用户需求',
                 type: 'list',
                 method: 'get',
@@ -9493,6 +9713,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'testtasks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '我负责的的测试单',
                 type: 'list',
                 method: 'get',
@@ -9543,6 +9764,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'projects',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '我参与的项目',
                 type: 'list',
                 method: 'get',
@@ -9593,6 +9815,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'feedbacks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的反馈',
                 type: 'list',
                 method: 'get',
@@ -9661,6 +9884,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'tickets',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的工单',
                 type: 'list',
                 method: 'get',
@@ -9730,6 +9954,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'testcases',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的用例',
                 type: 'list',
                 method: 'get',
@@ -9799,6 +10024,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'meetings',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '我的会议',
                 type: 'list',
                 method: 'get',
@@ -9849,6 +10075,7 @@ export const BUILTIN_MODULES = [
                 ],
             }, {
                 name: 'issues',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的问题',
                 type: 'list',
                 method: 'get',
@@ -9903,6 +10130,7 @@ export const BUILTIN_MODULES = [
                 resultGetter: 'issues',
             }, {
                 name: 'risks',
+                minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
                 display: '指派给我的风险',
                 type: 'list',
                 method: 'get',

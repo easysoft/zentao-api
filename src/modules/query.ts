@@ -1,18 +1,24 @@
-import type { ModuleAction, ModuleActionParam, ModuleActionParamRole, ModuleDefinition } from '../types/index.js';
+import type { ModuleAction, ModuleActionParam, ModuleActionParamRole, ModuleDefinition, ModuleQueryOptions } from '../types/index.js';
+import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
 import { objectProps } from './object-props.js';
 import { getModuleMapState, getModulesState } from './registry-store.js';
 
 /**
  * 获取模块定义。
  *
- * 模块名匹配大小写不敏感。返回值是注册表内部的已深冻结引用（O(1) 查询、零拷贝），
+ * 模块名匹配大小写不敏感。未传版本时返回注册表内部的已深冻结引用（O(1) 查询、零拷贝），
  * 任何写入尝试在严格模式下会抛 `TypeError`；如需修改请使用 {@link defineModules}。
  *
  * @param moduleName - 模块名。
- * @returns 已注册的模块定义；模块未注册时返回 `undefined`。
+ * @param options - 可选版本过滤；不传时保留完整注册表引用，传入时返回冻结的过滤视图。
+ * @returns 已注册的模块定义；模块未注册或过滤后没有动作时返回 `undefined`。
  */
-export function getModule(moduleName: string): ModuleDefinition | undefined {
-  return getModuleMapState().get(moduleName.toLowerCase());
+export function getModule(moduleName: string, options: ModuleQueryOptions = {}): ModuleDefinition | undefined {
+  const version = options.version === undefined ? undefined : parseZentaoVersion(options.version);
+  const module = getModuleMapState().get(moduleName.toLowerCase());
+  if (!version || !module) return module;
+  const actions = module.actions.filter(action => supportsZentaoVersion(version, action.minVersion));
+  return actions.length ? Object.freeze({ ...module, actions: Object.freeze(actions) }) : undefined;
 }
 
 /**
@@ -26,10 +32,11 @@ export function getModule(moduleName: string): ModuleDefinition | undefined {
  *
  * @param moduleName - 模块名（大小写不敏感）。
  * @param actionName - 动作名（大小写不敏感）；支持 `ls` 作为 `list` 的别名。
+ * @param options - 可选版本过滤。
  * @returns 匹配到的动作定义；模块未注册或动作不存在时返回 `undefined`。
  */
-export function getModuleAction(moduleName: string, actionName: string): ModuleAction | undefined {
-  const module = getModule(moduleName);
+export function getModuleAction(moduleName: string, actionName: string, options?: ModuleQueryOptions): ModuleAction | undefined {
+  const module = getModule(moduleName, options);
   if (!module) return undefined;
   const normalized = actionName === 'ls' ? 'list' : actionName;
   return module.actions.find((action) => String(action.name).toLowerCase() === normalized.toLowerCase());
@@ -42,12 +49,13 @@ export function getModuleAction(moduleName: string, actionName: string): ModuleA
  * @param actionName - 动作名（大小写不敏感）；支持 `ls` 作为 `list` 的别名。
  * @param options - 选项。
  * @param options.roles - 角色，可选 `path`、`query`、`body`。
+ * @param options.version - 可选禅道版本；不支持该动作时返回空数组，不做参数级版本过滤。
  * @returns 动作参数。
  */
-export function getModuleActionParams(moduleName: string, actionName: string, options?: { roles?: ModuleActionParamRole[] }): ModuleActionParam[] {
+export function getModuleActionParams(moduleName: string, actionName: string, options?: ModuleQueryOptions & { roles?: ModuleActionParamRole[] }): ModuleActionParam[] {
   const { roles } = options ?? {};
   const params = [] as ModuleActionParam[];
-  const action = getModuleAction(moduleName, actionName);
+  const action = getModuleAction(moduleName, actionName, options);
   if (!action) {
     return [];
   }
@@ -101,19 +109,24 @@ export function getModuleActionParams(moduleName: string, actionName: string, op
  * 顺序与模块写入注册表的顺序一致；包括内置模块和通过 {@link defineModules} 追加的用户模块。
  *
  * @returns 模块名数组（保留原始大小写）。
+ * @param options - 可选版本过滤，仅保留含有支持动作的模块。
  */
-export function getModuleNames(): string[] {
-  return getModulesState().map((module) => module.name);
+export function getModuleNames(options: ModuleQueryOptions = {}): string[] {
+  const version = options.version === undefined ? undefined : parseZentaoVersion(options.version);
+  return getModulesState()
+    .filter(module => !version || module.actions.some(action => supportsZentaoVersion(version, action.minVersion)))
+    .map(module => module.name);
 }
 
 /**
  * 判断模块名是否已注册。
  *
  * @param moduleName - 模块名；匹配大小写不敏感。
+ * @param options - 可选版本过滤。
  * @returns 已注册返回 `true`，否则 `false`。
  */
-export function isModuleName(moduleName: string): boolean {
-  return getModuleMapState().has(moduleName.toLowerCase());
+export function isModuleName(moduleName: string, options?: ModuleQueryOptions): boolean {
+  return getModule(moduleName, options) !== undefined;
 }
 
 /**

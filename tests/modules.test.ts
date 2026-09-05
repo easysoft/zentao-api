@@ -25,7 +25,8 @@ interface ApiActionMapping {
 function createMockServer(handler: (req: Request) => Response | Promise<Response>) {
   return Bun.serve({
     port: 0,
-    fetch: handler,
+    fetch: req => new URL(req.url).searchParams.get('mode') === 'getconfig'
+      ? Response.json({ version: '22.5' }) : handler(req),
   });
 }
 
@@ -82,6 +83,13 @@ describe('module registry', () => {
     const actionMap = JSON.parse(
       readFileSync(new URL('../scripts/zentao-api-map.json', import.meta.url), 'utf-8'),
     ) as Record<string, ApiActionMapping>;
+    const normalizePath = (path: string) => path.replace(/\{\w+\}/g, '{}');
+    const pathsForAction = (action: ModuleAction) => {
+      const scope = action.pathParams?.scope;
+      return action.path.includes('{scope}') && scope && typeof scope !== 'string'
+        ? scope.options!.map(option => normalizePath(action.path.replace('{scope}', String(option.value))))
+        : [normalizePath(action.path)];
+    };
 
     for (const [api, mapping] of Object.entries(actionMap)) {
       const separator = api.indexOf(' ');
@@ -91,7 +99,7 @@ describe('module registry', () => {
       const expectedMethod = typeof mapping.method === 'string' ? mapping.method : sourceMethod;
       const candidates = getModuleNames().flatMap(moduleName =>
         getModule(moduleName)!.actions
-          .filter(action => action.path === expectedPath && action.method?.toLowerCase() === expectedMethod.toLowerCase())
+          .filter(action => pathsForAction(action).includes(normalizePath(expectedPath)) && action.method?.toLowerCase() === expectedMethod.toLowerCase())
           .map(action => ({ moduleName, action })),
       ).filter(candidate => !mapping.module || candidate.moduleName === mapping.module);
       const candidate = candidates.find(({ action }) => !mapping.name || action.name === mapping.name);
@@ -100,7 +108,7 @@ describe('module registry', () => {
       expect(action, api).toBeDefined();
       if (mapping.module) expect(candidate!.moduleName, `${api} module`).toBe(mapping.module);
       if (mapping.name) expect(action!.name, `${api} name`).toBe(mapping.name);
-      expect(action!.path, api).toBe(expectedPath);
+      expect(pathsForAction(action!), api).toContain(normalizePath(expectedPath));
       expect(action!.method?.toLowerCase(), api).toBe(
         expectedMethod.toLowerCase(),
       );
@@ -234,6 +242,7 @@ describe('module registry', () => {
       display: 'Custom Product',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'GET',
@@ -242,6 +251,7 @@ describe('module registry', () => {
           resultGetter: 'items',
         },
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'archive',
           type: 'action',
           method: 'PUT',
@@ -266,6 +276,7 @@ describe('module registry', () => {
       display: 'Custom Product',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'GET',
@@ -288,6 +299,7 @@ describe('module registry', () => {
       name: 'custom',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'GET',
@@ -297,6 +309,7 @@ describe('module registry', () => {
       ],
     };
     const extra: ModuleAction = {
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       name: 'archive',
       type: 'action',
       method: 'PUT',
@@ -353,6 +366,7 @@ describe('action method / resultType inference', () => {
     defineModules({
       name: 'inferred',
       actions: cases.map(({ type }) => ({
+        minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
         name: type,
         type,
         path: `/inferred/${type}`,
@@ -370,7 +384,7 @@ describe('action method / resultType inference', () => {
     defineModules({
       name: 'explicit',
       actions: [
-        { name: 'remove', type: 'action', method: 'delete', resultType: 'object', path: '/explicit/{id}' },
+        { minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'], name: 'remove', type: 'action', method: 'delete', resultType: 'object', path: '/explicit/{id}' },
       ],
     });
 
@@ -384,7 +398,7 @@ describe('action method / resultType inference', () => {
       defineModules({
         name: 'bad-method',
         actions: [
-          { name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], path: '/bad' },
+          { minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'], name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], path: '/bad' },
         ],
       }),
     ).toThrow('method');
@@ -395,7 +409,7 @@ describe('action method / resultType inference', () => {
       defineModules({
         name: 'bad-result',
         actions: [
-          { name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], method: 'get', path: '/bad' },
+          { minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'], name: 'weird', type: 'mystery' as unknown as ModuleAction['type'], method: 'get', path: '/bad' },
         ],
       }),
     ).toThrow('result type');
@@ -404,10 +418,10 @@ describe('action method / resultType inference', () => {
   test('infers omitted fields through defineModuleActions and extendModuleAction', () => {
     defineModules({
       name: 'infer-extend',
-      actions: [{ name: 'list', type: 'list', path: '/infer-extend' }],
+      actions: [{ minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'], name: 'list', type: 'list', path: '/infer-extend' }],
     });
 
-    defineModuleActions('infer-extend', { name: 'close', type: 'action', path: '/infer-extend/{id}/close' });
+    defineModuleActions('infer-extend', { minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'], name: 'close', type: 'action', path: '/infer-extend/{id}/close' });
     expect(getModuleAction('infer-extend', 'close')!.method).toBe('post');
     expect(getModuleAction('infer-extend', 'close')!.resultType).toBe('text');
 
@@ -436,6 +450,7 @@ describe('extendModuleAction', () => {
       name: 'custom',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'create',
           type: 'action',
           method: 'POST',
@@ -472,6 +487,7 @@ describe('extendModuleAction', () => {
       name: 'custom',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'GET',
@@ -504,6 +520,7 @@ describe('extendModuleAction', () => {
       name: 'custom',
       actions: [
         {
+          minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
           name: 'list',
           type: 'list',
           method: 'GET',
