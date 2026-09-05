@@ -17,6 +17,7 @@
 - SDK 调用：`request("user/list", params)`
 - HTTP：`GET /users`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -62,6 +63,7 @@ const result = await request("user/list", {
 - SDK 调用：`request("user/create", params)`
 - HTTP：`POST /users`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -132,6 +134,7 @@ const result = await request("user/create", {
 - SDK 调用：`request("user/get", params)`
 - HTTP：`GET /users/{userID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -166,6 +169,7 @@ const result = await request("user/get", {
 - SDK 调用：`request("user/update", params)`
 - HTTP：`PUT /users/{userID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -285,6 +289,7 @@ const result = await request("user/update", {
 - SDK 调用：`request("user/delete", params)`
 - HTTP：`DELETE /users/{userID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

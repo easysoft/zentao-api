@@ -57,6 +57,8 @@ const bugs = await request('bug/list', { productID: 1 });
 | 选项 | 类型 | 说明 |
 | --- | --- | --- |
 | `client` | `ZentaoClient` | 高阶 `request()` 使用的默认客户端，由 `ZentaoClient.init()` 自动写入。 |
+| `version` | `string` | 当前禅道正式版本，例如 `biz13.5`；普通高阶请求直接使用，单次 `forceRefreshConfig` 优先。 |
+| `skipVersionCheckOnConfigError` | `boolean` | 配置获取失败时允许登录继续或请求跳过版本检查，默认 `false`；不忽略明确的版本不匹配。 |
 | `recPerPage` | `string` | 默认每页记录数，映射到模块动作的 `recPerPage` 参数。 |
 | `limit` | `string` | 限制 SDK 归一化后 `data` 的数量，不改变服务端页大小。 |
 | `timeout` | `number` | 默认请求超时时间，毫秒。 |

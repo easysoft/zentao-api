@@ -20,6 +20,7 @@
 - SDK 调用：`request("requirement/list", params)`
 - HTTP：`GET /products/{productID}/requirements`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -68,6 +69,7 @@ const result = await request("requirement/list", {
 - SDK 调用：`request("requirement/create", params)`
 - HTTP：`POST /requirements`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -201,6 +203,7 @@ const result = await request("requirement/create", {
 - SDK 调用：`request("requirement/get", params)`
 - HTTP：`GET /requirements/{storyID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -235,6 +238,7 @@ const result = await request("requirement/get", {
 - SDK 调用：`request("requirement/update", params)`
 - HTTP：`PUT /requirements/{storyID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -340,6 +344,7 @@ const result = await request("requirement/update", {
 - SDK 调用：`request("requirement/delete", params)`
 - HTTP：`DELETE /requirements/{storyID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -373,6 +378,7 @@ const result = await request("requirement/delete", {
 - SDK 调用：`request("requirement/activate", params)`
 - HTTP：`PUT /requirements/{storyID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -434,6 +440,7 @@ const result = await request("requirement/activate", {
 - SDK 调用：`request("requirement/change", params)`
 - HTTP：`PUT /requirements/{storyID}/change`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -502,6 +509,7 @@ const result = await request("requirement/change", {
 - SDK 调用：`request("requirement/close", params)`
 - HTTP：`PUT /requirements/{storyID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

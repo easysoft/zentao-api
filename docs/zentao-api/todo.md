@@ -15,6 +15,7 @@
 - SDK 调用：`request("todo/create", params)`
 - HTTP：`POST /todos`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -114,6 +115,7 @@ const result = await request("todo/create", {
 - SDK 调用：`request("todo/update", params)`
 - HTTP：`PUT /todos/{todoID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -216,6 +218,7 @@ const result = await request("todo/update", {
 - SDK 调用：`request("todo/delete", params)`
 - HTTP：`DELETE /todos/{todoID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

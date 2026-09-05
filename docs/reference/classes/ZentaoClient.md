@@ -127,13 +127,45 @@
 
 ***
 
+### getZentaoConfig()
+
+> **getZentaoConfig**(`options?`): `Promise`\<[`ServerConfig`](../interfaces/ServerConfig.md)\>
+
+获取禅道站点 `/?mode=getconfig` 配置，不发送 API Token。
+
+默认复用不超过 24 小时的缓存；缺失、过期或时间异常时重新获取。
+`forceRefresh: true` 忽略缓存。同一客户端的并发刷新共用首次调用的传输选项；
+后加入的调用仍可通过自己的 signal 取消等待。
+成功后更新实例缓存；启用 `persistProfiles` 且绑定了 profile 时仅更新其配置和获取时间。
+返回独立副本，修改返回值不会改变缓存。此方法不会忽略配置获取错误。
+
+#### Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `options` | [`GetZentaoConfigOptions`](../interfaces/GetZentaoConfigOptions.md) | 缓存、超时、TLS 与取消选项。 |
+
+#### Returns
+
+`Promise`\<[`ServerConfig`](../interfaces/ServerConfig.md)\>
+
+服务器配置。
+
+#### Throws
+
+传输错误、`E_INVALID_ZENTAO_CONFIG`、`E_INVALID_ZENTAO_VERSION` 或 profile 存储错误。
+
+***
+
 ### login()
 
 > **login**(`account`, `password`): `Promise`\<`string`\>
 
 使用账号密码登录禅道。
 
-成功后会把返回的 Token 写入当前客户端实例（后续请求自动带上 `Token` 头）；
+验证成功后强制获取一次站点配置，再把返回的 Token 写入当前客户端实例；
+配置获取失败默认阻断登录，只有全局 `skipVersionCheckOnConfigError` 可允许继续。
+全局 `version` 不跳过登录时的配置获取。
 当全局 `persistProfiles` 为真时，会同时把账号、Token、用户信息、服务端配置和
 客户端偏好（仅在显式设置过 `timeout` / `insecure` 时）持久化为本地 profile，
 并切换为当前 profile，方便下次通过 [ZentaoClient.fromProfile](#fromprofile) 直接登录态恢复。

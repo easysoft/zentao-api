@@ -11,6 +11,9 @@
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
+`forceRefreshConfig` 则强制使用实际版本。无法获取配置时默认抛错，
+`skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
@@ -42,6 +45,9 @@
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
+`forceRefreshConfig` 则强制使用实际版本。无法获取配置时默认抛错，
+`skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
@@ -79,6 +85,9 @@
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
+`forceRefreshConfig` 则强制使用实际版本。无法获取配置时默认抛错，
+`skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
@@ -116,6 +125,9 @@
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
+请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
+`forceRefreshConfig` 则强制使用实际版本。无法获取配置时默认抛错，
+`skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。

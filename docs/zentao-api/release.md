@@ -16,6 +16,7 @@
 - SDK 调用：`request("release/list", params)`
 - HTTP：`GET /products/{productID}/releases`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -64,6 +65,7 @@ const result = await request("release/list", {
 - SDK 调用：`request("release/create", params)`
 - HTTP：`POST /releases`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -169,6 +171,7 @@ const result = await request("release/create", {
 - SDK 调用：`request("release/update", params)`
 - HTTP：`PUT /releases/{releaseID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -269,6 +272,7 @@ const result = await request("release/update", {
 - SDK 调用：`request("release/delete", params)`
 - HTTP：`DELETE /releases/{releaseID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

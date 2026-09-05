@@ -11,6 +11,7 @@
 | <a id="property-description"></a> `description?` | `string` | 动作说明。 |
 | <a id="property-display"></a> `display?` | `string` | 面向用户展示的动作名称。 |
 | <a id="property-method"></a> `method?` | [`ModuleActionMethod`](../type-aliases/ModuleActionMethod.md) | HTTP 方法；省略时按 [type](#property-type) 自动推导： `list`/`get` → `GET`、`create`/`action` → `POST`、`update` → `PUT`、`delete` → `DELETE`。 当 `type` 无法推导出方法时抛出 `E_INDETERMINATE_ACTION_METHOD`。 |
+| <a id="property-minversion"></a> `minVersion` | readonly `string`[] | 各系列支持的最低禅道正式版本，例如 `['22.0', 'biz13.0', 'max8.0', 'ipd5.0']`；不能为空或重复系列，未列出的系列不支持。 |
 | <a id="property-name"></a> `name` | [`ModuleActionName`](../type-aliases/ModuleActionName.md) | 动作名称，例如 `list`、`get`、`close`。 |
 | <a id="property-pagergetter"></a> `pagerGetter?` | `string` \| [`ModuleActionPagerGetterMap`](ModuleActionPagerGetterMap.md) \| [`ModuleActionGetterFn`](../type-aliases/ModuleActionGetterFn.md)\<[`Pager`](Pager.md), [`RequestProcessOptions`](../type-aliases/RequestProcessOptions.md)\> | 从原始响应中提取分页信息的位置或函数： 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。 |
 | <a id="property-params"></a> `params?` | readonly [`ModuleActionParam`](ModuleActionParam.md)[] | 查询参数定义。 |

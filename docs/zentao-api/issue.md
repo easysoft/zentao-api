@@ -17,6 +17,7 @@
 - SDK 调用：`request("issue/list", params)`
 - HTTP：`GET /issues`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -62,6 +63,7 @@ const result = await request("issue/list", {
 - SDK 调用：`request("issue/projectIssues", params)`
 - HTTP：`GET /projects/{projectID}/issues`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -110,6 +112,7 @@ const result = await request("issue/projectIssues", {
 - SDK 调用：`request("issue/executionIssues", params)`
 - HTTP：`GET /executions/{executionID}/issues`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -158,6 +161,7 @@ const result = await request("issue/executionIssues", {
 - SDK 调用：`request("issue/create", params)`
 - HTTP：`POST /issues`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -281,6 +285,7 @@ const result = await request("issue/create", {
 - SDK 调用：`request("issue/get", params)`
 - HTTP：`GET /issues/{issueID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

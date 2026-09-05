@@ -24,6 +24,7 @@ Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、
 - SDK 调用：`request("bug/list", params)`
 - HTTP：`GET /{scope}/{scopeID}/bugs`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -74,6 +75,7 @@ const result = await request("bug/list", {
 - SDK 调用：`request("bug/modules", params)`
 - HTTP：`GET /products/{productID}/bug/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -108,6 +110,7 @@ const result = await request("bug/modules", {
 - SDK 调用：`request("bug/create", params)`
 - HTTP：`POST /bugs`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -239,6 +242,7 @@ const result = await request("bug/create", {
 - SDK 调用：`request("bug/get", params)`
 - HTTP：`GET /bugs/{bugID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -273,6 +277,7 @@ const result = await request("bug/get", {
 - SDK 调用：`request("bug/update", params)`
 - HTTP：`PUT /bugs/{bugID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -395,6 +400,7 @@ const result = await request("bug/update", {
 - SDK 调用：`request("bug/updateModule", params)`
 - HTTP：`PUT /bug/modules/{moduleID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -458,6 +464,7 @@ const result = await request("bug/updateModule", {
 - SDK 调用：`request("bug/delete", params)`
 - HTTP：`DELETE /bugs/{bugID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -491,6 +498,7 @@ const result = await request("bug/delete", {
 - SDK 调用：`request("bug/deleteModule", params)`
 - HTTP：`DELETE /bug/modules/{moduleID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -524,6 +532,7 @@ const result = await request("bug/deleteModule", {
 - SDK 调用：`request("bug/activate", params)`
 - HTTP：`PUT /bugs/{bugID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -598,6 +607,7 @@ const result = await request("bug/activate", {
 - SDK 调用：`request("bug/close", params)`
 - HTTP：`PUT /bugs/{bugID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -654,6 +664,7 @@ const result = await request("bug/close", {
 - SDK 调用：`request("bug/confirm", params)`
 - HTTP：`PUT /bugs/{bugID}/confirm`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -752,6 +763,7 @@ const result = await request("bug/confirm", {
 - SDK 调用：`request("bug/resolve", params)`
 - HTTP：`PUT /bugs/{bugID}/resolve`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

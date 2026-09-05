@@ -24,6 +24,7 @@
 - SDK 调用：`request("feedback/list", params)`
 - HTTP：`GET /products/{productID}/feedbacks`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -72,6 +73,7 @@ const result = await request("feedback/list", {
 - SDK 调用：`request("feedback/create", params)`
 - HTTP：`POST /feedbacks`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -167,6 +169,7 @@ const result = await request("feedback/create", {
 - SDK 调用：`request("feedback/createBug", params)`
 - HTTP：`POST /feedbacks/{feedbackID}/bugs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -274,6 +277,7 @@ const result = await request("feedback/createBug", {
 - SDK 调用：`request("feedback/createTicket", params)`
 - HTTP：`POST /feedbacks/{feedbackID}/tickets`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -361,6 +365,7 @@ const result = await request("feedback/createTicket", {
 - SDK 调用：`request("feedback/createTodo", params)`
 - HTTP：`POST /feedbacks/{feedbackID}/todos`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -427,6 +432,7 @@ const result = await request("feedback/createTodo", {
 - SDK 调用：`request("feedback/createStory", params)`
 - HTTP：`POST /feedbacks/{feedbackID}/stories`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -513,6 +519,7 @@ const result = await request("feedback/createStory", {
 - SDK 调用：`request("feedback/createTask", params)`
 - HTTP：`POST /feedbacks/{feedbackID}/tasks`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -610,6 +617,7 @@ const result = await request("feedback/createTask", {
 - SDK 调用：`request("feedback/get", params)`
 - HTTP：`GET /feedbacks/{feedbackID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -644,6 +652,7 @@ const result = await request("feedback/get", {
 - SDK 调用：`request("feedback/update", params)`
 - HTTP：`PUT /feedbacks/{feedbackID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -742,6 +751,7 @@ const result = await request("feedback/update", {
 - SDK 调用：`request("feedback/delete", params)`
 - HTTP：`DELETE /feedbacks/{feedbackID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -775,6 +785,7 @@ const result = await request("feedback/delete", {
 - SDK 调用：`request("feedback/activate", params)`
 - HTTP：`PUT /feedbacks/{feedbackID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -836,6 +847,7 @@ const result = await request("feedback/activate", {
 - SDK 调用：`request("feedback/close", params)`
 - HTTP：`PUT /feedbacks/{feedbackID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

@@ -17,6 +17,7 @@
 - SDK 调用：`request("program/list", params)`
 - HTTP：`GET /programs`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -62,6 +63,7 @@ const result = await request("program/list", {
 - SDK 调用：`request("program/create", params)`
 - HTTP：`POST /programs`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -144,6 +146,7 @@ const result = await request("program/create", {
 - SDK 调用：`request("program/get", params)`
 - HTTP：`GET /programs/{programID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -178,6 +181,7 @@ const result = await request("program/get", {
 - SDK 调用：`request("program/update", params)`
 - HTTP：`PUT /programs/{programID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -263,6 +267,7 @@ const result = await request("program/update", {
 - SDK 调用：`request("program/delete", params)`
 - HTTP：`DELETE /programs/{programID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

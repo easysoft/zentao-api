@@ -21,6 +21,7 @@
 - SDK 调用：`request("ticket/list", params)`
 - HTTP：`GET /products/{productID}/tickets`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -69,6 +70,7 @@ const result = await request("ticket/list", {
 - SDK 调用：`request("ticket/create", params)`
 - HTTP：`POST /tickets`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -177,6 +179,7 @@ const result = await request("ticket/create", {
 - SDK 调用：`request("ticket/createStory", params)`
 - HTTP：`POST /tickets/{ticketID}/stories`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -263,6 +266,7 @@ const result = await request("ticket/createStory", {
 - SDK 调用：`request("ticket/createBug", params)`
 - HTTP：`POST /tickets/{ticketID}/bugs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -370,6 +374,7 @@ const result = await request("ticket/createBug", {
 - SDK 调用：`request("ticket/get", params)`
 - HTTP：`GET /tickets/{ticketID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -404,6 +409,7 @@ const result = await request("ticket/get", {
 - SDK 调用：`request("ticket/update", params)`
 - HTTP：`PUT /tickets/{ticketID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -511,6 +517,7 @@ const result = await request("ticket/update", {
 - SDK 调用：`request("ticket/delete", params)`
 - HTTP：`DELETE /tickets/{ticketID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -544,6 +551,7 @@ const result = await request("ticket/delete", {
 - SDK 调用：`request("ticket/activate", params)`
 - HTTP：`PUT /tickets/{ticketID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -605,6 +613,7 @@ const result = await request("ticket/activate", {
 - SDK 调用：`request("ticket/close", params)`
 - HTTP：`PUT /tickets/{ticketID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

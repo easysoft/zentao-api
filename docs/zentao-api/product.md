@@ -22,6 +22,7 @@
 - SDK 调用：`request("product/list", params)`
 - HTTP：`GET /products`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -63,6 +64,7 @@ const result = await request("product/list", {
 - SDK 调用：`request("product/programProducts", params)`
 - HTTP：`GET /programs/{programID}/products`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -107,6 +109,7 @@ const result = await request("product/programProducts", {
 - SDK 调用：`request("product/create", params)`
 - HTTP：`POST /products`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -232,6 +235,7 @@ const result = await request("product/create", {
 - SDK 调用：`request("product/close", params)`
 - HTTP：`POST /products/{productID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -288,6 +292,7 @@ const result = await request("product/close", {
 - SDK 调用：`request("product/createStoryModule", params)`
 - HTTP：`POST /products/{productID}/story/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -351,6 +356,7 @@ const result = await request("product/createStoryModule", {
 - SDK 调用：`request("product/createBugModule", params)`
 - HTTP：`POST /products/{productID}/bug/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -414,6 +420,7 @@ const result = await request("product/createBugModule", {
 - SDK 调用：`request("product/createTestcaseModule", params)`
 - HTTP：`POST /products/{productID}/testcase/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -477,6 +484,7 @@ const result = await request("product/createTestcaseModule", {
 - SDK 调用：`request("product/get", params)`
 - HTTP：`GET /products/{productID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -511,6 +519,7 @@ const result = await request("product/get", {
 - SDK 调用：`request("product/update", params)`
 - HTTP：`PUT /products/{productID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -639,6 +648,7 @@ const result = await request("product/update", {
 - SDK 调用：`request("product/delete", params)`
 - HTTP：`DELETE /products/{productID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

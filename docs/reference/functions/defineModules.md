@@ -26,4 +26,5 @@
 
 ## Throws
 
-`E_INVALID_MODULE_DEFINITION` —— 缺少 `name` 或 `actions` 字段。
+`E_INVALID_MODULE_DEFINITION` —— 缺少 `name` 或 `actions` 字段；
+  `E_INVALID_ACTION_DEFINITION` —— 动作字段非法或 `minVersion` 缺失、为空、格式错误、系列重复。

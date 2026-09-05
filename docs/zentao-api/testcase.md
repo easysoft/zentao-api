@@ -20,6 +20,7 @@
 - SDK 调用：`request("testcase/list", params)`
 - HTTP：`GET /{scope}/{scopeID}/testcases`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -70,6 +71,7 @@ const result = await request("testcase/list", {
 - SDK 调用：`request("testcase/modules", params)`
 - HTTP：`GET /products/{productID}/testcase/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -104,6 +106,7 @@ const result = await request("testcase/modules", {
 - SDK 调用：`request("testcase/create", params)`
 - HTTP：`POST /testcases`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -256,6 +259,7 @@ const result = await request("testcase/create", {
 - SDK 调用：`request("testcase/get", params)`
 - HTTP：`GET /testcases/{caseID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -290,6 +294,7 @@ const result = await request("testcase/get", {
 - SDK 调用：`request("testcase/update", params)`
 - HTTP：`PUT /testcases/{caseID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -423,6 +428,7 @@ const result = await request("testcase/update", {
 - SDK 调用：`request("testcase/updateModule", params)`
 - HTTP：`PUT /testcase/modules/{moduleID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -486,6 +492,7 @@ const result = await request("testcase/updateModule", {
 - SDK 调用：`request("testcase/delete", params)`
 - HTTP：`DELETE /testcases/{caseID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -519,6 +526,7 @@ const result = await request("testcase/delete", {
 - SDK 调用：`request("testcase/deleteModule", params)`
 - HTTP：`DELETE /testcase/modules/{moduleID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

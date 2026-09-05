@@ -23,6 +23,7 @@
 - SDK 调用：`request("execution/list", params)`
 - HTTP：`GET /executions`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -68,6 +69,7 @@ const result = await request("execution/list", {
 - SDK 调用：`request("execution/projectExecutions", params)`
 - HTTP：`GET /projects/{projectID}/executions`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -112,6 +114,7 @@ const result = await request("execution/projectExecutions", {
 - SDK 调用：`request("execution/team", params)`
 - HTTP：`GET /executions/team`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -146,6 +149,7 @@ const result = await request("execution/team", {
 - SDK 调用：`request("execution/executionMembers", params)`
 - HTTP：`GET /executions/{executionID}/members`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -180,6 +184,7 @@ const result = await request("execution/executionMembers", {
 - SDK 调用：`request("execution/create", params)`
 - HTTP：`POST /executions`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -355,6 +360,7 @@ const result = await request("execution/create", {
 - SDK 调用：`request("execution/close", params)`
 - HTTP：`POST /executions/{executionID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -419,6 +425,7 @@ const result = await request("execution/close", {
 - SDK 调用：`request("execution/createTaskModule", params)`
 - HTTP：`POST /executions/{executionID}/task/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -482,6 +489,7 @@ const result = await request("execution/createTaskModule", {
 - SDK 调用：`request("execution/get", params)`
 - HTTP：`GET /executions/{executionID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -516,6 +524,7 @@ const result = await request("execution/get", {
 - SDK 调用：`request("execution/update", params)`
 - HTTP：`PUT /executions/{executionID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -668,6 +677,7 @@ const result = await request("execution/update", {
 - SDK 调用：`request("execution/delete", params)`
 - HTTP：`DELETE /executions/{executionID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -701,6 +711,7 @@ const result = await request("execution/delete", {
 - SDK 调用：`request("execution/members", params)`
 - HTTP：`PUT /executions/{executionID}/members`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

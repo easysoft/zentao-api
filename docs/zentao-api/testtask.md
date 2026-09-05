@@ -16,6 +16,7 @@
 - SDK 调用：`request("testtask/list", params)`
 - HTTP：`GET /{scope}/{scopeID}/testtasks`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -62,6 +63,7 @@ const result = await request("testtask/list", {
 - SDK 调用：`request("testtask/create", params)`
 - HTTP：`POST /testtasks`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -186,6 +188,7 @@ const result = await request("testtask/create", {
 - SDK 调用：`request("testtask/update", params)`
 - HTTP：`PUT /testtasks/{testtaskID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -305,6 +308,7 @@ const result = await request("testtask/update", {
 - SDK 调用：`request("testtask/delete", params)`
 - HTTP：`DELETE /testtasks/{testtaskID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

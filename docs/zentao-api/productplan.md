@@ -17,6 +17,7 @@
 - SDK 调用：`request("productplan/list", params)`
 - HTTP：`GET /products/{productID}/productplans`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -65,6 +66,7 @@ const result = await request("productplan/list", {
 - SDK 调用：`request("productplan/create", params)`
 - HTTP：`POST /productplans`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -161,6 +163,7 @@ const result = await request("productplan/create", {
 - SDK 调用：`request("productplan/get", params)`
 - HTTP：`GET /productplans/{planID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -195,6 +198,7 @@ const result = await request("productplan/get", {
 - SDK 调用：`request("productplan/update", params)`
 - HTTP：`PUT /productplans/{planID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -286,6 +290,7 @@ const result = await request("productplan/update", {
 - SDK 调用：`request("productplan/delete", params)`
 - HTTP：`DELETE /productplans/{planID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

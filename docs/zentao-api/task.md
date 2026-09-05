@@ -24,6 +24,7 @@
 - SDK 调用：`request("task/list", params)`
 - HTTP：`GET /executions/{executionID}/tasks`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -68,6 +69,7 @@ const result = await request("task/list", {
 - SDK 调用：`request("task/modules", params)`
 - HTTP：`GET /executions/{executionID}/task/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -102,6 +104,7 @@ const result = await request("task/modules", {
 - SDK 调用：`request("task/create", params)`
 - HTTP：`POST /tasks`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -229,6 +232,7 @@ const result = await request("task/create", {
 - SDK 调用：`request("task/get", params)`
 - HTTP：`GET /tasks/{taskID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -263,6 +267,7 @@ const result = await request("task/get", {
 - SDK 调用：`request("task/update", params)`
 - HTTP：`PUT /tasks/{taskID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -382,6 +387,7 @@ const result = await request("task/update", {
 - SDK 调用：`request("task/updateModule", params)`
 - HTTP：`PUT /task/modules/{moduleID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -445,6 +451,7 @@ const result = await request("task/updateModule", {
 - SDK 调用：`request("task/delete", params)`
 - HTTP：`DELETE /tasks/{taskID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -478,6 +485,7 @@ const result = await request("task/delete", {
 - SDK 调用：`request("task/deleteModule", params)`
 - HTTP：`DELETE /task/modules/{moduleID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -511,6 +519,7 @@ const result = await request("task/deleteModule", {
 - SDK 调用：`request("task/activate", params)`
 - HTTP：`PUT /tasks/{taskID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -579,6 +588,7 @@ const result = await request("task/activate", {
 - SDK 调用：`request("task/close", params)`
 - HTTP：`PUT /tasks/{taskID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -635,6 +645,7 @@ const result = await request("task/close", {
 - SDK 调用：`request("task/finish", params)`
 - HTTP：`PUT /tasks/{taskID}/finish`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -727,6 +738,7 @@ const result = await request("task/finish", {
 - SDK 调用：`request("task/start", params)`
 - HTTP：`PUT /tasks/{taskID}/start`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

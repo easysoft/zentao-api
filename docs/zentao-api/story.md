@@ -24,6 +24,7 @@
 - SDK 调用：`request("story/list", params)`
 - HTTP：`GET /{scope}/{scopeID}/stories`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -74,6 +75,7 @@ const result = await request("story/list", {
 - SDK 调用：`request("story/modules", params)`
 - HTTP：`GET /products/{productID}/story/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -108,6 +110,7 @@ const result = await request("story/modules", {
 - SDK 调用：`request("story/create", params)`
 - HTTP：`POST /stories`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -260,6 +263,7 @@ const result = await request("story/create", {
 - SDK 调用：`request("story/get", params)`
 - HTTP：`GET /stories/{storyID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -294,6 +298,7 @@ const result = await request("story/get", {
 - SDK 调用：`request("story/update", params)`
 - HTTP：`PUT /stories/{storyID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -404,6 +409,7 @@ const result = await request("story/update", {
 - SDK 调用：`request("story/updateModule", params)`
 - HTTP：`PUT /story/modules/{moduleID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -467,6 +473,7 @@ const result = await request("story/updateModule", {
 - SDK 调用：`request("story/delete", params)`
 - HTTP：`DELETE /stories/{storyID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -500,6 +507,7 @@ const result = await request("story/delete", {
 - SDK 调用：`request("story/deleteModule", params)`
 - HTTP：`DELETE /story/modules/{moduleID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -533,6 +541,7 @@ const result = await request("story/deleteModule", {
 - SDK 调用：`request("story/activate", params)`
 - HTTP：`PUT /stories/{storyID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -594,6 +603,7 @@ const result = await request("story/activate", {
 - SDK 调用：`request("story/change", params)`
 - HTTP：`PUT /stories/{storyID}/change`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -678,6 +688,7 @@ const result = await request("story/change", {
 - SDK 调用：`request("story/close", params)`
 - HTTP：`PUT /stories/{storyID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -742,6 +753,7 @@ const result = await request("story/close", {
 - SDK 调用：`request("story/getGrades", params)`
 - HTTP：`GET /storygrades`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

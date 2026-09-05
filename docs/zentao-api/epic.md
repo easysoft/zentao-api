@@ -20,6 +20,7 @@
 - SDK 调用：`request("epic/list", params)`
 - HTTP：`GET /products/{productID}/epics`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -68,6 +69,7 @@ const result = await request("epic/list", {
 - SDK 调用：`request("epic/create", params)`
 - HTTP：`POST /epics`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -201,6 +203,7 @@ const result = await request("epic/create", {
 - SDK 调用：`request("epic/get", params)`
 - HTTP：`GET /epics/{storyID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -235,6 +238,7 @@ const result = await request("epic/get", {
 - SDK 调用：`request("epic/update", params)`
 - HTTP：`PUT /epics/{storyID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -341,6 +345,7 @@ const result = await request("epic/update", {
 - SDK 调用：`request("epic/delete", params)`
 - HTTP：`DELETE /epics/{storyID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -374,6 +379,7 @@ const result = await request("epic/delete", {
 - SDK 调用：`request("epic/activate", params)`
 - HTTP：`PUT /epics/{storyID}/activate`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -435,6 +441,7 @@ const result = await request("epic/activate", {
 - SDK 调用：`request("epic/change", params)`
 - HTTP：`PUT /epics/{storyID}/change`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -519,6 +526,7 @@ const result = await request("epic/change", {
 - SDK 调用：`request("epic/close", params)`
 - HTTP：`PUT /epics/{storyID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

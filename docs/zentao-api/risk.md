@@ -18,6 +18,7 @@
 - SDK 调用：`request("risk/list", params)`
 - HTTP：`GET /risks`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -63,6 +64,7 @@ const result = await request("risk/list", {
 - SDK 调用：`request("risk/projectRisks", params)`
 - HTTP：`GET /projects/{projectID}/risks`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -111,6 +113,7 @@ const result = await request("risk/projectRisks", {
 - SDK 调用：`request("risk/executionRisks", params)`
 - HTTP：`GET /executions/{executionID}/risks`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -159,6 +162,7 @@ const result = await request("risk/executionRisks", {
 - SDK 调用：`request("risk/create", params)`
 - HTTP：`POST /risks`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -307,6 +311,7 @@ const result = await request("risk/create", {
 - SDK 调用：`request("risk/get", params)`
 - HTTP：`GET /risks/{riskID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -341,6 +346,7 @@ const result = await request("risk/get", {
 - SDK 调用：`request("risk/update", params)`
 - HTTP：`PUT /risks/{riskID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

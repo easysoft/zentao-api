@@ -2,7 +2,7 @@
 
 ## 持久化登录信息
 
-启用 `persistProfiles` 后，`login()` 成功时会保存站点、账号、token 和客户端配置。
+启用 `persistProfiles` 后，`login()` 成功时会保存站点、账号、token、客户端配置，以及服务器配置 `serverConfig` 和获取时间 `serverConfigFetchedAt`。
 
 ```ts
 import { ZentaoClient, setGlobalOptions } from 'zentao-api';
@@ -24,6 +24,34 @@ const client = await ZentaoClient.fromProfile();
 ```ts
 const client = await ZentaoClient.fromProfile('admin@https://zentao.example.com');
 ```
+
+## 服务器配置与版本检查
+
+登录验证成功后会请求一次站点根地址的 `/?mode=getconfig`，即使已经设置全局 `version`。配置成功获取后才更新登录状态；失败时默认抛错，全局 `skipVersionCheckOnConfigError: true` 可允许登录继续。
+
+```ts
+import { request } from 'zentao-api';
+
+const config = await client.getZentaoConfig();
+const freshConfig = await client.getZentaoConfig({ forceRefresh: true, timeout: 5000 });
+
+setGlobalOptions({ client, version: 'biz13.5' });
+await request('story/getGrades');
+await request('story/getGrades', {}, { forceRefreshConfig: true });
+```
+
+高阶请求先检查 Action 的最低版本。版本来源依次为强制刷新后的实际版本、全局 `version`、有效缓存、新获取的配置。强制刷新不会改写全局设置；`autoFill` 预读复用本次解析的版本。底层 `client.get/post/request` 不做版本检查。
+
+配置缓存的有效期为 24 小时，恰好 24 小时仍有效。旧 profile 没有获取时间，或时间无效、处于未来时，需要重新获取。获取失败不延长缓存期限。`fromProfile()` 恢复缓存；启用 `persistProfiles` 后，刷新仅更新绑定 profile 的配置和时间，不切换当前账号或覆盖其他字段。未启用持久化或没有绑定 profile 时只使用实例内存缓存。
+
+四个系列分别比较数字段：`22.5 = 22.5.0`、`biz13.10 > biz13.5`。不支持预发布后缀或未知系列前缀，非法格式抛出 `E_INVALID_ZENTAO_VERSION`。
+
+```ts
+// 仅配置网络或响应获取失败时跳过检查；单次设置优先于全局设置。
+await request('product/list', {}, { skipVersionCheckOnConfigError: true });
+```
+
+跳过选项不忽略版本不匹配、版本格式错误、取消或 profile 存储错误；直接调用 `getZentaoConfig()` 始终返回配置或抛错。
 
 ## 管理 profile
 
@@ -97,6 +125,9 @@ setGlobalOptions({ throwOnFail: true });
 | `E_INVALID_BASE_URL` | `baseUrl` 不是合法的 http/https URL，或带有查询/锚点。 |
 | `E_INVALID_MODULE` | 模块不存在。 |
 | `E_INVALID_ACTION` | 模块动作不存在。 |
+| `E_INVALID_ZENTAO_CONFIG` | 配置响应不是包含非空 `version` 的对象。 |
+| `E_INVALID_ZENTAO_VERSION` | 版本不是四个系列的数字正式版本。 |
+| `E_UNSUPPORTED_ZENTAO_VERSION` | 服务器版本低于 Action 的最低要求，或该系列不受支持。 |
 | `E_INVALID_REQUEST_NAME` | `request()` 名称不是 `module/action` 形式。 |
 | `E_MISSING_PARAM` | 缺少必填路径参数或请求体字段。 |
 | `E_INVALID_PARAM` | 参数值不合法，例如布尔字段传入了无法识别的取值。 |

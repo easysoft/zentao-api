@@ -15,6 +15,7 @@
 - SDK 调用：`request("file/create", params)`
 - HTTP：`POST /files`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -88,6 +89,7 @@ const result = await request("file/create", {
 - SDK 调用：`request("file/update", params)`
 - HTTP：`PUT /files/{fileID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -147,6 +149,7 @@ const result = await request("file/update", {
 - SDK 调用：`request("file/delete", params)`
 - HTTP：`DELETE /files/{fileID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

@@ -15,6 +15,7 @@
 - SDK 调用：`request("system/list", params)`
 - HTTP：`GET /products/{productID}/systems`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -57,6 +58,7 @@ const result = await request("system/list", {
 - SDK 调用：`request("system/create", params)`
 - HTTP：`POST /systems`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -147,6 +149,7 @@ const result = await request("system/create", {
 - SDK 调用：`request("system/update", params)`
 - HTTP：`PUT /systems/{systemID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

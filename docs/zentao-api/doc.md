@@ -53,6 +53,7 @@
 - SDK 调用：`request("doc/mySpaces", params)`
 - HTTP：`GET /doc/my/spaces`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -83,6 +84,7 @@ const result = await request("doc/mySpaces");
 - SDK 调用：`request("doc/teamSpaces", params)`
 - HTTP：`GET /doc/team/spaces`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -113,6 +115,7 @@ const result = await request("doc/teamSpaces");
 - SDK 调用：`request("doc/productSpaces", params)`
 - HTTP：`GET /doc/product/spaces`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -143,6 +146,7 @@ const result = await request("doc/productSpaces");
 - SDK 调用：`request("doc/projectSpaces", params)`
 - HTTP：`GET /doc/project/spaces`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -173,6 +177,7 @@ const result = await request("doc/projectSpaces");
 - SDK 调用：`request("doc/myLibs", params)`
 - HTTP：`GET /doc/my/spaces/{spaceID}/libs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -207,6 +212,7 @@ const result = await request("doc/myLibs", {
 - SDK 调用：`request("doc/teamLibs", params)`
 - HTTP：`GET /doc/team/spaces/{spaceID}/libs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -241,6 +247,7 @@ const result = await request("doc/teamLibs", {
 - SDK 调用：`request("doc/productLibs", params)`
 - HTTP：`GET /doc/product/spaces/{productID}/libs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -275,6 +282,7 @@ const result = await request("doc/productLibs", {
 - SDK 调用：`request("doc/projectLibs", params)`
 - HTTP：`GET /doc/project/spaces/{projectID}/libs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -309,6 +317,7 @@ const result = await request("doc/projectLibs", {
 - SDK 调用：`request("doc/myDocs", params)`
 - HTTP：`GET /doc/my/spaces/{spaceID}/libs/{libID}/docs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -345,6 +354,7 @@ const result = await request("doc/myDocs", {
 - SDK 调用：`request("doc/teamDocs", params)`
 - HTTP：`GET /doc/team/spaces/{spaceID}/libs/{libID}/docs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -381,6 +391,7 @@ const result = await request("doc/teamDocs", {
 - SDK 调用：`request("doc/productDocs", params)`
 - HTTP：`GET /doc/product/spaces/{productID}/libs/{libID}/docs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -417,6 +428,7 @@ const result = await request("doc/productDocs", {
 - SDK 调用：`request("doc/projectDocs", params)`
 - HTTP：`GET /doc/project/spaces/{projectID}/libs/{libID}/docs`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -453,6 +465,7 @@ const result = await request("doc/projectDocs", {
 - SDK 调用：`request("doc/myModules", params)`
 - HTTP：`GET /doc/my/spaces/{spaceID}/libs/{libID}/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -489,6 +502,7 @@ const result = await request("doc/myModules", {
 - SDK 调用：`request("doc/teamModules", params)`
 - HTTP：`GET /doc/team/spaces/{spaceID}/libs/{libID}/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -525,6 +539,7 @@ const result = await request("doc/teamModules", {
 - SDK 调用：`request("doc/productModules", params)`
 - HTTP：`GET /doc/product/spaces/{productID}/libs/{libID}/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -561,6 +576,7 @@ const result = await request("doc/productModules", {
 - SDK 调用：`request("doc/projectModules", params)`
 - HTTP：`GET /doc/project/spaces/{projectID}/libs/{libID}/modules`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -597,6 +613,7 @@ const result = await request("doc/projectModules", {
 - SDK 调用：`request("doc/createMySpace", params)`
 - HTTP：`POST /doc/my/spaces`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -653,6 +670,7 @@ const result = await request("doc/createMySpace", {
 - SDK 调用：`request("doc/createTeamSpace", params)`
 - HTTP：`POST /doc/team/spaces`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -709,6 +727,7 @@ const result = await request("doc/createTeamSpace", {
 - SDK 调用：`request("doc/createMyLib", params)`
 - HTTP：`POST /doc/my/spaces/{spaceID}/libs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -768,6 +787,7 @@ const result = await request("doc/createMyLib", {
 - SDK 调用：`request("doc/createTeamLib", params)`
 - HTTP：`POST /doc/team/spaces/{spaceID}/libs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -859,6 +879,7 @@ const result = await request("doc/createTeamLib", {
 - SDK 调用：`request("doc/createProductLib", params)`
 - HTTP：`POST /doc/product/spaces/{productID}/libs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -950,6 +971,7 @@ const result = await request("doc/createProductLib", {
 - SDK 调用：`request("doc/createProjectLib", params)`
 - HTTP：`POST /doc/project/spaces/{projectID}/libs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1041,6 +1063,7 @@ const result = await request("doc/createProjectLib", {
 - SDK 调用：`request("doc/createMyDoc", params)`
 - HTTP：`POST /doc/my/spaces/{spaceID}/libs/{libID}/docs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1122,6 +1145,7 @@ const result = await request("doc/createMyDoc", {
 - SDK 调用：`request("doc/createTeamDoc", params)`
 - HTTP：`POST /doc/team/spaces/{spaceID}/libs/{libID}/docs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1203,6 +1227,7 @@ const result = await request("doc/createTeamDoc", {
 - SDK 调用：`request("doc/createProductDoc", params)`
 - HTTP：`POST /doc/product/spaces/{productID}/libs/{libID}/docs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1284,6 +1309,7 @@ const result = await request("doc/createProductDoc", {
 - SDK 调用：`request("doc/createProjectDoc", params)`
 - HTTP：`POST /doc/project/spaces/{projectID}/libs/{libID}/docs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1365,6 +1391,7 @@ const result = await request("doc/createProjectDoc", {
 - SDK 调用：`request("doc/createMyModule", params)`
 - HTTP：`POST /doc/my/spaces/{spaceID}/libs/{libID}/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1433,6 +1460,7 @@ const result = await request("doc/createMyModule", {
 - SDK 调用：`request("doc/createTeamModule", params)`
 - HTTP：`POST /doc/team/spaces/{spaceID}/libs/{libID}/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1501,6 +1529,7 @@ const result = await request("doc/createTeamModule", {
 - SDK 调用：`request("doc/createProductModule", params)`
 - HTTP：`POST /doc/product/spaces/{productID}/libs/{libID}/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1569,6 +1598,7 @@ const result = await request("doc/createProductModule", {
 - SDK 调用：`request("doc/createProjectModule", params)`
 - HTTP：`POST /doc/project/spaces/{projectID}/libs/{libID}/modules`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1637,6 +1667,7 @@ const result = await request("doc/createProjectModule", {
 - SDK 调用：`request("doc/getSpace", params)`
 - HTTP：`GET /doc/spaces/{spaceID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1671,6 +1702,7 @@ const result = await request("doc/getSpace", {
 - SDK 调用：`request("doc/getLib", params)`
 - HTTP：`GET /doc/libs/{libID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1705,6 +1737,7 @@ const result = await request("doc/getLib", {
 - SDK 调用：`request("doc/get", params)`
 - HTTP：`GET /doc/docs/{docID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1739,6 +1772,7 @@ const result = await request("doc/get", {
 - SDK 调用：`request("doc/updateSpace", params)`
 - HTTP：`PUT /doc/spaces/{spaceID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1798,6 +1832,7 @@ const result = await request("doc/updateSpace", {
 - SDK 调用：`request("doc/updateLib", params)`
 - HTTP：`PUT /doc/libs/{libID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1889,6 +1924,7 @@ const result = await request("doc/updateLib", {
 - SDK 调用：`request("doc/update", params)`
 - HTTP：`PUT /doc/docs/{docID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -1968,6 +2004,7 @@ const result = await request("doc/update", {
 - SDK 调用：`request("doc/updateModule", params)`
 - HTTP：`PUT /doc/modules/{moduleID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -2027,6 +2064,7 @@ const result = await request("doc/updateModule", {
 - SDK 调用：`request("doc/deleteSpace", params)`
 - HTTP：`DELETE /doc/spaces/{spaceID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -2060,6 +2098,7 @@ const result = await request("doc/deleteSpace", {
 - SDK 调用：`request("doc/deleteLib", params)`
 - HTTP：`DELETE /doc/libs/{libID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -2093,6 +2132,7 @@ const result = await request("doc/deleteLib", {
 - SDK 调用：`request("doc/delete", params)`
 - HTTP：`DELETE /doc/docs/{docID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -2126,6 +2166,7 @@ const result = await request("doc/delete", {
 - SDK 调用：`request("doc/deleteModule", params)`
 - HTTP：`DELETE /doc/modules/{moduleID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

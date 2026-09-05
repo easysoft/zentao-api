@@ -20,6 +20,7 @@
 - SDK 调用：`request("meeting/list", params)`
 - HTTP：`GET /meetings`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -65,6 +66,7 @@ const result = await request("meeting/list", {
 - SDK 调用：`request("meeting/projectMeetings", params)`
 - HTTP：`GET /projects/{projectID}/meetings`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -113,6 +115,7 @@ const result = await request("meeting/projectMeetings", {
 - SDK 调用：`request("meeting/executionMeetings", params)`
 - HTTP：`GET /executions/{executionID}/meetings`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -161,6 +164,7 @@ const result = await request("meeting/executionMeetings", {
 - SDK 调用：`request("meeting/create", params)`
 - HTTP：`POST /meetings`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -300,6 +304,7 @@ const result = await request("meeting/create", {
 - SDK 调用：`request("meeting/get", params)`
 - HTTP：`GET /meetings/{meetingID}`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -334,6 +339,7 @@ const result = await request("meeting/get", {
 - SDK 调用：`request("meeting/update", params)`
 - HTTP：`PUT /meetings/{meetingID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -461,6 +467,7 @@ const result = await request("meeting/update", {
 - SDK 调用：`request("meeting/delete", params)`
 - HTTP：`DELETE /meetings/{meetingID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -494,6 +501,7 @@ const result = await request("meeting/delete", {
 - SDK 调用：`request("meeting/minutes", params)`
 - HTTP：`PUT /meetings/{meetingID}/minutes`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

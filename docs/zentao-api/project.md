@@ -24,6 +24,7 @@
 - SDK 调用：`request("project/list", params)`
 - HTTP：`GET /projects`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -69,6 +70,7 @@ const result = await request("project/list", {
 - SDK 调用：`request("project/programProjects", params)`
 - HTTP：`GET /programs/{programID}/projects`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -113,6 +115,7 @@ const result = await request("project/programProjects", {
 - SDK 调用：`request("project/team", params)`
 - HTTP：`GET /projects/team`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -147,6 +150,7 @@ const result = await request("project/team", {
 - SDK 调用：`request("project/projectMembers", params)`
 - HTTP：`GET /projects/{projectID}/members`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -181,6 +185,7 @@ const result = await request("project/projectMembers", {
 - SDK 调用：`request("project/create", params)`
 - HTTP：`POST /projects`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -292,6 +297,7 @@ const result = await request("project/create", {
 - SDK 调用：`request("project/close", params)`
 - HTTP：`POST /projects/{projectID}/close`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -356,6 +362,7 @@ const result = await request("project/close", {
 - SDK 调用：`request("project/createStory", params)`
 - HTTP：`POST /projects/{projectID}/stories`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -454,6 +461,7 @@ const result = await request("project/createStory", {
 - SDK 调用：`request("project/createBug", params)`
 - HTTP：`POST /projects/{projectID}/bugs`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -559,6 +567,7 @@ const result = await request("project/createBug", {
 - SDK 调用：`request("project/createTask", params)`
 - HTTP：`POST /projects/{projectID}/tasks`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -682,6 +691,7 @@ const result = await request("project/createTask", {
 - SDK 调用：`request("project/update", params)`
 - HTTP：`PUT /projects/{projectID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -796,6 +806,7 @@ const result = await request("project/update", {
 - SDK 调用：`request("project/delete", params)`
 - HTTP：`DELETE /projects/{projectID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -829,6 +840,7 @@ const result = await request("project/delete", {
 - SDK 调用：`request("project/members", params)`
 - HTTP：`PUT /projects/{projectID}/members`
 - 动作类型：`action`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

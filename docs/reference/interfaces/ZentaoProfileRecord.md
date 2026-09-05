@@ -25,5 +25,6 @@
 | <a id="property-logintime"></a> `loginTime?` | `string` | 登录时间。 | [`ZentaoProfile`](ZentaoProfile.md).[`loginTime`](ZentaoProfile.md#property-logintime) |
 | <a id="property-server"></a> `server` | `string` | 禅道站点根地址，不包含 `/api.php/v2`。 | [`ZentaoProfile`](ZentaoProfile.md).[`server`](ZentaoProfile.md#property-server) |
 | <a id="property-serverconfig"></a> `serverConfig?` | [`ServerConfig`](ServerConfig.md) | 禅道服务端配置。 | [`ZentaoProfile`](ZentaoProfile.md).[`serverConfig`](ZentaoProfile.md#property-serverconfig) |
+| <a id="property-serverconfigfetchedat"></a> `serverConfigFetchedAt?` | `string` | 成功从 `?mode=getconfig` 获取配置的本地 ISO 时间；缺失时缓存需要刷新。 | [`ZentaoProfile`](ZentaoProfile.md).[`serverConfigFetchedAt`](ZentaoProfile.md#property-serverconfigfetchedat) |
 | <a id="property-token"></a> `token` | `string` | 禅道 API Token。 | [`ZentaoProfile`](ZentaoProfile.md).[`token`](ZentaoProfile.md#property-token) |
 | <a id="property-user"></a> `user?` | `Record`\<`string`, `unknown`\> | 登录验证通过后得到的用户信息。 | [`ZentaoProfile`](ZentaoProfile.md).[`user`](ZentaoProfile.md#property-user) |

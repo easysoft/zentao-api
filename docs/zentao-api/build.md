@@ -16,6 +16,7 @@
 - SDK 调用：`request("build/list", params)`
 - HTTP：`GET /{scope}/{scopeID}/builds`
 - 动作类型：`list`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -66,6 +67,7 @@ const result = await request("build/list", {
 - SDK 调用：`request("build/create", params)`
 - HTTP：`POST /builds`
 - 动作类型：`create`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -178,6 +180,7 @@ const result = await request("build/create", {
 - SDK 调用：`request("build/update", params)`
 - HTTP：`PUT /builds/{buildID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 
@@ -293,6 +296,7 @@ const result = await request("build/update", {
 - SDK 调用：`request("build/delete", params)`
 - HTTP：`DELETE /builds/{buildID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.0` / `biz13.0` / `max8.0` / `ipd5.0`
 
 ### 路径参数
 

@@ -21,6 +21,7 @@
 | [FileCreateResult](interfaces/FileCreateResult.md) | `request("file/create")` 归一化后的结果。 |
 | [FileUploadDataInput](interfaces/FileUploadDataInput.md) | 内存数据形式的上传输入。 |
 | [FileUploadPathInput](interfaces/FileUploadPathInput.md) | Node.js/Bun 本地文件路径形式的上传输入。 |
+| [GetZentaoConfigOptions](interfaces/GetZentaoConfigOptions.md) | [ZentaoClient.getZentaoConfig](classes/ZentaoClient.md#getzentaoconfig) 的选项。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供高阶 [request](functions/request.md) 调用复用。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
@@ -30,6 +31,7 @@
 | [ModuleActionRequestBody](interfaces/ModuleActionRequestBody.md) | 模块动作请求体定义。 |
 | [ModuleActionResponse](interfaces/ModuleActionResponse.md) | 模块动作响应定义。 |
 | [ModuleDefinition](interfaces/ModuleDefinition.md) | 禅道模块定义，由多个动作组成。 |
+| [ModuleQueryOptions](interfaces/ModuleQueryOptions.md) | 注册库查询选项；不传版本时返回完整的当前定义，不使用全局版本。 |
 | [Pager](interfaces/Pager.md) | 禅道 API 原始分页结构。 |
 | [ProcessListOptions](interfaces/ProcessListOptions.md) | [processData](functions/processData.md) 处理列表时的选项；执行顺序为 转换 → 过滤 → 搜索 → 排序 → 限制数量 → 摘取。 |
 | [ProcessSingleOptions](interfaces/ProcessSingleOptions.md) | [processData](functions/processData.md) 处理单条对象时的选项；执行顺序为 转换 → 摘取。 |
@@ -102,6 +104,7 @@
 | [getObjectProps](functions/getObjectProps.md) | 获取对象属性。 |
 | [getProfile](functions/getProfile.md) | 获取指定 profile。 |
 | [getProfileKey](functions/getProfileKey.md) | 根据 profile 的账号和禅道站点地址生成稳定 key。 |
+| [isModuleName](functions/isModuleName.md) | 判断模块名是否已注册。 |
 | [pickFields](functions/pickFields.md) | 对列表中的每条对象摘取指定字段。 |
 | [pickFieldsSingle](functions/pickFieldsSingle.md) | 从单条对象中摘取指定字段，支持通过 `.` 访问子字段，保留嵌套结构。 |
 | [processData](functions/processData.md) | 处理单条对象：按 转换 → 摘取 的顺序执行。 |

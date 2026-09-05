@@ -28,6 +28,8 @@ SDK 已知错误码到默认消息的映射表。
 | <a id="property-e_invalid_profile"></a> `E_INVALID_PROFILE` | `"Invalid ZenTao profile."` | `'Invalid ZenTao profile.'` |
 | <a id="property-e_invalid_request_name"></a> `E_INVALID_REQUEST_NAME` | "Request name must use the form \"moduleName\", \"moduleName/methodName\", or \"moduleName/\<objectID\>\"." | `'Request name must use the form "moduleName", "moduleName/methodName", or "moduleName/<objectID>".'` |
 | <a id="property-e_invalid_upload_source"></a> `E_INVALID_UPLOAD_SOURCE` | `"Invalid upload source for field: {field}"` | `'Invalid upload source for field: {field}'` |
+| <a id="property-e_invalid_zentao_config"></a> `E_INVALID_ZENTAO_CONFIG` | `"ZenTao configuration must be an object with a non-empty version."` | `'ZenTao configuration must be an object with a non-empty version.'` |
+| <a id="property-e_invalid_zentao_version"></a> `E_INVALID_ZENTAO_VERSION` | `"Invalid ZenTao version: {version}"` | `'Invalid ZenTao version: {version}'` |
 | <a id="property-e_login_failed"></a> `E_LOGIN_FAILED` | `"ZenTao login failed."` | `'ZenTao login failed.'` |
 | <a id="property-e_missing_param"></a> `E_MISSING_PARAM` | `"Missing required parameter: {param}"` | `'Missing required parameter: {param}'` |
 | <a id="property-e_network_error"></a> `E_NETWORK_ERROR` | `"Network request failed: {message}"` | `'Network request failed: {message}'` |
@@ -37,6 +39,7 @@ SDK 已知错误码到默认消息的映射表。
 | <a id="property-e_profile_storage_invalid"></a> `E_PROFILE_STORAGE_INVALID` | `"ZenTao profile storage is not valid JSON."` | `'ZenTao profile storage is not valid JSON.'` |
 | <a id="property-e_profile_storage_unavailable"></a> `E_PROFILE_STORAGE_UNAVAILABLE` | `"ZenTao profile storage is unavailable in this runtime."` | `'ZenTao profile storage is unavailable in this runtime.'` |
 | <a id="property-e_timeout"></a> `E_TIMEOUT` | `"Request timed out."` | `'Request timed out.'` |
+| <a id="property-e_unsupported_zentao_version"></a> `E_UNSUPPORTED_ZENTAO_VERSION` | `"Action {action} does not support ZenTao {version}; minimum versions: {minVersion}"` | `'Action {action} does not support ZenTao {version}; minimum versions: {minVersion}'` |
 | <a id="property-e_upload_file_not_found"></a> `E_UPLOAD_FILE_NOT_FOUND` | `"Upload file not found: {path}"` | `'Upload file not found: {path}'` |
 | <a id="property-e_upload_file_read_failed"></a> `E_UPLOAD_FILE_READ_FAILED` | `"Failed to read upload file: {path}"` | `'Failed to read upload file: {path}'` |
 | <a id="property-e_upload_file_too_large"></a> `E_UPLOAD_FILE_TOO_LARGE` | `"Upload file is {size} bytes and exceeds the {limit} byte limit."` | `'Upload file is {size} bytes and exceeds the {limit} byte limit.'` |

@@ -58,6 +58,10 @@
         "link": "/reference/interfaces/FileUploadPathInput.md"
       },
       {
+        "text": "GetZentaoConfigOptions",
+        "link": "/reference/interfaces/GetZentaoConfigOptions.md"
+      },
+      {
         "text": "GlobalOptions",
         "link": "/reference/interfaces/GlobalOptions.md"
       },
@@ -92,6 +96,10 @@
       {
         "text": "ModuleDefinition",
         "link": "/reference/interfaces/ModuleDefinition.md"
+      },
+      {
+        "text": "ModuleQueryOptions",
+        "link": "/reference/interfaces/ModuleQueryOptions.md"
       },
       {
         "text": "Pager",
@@ -338,6 +346,10 @@
       {
         "text": "getProfileKey",
         "link": "/reference/functions/getProfileKey.md"
+      },
+      {
+        "text": "isModuleName",
+        "link": "/reference/functions/isModuleName.md"
       },
       {
         "text": "pickFields",

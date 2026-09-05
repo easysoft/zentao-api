@@ -17,6 +17,7 @@
 - SDK 调用：`request("workflow/list", params)`
 - HTTP：`GET /workflow/contract`
 - 动作类型：`list`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -48,6 +49,7 @@ const result = await request("workflow/list");
 - SDK 调用：`request("workflow/getContract", params)`
 - HTTP：`GET /workflow/contract/1`
 - 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -78,6 +80,7 @@ const result = await request("workflow/getContract");
 - SDK 调用：`request("workflow/create", params)`
 - HTTP：`POST /workflow/contract`
 - 动作类型：`create`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -134,6 +137,7 @@ const result = await request("workflow/create", {
 - SDK 调用：`request("workflow/update", params)`
 - HTTP：`PUT /workflow/contract/{contractID}`
 - 动作类型：`update`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 
@@ -193,6 +197,7 @@ const result = await request("workflow/update", {
 - SDK 调用：`request("workflow/delete", params)`
 - HTTP：`DELETE /workflow/contract/{contractID}`
 - 动作类型：`delete`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
 
 ### 路径参数
 

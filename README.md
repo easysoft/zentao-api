@@ -221,11 +221,28 @@ setGlobalOptions({
 });
 ```
 
-常用全局选项包括 `client`、`recPerPage`、`limit`、`timeout`、`insecure`、`persistProfiles`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。
+常用全局选项包括 `client`、`version`、`recPerPage`、`limit`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。
+
+### 禅道版本检查
+
+高阶 `request()` 会在发送业务请求前检查 Action 的必填 `minVersion`。四个系列分别比较，例如 `22.5`、`biz13.5`、`max8.5`、`ipd5.5`；支持点分数字正式版本，暂不支持 alpha、beta、rc 等后缀。底层 `client.get/post/request` 不检查 Action 版本。
+
+```ts
+setGlobalOptions({ version: 'biz13.5' });
+await request('story/getGrades'); // 直接使用全局版本，无需获取配置
+await request('story/getGrades', {}, { forceRefreshConfig: true }); // 用服务器实际版本校验本次请求
+
+const config = await client.getZentaoConfig(); // 复用有效缓存，缺失或过期时获取
+const freshConfig = await client.getZentaoConfig({ forceRefresh: true });
+```
+
+强制刷新不会改写全局 `version`。未指定全局版本时，使用不超过 24 小时的缓存；缓存缺失、过期或时间异常时访问站点根地址的 `/?mode=getconfig`。登录验证成功后也会强制获取一次，即使已设置全局版本。
+
+配置获取失败默认停止调用；可以通过全局或单次 `skipVersionCheckOnConfigError: true` 跳过本次检查。该选项不忽略版本不匹配、版本格式错误、取消或 profile 存储错误。版本不匹配抛出 `E_UNSUPPORTED_ZENTAO_VERSION`。
 
 ### 持久化 Profile
 
-Profile 默认不会写入。先启用 `persistProfiles`，登录成功后才会保存站点、账号、token 和客户端配置：
+Profile 默认不会写入。先启用 `persistProfiles`，登录成功后才会保存站点、账号、token、客户端配置，以及 `serverConfig` 和获取时间 `serverConfigFetchedAt`：
 
 ```ts
 import { ZentaoClient, setGlobalOptions } from 'zentao-api';
@@ -313,6 +330,7 @@ import { ZentaoClient, request } from 'zentao-api/browser';
 
 ```ts
 import {
+  getModule,
   getModuleAction,
   getModuleActionParams,
   getModuleNames,
@@ -323,7 +341,13 @@ const modules = getModuleNames();
 const action = getModuleAction('bug', 'create');
 const params = getModuleActionParams('bug', 'create');
 const labels = getObjectProps('bug');
+
+const supported = getModule('story', { version: 'biz13.0' });
+const unavailable = getModuleAction('story', 'getGrades', { version: 'biz13.0' }); // undefined
+const supportedParams = getModuleActionParams('story', 'create', { version: 'biz13.0', roles: ['body'] });
 ```
+
+模块查询只使用显式传入的 `version`，省略时返回当前完整定义，不受全局版本影响。过滤后没有动作的模块不返回。旧 Action 后续新增的参数仍按当前定义返回，不做参数级版本过滤。
 
 未注册的 API 可以新增为自定义模块：
 
@@ -335,6 +359,7 @@ defineModules({
   actions: [
     {
       name: 'list',
+      minVersion: ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'],
       type: 'list',
       path: '/custom',
       resultGetter: 'items',
@@ -355,6 +380,8 @@ extendModuleAction('task', 'list', {
 ```
 
 `defineModuleActions()` 可追加或整体替换单个动作，`defineModules(module, { replace: true })` 可整体替换同名模块。请确保扩展代码在第一次调用 `request()` 前执行。
+
+所有完整 Action 定义都必须包含非空的 `minVersion` 数组，同一系列不能重复；未列出的系列视为不支持。SDK 0.5.5 及之前已有的 Action 最低版本为 `22.0 / biz13.0 / max8.0 / ipd5.0`，之后新增的 Action 为 `22.5 / biz13.5 / max8.5 / ipd5.5`。
 
 ## 文档
 
