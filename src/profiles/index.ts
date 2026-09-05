@@ -37,12 +37,19 @@ function withStoreMutex<T>(operation: () => Promise<T>): Promise<T> {
   return next;
 }
 
-function getBrowserStorage(): Storage | undefined {
+async function withStorageErrors<T>(operation: () => Promise<T>): Promise<T> {
   try {
-    return globalThis.localStorage;
-  } catch {
-    return undefined;
+    return await operation();
+  } catch (error) {
+    if (error instanceof ZentaoError) throw error;
+    throw new ZentaoError('E_PROFILE_STORAGE_UNAVAILABLE', undefined, error);
   }
+}
+
+function getBrowserStorage(): Storage {
+  const storage = globalThis.localStorage;
+  if (!storage) throw new ZentaoError('E_PROFILE_STORAGE_UNAVAILABLE');
+  return storage;
 }
 
 async function getProfileFilePath(): Promise<string> {
@@ -110,58 +117,53 @@ function parseStore(text: string): ZentaoProfilesStore {
   }
 }
 
-async function readStore(): Promise<ZentaoProfilesStore> {
-  if (isNodeRuntime()) {
-    const fs = await importNodeModule<typeof import('node:fs/promises')>('node:fs/promises');
-    const file = await getProfileFilePath();
-    try {
-      return parseStore(await fs.readFile(file, 'utf8'));
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        return { profiles: [] };
+function readStore(): Promise<ZentaoProfilesStore> {
+  return withStorageErrors(async () => {
+    if (isNodeRuntime()) {
+      const fs = await importNodeModule<typeof import('node:fs/promises')>('node:fs/promises');
+      const file = await getProfileFilePath();
+      try {
+        return parseStore(await fs.readFile(file, 'utf8'));
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+          return { profiles: [] };
+        }
+        throw error;
       }
-      throw error;
     }
-  }
 
-  const storage = getBrowserStorage();
-  if (!storage) {
-    throw new ZentaoError('E_PROFILE_STORAGE_UNAVAILABLE');
-  }
-
-  const text = storage.getItem(ZENTAO_PROFILES_STORAGE_KEY);
-  return text ? parseStore(text) : { profiles: [] };
+    const text = getBrowserStorage().getItem(ZENTAO_PROFILES_STORAGE_KEY);
+    return text === null ? { profiles: [] } : parseStore(text);
+  });
 }
 
-async function writeStore(store: ZentaoProfilesStore): Promise<void> {
-  const normalizedStore = normalizeStore(store);
-  const text = `${JSON.stringify(normalizedStore, null, 2)}\n`;
+function writeStore(store: ZentaoProfilesStore): Promise<void> {
+  return withStorageErrors(async () => {
+    const normalizedStore = normalizeStore(store);
+    const text = `${JSON.stringify(normalizedStore, null, 2)}\n`;
 
-  if (isNodeRuntime()) {
-    const fs = await importNodeModule<typeof import('node:fs/promises')>('node:fs/promises');
-    const path = await importNodeModule<typeof import('node:path')>('node:path');
-    const file = await getProfileFilePath();
-    const dir = path.dirname(file);
-    const tempFile = path.join(dir, `.zentao.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`);
+    if (isNodeRuntime()) {
+      const fs = await importNodeModule<typeof import('node:fs/promises')>('node:fs/promises');
+      const path = await importNodeModule<typeof import('node:path')>('node:path');
+      const file = await getProfileFilePath();
+      const dir = path.dirname(file);
+      const tempFile = path.join(dir, `.zentao.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`);
 
-    await fs.mkdir(dir, { recursive: true, mode: 0o700 });
-    await fs.chmod(dir, 0o700).catch(() => undefined);
-    try {
-      await fs.writeFile(tempFile, text, { encoding: 'utf8', mode: 0o600 });
-      await fs.rename(tempFile, file);
-      await fs.chmod(file, 0o600).catch(() => undefined);
-    } catch (error) {
-      await fs.rm(tempFile, { force: true }).catch(() => undefined);
-      throw error;
+      await fs.mkdir(dir, { recursive: true, mode: 0o700 });
+      await fs.chmod(dir, 0o700).catch(() => undefined);
+      try {
+        await fs.writeFile(tempFile, text, { encoding: 'utf8', mode: 0o600 });
+        await fs.rename(tempFile, file);
+        await fs.chmod(file, 0o600).catch(() => undefined);
+      } catch (error) {
+        await fs.rm(tempFile, { force: true }).catch(() => undefined);
+        throw error;
+      }
+      return;
     }
-    return;
-  }
 
-  const storage = getBrowserStorage();
-  if (!storage) {
-    throw new ZentaoError('E_PROFILE_STORAGE_UNAVAILABLE');
-  }
-  storage.setItem(ZENTAO_PROFILES_STORAGE_KEY, text);
+    getBrowserStorage().setItem(ZENTAO_PROFILES_STORAGE_KEY, text);
+  });
 }
 
 function toRecord(profile: ZentaoProfile): ZentaoProfileRecord {

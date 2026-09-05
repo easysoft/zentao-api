@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
-import { mkdtempSync, rmSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -60,6 +60,21 @@ afterEach(() => {
 });
 
 describe('persistent profiles', () => {
+  test('wraps filesystem errors and keeps their original details', async () => {
+    mkdirSync(join(tempHome, '.config/zentao/zentao.json'), { recursive: true });
+    const readError = await getAllProfiles().catch(error => error);
+    expect(readError.code).toBe('E_PROFILE_STORAGE_UNAVAILABLE');
+    expect(readError.details.code).toBe('EISDIR');
+
+    rmSync(join(tempHome, '.config/zentao'), { recursive: true });
+    writeFileSync(join(tempHome, '.config/zentao'), 'blocked');
+    const writeError = await addProfile({ server: 'https://audit.example.com', account: 'admin', token: 'token' })
+      .catch(error => error);
+    expect(writeError.code).toBe('E_PROFILE_STORAGE_UNAVAILABLE');
+    expect(writeError.details.code).toBe('ENOTDIR');
+    expect(readFileSync(join(tempHome, '.config/zentao'), 'utf8')).toBe('blocked');
+  });
+
   test('isolates malformed entries without blocking valid profiles', async () => {
     const valid = await addProfile({ server: 'https://audit.example.com', account: 'admin', token: 'valid' });
     const file = join(tempHome, '.config/zentao/zentao.json');
