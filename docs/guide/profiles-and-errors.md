@@ -96,6 +96,8 @@ await addProfile({
 await deleteProfile('admin@https://zentao.example.com');
 ```
 
+删除当前 profile 后，会回退为最近添加且仍保留的记录；覆盖或切换已有记录不会改变添加顺序。删除最后一条记录时清空当前 profile。删除本地记录不会撤销服务端 token，也不会改变已有客户端实例。
+
 所有修改操作都保护完整的读取、修改和写回过程。Node.js / Bun 使用文件锁，支持同主机、本地文件系统中采用相同锁协议的进程；只回收已确认退出的本机进程留下的锁，不会按锁的年龄抢占仍存活的进程。等待约 5 秒仍未取得锁会抛出 `E_PROFILE_STORAGE_UNAVAILABLE`，profile 数据保持不变。网络共享目录、旧版本 SDK 和直接改写文件的外部程序不在并发保护范围。
 
 浏览器支持 Web Locks 时，可访问同一 localStorage 的同源页面上下文共用写锁；不支持时只保证当前 SDK 实例内串行。等待 Web Lock 也有约 5 秒上限，已经取得锁的操作会继续完成。

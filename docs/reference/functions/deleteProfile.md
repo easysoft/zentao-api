@@ -6,7 +6,7 @@
 
 删除指定 profile。
 
-若被删除的是当前 profile，会回退为列表中最近一次写入的 profile；若已无任何 profile，
+若被删除的是当前 profile，会回退为最近添加且仍保留的 profile；覆盖或切换已有记录不改变添加顺序。若已无任何 profile，
 当前 profile 会被清空。操作同样通过进程内串行锁保护。
 
 ## Parameters
