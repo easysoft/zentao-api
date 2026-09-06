@@ -389,11 +389,20 @@ export class ZentaoClient {
   async request(path: string, options: ClientRequestOptions & { responseType: 'blob' }): Promise<Blob>;
   async request<T = unknown>(path: string, options?: ClientRequestOptions): Promise<T>;
   async request(path: string, options: ClientRequestOptions = {}): Promise<unknown> {
-    return this.fetchUrl(buildUrl(this.baseUrl, path, options.query), options, this.token);
+    return this.fetch(buildUrl(this.baseUrl, path, options.query), options, this.token);
   }
 
-  /** API 与站点配置共用的传输层；配置请求不传入 Token。 */
-  private async fetchUrl(
+  /**
+   * 使用完整 URL 发起请求，复用 API 与站点配置的传输层。
+   *
+   * @param url - 完整请求 URL，包含所需的查询参数。
+   * @param options - 单次请求选项；其中 `query` 需由调用方预先拼入 `url`。
+   * @param token - 显式注入的 Token；省略时不自动使用实例保存的 Token。
+   * @param fetchOptions - 原生 fetch 的缓存与凭据选项。
+   * @returns 按 `options.responseType` 解析的响应体，默认优先 JSON，失败后返回文本。
+   * @throws {ZentaoError} 传输层失败时抛出，详见 {@link ZentaoClient.request}。
+   */
+  async fetch(
     url: string,
     options: ClientRequestOptions,
     token?: string,
@@ -487,7 +496,7 @@ export class ZentaoClient {
       return this.serverConfig;
     }
 
-    const pending = this.fetchUrl(buildUrl(this.siteUrl, '/', { mode: 'getconfig' }), {
+    const pending = this.fetch(buildUrl(this.siteUrl, '/', { mode: 'getconfig' }), {
       method: 'GET', timeout: options.timeout, insecure: options.insecure, signal: options.signal,
     }, undefined, { cache: 'no-store', credentials: 'omit' }).then(async (config) => {
       if (!isServerConfig(config)) throw new ZentaoError('E_INVALID_ZENTAO_CONFIG');

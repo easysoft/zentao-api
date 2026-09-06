@@ -96,6 +96,33 @@
 
 ***
 
+### fetch()
+
+> **fetch**(`url`, `options`, `token?`, `fetchOptions?`): `Promise`\<`unknown`\>
+
+使用完整 URL 发起请求，复用 API 与站点配置的传输层。
+
+#### Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `url` | `string` | 完整请求 URL，包含所需的查询参数。 |
+| `options` | [`ClientRequestOptions`](../interfaces/ClientRequestOptions.md) | 单次请求选项；其中 `query` 需由调用方预先拼入 `url`。 |
+| `token?` | `string` | 显式注入的 Token；省略时不自动使用实例保存的 Token。 |
+| `fetchOptions?` | `Pick`\<`RequestInit`, `"cache"` \| `"credentials"`\> | 原生 fetch 的缓存与凭据选项。 |
+
+#### Returns
+
+`Promise`\<`unknown`\>
+
+按 `options.responseType` 解析的响应体，默认优先 JSON，失败后返回文本。
+
+#### Throws
+
+传输层失败时抛出，详见 [ZentaoClient.request](#request)。
+
+***
+
 ### get()
 
 > **get**\<`T`\>(`path`, `options?`): `Promise`\<`T`\>
