@@ -131,7 +131,9 @@
 
 > **getZentaoConfig**(`options?`): `Promise`\<[`ServerConfig`](../interfaces/ServerConfig.md)\>
 
-获取禅道站点 `/?mode=getconfig` 配置，不发送 API Token。
+匿名获取禅道站点 `/?mode=getconfig` 配置，只需站点地址，无需登录或 profile。
+
+不发送 API Token，浏览器请求显式省略 Cookie 等凭据，不受 API Token 过期影响。
 
 默认复用不超过 24 小时的缓存；缺失、过期或时间异常时重新获取。
 `forceRefresh: true` 忽略缓存。同一客户端的并发刷新共用首次调用的传输选项；

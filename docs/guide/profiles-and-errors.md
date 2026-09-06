@@ -38,6 +38,13 @@ setGlobalOptions({ client }); // 需要让高阶 request() 使用该客户端时
 
 ## 服务器配置与版本检查
 
+配置接口 `/?mode=getconfig` 允许匿名访问。只需站点地址即可在登录前获取版本，无需 Token 或 profile；已有 Token 过期也不影响配置获取。请求不发送 API Token，浏览器中还会显式省略 Cookie 等凭据。没有绑定 profile 时，即使启用 `persistProfiles`，也只使用实例内存缓存，不访问 profile 存储。
+
+```ts
+const siteClient = new ZentaoClient('https://zentao.example.com');
+const { version } = await siteClient.getZentaoConfig();
+```
+
 登录验证成功后会请求一次站点根地址的 `/?mode=getconfig`，即使已经设置全局 `version`。配置成功获取后才更新登录状态；失败时默认抛错，全局 `skipVersionCheckOnConfigError: true` 可允许登录继续。
 
 ```ts

@@ -393,7 +393,12 @@ export class ZentaoClient {
   }
 
   /** API 与站点配置共用的传输层；配置请求不传入 Token。 */
-  private async fetchUrl(url: string, options: ClientRequestOptions, token?: string, cache?: RequestCache): Promise<unknown> {
+  private async fetchUrl(
+    url: string,
+    options: ClientRequestOptions,
+    token?: string,
+    fetchOptions: Pick<RequestInit, 'cache' | 'credentials'> = {},
+  ): Promise<unknown> {
     const globals = getGlobalOptions();
     const method: HttpMethod = options.method ?? 'GET';
     const timeout = options.timeout ?? globals.timeout ?? this.timeout ?? DEFAULT_TIMEOUT;
@@ -407,7 +412,7 @@ export class ZentaoClient {
       method,
       headers,
       redirect: 'manual',
-      cache,
+      ...fetchOptions,
     };
     // GET 请求不携带 body，避免浏览器和部分代理拒绝请求。
     if (options.body !== undefined && method !== 'GET') {
@@ -452,7 +457,9 @@ export class ZentaoClient {
   }
 
   /**
-   * 获取禅道站点 `/?mode=getconfig` 配置，不发送 API Token。
+   * 匿名获取禅道站点 `/?mode=getconfig` 配置，只需站点地址，无需登录或 profile。
+   *
+   * 不发送 API Token，浏览器请求显式省略 Cookie 等凭据，不受 API Token 过期影响。
    *
    * 默认复用不超过 24 小时的缓存；缺失、过期或时间异常时重新获取。
    * `forceRefresh: true` 忽略缓存。同一客户端的并发刷新共用首次调用的传输选项；
@@ -482,7 +489,7 @@ export class ZentaoClient {
 
     const pending = this.fetchUrl(buildUrl(this.siteUrl, '/', { mode: 'getconfig' }), {
       method: 'GET', timeout: options.timeout, insecure: options.insecure, signal: options.signal,
-    }, undefined, 'no-store').then(async (config) => {
+    }, undefined, { cache: 'no-store', credentials: 'omit' }).then(async (config) => {
       if (!isServerConfig(config)) throw new ZentaoError('E_INVALID_ZENTAO_CONFIG');
       parseZentaoVersion(config.version);
       const timestamp = new Date().toISOString();

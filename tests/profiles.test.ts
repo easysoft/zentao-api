@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -336,6 +336,22 @@ function savedConfig(version: string): ServerConfig {
 }
 
 describe('profile server configuration cache', () => {
+  test('anonymous discovery does not create or read profiles even when persistence is enabled', async () => {
+    const server = createMockServer(() => Response.json(savedConfig('22.5')));
+    try {
+      setGlobalOptions({ persistProfiles: true });
+      const client = new ZentaoClient(server.url.toString());
+      const file = join(tempHome, '.config/zentao/zentao.json');
+      await expect(client.getZentaoConfig()).resolves.toMatchObject({ version: '22.5' });
+      expect(existsSync(file)).toBe(false);
+
+      mkdirSync(join(tempHome, '.config/zentao'), { recursive: true });
+      writeFileSync(file, '{invalid');
+      await expect(client.getZentaoConfig({ forceRefresh: true })).resolves.toMatchObject({ version: '22.5' });
+      expect(readFileSync(file, 'utf8')).toBe('{invalid');
+    } finally { server.stop(true); }
+  });
+
   test.each([
     ['fresh', 1000, 0],
     ['exactly one day', 86_400_000, 0],

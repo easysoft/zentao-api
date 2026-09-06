@@ -236,6 +236,13 @@ const config = await client.getZentaoConfig(); // 复用有效缓存，缺失或
 const freshConfig = await client.getZentaoConfig({ forceRefresh: true });
 ```
 
+`getZentaoConfig()` 只需站点地址，无需登录或 profile；未提供 Token 或 Token 已过期时都可调用。请求不发送 API Token，浏览器中还会显式省略 Cookie 等凭据，因此可以在登录前查询版本：
+
+```ts
+const siteClient = new ZentaoClient('https://zentao.example.com');
+const { version } = await siteClient.getZentaoConfig();
+```
+
 强制刷新不会改写全局 `version`。未指定全局版本时，使用不超过 24 小时的缓存；缓存缺失、过期或时间异常时访问站点根地址的 `/?mode=getconfig`。登录验证成功后也会强制获取一次，即使已设置全局版本。
 
 配置获取失败默认停止调用；可以通过全局或单次 `skipVersionCheckOnConfigError: true` 跳过本次检查。该选项不忽略版本不匹配、版本格式错误、取消或 profile 存储错误。版本不匹配抛出 `E_UNSUPPORTED_ZENTAO_VERSION`。

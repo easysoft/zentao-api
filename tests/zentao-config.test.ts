@@ -7,6 +7,35 @@ afterEach(() => {
 });
 
 describe('getZentaoConfig', () => {
+  test.each([
+    ['no token', undefined],
+    ['expired token', 'expired-token'],
+  ] as const)('fetches configuration before and after API authentication fails (%s)', async (_label, token) => {
+    const urls: string[] = [];
+    let version = '22.5';
+    const server = Bun.serve({ port: 0, fetch(req) {
+      urls.push(req.url);
+      if (new URL(req.url).searchParams.get('mode') === 'getconfig') {
+        expect(req.headers.has('Token')).toBe(false);
+        return Response.json({ version });
+      }
+      expect(req.headers.get('Token')).toBe(token ?? null);
+      return new Response('Unauthorized', { status: 401 });
+    } });
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.toString(), token });
+      await expect(client.getZentaoConfig()).resolves.toMatchObject({ version: '22.5' });
+      await expect(request('product/list', {}, { client })).rejects.toMatchObject({ code: 'E_HTTP_ERROR' });
+      version = '22.6';
+      await expect(client.getZentaoConfig({ forceRefresh: true })).resolves.toMatchObject({ version: '22.6' });
+      expect(urls).toEqual([
+        `${server.url}?mode=getconfig`,
+        `${server.url}api.php/v2/products`,
+        `${server.url}?mode=getconfig`,
+      ]);
+    } finally { server.stop(true); }
+  });
+
   test('uses the site subdirectory, sends no Token, caches copies and deduplicates refreshes', async () => {
     const urls: string[] = [];
     const server = Bun.serve({ port: 0, async fetch(req) {

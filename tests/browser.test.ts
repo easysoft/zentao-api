@@ -57,8 +57,10 @@ describe('browser bundle', () => {
           if (new URL(_url).searchParams.get('mode') === 'getconfig') {
             expect(new Headers(init?.headers).has('Token')).toBe(false);
             expect(init?.cache).toBe('no-store');
+            expect(init?.credentials).toBe('omit');
             return Promise.resolve(Response.json({ version: 'biz13.5' }));
           }
+          expect(init?.credentials).toBeUndefined();
           const headers = new Headers(init?.headers);
           receivedToken = headers.get('Token') ?? undefined;
           receivedBody = init?.body;
@@ -76,6 +78,8 @@ describe('browser bundle', () => {
       expect(api.ZentaoClient).toBeFunction();
       const client = new api.ZentaoClient('https://zentao.example.com');
 
+      await expect(client.getZentaoConfig()).resolves.toMatchObject({ version: 'biz13.5' });
+      expect(storage.size).toBe(0);
       await expect(client.request('/products', { insecure: true })).rejects.toThrow('insecure');
 
       await api.addProfile({
