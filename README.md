@@ -419,6 +419,8 @@ bun run check             # 完整 CI：测试、类型检查、注册表、构�
 
 `bun run test:real` 会依次读取 `.env.local` 和 `env.local`，需要配置 `ZENTAO_URL`（或 `ZENTAO_BASE_URL`），以及 `ZENTAO_TOKEN` 或 `ZENTAO_ACCOUNT` / `ZENTAO_PASSWORD`。使用 `bun run test:real -- --keep-test-data` 可保留测试创建的数据。
 
+测试创建和更新项目时会复用现有 Scrum 项目的有效项目流程，也可通过 `ZENTAO_WORKFLOW_GROUP` 显式指定流程 ID。没有可复用流程时默认使用开源版的 `0`；付费版需要指定有效的流程 ID。
+
 模块注册表由 `data/zentao-openapi.json` 生成。请勿手动编辑 `src/modules/generated.ts`；更新规范后运行：
 
 ```sh

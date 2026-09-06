@@ -13,6 +13,7 @@ import {
 import {
   createRealEnvLogger,
   resolveRealEnvRuntimeOptions,
+  resolveRealEnvWorkflowGroup,
 } from './real-env-support';
 
 const ENV_FILES = ['.env.local', 'env.local'] as const;
@@ -572,6 +573,20 @@ describe('real ZenTao product API', () => {
     expectSuccess(plannedStoryResponse);
     expect(fieldIncludesID(unwrapRecord(plannedStoryResponse.data).plan, requirePlanID())).toBe(true);
 
+    const availableProjectsResponse = await apiRequest('Fetch project workflow groups', 'project/list', {
+      browseType: 'all',
+      orderBy: 'id_desc',
+      recPerPage: 1000,
+      pageID: 1,
+    });
+    expectSuccess(availableProjectsResponse);
+    expect(Array.isArray(availableProjectsResponse.data)).toBe(true);
+    const workflowGroup = resolveRealEnvWorkflowGroup(
+      availableProjectsResponse.data as Record<string, unknown>[],
+      readEnv('ZENTAO_WORKFLOW_GROUP'),
+    );
+    logger.info('Using project workflow group', { workflowGroup });
+
     const projectName = `${productName} project`;
     created.projectID = await createEntity('Create temporary project', 'project/create', {
       name: projectName,
@@ -579,7 +594,7 @@ describe('real ZenTao product API', () => {
       begin: startDate,
       end: projectEndDate,
       products: [productID],
-      workflowGroup: 0,
+      workflowGroup,
       PM: actorAccount,
     }, undefined, {
       requestName: 'project/list',
@@ -600,7 +615,7 @@ describe('real ZenTao product API', () => {
       begin: startDate,
       end: projectEndDate,
       products: [productID],
-      workflowGroup: 0,
+      workflowGroup,
       PM: actorAccount,
     });
     expectSuccess(projectUpdateResponse);

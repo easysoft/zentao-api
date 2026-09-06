@@ -29,6 +29,20 @@ export interface RealEnvTestRun {
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
 
+export function resolveRealEnvWorkflowGroup(
+  projects: readonly Record<string, unknown>[],
+  configured?: string,
+): number {
+  const project = projects.find((item) => (
+    item.model === 'scrum' && Number.isSafeInteger(Number(item.workflowGroup)) && Number(item.workflowGroup) > 0
+  ));
+  const workflowGroup = Number(configured ?? project?.workflowGroup ?? 0);
+  if (!Number.isSafeInteger(workflowGroup) || workflowGroup < 0 || configured?.trim() === '') {
+    throw new Error('ZENTAO_WORKFLOW_GROUP must be a non-negative integer.');
+  }
+  return workflowGroup;
+}
+
 export function resolveRealEnvRuntimeOptions(
   argv: readonly string[] = Bun.argv,
   env: Record<string, string | undefined> = process.env,

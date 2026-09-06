@@ -3,9 +3,28 @@ import {
   createRealEnvTestRun,
   createRealEnvLogger,
   resolveRealEnvRuntimeOptions,
+  resolveRealEnvWorkflowGroup,
 } from './real-env-support';
 
 describe('real environment test support', () => {
+  test('uses a valid Scrum workflow group or an explicit environment override', () => {
+    const projects = [
+      { model: 'waterfall', workflowGroup: 4 },
+      { model: 'scrum', workflowGroup: 0 },
+      { model: 'scrum', workflowGroup: 'invalid' },
+      { model: 'scrum', workflowGroup: '2' },
+    ];
+
+    expect(resolveRealEnvWorkflowGroup(projects)).toBe(2);
+    expect(resolveRealEnvWorkflowGroup(projects, '13')).toBe(13);
+    expect(resolveRealEnvWorkflowGroup(projects, '0')).toBe(0);
+    expect(resolveRealEnvWorkflowGroup([])).toBe(0);
+    expect(resolveRealEnvWorkflowGroup([{ model: 'waterfall', workflowGroup: 4 }])).toBe(0);
+    for (const value of ['invalid', '-1', '1.5', 'Infinity', '']) {
+      expect(() => resolveRealEnvWorkflowGroup(projects, value)).toThrow('ZENTAO_WORKFLOW_GROUP');
+    }
+  });
+
   test('parses the keep-test-data CLI flag', () => {
     expect(resolveRealEnvRuntimeOptions(['bun', 'test', '--keep-test-data']).keepTestData).toBe(true);
     expect(resolveRealEnvRuntimeOptions(['bun', 'test']).keepTestData).toBe(false);
