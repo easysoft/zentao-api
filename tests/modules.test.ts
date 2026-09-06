@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import {
   ZentaoClient,
   defineModuleActions,
@@ -12,7 +12,9 @@ import {
   request,
   setGlobalOptions,
   type ModuleAction,
+  type ModuleActionRequestCallback,
   type ModuleDefinition,
+  type RequestOptions,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
 
@@ -61,8 +63,10 @@ function createBlockDocContent(): string {
 }
 
 afterEach(() => {
+  mock.restore();
   resetModuleDefinitions();
   setGlobalOptions({
+    version: undefined,
     client: undefined,
     recPerPage: undefined,
     limit: undefined,
@@ -77,6 +81,12 @@ describe('module registry', () => {
   test('gets generated module and action definitions', () => {
     expect(getModule('product')!.name).toBe('product');
     expect(getModuleAction('product', 'list')!.path).toBe('/products');
+  });
+
+  test.each([null, 'request', {}])('rejects a non-function request callback: %p', (value) => {
+    expect(() => extendModuleAction('product', 'list', {
+      request: value as unknown as ModuleActionRequestCallback,
+    })).toThrow(expect.objectContaining({ code: 'E_INVALID_ACTION_DEFINITION' }));
   });
 
   test('applies API mappings to modules, names, and action properties', () => {
@@ -627,6 +637,163 @@ describe('builtin overrides (override.ts)', () => {
 });
 
 describe('high-level request', () => {
+  test.each([
+    ['application/json', undefined],
+    ['application/x-www-form-urlencoded', 'form'],
+  ] as const)('passes resolved requests and effective options to custom callbacks for %s', async (mediaType, bodyType) => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'fail' });
+    const raw = { data: { id: 7, name: 'new' } };
+    const customRequest = mock<ModuleActionRequestCallback>(async () => raw);
+    defineModuleActions('product', {
+      minVersion: ['22.0'],
+      name: 'customUpdate',
+      type: 'update',
+      path: '/products/{productID}',
+      pathParams: { productID: '产品ID' },
+      params: [{ name: 'language', defaultValue: 'zh-cn' }],
+      requestBody: {
+        mediaType,
+        schema: {
+          type: 'object',
+          properties: { name: { type: 'string' }, count: { type: 'integer' } },
+        },
+      },
+      request: customRequest,
+    });
+    setGlobalOptions({ version: '22.5', client, timeout: 8000, insecure: true });
+    const params = { productID: 7, name: 'new', count: '2' };
+
+    await expect(request('product/customUpdate', params)).resolves.toMatchObject({
+      status: 'success', data: raw.data,
+    });
+    const info = customRequest.mock.calls[0][0];
+    expect(info.request).toEqual({
+      module: 'product',
+      action: getModuleAction('product', 'customUpdate')!,
+      params,
+      path: '/products/7',
+      query: { language: 'zh-cn' },
+      data: { name: 'new', count: 2 },
+      id: 7,
+    });
+    expect(info.body).toEqual({ name: 'new', count: 2 });
+    expect(info.bodyType).toBe(bodyType);
+    expect(info.timeout).toBe(8000);
+    expect(info.insecure).toBe(true);
+    expect(info.client).toBe(client);
+    expect(info.options).toEqual({});
+
+    setGlobalOptions({ client: new ZentaoClient('http://default.test') });
+    const options = { client, timeout: 0, insecure: false, raw: true } satisfies RequestOptions;
+    expect(await request('product/customUpdate', params, options)).toBe(raw);
+    const overridden = customRequest.mock.calls[1][0];
+    expect(overridden.client).toBe(client);
+    expect(overridden.options).toBe(options);
+    expect(overridden.timeout).toBe(0);
+    expect(overridden.insecure).toBe(false);
+
+    await expect(request('product/customUpdate', {}, { client })).rejects.toMatchObject({ code: 'E_MISSING_PARAM' });
+    setGlobalOptions({ version: '21.0' });
+    await expect(request('product/customUpdate', params, { client })).rejects.toMatchObject({
+      code: 'E_UNSUPPORTED_ZENTAO_VERSION',
+    });
+    expect(customRequest).toHaveBeenCalledTimes(2);
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  test('normalizes custom responses with getters, pagination and local processing', async () => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'fail' });
+    const customRequest = mock<ModuleActionRequestCallback>(async () => ({
+      payload: {
+        items: [{ id: 1, name: 'first' }, { id: 2, name: 'second' }],
+        pager: { recTotal: 5, recPerPage: 2, pageID: 2 },
+      },
+    }));
+    extendModuleAction('product', 'list', {
+      request: customRequest,
+      resultGetter: 'payload.items',
+      pagerGetter: 'payload.pager',
+    });
+    setGlobalOptions({ version: '22.5', client, recPerPage: '2', limit: '1' });
+
+    await expect(request('product', { page: 2 }, { sort: 'id:desc', pick: ['id'] })).resolves.toEqual({
+      status: 'success',
+      data: [{ id: 2 }],
+      pager: { total: 5, page: 2, recPerPage: 2 },
+    });
+    expect(customRequest.mock.calls[0][0].request.query).toMatchObject({ pageID: 2, recPerPage: '2' });
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  test('preserves custom failure responses, throwOnFail, raw mode and callback errors', async () => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
+    const raw = { status: 'fail', message: 'custom failure', code: 403 };
+    const customRequest = mock<ModuleActionRequestCallback>(async () => raw);
+    extendModuleAction('product', 'list', { request: customRequest });
+    setGlobalOptions({ version: '22.5', client });
+
+    await expect(request('product')).resolves.toMatchObject({
+      status: 'fail', message: 'custom failure', apiCode: 403, raw,
+    });
+    await expect(request('product', {}, { throwOnFail: true })).rejects.toMatchObject({ code: 'E_API_FAILED' });
+    setGlobalOptions({ throwOnFail: true });
+    await expect(request('product')).rejects.toMatchObject({ code: 'E_API_FAILED' });
+    expect(await request('product', {}, { raw: true })).toBe(raw);
+
+    const error = new Error('custom transport failed');
+    customRequest.mockRejectedValueOnce(error);
+    await expect(request('product')).rejects.toBe(error);
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  test('passes prepared multipart uploads to custom callbacks and keeps upload validation', async () => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'fail' });
+    const customRequest = mock<ModuleActionRequestCallback>(async () => ({ data: { id: 42 } }));
+    extendModuleAction('file', 'create', { request: customRequest });
+    setGlobalOptions({ version: '22.5', client });
+    const params = { file: new Blob(['test'], { type: 'text/plain' }), objectType: 'story', objectID: 7 };
+
+    await expect(request('file/create', params, { maxUploadBytes: 4 })).resolves.toMatchObject({ data: { id: 42 } });
+    const info = customRequest.mock.calls[0][0];
+    expect(info.bodyType).toBe('raw');
+    expect(info.body).toBeInstanceOf(FormData);
+    const body = info.body as FormData;
+    expect(body.get('objectType')).toBe('story');
+    expect(body.get('objectID')).toBe('7');
+    expect(await (body.get('file') as File).text()).toBe('test');
+
+    await expect(request('file/create', params, { maxUploadBytes: 3 })).rejects.toMatchObject({
+      code: 'E_UPLOAD_FILE_TOO_LARGE',
+    });
+    expect(customRequest).toHaveBeenCalledTimes(1);
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  test('uses custom get and update callbacks when autoFill is enabled', async () => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'fail' });
+    const getRequest = mock<ModuleActionRequestCallback>(async () => ({
+      data: { id: 7, name: 'old', PO: 'admin', acl: 'private' },
+    }));
+    const updateRequest = mock<ModuleActionRequestCallback>(async ({ body }) => ({ data: body }));
+    extendModuleAction('product', 'get', { request: getRequest, resultGetter: 'data' });
+    extendModuleAction('product', 'update', { request: updateRequest, resultGetter: 'data' });
+    setGlobalOptions({ version: '22.5', client });
+
+    await expect(request('product/update', { id: 7, name: 'new' }, { autoFill: true })).resolves.toMatchObject({
+      data: { name: 'new', PO: 'admin', acl: 'private' },
+    });
+    expect(getRequest).toHaveBeenCalledTimes(1);
+    expect(getRequest.mock.calls[0][0].request.path).toBe('/products/7');
+    expect(updateRequest).toHaveBeenCalledTimes(1);
+    expect(updateRequest.mock.calls[0][0].body).toMatchObject({ name: 'new', PO: 'admin', acl: 'private' });
+    expect(transport).not.toHaveBeenCalled();
+  });
+
   test('uses global client and global recPerPage with moduleName/methodName', async () => {
     let receivedUrl = '';
     const server = createMockServer((req) => {

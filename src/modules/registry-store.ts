@@ -176,6 +176,9 @@ export function validateAction(action: ModuleAction): void {
   if (action.resultType !== undefined && typeof action.resultType !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
+  if (action.request !== undefined && typeof action.request !== 'function') {
+    throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+  }
 }
 
 /** 当前运行时注册表中的模块数组（define 侧原地修改，query 侧只读）。 */

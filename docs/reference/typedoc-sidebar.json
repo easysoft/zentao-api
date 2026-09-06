@@ -220,6 +220,10 @@
         "link": "/reference/type-aliases/ModuleActionParamRole.md"
       },
       {
+        "text": "ModuleActionRequestCallback",
+        "link": "/reference/type-aliases/ModuleActionRequestCallback.md"
+      },
+      {
         "text": "ModuleActionRequestMediaType",
         "link": "/reference/type-aliases/ModuleActionRequestMediaType.md"
       },

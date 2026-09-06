@@ -1,5 +1,6 @@
-import type { HttpMethod } from './client.js';
-import type { RequestProcessOptions } from './options.js';
+import type { ZentaoClient } from '../client/index.js';
+import type { ClientRequestBodyType, HttpMethod } from './client.js';
+import type { RequestOptions, RequestProcessOptions } from './options.js';
 import type { Pager } from './response.js';
 
 /** 模块动作类型：基础 CRUD 或自定义动作。 */
@@ -101,6 +102,27 @@ export type ModuleActionGetterFn<T, O = RequestProcessOptions> = (
   options?: O,
 ) => T;
 
+/**
+ * 自定义动作的请求发送逻辑，在版本检查、参数解析和请求体准备完成后调用。
+ * 返回原始响应数据，后续仍按动作定义提取结果、分页并应用请求选项；抛出的错误原样传递。
+ */
+export type ModuleActionRequestCallback = (info: {
+  /** 解析后的路径、查询参数、请求体数据及动作定义。 */
+  request: ModuleActionRequest;
+  /** 准备好的请求体，例如 JSON 对象或上传用的 FormData。 */
+  body: unknown;
+  /** 请求体序列化方式，可直接传给客户端。 */
+  bodyType?: ClientRequestBodyType;
+  /** 本次请求的超时选项，未指定时回落到全局选项。 */
+  timeout?: number;
+  /** 本次请求的 TLS 选项，未指定时回落到全局选项。 */
+  insecure?: boolean;
+  /** 本次调用选定的客户端。 */
+  client: ZentaoClient;
+  /** 调用方传入的原始请求选项。 */
+  options: RequestOptions;
+}) => Promise<unknown>;
+
 /** 禅道模块中的单个 API 动作定义。 */
 export interface ModuleAction {
   /** 动作名称，例如 `list`、`get`、`close`。 */
@@ -143,6 +165,9 @@ export interface ModuleAction {
    * 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。
    */
   resultGetter?: string | ModuleActionResultFieldMap | ModuleActionGetterFn<unknown>;
+
+  /** 自定义请求回调；省略时通过 ZentaoClient.request 发送请求，返回值沿用相同的响应处理流程。 */
+  request?: ModuleActionRequestCallback;
 }
 
 /** 内置模块名称，同时允许用户扩展自定义模块名。 */

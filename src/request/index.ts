@@ -353,14 +353,18 @@ async function requestInternal<T = unknown>(
   const preparedBody = await prepareActionBody(command, {
     maxUploadBytes: options.maxUploadBytes,
   });
-  const raw = await client.request(command.path, {
-    method: String(command.action.method).toUpperCase() as HttpMethod,
-    query: command.query,
-    body: preparedBody.body,
-    bodyType: preparedBody.bodyType,
+  const requestOptions = {
+    ...preparedBody,
     timeout: options.timeout ?? globals.timeout,
     insecure: options.insecure ?? globals.insecure,
-  });
+  };
+  const raw = command.action.request
+    ? await command.action.request({ request: command, ...requestOptions, client, options })
+    : await client.request(command.path, {
+      method: String(command.action.method).toUpperCase() as HttpMethod,
+      query: command.query,
+      ...requestOptions,
+    });
 
   if (options.raw) {
     return raw;
