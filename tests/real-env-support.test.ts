@@ -4,9 +4,41 @@ import {
   createRealEnvLogger,
   resolveRealEnvRuntimeOptions,
   resolveRealEnvWorkflowGroup,
+  createRealEnvCoverage,
+  getMissingRealEnvModule,
+  validateRealEnvResponse,
 } from './real-env-support';
 
 describe('real environment test support', () => {
+  test('rejects HTML errors and invalid list data even when the SDK reports success', () => {
+    const html = '<p>ERROR: the control file module/meeting/control.php not found.</p>';
+    expect(getMissingRealEnvModule(html)).toBe('module/meeting/control.php');
+    expect(getMissingRealEnvModule('<p>Fatal error: database failure</p>')).toBeUndefined();
+    expect(() => validateRealEnvResponse({ status: 'success', data: html }, 'list')).toThrow('HTML/error page');
+    expect(() => validateRealEnvResponse({ status: 'success', data: {} }, 'list')).toThrow('array');
+    expect(() => validateRealEnvResponse({ status: 'fail', message: 'denied', data: {} })).toThrow('denied');
+    expect(() => validateRealEnvResponse({ status: 'success', data: { result: 'fail', message: 'denied' } })).toThrow('result=fail');
+    expect(() => validateRealEnvResponse({ status: 'success', data: [] }, 'list')).not.toThrow();
+    expect(() => validateRealEnvResponse({ status: 'success', data: { content: '<p>Document content</p>' } }, 'object')).not.toThrow();
+  });
+
+  test('reports unique actions, scoped routes, exclusions and failures without hiding a failed attempt', () => {
+    const coverage = createRealEnvCoverage(['story/list', 'bug/list', 'meeting/list', 'todo/create']);
+    coverage.record('story/list', 'success', 'GET /products/{id}/stories');
+    coverage.record('story/list', 'success', 'GET /projects/{id}/stories');
+    coverage.record('bug/list', 'fail');
+    coverage.record('bug/list', 'success');
+    coverage.exclude('meeting/list', 'missing module');
+    const report = coverage.report();
+    expect(report.successful).toEqual(['story/list']);
+    expect(report.exercised).toBe(2);
+    expect(report.failed).toEqual(['bug/list']);
+    expect(report.untested).toEqual(['todo/create']);
+    expect(report.excluded).toEqual({ 'meeting/list': 'missing module' });
+    expect(report.routes).toHaveLength(2);
+    expect(report.calls).toHaveLength(4);
+  });
+
   test('uses a valid Scrum workflow group or an explicit environment override', () => {
     const projects = [
       { model: 'waterfall', workflowGroup: 4 },

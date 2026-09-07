@@ -1,24 +1,35 @@
 import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { randomUUID } from 'node:crypto';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   ZentaoClient,
   request,
   setGlobalOptions,
+  getModule,
+  getModuleAction,
+  getModuleNames,
   type RequestOptions,
   type ResponseData,
 } from '../src/index';
+import { resolveActionRequest } from '../src/modules/resolve';
 import {
   createRealEnvLogger,
   resolveRealEnvRuntimeOptions,
   resolveRealEnvWorkflowGroup,
+  createRealEnvCoverage,
+  getMissingRealEnvModule,
+  validateRealEnvResponse,
 } from './real-env-support';
 
 const ENV_FILES = ['.env.local', 'env.local'] as const;
-const runtimeOptions = resolveRealEnvRuntimeOptions();
+let runtimeOptions = resolveRealEnvRuntimeOptions();
 const logger = createRealEnvLogger();
+const coverage = createRealEnvCoverage(getModuleNames().flatMap(name => getModule(name)!.actions.map(action => `${name}/${action.name}`)));
+const unavailable = new Map<string, string>();
+const extraCreated: { requestName: `${string}/${string}`; id: number }[] = [];
+const listParams = { recPerPage: 1000, pageID: 1 };
 
 interface RealEnvConfig {
   baseUrl: string;
@@ -35,6 +46,7 @@ let requestOptions: RequestOptions & { raw?: false } = {};
 let productID: number | undefined;
 let productName = '';
 let actorAccount: string | undefined;
+let supportModuleID: number | undefined;
 
 const created = {
   fileIDs: [] as number[],
@@ -44,6 +56,7 @@ const created = {
   planID: undefined as number | undefined,
   projectID: undefined as number | undefined,
   executionID: undefined as number | undefined,
+  programID: undefined as number | undefined,
 };
 
 interface LookupByField {
@@ -118,16 +131,13 @@ async function loadRealEnvConfig(): Promise<RealEnvConfig> {
 }
 
 function expectSuccess(response: ResponseData): void {
-  if (response.status !== 'success') {
-    throw new Error(`Expected ZenTao API success, got ${JSON.stringify(response)}`);
-  }
+  validateRealEnvResponse(response);
   expect(response.status).toBe('success');
 }
 
 function tryExtractID(data: unknown): number | undefined {
-  const id = isRecord(data) ? data.id : undefined;
-  const numberValue = Number(id);
-  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : undefined;
+  if (!isRecord(data)) return undefined;
+  return [data.id, data.rawID, data.caseID].map(Number).find(id => Number.isSafeInteger(id) && id > 0);
 }
 
 function requireProductID(): number {
@@ -152,7 +162,7 @@ function requireExecutionID(): number {
 
 function recordMatchesID(item: unknown, id: number): boolean {
   if (!isRecord(item)) return false;
-  return ['id', 'rawID'].some((key) => String(item[key]) === String(id));
+  return ['id', 'rawID', 'caseID'].some((key) => String(item[key]) === String(id));
 }
 
 function expectListContainsID(data: unknown, id: number): void {
@@ -239,6 +249,7 @@ function summarizeCreatedData(): Record<string, unknown> {
     productName,
     planID: created.planID,
     projectID: created.projectID,
+    programID: created.programID,
     executionID: created.executionID,
     fileIDs: created.fileIDs,
     storyIDs: created.storyIDs,
@@ -253,9 +264,90 @@ async function apiRequest(
   params: Record<string, unknown> = {},
 ): Promise<ResponseData> {
   logger.step(label, { api: requestName, ...summarizeParams(params) });
-  const response = await request(requestName, params, requestOptions);
-  logger.result(summarizeResponse(response));
-  return response;
+  const [moduleName, actionName] = requestName.split('/');
+  const action = getModuleAction(moduleName, actionName)!;
+  try {
+    const response = await request(requestName, params, requestOptions);
+    validateRealEnvResponse(response, action.method === 'get' ? action.resultType : undefined);
+    const command = resolveActionRequest(getModule(moduleName)!, actionName, params);
+    coverage.record(requestName, 'success', `${action.method?.toUpperCase()} ${command.path.replace(/\/\d+(?=\/|$)/g, '/{id}')}`);
+    logger.result(summarizeResponse(response));
+    return response;
+  } catch (error) {
+    coverage.record(requestName, 'fail', undefined, (error as Error).message);
+    throw new Error(`${requestName}: ${(error as Error).message}`, { cause: error });
+  }
+}
+
+async function call(requestName: `${string}/${string}`, params: Record<string, unknown> = {}): Promise<ResponseData> {
+  return apiRequest(requestName, requestName, params);
+}
+
+async function createTracked(
+  requestName: `${string}/${string}`,
+  params: Record<string, unknown>,
+  deleteName: `${string}/${string}`,
+  lookup?: LookupByField,
+): Promise<number> {
+  const moduleName = deleteName.split('/')[0];
+  if (!lookup && moduleName !== 'doc' && !deleteName.endsWith('Module')) {
+    lookup = {
+      requestName: moduleName === 'todo' ? 'my/todos' : `${moduleName}/list`,
+      params: { ...listParams, browseType: ['story', 'epic', 'requirement'].includes(moduleName) ? 'allstory' : 'all',
+        ...(['story', 'epic', 'requirement', 'bug', 'testcase', 'feedback', 'ticket', 'release', 'testtask'].includes(moduleName)
+          ? { productID: requireProductID() } : {}),
+        ...(moduleName === 'task' ? { executionID: requireExecutionID() } : {}),
+      },
+      field: ['todo', 'task', 'build', 'testtask', 'program'].includes(moduleName) ? 'name' : typeof params.title === 'string' ? 'title' : 'name',
+      value: String(params.title ?? params.name),
+    };
+  }
+  try {
+    const id = await createEntity(requestName, requestName, params, undefined, lookup);
+    extraCreated.push({ requestName: deleteName, id });
+    return id;
+  } catch (error) {
+    // A failed response can follow a successful write. Recover only this run's uniquely named fixture for cleanup.
+    if (lookup) {
+      try {
+        const id = await findCreatedID(lookup);
+        if (id) extraCreated.push({ requestName: deleteName, id });
+      } catch (lookupError) {
+        logger.info('Could not recover the created fixture for cleanup', { api: requestName, name: lookup.value, error: (lookupError as Error).message });
+      }
+    }
+    throw error;
+  }
+}
+
+async function deleteTracked(requestName: `${string}/${string}`, id: number): Promise<void> {
+  if (runtimeOptions.keepTestData) return;
+  await call(requestName, { id });
+  const index = extraCreated.findIndex(item => item.requestName === requestName && item.id === id);
+  if (index >= 0) extraCreated.splice(index, 1);
+}
+
+async function getRecord(requestName: `${string}/${string}`, id: number): Promise<Record<string, unknown>> {
+  const response = await call(requestName, { id });
+  expect(recordMatchesID(response.data, id)).toBe(true);
+  return unwrapRecord(response.data);
+}
+
+async function getList(requestName: `${string}/${string}`, params: Record<string, unknown> = {}): Promise<Record<string, unknown>[]> {
+  const response = await call(requestName, { ...listParams, ...params });
+  expect(Array.isArray(response.data)).toBe(true);
+  return response.data as Record<string, unknown>[];
+}
+
+async function getSupportModuleID(): Promise<number> {
+  return supportModuleID ??= await createTracked('product/createStoryModule', {
+    productID: requireProductID(), name: `${productName} support`, parentID: 0,
+  }, 'story/deleteModule');
+}
+
+async function createRequirement(moduleName: 'story' | 'epic' | 'requirement', title: string): Promise<number> {
+  return createTracked(`${moduleName}/create`, { productID: requireProductID(), title,
+    pri: 3, category: 'feature', estimate: 1, spec: 'Lifecycle specification', verify: 'Verify lifecycle', ...maybeReviewer() }, `${moduleName}/delete`);
 }
 
 async function createEntity(
@@ -292,46 +384,71 @@ async function expectDeleteSuccess(requestName: `${string}/${string}`, id: numbe
   expectSuccess(response);
 }
 
+const config = await loadRealEnvConfig();
+runtimeOptions = resolveRealEnvRuntimeOptions();
+actorAccount = config.reviewer ?? config.account;
+if (!actorAccount) throw new Error('Set ZENTAO_ACCOUNT or ZENTAO_REVIEWER for real environment owners, reviewers and team members.');
+logger.environment({
+  envFiles: ENV_FILES,
+  baseUrl: config.baseUrl,
+  authMode: config.token ? 'token' : 'account-password',
+  account: config.account,
+  reviewer: actorAccount,
+  timeout: config.timeout,
+  insecure: config.insecure,
+  keepTestData: runtimeOptions.keepTestData,
+  token: config.token,
+  password: config.password,
+});
+
+client = new ZentaoClient({
+  baseUrl: config.baseUrl,
+  token: config.token,
+  timeout: config.timeout,
+  insecure: config.insecure,
+});
+
+if (!config.token) {
+  logger.step('Login with account/password', { account: config.account });
+  await client.login(config.account!, config.password!);
+  logger.result({ status: 'success' });
+} else {
+  logger.info('Using token authentication');
+}
+
+requestOptions = {
+  client,
+  timeout: config.timeout,
+  insecure: config.insecure,
+};
+setGlobalOptions({ client, timeout: config.timeout, insecure: config.insecure });
+// Probe only known optional modules. Authentication, SQL and other unexpected errors remain failures.
+for (const [moduleName, probe] of [
+  ['issue', 'issue/list'], ['risk', 'risk/list'], ['meeting', 'meeting/list'],
+  ['workflow', 'workflow/list'], ['storygrade', 'story/getGrades'],
+] as const) {
+  const response = await request(probe, { recPerPage: 1, pageID: 1 }, requestOptions);
+  const missing = getMissingRealEnvModule(response.data);
+  if (missing === `module/${moduleName === 'workflow' ? 'contract' : moduleName}/control.php`) {
+    const reason = `Server module unavailable: ${missing}`;
+    unavailable.set(moduleName, reason);
+    logger.info(reason);
+    const actions = moduleName === 'storygrade' ? ['story/getGrades']
+      : getModule(moduleName)!.actions.map(action => `${moduleName}/${action.name}`);
+    if (['issue', 'risk', 'meeting'].includes(moduleName)) actions.push(`my/${moduleName}s`);
+    for (const action of actions) coverage.exclude(action, reason);
+  } else {
+    validateRealEnvResponse(response, 'list');
+  }
+}
+for (const action of ['issue/create', 'risk/create', 'risk/update', 'system/create']) {
+  if (!unavailable.has(action.split('/')[0])) coverage.exclude(action, 'No delete API is available to clean up this resource.');
+}
+
+
 describe('real ZenTao product API', () => {
   beforeAll(async () => {
-    const config = await loadRealEnvConfig();
-    actorAccount = config.reviewer ?? config.account;
-    logger.environment({
-      envFiles: ENV_FILES,
-      baseUrl: config.baseUrl,
-      authMode: config.token ? 'token' : 'account-password',
-      account: config.account,
-      reviewer: actorAccount,
-      timeout: config.timeout,
-      insecure: config.insecure,
-      keepTestData: runtimeOptions.keepTestData,
-      token: config.token,
-      password: config.password,
-    });
-
-    client = new ZentaoClient({
-      baseUrl: config.baseUrl,
-      token: config.token,
-      timeout: config.timeout,
-      insecure: config.insecure,
-    });
-
-    if (!config.token) {
-      logger.step('Login with account/password', { account: config.account });
-      await client.login(config.account!, config.password!);
-      logger.result({ status: 'success' });
-    } else {
-      logger.info('Using token authentication');
-    }
-
-    requestOptions = {
-      client,
-      timeout: config.timeout,
-      insecure: config.insecure,
-    };
-    setGlobalOptions({ client, timeout: config.timeout, insecure: config.insecure });
-
-    productName = `zentao-api-real-${Date.now()}-${randomUUID().slice(0, 8)}`;
+    productName = `zentao-api-real-${randomUUID().slice(0, 8)}`;
     const response = await apiRequest('Create temporary product', 'product/create', {
       name: productName,
       type: 'normal',
@@ -354,7 +471,7 @@ describe('real ZenTao product API', () => {
       throw new Error(`Could not determine temporary product id: ${JSON.stringify(response.data)}`);
     }
     logger.result({ productID, productName });
-  });
+  }, 120000);
 
   afterAll(async () => {
     const cleanupErrors: string[] = [];
@@ -366,6 +483,14 @@ describe('real ZenTao product API', () => {
           cleanupErrors.push(`${requestName} #${id}: ${response.message ?? 'status fail'}`);
         }
       } catch (error) {
+        if (['epic/delete', 'requirement/delete'].includes(requestName) && (error as Error).message.includes('Missing required parameter: storyID')) {
+          try {
+            await apiRequest('Cleanup through shared story endpoint', 'story/delete', { id });
+            return;
+          } catch (fallbackError) {
+            cleanupErrors.push(`story/delete #${id}: ${(fallbackError as Error).message}`);
+          }
+        }
         cleanupErrors.push(`${requestName} #${id}: ${(error as Error).message ?? String(error)}`);
       }
     };
@@ -383,6 +508,7 @@ describe('real ZenTao product API', () => {
       }
 
       logger.info('Cleaning up real environment test data', summarizeCreatedData());
+      for (const item of [...extraCreated].reverse()) await cleanup(item.requestName, item.id);
       await cleanupIDs('file/delete', created.fileIDs);
       await cleanupIDs('task/delete', created.taskIDs);
       await cleanupIDs('bug/delete', created.bugIDs);
@@ -391,7 +517,15 @@ describe('real ZenTao product API', () => {
       await cleanupIDs('story/delete', created.storyIDs);
       await cleanup('productplan/delete', created.planID);
       await cleanup('product/delete', productID);
+      await cleanup('program/delete', created.programID);
     } finally {
+      const report = { ...coverage.report(), keepTestData: runtimeOptions.keepTestData, cleanupErrors,
+        retained: runtimeOptions.keepTestData ? { ...summarizeCreatedData(), extraCreated } : undefined };
+      mkdirSync('coverage', { recursive: true });
+      writeFileSync('coverage/real-env.json', `${JSON.stringify(report, null, 2)}\n`);
+      logger.info('API coverage', { exercised: report.exercised, successful: report.successful.length, total: report.total,
+        failed: report.failed.length, excluded: Object.keys(report.excluded).length,
+        untested: report.untested.length, routes: report.routes.length, report: 'coverage/real-env.json' });
       setGlobalOptions({
         client: undefined,
         recPerPage: undefined,
@@ -404,7 +538,7 @@ describe('real ZenTao product API', () => {
     if (cleanupErrors.length > 0) {
       throw new Error(`Real environment cleanup failed:\n${cleanupErrors.join('\n')}`);
     }
-  });
+  }, 120000);
 
   test('runs a write-heavy product lifecycle against the real API', async () => {
     const productID = requireProductID();
@@ -499,6 +633,7 @@ describe('real ZenTao product API', () => {
         throw new Error(`Could not determine uploaded file id: ${JSON.stringify(uploadResponse.data)}`);
       }
       created.fileIDs.push(fileID);
+      await call('file/update', { id: fileID, fileName: 'renamed-real-upload.txt' });
 
       const uploadedStoryResponse = await apiRequest('Verify uploaded story file', 'story/get', {
         id: created.storyIDs[0],
@@ -507,6 +642,7 @@ describe('real ZenTao product API', () => {
       const story = unwrapRecord(uploadedStoryResponse.data);
       const files = isRecord(story.files) ? Object.values(story.files) : [];
       expect(files.some((file) => recordMatchesID(file, fileID))).toBe(true);
+      expect(files.some(file => isRecord(file) && String(file.title).includes('renamed-real-upload'))).toBe(true);
     } finally {
       rmSync(uploadDir, { recursive: true, force: true });
     }
@@ -860,4 +996,343 @@ describe('real ZenTao product API', () => {
     const resolvedBug = unwrapRecord(resolvedBugResponse.data, 'bug');
     expect(String(resolvedBug.resolution)).toBe('fixed');
   }, 120000);
+
+  test('creates, updates and reads a temporary program with its product and project', async () => {
+    const body = { name: `${productName} program`, begin: dateAfter(0), end: dateAfter(60), PM: actorAccount };
+    created.programID = await createEntity('Create program', 'program/create', body, undefined, {
+      requestName: 'program/list', params: { ...listParams, browseType: 'all' }, field: 'name', value: body.name,
+    });
+    const id = created.programID;
+    expect((await getRecord('program/get', id)).name).toBe(body.name);
+    await call('program/update', { id, ...body, name: `${body.name} updated` });
+    expect((await getRecord('program/get', id)).name).toBe(`${body.name} updated`);
+    expectListContainsID(await getList('program/list', { browseType: 'all' }), id);
+
+    await call('product/update', { id: requireProductID(), name: `${productName}-updated`, type: 'normal', acl: 'open', program: id });
+    const projects = await getList('project/list', { browseType: 'all' });
+    const project = projects.find(item => recordMatchesID(item, requireProjectID()))!;
+    await call('project/update', { id: requireProjectID(), name: project.name, model: 'scrum',
+      begin: dateAfter(0), end: dateAfter(45), products: [requireProductID()], workflowGroup: project.workflowGroup, parent: id, PM: actorAccount });
+    expectListContainsID(await getList('product/programProducts', { programID: id }), requireProductID());
+    expectListContainsID(await getList('project/programProjects', { programID: id, browseType: 'all' }), requireProjectID());
+  }, 60000);
+
+  test('creates a temporary user and maintains only the temporary project and execution teams', async () => {
+    const account = `apitest_${randomUUID().replaceAll('-', '').slice(0, 12)}`;
+    const id = await createTracked('user/create', { account, realname: 'API temporary user', password: `Aa9!${randomUUID()}` }, 'user/delete', {
+      requestName: 'user/list', params: listParams, field: 'account', value: account,
+    });
+    expect((await getRecord('user/get', id)).account).toBe(account);
+    await call('user/update', { id, realname: 'API updated temporary user' });
+    expect((await getRecord('user/get', id)).realname).toBe('API updated temporary user');
+    expectListContainsID(await getList('user/list'), id);
+    for (const moduleName of ['project', 'execution'] as const) {
+      const parentID = moduleName === 'project' ? requireProjectID() : requireExecutionID();
+      await call(`${moduleName}/members`, { id: parentID, account: [actorAccount, account],
+        role: ['PM', 'dev'], days: [10, 10], hours: [7, 7], limited: ['no', 'no'] });
+      for (const action of ['team', `${moduleName}Members`]) {
+        const members = await getList(`${moduleName}/${action}`, { [`${moduleName}ID`]: parentID });
+        expect(members.some(member => member.account === account)).toBe(true);
+      }
+    }
+    await deleteTracked('user/delete', id);
+    if (!runtimeOptions.keepTestData) expectListExcludesID(await getList('user/list'), id);
+  }, 60000);
+
+  for (const moduleName of ['story', 'bug', 'testcase', 'task'] as const) {
+    test(`${moduleName} module directory CRUD`, async () => {
+      const parent = moduleName === 'task' ? { executionID: requireExecutionID() } : { productID: requireProductID() };
+      const creator = moduleName === 'task' ? 'execution/createTaskModule' : `product/create${moduleName[0].toUpperCase()}${moduleName.slice(1)}Module` as const;
+      const name = `${productName} ${moduleName} module`;
+      const id = await createTracked(creator, { ...parent, name, parentID: 0 }, `${moduleName}/deleteModule`, {
+        requestName: `${moduleName}/modules`, params: parent, field: 'name', value: name,
+      });
+      expectListContainsID(await getList(`${moduleName}/modules`, parent), id);
+      await call(`${moduleName}/updateModule`, { id, name: `${name} updated`, parent: 0 });
+      const modules = await getList(`${moduleName}/modules`, parent);
+      expect(modules.find(item => recordMatchesID(item, id))?.name).toBe(`${name} updated`);
+      await deleteTracked(`${moduleName}/deleteModule`, id);
+      if (!runtimeOptions.keepTestData) expectListExcludesID(await getList(`${moduleName}/modules`, parent), id);
+    }, 60000);
+  }
+
+  for (const moduleName of ['story', 'epic', 'requirement'] as const) {
+    test(`${moduleName} CRUD`, async () => {
+      const title = `${productName} ${moduleName} lifecycle`;
+      const id = await createRequirement(moduleName, title);
+      expect((await getRecord(`${moduleName}/get`, id)).title).toBe(title);
+      await call(`${moduleName}/update`, { id, title: `${title} updated`, pri: 2, category: 'feature', estimate: 1 });
+      expect((await getRecord(`${moduleName}/get`, id)).title).toBe(`${title} updated`);
+      expectListContainsID(await getList(`${moduleName}/list`, { productID: requireProductID(), browseType: 'allstory' }), id);
+      await deleteTracked(`${moduleName}/delete`, id);
+      if (!runtimeOptions.keepTestData) expectListExcludesID(await getList(`${moduleName}/list`, { productID: requireProductID(), browseType: 'allstory' }), id);
+    }, 60000);
+    for (const transition of ['close', 'activate', 'change'] as const) {
+      test(`${moduleName}/${transition} transition`, async () => {
+        const title = `${productName} ${moduleName} ${transition}`;
+        const id = await createRequirement(moduleName, title);
+        // All three requirement types share the story model; prepare state independently of the route under test.
+        if (transition !== 'close') await call('story/close', { id, closedReason: 'postponed' });
+        if (transition === 'change') await call('story/activate', { id, assignedTo: actorAccount });
+        await call(`${moduleName}/${transition}`, { id, title: `${title} changed`, closedReason: 'postponed',
+          assignedTo: actorAccount, comment: 'Temporary lifecycle test', spec: 'Changed lifecycle specification', verify: 'Changed acceptance', ...maybeReviewer() });
+        const detail = await getRecord(`${moduleName}/get`, id);
+        if (transition === 'close') expect(detail.status).toBe('closed');
+        if (transition === 'activate') expect(['draft', 'active']).toContain(String(detail.status));
+        if (transition === 'change') expect(detail.title).toBe(`${title} changed`);
+      }, 60000);
+    }
+  }
+
+  test('testcase CRUD with steps and product/project/execution scopes', async () => {
+    const body = { productID: requireProductID(), title: `${productName} testcase`, type: 'feature', pri: 3,
+      precondition: 'A temporary product exists', steps: ['Open temporary product', 'Read its name'], expects: ['Product exists', 'Name matches'],
+      stepType: ['step', 'step'], project: requireProjectID(), execution: requireExecutionID() };
+    const id = await createTracked('testcase/create', body, 'testcase/delete');
+    expect((await getRecord('testcase/get', id)).title).toBe(body.title);
+    await call('testcase/update', { id, ...body, title: `${body.title} updated`, pri: 1 });
+    const detail = await getRecord('testcase/get', id);
+    expect(detail.title).toBe(`${body.title} updated`);
+    expect(Number(detail.pri)).toBe(1);
+    expect(Array.isArray(detail.steps) && detail.steps.length === 2).toBe(true);
+    expectListContainsID(await getList('testcase/list', { productID: requireProductID() }), id);
+    await getList('testcase/list', { projectID: requireProjectID() });
+    await getList('testcase/list', { executionID: requireExecutionID() });
+    await deleteTracked('testcase/delete', id);
+    if (!runtimeOptions.keepTestData) expectListExcludesID(await getList('testcase/list', { productID: requireProductID() }), id);
+  }, 60000);
+
+  test('build, testtask and release CRUD with scoped lists', async () => {
+    const systems = await getList('system/list', { productID: requireProductID() });
+    const systemID = tryExtractID(systems[0]);
+    if (!systemID) throw new Error('The temporary product has no default application for build/release tests.');
+    await call('system/update', { id: systemID, name: `${productName} application`, children: [], desc: 'Temporary product application' });
+    expect((await getList('system/list', { productID: requireProductID() })).find(item => recordMatchesID(item, systemID))?.name).toBe(`${productName} application`);
+    const buildBody = { executionID: requireExecutionID(), product: requireProductID(), system: systemID,
+      name: `${productName} build`, builder: actorAccount, date: dateAfter(0), desc: 'Temporary build' };
+    const buildID = await createTracked('build/create', buildBody, 'build/delete', {
+      requestName: 'build/list', params: { ...listParams, executionID: requireExecutionID() }, field: 'name', value: buildBody.name,
+    });
+    await call('build/update', { id: buildID, ...buildBody, execution: requireExecutionID(), name: `${buildBody.name} updated` });
+    for (const params of [{ projectID: requireProjectID() }, { executionID: requireExecutionID() }]) {
+      const builds = await getList('build/list', params);
+      expect(builds.find(item => recordMatchesID(item, buildID))?.name).toBe(`${buildBody.name} updated`);
+    }
+    const testBody = { productID: requireProductID(), name: `${productName} testtask`, build: buildID,
+      execution: requireExecutionID(), type: ['integrate'], owner: actorAccount, status: 'wait', begin: dateAfter(0), end: dateAfter(7) };
+    const testID = await createTracked('testtask/create', testBody, 'testtask/delete');
+    await call('testtask/update', { id: testID, ...testBody, name: `${testBody.name} updated`, status: 'doing' });
+    for (const params of [{ productID: requireProductID() }, { projectID: requireProjectID() }, { executionID: requireExecutionID() }]) {
+      const tests = await getList('testtask/list', params);
+      expect(tests.find(item => recordMatchesID(item, testID))?.name).toBe(`${testBody.name} updated`);
+    }
+    const releaseBody = { productID: requireProductID(), system: systemID, name: `${productName} release`, build: [buildID], status: 'wait', date: dateAfter(7) };
+    const releaseID = await createTracked('release/create', releaseBody, 'release/delete');
+    await call('release/update', { id: releaseID, ...releaseBody, name: `${releaseBody.name} updated` });
+    expect((await getList('release/list', { productID: requireProductID() })).find(item => recordMatchesID(item, releaseID))?.name).toBe(`${releaseBody.name} updated`);
+    await deleteTracked('release/delete', releaseID);
+    await deleteTracked('testtask/delete', testID);
+    await deleteTracked('build/delete', buildID);
+    if (!runtimeOptions.keepTestData) {
+      expectListExcludesID(await getList('release/list', { productID: requireProductID() }), releaseID);
+      expectListExcludesID(await getList('testtask/list', { productID: requireProductID() }), testID);
+      expectListExcludesID(await getList('build/list', { executionID: requireExecutionID() }), buildID);
+    }
+  }, 60000);
+
+  for (const target of ['story', 'bug', 'task'] as const) {
+    test(`creates ${target} through the project route`, async () => {
+      const title = `${productName} project ${target}`;
+      const id = await createTracked(`project/create${target[0].toUpperCase()}${target.slice(1)}`, {
+        projectID: requireProjectID(), productID: requireProductID(), executionID: requireExecutionID(),
+        title, name: title, spec: 'Project scoped requirement', ...maybeReviewer(),
+        openedBuild: ['trunk'], type: target === 'bug' ? 'codeerror' : 'devel', severity: 3, pri: 3,
+        steps: 'Project scoped bug', estimate: 1, assignedTo: actorAccount,
+      }, `${target}/delete`);
+      const detail = await getRecord(`${target}/get`, id);
+      expect(detail.title ?? detail.name).toBe(title);
+      if (target !== 'task') expectListContainsID(await getList(`${target}/list`, {
+        projectID: requireProjectID(), browseType: target === 'story' ? 'allstory' : 'all',
+      }), id);
+    }, 60000);
+  }
+
+  test('bug confirm/resolve/close/activate and task start/finish/close/activate', async () => {
+    const bugID = await createTracked('bug/create', { productID: requireProductID(), project: requireProjectID(), execution: requireExecutionID(),
+      title: `${productName} transition bug`, openedBuild: ['trunk'], type: 'codeerror', severity: 3, pri: 3, steps: 'Temporary bug' }, 'bug/delete');
+    expectListContainsID(await getList('bug/list', { projectID: requireProjectID() }), bugID);
+    await getList('bug/list', { executionID: requireExecutionID() });
+    await call('bug/confirm', { id: bugID, assignedTo: actorAccount, type: 'codeerror', pri: 2, comment: 'Confirm temporary bug' });
+    expect(Number((await getRecord('bug/get', bugID)).confirmed)).toBe(1);
+    await call('bug/resolve', { id: bugID, resolution: 'fixed', resolvedBuild: 'trunk', resolvedDate: dateAfter(0) });
+    await call('bug/close', { id: bugID, comment: 'Close temporary bug' });
+    expect((await getRecord('bug/get', bugID)).status).toBe('closed');
+    await call('bug/activate', { id: bugID, openedBuild: ['trunk'], assignedTo: actorAccount, comment: 'Reactivate temporary bug' });
+    expect((await getRecord('bug/get', bugID)).status).toBe('active');
+    const taskID = await createTracked('task/create', { executionID: requireExecutionID(), name: `${productName} transition task`,
+      type: 'devel', assignedTo: actorAccount, estimate: 1 }, 'task/delete');
+    expect((await getRecord('task/get', taskID)).name).toBe(`${productName} transition task`);
+    await call('task/start', { id: taskID, realStarted: dateAfter(0), consumed: 0, left: 1 });
+    expect((await getRecord('task/get', taskID)).status).toBe('doing');
+    await call('task/finish', { id: taskID, currentConsumed: 1, consumed: 1, realStarted: dateAfter(0), finishedDate: dateAfter(1) });
+    await call('task/close', { id: taskID, comment: 'Close temporary task' });
+    expect((await getRecord('task/get', taskID)).status).toBe('closed');
+    await call('task/activate', { id: taskID, left: 1, assignedTo: actorAccount });
+    expect((await getRecord('task/get', taskID)).status).toBe('doing');
+  }, 60000);
+
+  for (const moduleName of ['feedback', 'ticket'] as const) {
+    test(`${moduleName} CRUD and close/activate transitions`, async () => {
+      const body = { product: requireProductID(), title: `${productName} ${moduleName}`, module: await getSupportModuleID(),
+        type: moduleName === 'feedback' ? 'story' : 'code', desc: 'Temporary customer request', assignedTo: actorAccount, openedBuild: ['trunk'] };
+      const id = await createTracked(`${moduleName}/create`, body, `${moduleName}/delete`);
+      expect((await getRecord(`${moduleName}/get`, id)).title).toBe(body.title);
+      await call(`${moduleName}/update`, { id, ...body, title: `${body.title} updated` });
+      expect((await getRecord(`${moduleName}/get`, id)).title).toBe(`${body.title} updated`);
+      expectListContainsID(await getList(`${moduleName}/list`, { productID: requireProductID() }), id);
+      await call(`${moduleName}/close`, { id, closedReason: 'refuse', comment: 'Close temporary request' });
+      expect((await getRecord(`${moduleName}/get`, id)).status).toBe('closed');
+      await call(`${moduleName}/activate`, { id, assignedTo: actorAccount, comment: 'Reactivate temporary request' });
+      expect((await getRecord(`${moduleName}/get`, id)).status).not.toBe('closed');
+      await deleteTracked(`${moduleName}/delete`, id);
+      if (!runtimeOptions.keepTestData) expectListExcludesID(await getList(`${moduleName}/list`, { productID: requireProductID() }), id);
+    }, 60000);
+
+    for (const target of (moduleName === 'feedback' ? ['story', 'bug', 'task', 'todo', 'ticket'] : ['story', 'bug']) as ('story' | 'bug' | 'task' | 'todo' | 'ticket')[]) {
+      test(`converts ${moduleName} to ${target}`, async () => {
+        const title = `${productName} ${moduleName} to ${target}`;
+        const sourceID = await createTracked(`${moduleName}/create`, { product: requireProductID(), title, module: await getSupportModuleID(),
+          type: moduleName === 'feedback' ? 'story' : 'code', desc: 'Temporary conversion input', openedBuild: ['trunk'] }, `${moduleName}/delete`);
+        const action = `${moduleName}/create${target[0].toUpperCase()}${target.slice(1)}` as const;
+        const id = await createTracked(action, { id: sourceID, productID: requireProductID(), product: requireProductID(),
+          title, name: title, spec: 'Converted requirement', category: 'feature', openedBuild: ['trunk'], type: target === 'bug' ? 'codeerror' : target === 'task' ? 'devel' : 'code',
+          steps: 'Converted bug', severity: 3, pri: 3, module: await getSupportModuleID(), executionID: requireExecutionID(), assignedTo: actorAccount,
+          estStarted: dateAfter(0), deadline: dateAfter(7), date: dateAfter(0) }, `${target}/delete`);
+        if (target === 'todo') expectListContainsID(await getList('my/todos', { browseType: 'all' }), id);
+        else {
+          const detail = await getRecord(`${target}/get`, id);
+          expect(detail.title ?? detail.name).toBe(title);
+        }
+      }, 60000);
+    }
+  }
+
+  test('todo CRUD through the personal work list', async () => {
+    const body = { date: dateAfter(0), type: 'custom', name: `${productName} todo`, begin: '0900', end: '0930', assignedTo: actorAccount, desc: 'Temporary todo' };
+    const id = await createTracked('todo/create', body, 'todo/delete', {
+      requestName: 'my/todos', params: { ...listParams, browseType: 'all' }, field: 'name', value: body.name,
+    });
+    await call('todo/update', { id, ...body, name: `${body.name} updated` });
+    expect((await getList('my/todos', { browseType: 'all' })).find(item => recordMatchesID(item, id))?.name).toBe(`${body.name} updated`);
+    await deleteTracked('todo/delete', id);
+    if (!runtimeOptions.keepTestData) expectListExcludesID(await getList('my/todos', { browseType: 'all' }), id);
+  }, 60000);
+
+  test('feedback close with confirmClose', async () => {
+    const id = await createTracked('feedback/create', { product: requireProductID(), title: `${productName} force-close`, type: 'story' }, 'feedback/delete');
+    await call('feedback/close', { id, closedReason: 'refuse', confirmClose: 'yes' });
+    expect((await getRecord('feedback/get', id)).status).toBe('closed');
+  }, 60000);
+
+  for (const scope of ['my', 'team', 'product', 'project'] as const) {
+    test(`${scope} document spaces, libraries, modules and document CRUD`, async () => {
+      const suffix = `${scope[0].toUpperCase()}${scope.slice(1)}`;
+      const name = `${productName} ${scope} documents`;
+      let parent: Record<string, unknown>;
+      if (scope === 'my' || scope === 'team') {
+        const spaceID = await createTracked(`doc/create${suffix}Space`, { name }, 'doc/deleteSpace');
+        expect((await getRecord('doc/getSpace', spaceID)).name).toBe(name);
+        await call('doc/updateSpace', { id: spaceID, name: `${name} updated` });
+        expect((await getRecord('doc/getSpace', spaceID)).name).toBe(`${name} updated`);
+        expectListContainsID(await getList(`doc/${scope}Spaces`), spaceID);
+        parent = { spaceID };
+      } else {
+        const id = scope === 'product' ? requireProductID() : requireProjectID();
+        expectListContainsID(await getList(`doc/${scope}Spaces`), id);
+        parent = { [`${scope}ID`]: id };
+      }
+      const libID = await createTracked(`doc/create${suffix}Lib`, { ...parent, name, acl: scope === 'team' ? 'open' : 'default' }, 'doc/deleteLib');
+      expect((await getRecord('doc/getLib', libID)).name).toBe(name);
+      await call('doc/updateLib', { id: libID, name: `${name} library updated`, acl: scope === 'team' ? 'open' : 'default' });
+      expect((await getRecord('doc/getLib', libID)).name).toBe(`${name} library updated`);
+      expectListContainsID(await getList(`doc/${scope}Libs`, parent), libID);
+      const moduleID = await createTracked(`doc/create${suffix}Module`, { ...parent, libID, name: `${name} module`, parentID: 0 }, 'doc/deleteModule');
+      await call('doc/updateModule', { id: moduleID, name: `${name} module updated` });
+      expectListContainsID(await getList(`doc/${scope}Modules`, { ...parent, libID }), moduleID);
+      const docID = await createTracked(`doc/create${suffix}Doc`, { ...parent, libID, moduleID, title: name,
+        content: '# Temporary document\n\nCreated by real environment API test.', contentType: 'doc' }, 'doc/delete');
+      expect((await getRecord('doc/get', docID)).title).toBe(name);
+      await call('doc/update', { id: docID, moduleID, title: `${name} updated`, content: '# Updated document\n\nUpdated API content.', contentType: 'doc' });
+      const document = await getRecord('doc/get', docID);
+      expect(document.title).toBe(`${name} updated`);
+      expect(String(document.content)).toContain('Updated API content');
+      expectListContainsID(await getList(`doc/${scope}Docs`, { ...parent, libID }), docID);
+      await deleteTracked('doc/delete', docID);
+      if (!runtimeOptions.keepTestData) expectListExcludesID(await getList(`doc/${scope}Docs`, { ...parent, libID }), docID);
+    }, 60000);
+  }
+
+  for (const action of getModule('my')!.actions) {
+    const dependency = ({ meetings: 'meeting', issues: 'issue', risks: 'risk' } as Record<string, string>)[action.name];
+    test.skipIf(unavailable.has(dependency))(`personal list my/${action.name}`, async () => {
+      const response = await call(`my/${action.name}`, { recPerPage: 2, pageID: 1 });
+      expect(Array.isArray(response.data)).toBe(true);
+      if (response.pager) {
+        expect(response.pager.page).toBe(1);
+        expect(response.pager.recPerPage).toBe(2);
+        expect(response.pager.total).toBeGreaterThanOrEqual((response.data as unknown[]).length);
+      }
+    }, 30000);
+  }
+
+  test.skipIf(unavailable.has('storygrade'))('story grade options', async () => {
+    await getList('story/getGrades');
+  }, 30000);
+
+  for (const moduleName of ['issue', 'risk'] as const) {
+    test.skipIf(unavailable.has(moduleName))(`${moduleName} read APIs`, async () => {
+      const items = await getList(`${moduleName}/list`);
+      await getList(`${moduleName}/project${moduleName === 'issue' ? 'Issues' : 'Risks'}`, { projectID: requireProjectID() });
+      await getList(`${moduleName}/execution${moduleName === 'issue' ? 'Issues' : 'Risks'}`, { executionID: requireExecutionID() });
+      const id = tryExtractID(items[0]);
+      if (id) await getRecord(`${moduleName}/get`, id);
+      else coverage.exclude(`${moduleName}/get`, 'No existing record; creation has no cleanup API.');
+    }, 60000);
+  }
+
+  test.skipIf(unavailable.has('meeting'))('meeting CRUD and minutes', async () => {
+    const body = { project: requireProjectID(), execution: requireExecutionID(), name: `${productName} meeting`,
+      begin: `${dateAfter(7)} 09:00`, end: `${dateAfter(7)} 10:00`, mode: 'online', host: actorAccount, participant: [actorAccount], room: 0 };
+    const id = await createTracked('meeting/create', body, 'meeting/delete');
+    await call('meeting/update', { id, ...body, name: `${body.name} updated` });
+    expect((await getRecord('meeting/get', id)).name).toBe(`${body.name} updated`);
+    await call('meeting/minutes', { id, minutes: 'Temporary API meeting minutes' });
+    expect(String((await getRecord('meeting/get', id)).minutes)).toContain('Temporary API meeting minutes');
+    expectListContainsID(await getList('meeting/list'), id);
+    expectListContainsID(await getList('meeting/projectMeetings', { projectID: requireProjectID() }), id);
+    expectListContainsID(await getList('meeting/executionMeetings', { executionID: requireExecutionID() }), id);
+  }, 60000);
+
+  test.skipIf(unavailable.has('workflow'))('custom contract workflow CRUD', async () => {
+    const name = `${productName} contract`;
+    const id = await createTracked('workflow/create', { name }, 'workflow/delete', {
+      requestName: 'workflow/list', params: {}, field: 'name', value: name,
+    });
+    await call('workflow/update', { id, name: `${name} updated` });
+    const contracts = await getList('workflow/list');
+    expect(contracts.find(item => recordMatchesID(item, id))?.name).toBe(`${name} updated`);
+    if (contracts.some(item => recordMatchesID(item, 1))) await getRecord('workflow/getContract', 1);
+    else coverage.exclude('workflow/getContract', 'Registry detail route is fixed to contract #1, which does not exist.');
+  }, 60000);
+
+  test('closes the temporary execution, project and product after all dependent scenarios', async () => {
+    await getList('story/list', { projectID: requireProjectID(), browseType: 'allstory' });
+    await getList('execution/projectExecutions', { projectID: requireProjectID(), browseType: 'all' });
+    await call('execution/close', { id: requireExecutionID(), realEnd: dateAfter(0), comment: 'Temporary lifecycle completed' });
+    expect((await getRecord('execution/get', requireExecutionID())).status).toBe('closed');
+    await call('project/close', { id: requireProjectID(), realEnd: dateAfter(0), comment: 'Temporary lifecycle completed' });
+    expect((await getList('project/list', { browseType: 'all' })).find(item => recordMatchesID(item, requireProjectID()))?.status).toBe('closed');
+    await call('product/close', { id: requireProductID(), comment: 'Temporary lifecycle completed' });
+    expect((await getRecord('product/get', requireProductID())).status).toBe('close');
+  }, 60000);
 });

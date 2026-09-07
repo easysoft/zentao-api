@@ -29,6 +29,59 @@ export interface RealEnvTestRun {
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
 
+export function getMissingRealEnvModule(data: unknown): string | undefined {
+  return typeof data === 'string'
+    ? data.match(/the control file (module\/[a-z0-9_]+\/control\.php) not found/i)?.[1]
+    : undefined;
+}
+
+export function validateRealEnvResponse(
+  response: { status: string; message?: string; data?: unknown },
+  resultType?: 'list' | 'object' | 'text',
+): void {
+  if (response.status !== 'success') throw new Error(response.message ?? 'ZenTao API returned failure.');
+  if (response.data && typeof response.data === 'object' && 'result' in response.data && response.data.result === 'fail') {
+    throw new Error(`ZenTao API returned result=fail: ${JSON.stringify(response.data)}`);
+  }
+  if (typeof response.data === 'string' && /<[^>]+>|Fatal error|ERROR:/i.test(response.data)) {
+    const text = response.data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+    throw new Error(`Expected JSON API response, got an HTML/error page: ${text.slice(Math.max(0, text.lastIndexOf('ERROR:')), Math.max(0, text.lastIndexOf('ERROR:')) + 600)}`);
+  }
+  if (resultType === 'list' && !Array.isArray(response.data)) {
+    throw new Error('Expected API data to be an array.');
+  }
+  if (resultType === 'object' && (!response.data || typeof response.data !== 'object' || Array.isArray(response.data))) {
+    throw new Error('Expected API data to be an object.');
+  }
+}
+
+export function createRealEnvCoverage(actions: readonly string[]) {
+  const calls: { action: string; outcome: 'success' | 'fail'; route?: string; error?: string }[] = [];
+  const excluded = new Map<string, string>();
+  return {
+    record(action: string, outcome: 'success' | 'fail', route?: string, error?: string) {
+      calls.push({ action, outcome, route, error });
+    },
+    exclude(action: string, reason: string) {
+      excluded.set(action, reason);
+    },
+    report() {
+      const failed = [...new Set(calls.filter(call => call.outcome === 'fail').map(call => call.action))].sort();
+      const successful = [...new Set(calls.filter(call => call.outcome === 'success').map(call => call.action))].filter(action => !failed.includes(action)).sort();
+      return {
+        total: actions.length,
+        exercised: new Set(calls.map(call => call.action)).size,
+        successful,
+        failed,
+        excluded: Object.fromEntries(excluded),
+        untested: actions.filter(action => !successful.includes(action) && !failed.includes(action) && !excluded.has(action)).sort(),
+        routes: [...new Set(calls.filter(call => call.outcome === 'success' && call.route).map(call => call.route!))].sort(),
+        calls,
+      };
+    },
+  };
+}
+
 export function resolveRealEnvWorkflowGroup(
   projects: readonly Record<string, unknown>[],
   configured?: string,
