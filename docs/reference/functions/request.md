@@ -9,6 +9,7 @@
 按模块名或模块动作名请求禅道 API。
 
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
+动作的 beforeRequest 在参数解析后、请求体准备前执行，返回值浅合并到解析后的请求描述中。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
 请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
@@ -43,6 +44,7 @@
 按模块名或模块动作名请求禅道 API。
 
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
+动作的 beforeRequest 在参数解析后、请求体准备前执行，返回值浅合并到解析后的请求描述中。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
 请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
@@ -83,6 +85,7 @@
 按模块名或模块动作名请求禅道 API。
 
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
+动作的 beforeRequest 在参数解析后、请求体准备前执行，返回值浅合并到解析后的请求描述中。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
 请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，
@@ -123,6 +126,7 @@
 按模块名或模块动作名请求禅道 API。
 
 选项优先级为：本次调用 options > 全局 options > 客户端默认值。
+动作的 beforeRequest 在参数解析后、请求体准备前执行，返回值浅合并到解析后的请求描述中。
 当响应 `status` 为 `"fail"` 时，默认按原样返回；若 `options.throwOnFail`
 或全局 `throwOnFail` 为真，则改为抛出 `E_API_FAILED`。
 请求前按 Action 的 `minVersion` 检查服务器版本；全局 `version` 可避免配置探测，

@@ -103,6 +103,17 @@ export type ModuleActionGetterFn<T, O = RequestProcessOptions> = (
 ) => T;
 
 /**
+ * 请求发送前的回调，在版本检查、autoFill 和参数解析完成后、请求体准备前调用。
+ * 可直接修改本次请求，或返回 `path`、`query`、`data`、`params`、`id` 的部分字段作为补丁。
+ * 返回值浅合并到解析后的请求描述中，同名字段以返回值为准；对象字段整体替换。
+ * 合并后的请求用于请求体准备、请求发送和响应处理，不会重新执行版本检查、autoFill 或参数解析。
+ * 回调抛出或拒绝时终止本次请求，错误原样传递。
+ */
+export type ModuleActionBeforeRequestCallback = (
+  request: ModuleActionRequest,
+) => Promise<Partial<Omit<ModuleActionRequest, 'module' | 'action'>>>;
+
+/**
  * 自定义动作的请求发送逻辑，在版本检查、参数解析和请求体准备完成后调用。
  * 返回原始响应数据，后续仍按动作定义提取结果、分页并应用请求选项；抛出的错误原样传递。
  */
@@ -165,6 +176,9 @@ export interface ModuleAction {
    * 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。
    */
   resultGetter?: string | ModuleActionResultFieldMap | ModuleActionGetterFn<unknown>;
+
+  /** 请求体准备前执行的回调，可修改解析后的请求并返回请求描述的部分字段作为补丁。 */
+  beforeRequest?: ModuleActionBeforeRequestCallback;
 
   /** 自定义请求回调；省略时通过 ZentaoClient.request 发送请求，返回值沿用相同的响应处理流程。 */
   request?: ModuleActionRequestCallback;

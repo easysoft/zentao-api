@@ -8,6 +8,7 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
+| <a id="property-beforerequest"></a> `beforeRequest?` | [`ModuleActionBeforeRequestCallback`](../type-aliases/ModuleActionBeforeRequestCallback.md) | 请求体准备前执行的回调，可修改解析后的请求并返回请求描述的部分字段作为补丁。 |
 | <a id="property-description"></a> `description?` | `string` | 动作说明。 |
 | <a id="property-display"></a> `display?` | `string` | 面向用户展示的动作名称。 |
 | <a id="property-method"></a> `method?` | [`ModuleActionMethod`](../type-aliases/ModuleActionMethod.md) | HTTP 方法；省略时按 [type](#property-type) 自动推导： `list`/`get` → `GET`、`create`/`action` → `POST`、`update` → `PUT`、`delete` → `DELETE`。 当 `type` 无法推导出方法时抛出 `E_INDETERMINATE_ACTION_METHOD`。 |

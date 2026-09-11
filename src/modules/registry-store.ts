@@ -176,6 +176,9 @@ export function validateAction(action: ModuleAction): void {
   if (action.resultType !== undefined && typeof action.resultType !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
+  if (action.beforeRequest !== undefined && typeof action.beforeRequest !== 'function') {
+    throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+  }
   if (action.request !== undefined && typeof action.request !== 'function') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }

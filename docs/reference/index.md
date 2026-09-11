@@ -60,6 +60,7 @@
 | [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
 | [ListPagerInfo](type-aliases/ListPagerInfo.md) | 列表分页信息别名。 |
+| [ModuleActionBeforeRequestCallback](type-aliases/ModuleActionBeforeRequestCallback.md) | 请求发送前的回调，在版本检查、autoFill 和参数解析完成后、请求体准备前调用。 可直接修改本次请求，或返回 `path`、`query`、`data`、`params`、`id` 的部分字段作为补丁。 返回值浅合并到解析后的请求描述中，同名字段以返回值为准；对象字段整体替换。 合并后的请求用于请求体准备、请求发送和响应处理，不会重新执行版本检查、autoFill 或参数解析。 回调抛出或拒绝时终止本次请求，错误原样传递。 |
 | [ModuleActionGetterFn](type-aliases/ModuleActionGetterFn.md) | 从原始响应中提取数据时使用的函数形态。 |
 | [ModuleActionMethod](type-aliases/ModuleActionMethod.md) | 模块动作使用的 HTTP 方法；兼容生成定义中的小写方法。 |
 | [ModuleActionName](type-aliases/ModuleActionName.md) | 模块动作名称，允许除基础动作外的自定义名称。 |

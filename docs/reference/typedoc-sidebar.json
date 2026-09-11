@@ -200,6 +200,10 @@
         "link": "/reference/type-aliases/ListPagerInfo.md"
       },
       {
+        "text": "ModuleActionBeforeRequestCallback",
+        "link": "/reference/type-aliases/ModuleActionBeforeRequestCallback.md"
+      },
+      {
         "text": "ModuleActionGetterFn",
         "link": "/reference/type-aliases/ModuleActionGetterFn.md"
       },

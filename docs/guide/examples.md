@@ -72,6 +72,26 @@ const task = await request('task/create', {
 });
 ```
 
+## 在请求发送前调整请求数据
+
+通过 `extendModuleAction()` 为动作设置 `beforeRequest`。SDK 会等待回调完成，再准备请求体并发送请求。
+
+```ts
+import { extendModuleAction, request } from 'zentao-api';
+
+extendModuleAction('product', 'list', {
+  beforeRequest: async (command) => ({
+    query: { ...command.query, recPerPage: 50 },
+  }),
+});
+
+const products = await request('product');
+```
+
+回调可以直接修改解析后的请求，也可以返回 `path`、`query`、`data`、`params`、`id` 的部分字段作为补丁。返回值浅合并到请求描述中，同名字段以返回值为准，`query`、`data`、`params` 等对象字段整体替换，需要保留原字段时可像上例一样展开。自定义 `ModuleAction.request` 也会收到合并后的请求。回调报错会终止本次请求，错误原样传递。
+
+回调执行时，版本检查、`autoFill` 和参数解析已经完成，补丁不会重新执行这些步骤。修改 `params` 会影响后续结果和分页 getter 的入参；调整实际发送的路径、查询参数或请求体，应分别返回 `path`、`query` 或 `data`。超时、客户端、响应处理等选项仍通过 `request()` 的第三个参数传入。
+
 ## 直接调用 REST 路径
 
 当你需要调用尚未注册到模块系统的接口时，可以使用底层 `ZentaoClient.request()`。
