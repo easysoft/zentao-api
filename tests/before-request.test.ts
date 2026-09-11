@@ -28,6 +28,64 @@ afterEach(() => {
   });
 });
 
+describe('builtin requirement review hooks', () => {
+  const actions = [
+    ['story', 'create'],
+    ['story', 'change'],
+    ['requirement', 'create'],
+    ['requirement', 'change'],
+    ['epic', 'create'],
+    ['epic', 'change'],
+  ] as const;
+
+  test.each(actions)('%s/%s sends reviewing status when reviewers are provided', async (moduleName, actionName) => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
+    setGlobalOptions({ version: '22.5', client });
+
+    for (const reviewer of [['admin'], 'admin']) {
+      await request(`${moduleName}/${actionName}`, {
+        id: 7, productID: 1, title: 'Review this requirement', reviewer,
+      });
+      const body = transport.mock.calls.at(-1)![1]!.body;
+      expect(body).toMatchObject({
+        title: 'Review this requirement', reviewer: ['admin'], status: 'reviewing',
+      });
+      expect(body).not.toHaveProperty('needNotReview');
+    }
+  });
+
+  test.each(actions)('%s/%s skips review when reviewers are absent or empty', async (moduleName, actionName) => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
+    setGlobalOptions({ version: '22.5', client });
+
+    for (const reviewer of [undefined, null, [], '', [' ', '']]) {
+      await request(`${moduleName}/${actionName}`, {
+        id: 7, productID: 1, title: 'No review needed', ...(reviewer === undefined ? {} : { reviewer }),
+      });
+      const body = transport.mock.calls.at(-1)![1]!.body;
+      expect(body).toMatchObject({ title: 'No review needed', needNotReview: '1' });
+      expect(body).not.toHaveProperty('status');
+    }
+  });
+
+  test('uses resolved data reviewers without mutating the caller data', async () => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
+    setGlobalOptions({ version: '22.5', client });
+    const data = Object.freeze({ title: 'Keep this title', reviewer: [], needNotReview: '0' });
+
+    await request('requirement/change', { id: 7, reviewer: ['admin'], data });
+    expect(transport.mock.calls[0][1]!.body).toEqual({ ...data, needNotReview: '1' });
+    expect(data.needNotReview).toBe('0');
+
+    const jsonData = { title: 'Review this title', reviewer: ['admin'], status: 'draft' };
+    await request('requirement/change', { id: 7, reviewer: [], data: JSON.stringify(jsonData) });
+    expect(transport.mock.calls[1][1]!.body).toEqual({ ...jsonData, status: 'reviewing' });
+  });
+});
+
 describe('ModuleAction.beforeRequest', () => {
   test.each([null, 'beforeRequest', {}, false])('rejects a non-function callback at registry write entries: %p', (value) => {
     const action = {

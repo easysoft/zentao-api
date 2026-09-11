@@ -473,6 +473,13 @@ Schema:
     "verify": {
       "type": "string",
       "description": "验收标准"
+    },
+    "reviewer": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "评审人员"
     }
   }
 }
@@ -501,7 +508,10 @@ const result = await request("requirement/change", {
   "storyID": 1,
   "title": "<string>",
   "spec": "<string>",
-  "verify": "<string>"
+  "verify": "<string>",
+  "reviewer": [
+    "<string>"
+  ]
 });
 ```
 ## 关闭用户需求

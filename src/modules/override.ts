@@ -97,6 +97,38 @@ export function applyBuiltinOverrides(): void {
     return action;
   });
 
+  // 需求创建和变更时，根据评审人决定是否进入评审流程。
+  ['story', 'requirement', 'epic'].forEach((moduleName) => {
+    ['create', 'change'].forEach((actionName) => {
+      extendModuleAction(moduleName, actionName, (action) => {
+        const schema = action.requestBody!.schema as {
+          properties: Record<string, unknown>;
+          required?: string[];
+        };
+        // 补齐 requirement/change 的评审人字段，并允许未传评审人时执行回调。
+        schema.properties.reviewer ??= {
+          type: 'array',
+          items: { type: 'string' },
+          description: '评审人员',
+        };
+        if (schema.required) {
+          schema.required = schema.required.filter(name => name !== 'reviewer');
+        }
+        action.beforeRequest = async ({ data = {} }) => {
+          const hasReviewer = Array.isArray(data.reviewer)
+            && data.reviewer.some(reviewer => typeof reviewer === 'string' && reviewer.trim() !== '');
+          if (hasReviewer) {
+            data.status = 'reviewing';
+          } else {
+            data.needNotReview = '1';
+          }
+          return { data };
+        };
+        return action;
+      });
+    });
+  });
+
   // 修改 acl 字段默认值为 open
   [
     ['product', 'create'],

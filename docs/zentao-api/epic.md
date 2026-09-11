@@ -483,9 +483,7 @@ Schema:
       "description": "验收标准"
     }
   },
-  "required": [
-    "reviewer"
-  ]
+  "required": []
 }
 ```
 
