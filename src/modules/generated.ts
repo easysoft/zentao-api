@@ -586,10 +586,7 @@ export const BUILTIN_MODULES = [
                                 "description": "评审人"
                             },
                             "desc": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
+                                "type": "string",
                                 "description": "产品描述"
                             },
                             "QD": {
@@ -806,10 +803,7 @@ export const BUILTIN_MODULES = [
                                 "description": "评审人"
                             },
                             "desc": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
+                                "type": "string",
                                 "description": "产品描述"
                             },
                             "QD": {
