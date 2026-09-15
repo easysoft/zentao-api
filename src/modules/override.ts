@@ -109,7 +109,7 @@ export function applyBuiltinOverrides(): void {
         schema.properties.reviewer ??= {
           type: 'array',
           items: { type: 'string' },
-          description: '评审人员',
+          description: '评审人员，如果无需评审则不传',
         };
         if (schema.required) {
           schema.required = schema.required.filter(name => name !== 'reviewer');
