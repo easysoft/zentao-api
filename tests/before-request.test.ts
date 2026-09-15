@@ -285,9 +285,9 @@ describe('ModuleAction.beforeRequest', () => {
   test('runs once for each autoFill request and sees the filled update body', async () => {
     const client = new ZentaoClient('http://zentao.test');
     const events: string[] = [];
-    const transport = spyOn(client, 'request').mockResolvedValue({
-      data: { id: 7, name: 'old', PO: 'admin', acl: 'private' },
-    });
+    const transport = spyOn(client, 'request')
+      .mockResolvedValueOnce({ data: { id: 7, name: 'old', PO: 'admin', acl: 'private' } })
+      .mockResolvedValueOnce(Response.json({ status: 'success', data: { id: 7 } }));
     extendModuleAction('product', 'get', {
       resultGetter: 'data',
       beforeRequest: async () => {

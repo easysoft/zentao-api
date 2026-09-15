@@ -183,6 +183,8 @@ console.log(bugs.data);
 
 `request()` 默认按原样返回 `{ status: "fail" }` 响应；启用 `throwOnFail` 后会抛出 `E_API_FAILED`。
 
+`product/create`、`product/update`、`feedback/close`、`bug/confirm` 还会校验响应 JSON。即使 HTTP 为 200，PHP 警告、SQL 错误文本或空响应也会返回失败；原始文本保存在 `raw.responseText`，使用 `raw: true` 时位于返回对象的 `responseText`。异常响应可能发生在部分字段已写入之后，应先回读对象再决定是否重试。
+
 ```ts
 import { request, ZentaoError } from 'zentao-api';
 

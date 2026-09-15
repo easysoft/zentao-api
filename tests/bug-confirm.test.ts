@@ -43,7 +43,7 @@ test.each(['active', 'resolved', 'closed'])('confirm preserves omitted fields an
 
 test.each([false, true])('explicit confirmation data takes precedence and skips detail fetching (JSON=%p)', async json => {
   const client = new ZentaoClient('http://zentao.test');
-  const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success', data: 7 });
+  const transport = spyOn(client, 'request').mockResolvedValue(Response.json({ status: 'success', data: 7 }));
   setGlobalOptions({ version: 'ipd5.6' });
   const data = Object.freeze({ ...current, status: 'resolved', assignedTo: '', type: 'config', pri: 1, deadline: '', mailto: [] });
   const raw = await request('bug/confirm', { id: 7, status: 'active', data: json ? JSON.stringify(data) : data }, { client, raw: true });
@@ -82,7 +82,7 @@ test('closed assignee is rejected unless the caller supplies a valid replacement
   const transport = spyOn(client, 'request')
     .mockResolvedValueOnce(closed)
     .mockResolvedValueOnce(closed)
-    .mockResolvedValueOnce({ status: 'success', data: 7 });
+    .mockResolvedValueOnce(Response.json({ status: 'success', data: 7 }));
   setGlobalOptions({ version: 'ipd5.6' });
   await expect(request('bug/confirm', { id: 7 }, { client })).rejects.toMatchObject({ code: 'E_INVALID_PARAM' });
   expect(transport).toHaveBeenCalledTimes(1);
@@ -95,7 +95,7 @@ test('confirmation prefetch carries the per-request config error policy', async 
   spyOn(client, 'getZentaoConfig').mockRejectedValue(new ZentaoError('E_INVALID_ZENTAO_CONFIG'));
   const transport = spyOn(client, 'request')
     .mockResolvedValueOnce({ status: 'success', bug: current })
-    .mockResolvedValueOnce({ status: 'success', data: 7 });
+    .mockResolvedValueOnce(Response.json({ status: 'success', data: 7 }));
   const options: RequestOptions = { client, skipVersionCheckOnConfigError: true };
   await request('bug/confirm', { id: 7 }, options);
   expect(transport).toHaveBeenCalledTimes(2);

@@ -4,7 +4,26 @@ import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
 import { isRecord } from '../utils/index.js';
 import { request } from '../request/index.js';
 import { ZentaoError } from '../misc/errors.js';
-import type { HttpMethod } from '../types/index.js';
+import type { HttpMethod, ModuleActionRequestCallback } from '../types/index.js';
+
+/** 这些内置写接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
+const requestJSON: ModuleActionRequestCallback = async ({ request: command, body, bodyType, client, timeout, insecure }) => {
+  const response = await client.request(command.path, {
+    method: command.action.method!.toUpperCase() as HttpMethod,
+    query: command.query, body, bodyType, timeout, insecure, responseType: 'response',
+  });
+  const responseText = await response.text();
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    return {
+      status: 'fail',
+      message: `Invalid JSON response from ${command.module}/${command.action.name}.`,
+      httpStatus: response.status,
+      responseText,
+    };
+  }
+};
 
 /**
  * 内置覆盖 / 扩展定义。
@@ -68,6 +87,10 @@ import type { HttpMethod } from '../types/index.js';
  * @internal
  */
 export function applyBuiltinOverrides(): void {
+  for (const [moduleName, actionName] of [['product', 'create'], ['product', 'update'], ['feedback', 'close']]) {
+    extendModuleAction(moduleName, actionName, { request: requestJSON });
+  }
+
   // 创建执行时，需要添加产品字段
   extendModuleAction('execution', 'create', (action) => {
     const required = action.requestBody!.schema?.required;
@@ -174,10 +197,7 @@ export function applyBuiltinOverrides(): void {
       if (data.assignedTo === 'closed') {
         throw new ZentaoError('E_INVALID_PARAM', { param: 'assignedTo', value: 'closed' });
       }
-      return client.request(command.path, {
-        method: command.action.method!.toUpperCase() as HttpMethod,
-        query: command.query, body: data, bodyType, timeout, insecure,
-      });
+      return requestJSON({ request: command, body: data, bodyType, client, timeout, insecure, options });
     },
   });
 
