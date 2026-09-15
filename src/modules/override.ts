@@ -129,6 +129,19 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
+  // confirmClose 是控制器参数，留在 JSON body 中会被误当成反馈表字段。
+  extendModuleAction('feedback', 'close', {
+    beforeRequest: async (command) => {
+      const data = { ...command.data };
+      const query = { ...command.query };
+      if (Object.hasOwn(data, 'confirmClose')) {
+        query.confirmClose = data.confirmClose;
+        delete data.confirmClose;
+      }
+      return { data, query };
+    },
+  });
+
   // 修改 acl 字段默认值为 open
   [
     ['product', 'create'],
