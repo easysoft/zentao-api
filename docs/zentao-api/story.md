@@ -184,7 +184,7 @@ Schema:
       "items": {
         "type": "string"
       },
-      "description": "评审人，如果设置必须评审，必须填写"
+      "description": "评审人员，如果无需评审则不传"
     },
     "project": {
       "type": "integer",
@@ -634,7 +634,7 @@ Schema:
       "items": {
         "type": "string"
       },
-      "description": "评审人员"
+      "description": "评审人员，如果无需评审则不传"
     },
     "spec": {
       "type": "string",

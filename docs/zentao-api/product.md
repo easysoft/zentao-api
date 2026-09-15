@@ -159,10 +159,7 @@ Schema:
       "description": "评审人"
     },
     "desc": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
+      "type": "string",
       "description": "产品描述"
     },
     "QD": {
@@ -222,9 +219,7 @@ const result = await request("product/create", {
   "reviewer": [
     "<string>"
   ],
-  "desc": [
-    "<string>"
-  ],
+  "desc": "<string>",
   "QD": "<string>",
   "RD": "<string>",
   "acl": "<string>"
@@ -571,10 +566,7 @@ Schema:
       "description": "评审人"
     },
     "desc": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
+      "type": "string",
       "description": "产品描述"
     },
     "QD": {
@@ -635,9 +627,7 @@ const result = await request("product/update", {
   "reviewer": [
     "<string>"
   ],
-  "desc": [
-    "<string>"
-  ],
+  "desc": "<string>",
   "QD": "<string>",
   "RD": "<string>",
   "acl": "<string>"
