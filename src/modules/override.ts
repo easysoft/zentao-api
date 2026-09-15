@@ -2,6 +2,9 @@ import { extendModuleAction, defineModules, defineModuleActions } from './define
 import { extractResult } from './resolve.js';
 import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
 import { isRecord } from '../utils/index.js';
+import { request } from '../request/index.js';
+import { ZentaoError } from '../misc/errors.js';
+import type { HttpMethod } from '../types/index.js';
 
 /**
  * 内置覆盖 / 扩展定义。
@@ -139,6 +142,42 @@ export function applyBuiltinOverrides(): void {
         delete data.confirmClose;
       }
       return { data, query };
+    },
+  });
+
+  // 确认表单会重置缺省字段；仅补齐可写字段，不回传详情中的其他属性。
+  extendModuleAction('bug', 'confirm', {
+    request: async ({ request: command, body, bodyType, client, timeout, insecure, options }) => {
+      const data = { ...(body as Record<string, unknown>) };
+      const fields = ['status', 'assignedTo', 'type', 'pri', 'deadline', 'mailto'];
+      const missing = fields.filter(field => data[field] === undefined);
+      if (missing.length) {
+        const response = await request('bug/get', { id: command.id }, {
+          client, timeout, insecure, throwOnFail: true,
+          forceRefreshConfig: options.forceRefreshConfig,
+          skipVersionCheckOnConfigError: options.skipVersionCheckOnConfigError,
+        });
+        const current = response.data;
+        if (!isRecord(current) || missing.some(field => current[field] === undefined)) {
+          throw new ZentaoError('E_API_FAILED', { message: 'Bug details are incomplete; confirmation was not sent.' });
+        }
+        for (const field of missing) {
+          data[field] = field === 'mailto' && typeof current[field] === 'string'
+            ? current[field].split(',').filter(Boolean)
+            : current[field];
+        }
+      }
+      if (typeof data.status !== 'string' || !data.status.trim()) {
+        throw new ZentaoError('E_INVALID_PARAM', { param: 'status', value: String(data.status) });
+      }
+      // 已关闭 Bug 的指派人是特殊标记，API 会把它当成账号校验，需调用方明确指定。
+      if (data.assignedTo === 'closed') {
+        throw new ZentaoError('E_INVALID_PARAM', { param: 'assignedTo', value: 'closed' });
+      }
+      return client.request(command.path, {
+        method: command.action.method!.toUpperCase() as HttpMethod,
+        query: command.query, body: data, bodyType, timeout, insecure,
+      });
     },
   });
 

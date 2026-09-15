@@ -1163,7 +1163,9 @@ describe('real ZenTao product API', () => {
     expectListContainsID(await getList('bug/list', { projectID: requireProjectID() }), bugID);
     await getList('bug/list', { executionID: requireExecutionID() });
     await call('bug/confirm', { id: bugID, assignedTo: actorAccount, type: 'codeerror', pri: 2, comment: 'Confirm temporary bug' });
-    expect(Number((await getRecord('bug/get', bugID)).confirmed)).toBe(1);
+    const confirmedBug = await getRecord('bug/get', bugID);
+    expect(Number(confirmedBug.confirmed)).toBe(1);
+    expect(confirmedBug.status).toBe('active');
     await call('bug/resolve', { id: bugID, resolution: 'fixed', resolvedBuild: 'trunk', resolvedDate: dateAfter(0) });
     await call('bug/close', { id: bugID, comment: 'Close temporary bug' });
     expect((await getRecord('bug/get', bugID)).status).toBe('closed');

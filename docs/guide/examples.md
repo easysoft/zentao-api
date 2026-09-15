@@ -49,6 +49,16 @@ const bugs = await request('bug/list', {
 });
 ```
 
+## 确认 Bug
+
+```ts
+await request('bug/confirm', { bugID: 1001, comment: '已确认问题' });
+```
+
+省略 `status`、`assignedTo`、`type`、`pri`、`deadline` 或 `mailto` 时，SDK 会先读取当前 Bug，再补齐这些字段，避免服务端将缺省字段重置。显式传入的值（包括 `data` 中的值）保持优先级；全部提供时不额外读取详情。预读失败或状态为空时终止写入，此行为不依赖 `autoFill`。
+
+已关闭 Bug 的指派人可能是特殊值 `closed`，不能作为账号回传。确认这类 Bug 时请明确提供有效的 `assignedTo`；省略 `status` 会保留其已关闭状态。
+
 ## 解决 Bug
 
 ```ts
