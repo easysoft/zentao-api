@@ -91,6 +91,16 @@ export function applyBuiltinOverrides(): void {
     extendModuleAction(moduleName, actionName, { request: requestJSON });
   }
 
+  // 产品描述是字符串；仅修正该字段，保留上游 OpenAPI 数据和其他请求体字段。
+  for (const actionName of ['create', 'update']) {
+    extendModuleAction('product', actionName, (action) => {
+      const properties = action.requestBody!.schema.properties as Record<string, Record<string, unknown>>;
+      properties.desc.type = 'string';
+      delete properties.desc.items;
+      return action;
+    });
+  }
+
   // 创建执行时，需要添加产品字段
   extendModuleAction('execution', 'create', (action) => {
     const required = action.requestBody!.schema?.required;

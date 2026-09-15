@@ -1,7 +1,11 @@
 import { afterEach, expect, test } from 'bun:test';
 import { ZentaoClient, request, setGlobalOptions } from '../src/index';
+import { resetModuleDefinitions } from '../src/modules/registry';
 
-afterEach(() => setGlobalOptions({ version: undefined }));
+afterEach(() => {
+  resetModuleDefinitions();
+  setGlobalOptions({ version: undefined });
+});
 
 test.each(['', 'Description, with commas\nand a second line'])('product create and partial updates preserve description %p', async desc => {
   let product: Record<string, unknown> = {};
@@ -21,6 +25,8 @@ test.each(['', 'Description, with commas\nand a second line'])('product create a
     const client = new ZentaoClient(server.url.href);
     setGlobalOptions({ version: 'ipd5.6' });
     await request('product/create', { name: 'Original', desc }, { client });
+    // The description override must survive registry resets before autoFill runs.
+    resetModuleDefinitions();
     await request('product/update', { id: 7, name: 'Renamed' }, { client, autoFill: true });
     expect((await request('product/get', { id: 7 }, { client })).data?.desc).toBe(desc);
     expect(writes.map(body => body.desc)).toEqual([desc, desc]);
