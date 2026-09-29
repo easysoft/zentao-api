@@ -109,6 +109,10 @@
       {
         "text": "地盘 (my)",
         "link": "/zentao-api/my"
+      },
+      {
+        "text": "数据库 (db)",
+        "link": "/zentao-api/db"
       }
     ]
   }

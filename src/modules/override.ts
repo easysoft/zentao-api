@@ -6,7 +6,7 @@ import { request } from '../request/index.js';
 import { ZentaoError } from '../misc/errors.js';
 import type { HttpMethod, ModuleActionRequestCallback } from '../types/index.js';
 
-/** 这些内置写接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
+/** 这些内置接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
 const requestJSON: ModuleActionRequestCallback = async ({ request: command, body, bodyType, client, timeout, insecure }) => {
   const response = await client.request(command.path, {
     method: command.action.method!.toUpperCase() as HttpMethod,
@@ -87,6 +87,70 @@ const requestJSON: ModuleActionRequestCallback = async ({ request: command, body
  * @internal
  */
 export function applyBuiltinOverrides(): void {
+  defineModules({
+    name: 'db',
+    display: '数据库',
+    actions: [
+      {
+        name: 'query',
+        minVersion: ['22.7', 'biz13.7', 'max8.7', 'ipd5.7'],
+        display: '执行 SQL 查询',
+        description: '返回查询结果行及分页；使用 raw: true 可获取原始响应中的 SQL、列信息和执行耗时。',
+        type: 'list',
+        method: 'post',
+        path: '/db/query',
+        resultType: 'list',
+        resultGetter: 'rows',
+        pagerGetter: { pageID: 'page', recPerPage: 'limit', recTotal: 'total' },
+        request: requestJSON,
+        requestBody: {
+          required: true,
+          schema: {
+            type: 'object',
+            required: ['sql'],
+            properties: {
+              sql: { type: 'string', description: 'SQL 查询语句' },
+              page: { type: 'integer', description: '页码，默认 1' },
+              limit: { type: 'integer', description: '每页记录数，默认 100' },
+            },
+          },
+          example: { sql: 'select * from zt_config', page: 4, limit: 3 },
+        },
+      },
+      {
+        name: 'tables',
+        minVersion: ['22.7', 'biz13.7', 'max8.7', 'ipd5.7'],
+        display: '获取数据库表列表',
+        type: 'list',
+        method: 'get',
+        path: '/db/tables',
+        resultType: 'list',
+        resultGetter: 'tables',
+        request: requestJSON,
+      },
+      {
+        name: 'table',
+        minVersion: ['22.7', 'biz13.7', 'max8.7', 'ipd5.7'],
+        display: '获取数据库表结构',
+        description: 'meta 返回表信息、主键和列定义；sql 返回包含表信息、dialect 和建表 SQL 的对象。',
+        type: 'get',
+        method: 'get',
+        path: '/db/tables/{table}',
+        pathParams: { table: '数据库表名，例如 zt_config' },
+        params: [{
+          name: 'type',
+          type: 'string',
+          description: '表结构返回格式',
+          defaultValue: 'meta',
+          options: [{ value: 'meta', label: '元数据' }, { value: 'sql', label: '建表 SQL' }],
+        }],
+        resultType: 'object',
+        resultGetter: data => isRecord(data) ? data.table ?? data : data,
+        request: requestJSON,
+      },
+    ],
+  });
+
   for (const [moduleName, actionName] of [['product', 'create'], ['product', 'update'], ['feedback', 'close']]) {
     extendModuleAction(moduleName, actionName, { request: requestJSON });
   }

@@ -47,11 +47,13 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModule('invalid')).toBeUndefined();
   });
 
-  test('assigns the two historical cohorts including builtin overrides', () => {
+  test('assigns historical and db version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(229);
+    expect(actions).toHaveLength(232);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(123);
+    expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
+      === JSON.stringify(['22.7', 'biz13.7', 'max8.7', 'ipd5.7']))).toBe(true);
     for (const name of ['productplan', 'epic', 'requirement', 'testcase', 'release']) {
       expect(getModuleAction(name, 'update')!.minVersion).toEqual(oldVersions);
     }
@@ -75,7 +77,7 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModuleAction('story', 'ls', { version: '22.0' })?.name).toBe('list');
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.0', roles: ['body'] })).toEqual([]);
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.5', roles: ['body'] }).length).toBeGreaterThan(0);
-    expect(getModuleNames()).toHaveLength(26);
+    expect(getModuleNames()).toHaveLength(27);
     expect(getModuleNames({ version: '22.0' })).toHaveLength(19);
     expect(getModuleNames({ version: '21.9' })).toEqual([]);
     expect(getModule('doc', { version: '22.0' })).toBeUndefined();
