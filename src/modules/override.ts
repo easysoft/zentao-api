@@ -151,6 +151,144 @@ export function applyBuiltinOverrides(): void {
     ],
   });
 
+  // 知识库接口尚未纳入 OpenAPI，需部署对应商业知识库扩展。
+  const knowledgeMinVersion = ['biz13.7', 'max8.7', 'ipd5.7'];
+  const knowledgeType = {
+    type: 'string' as const,
+    description: '知识类型，省略或空字符串表示不限；text/file 不可与非空 objectType 同时使用。',
+    options: [
+      { value: 'object', label: '对象知识' },
+      { value: 'text', label: '文本知识' },
+      { value: 'file', label: '文件知识' },
+    ],
+  };
+  const knowledgeObjectType = {
+    type: 'string' as const,
+    description: '来源对象类型；单独指定时按 type=object 筛选，每次只接受一个编码。',
+    options: [
+      { value: 'story', label: '需求' },
+      { value: 'task', label: '任务' },
+      { value: 'case', label: '测试用例' },
+      { value: 'bug', label: 'Bug' },
+      { value: 'plan', label: '产品计划' },
+      { value: 'release', label: '发布' },
+      { value: 'feedback', label: '反馈' },
+      { value: 'ticket', label: '工单' },
+      { value: 'doc', label: '文档（含接口文档）' },
+      { value: 'issue', label: '问题' },
+      { value: 'risk', label: '风险' },
+      { value: 'opportunity', label: '机会' },
+      { value: 'practice', label: '最佳实践' },
+      { value: 'component', label: '组件' },
+    ],
+  };
+  defineModules([
+    {
+      name: 'knowledgelib',
+      display: '知识库',
+      description: '需部署商业知识库扩展，仅返回已发布且当前用户可访问的知识库。',
+      actions: [],
+    },
+    {
+      name: 'knowledge',
+      display: '知识',
+      description: '需部署商业知识库扩展，支持浏览知识、向量搜索和读取已保存正文。',
+      actions: [],
+    },
+  ]);
+  defineModuleActions('knowledgelib', {
+    name: 'list',
+    minVersion: knowledgeMinVersion,
+    display: '获取知识库列表',
+    type: 'list',
+    method: 'get',
+    path: '/ai/knowledgelibs',
+    resultType: 'list',
+    resultGetter: 'data',
+    pagerGetter: 'pager',
+    request: requestJSON,
+    params: [
+      {
+        name: 'type',
+        type: 'string',
+        description: '库类型，省略或空字符串时合并两类可见库',
+        options: [{ value: 'my', label: '我的知识库' }, { value: 'team', label: '组织知识库' }],
+      },
+      { name: 'keyword', type: 'string', description: '知识库名称或描述关键词，首尾空白会被移除' },
+      { name: 'pageID', type: 'number', defaultValue: 1, description: '页码，从 1 开始的正整数' },
+      { name: 'recPerPage', type: 'number', defaultValue: 20, description: '每页条数，范围 1～100' },
+    ],
+  });
+  defineModuleActions('knowledge', [
+    {
+      name: 'list',
+      minVersion: knowledgeMinVersion,
+      display: '获取知识库内知识列表',
+      description: '返回当前用户可见的知识条目，按本地 ID 降序排列；不支持标题关键词查询。',
+      type: 'list',
+      method: 'get',
+      path: '/ai/knowledgelibs/{libID}/knowledges',
+      pathParams: { libID: '本地知识库 ID，正整数' },
+      resultType: 'list',
+      resultGetter: 'data',
+      pagerGetter: 'pager',
+      request: requestJSON,
+      params: [
+        { name: 'type', ...knowledgeType },
+        { name: 'objectType', ...knowledgeObjectType },
+        { name: 'pageID', type: 'number', defaultValue: 1, description: '页码，从 1 开始的正整数' },
+        { name: 'recPerPage', type: 'number', defaultValue: 20, description: '每页条数，范围 1～100' },
+      ],
+    },
+    {
+      name: 'search',
+      minVersion: knowledgeMinVersion,
+      display: '多知识库向量搜索',
+      description: '仅检索已有索引，需 ai.searchknowledgelib 权限。按匹配度降序返回片段，不分页；用 knowledgeID 获取完整正文，chunkID 仅标识片段。',
+      type: 'list',
+      method: 'post',
+      path: '/ai/knowledges/search',
+      resultType: 'list',
+      resultGetter: 'data',
+      request: requestJSON,
+      requestBody: {
+        required: true,
+        mediaType: 'application/json',
+        schema: {
+          type: 'object',
+          required: ['keyword', 'libIDs'],
+          example: { keyword: '如何处理接口请求超时', libIDs: [12, 18], minSimilarity: 0.7, limit: 5 },
+          properties: {
+            keyword: { type: 'string', minLength: 1, description: '搜索问题或关键词，去除首尾空白后不能为空' },
+            libIDs: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'integer', minimum: 1 },
+              description: '本地知识库 ID 的非空正整数数组，例如 [12,18]；不接受字符串元素，重复 ID 自动去重',
+            },
+            type: knowledgeType,
+            objectType: knowledgeObjectType,
+            minSimilarity: { type: 'number', minimum: 0, maximum: 1, defaultValue: 0.5, description: '最小匹配度，范围 [0,1]' },
+            limit: { type: 'integer', minimum: 1, maximum: 100, defaultValue: 5, description: '整次多库搜索最多返回的片段数，范围 1～100' },
+          },
+        },
+      },
+    },
+    {
+      name: 'get',
+      minVersion: knowledgeMinVersion,
+      display: '获取知识详细内容',
+      description: '返回已保存的完整正文及来源信息，不触发文件提取、知识同步或索引更新。按 contentType 解释正文，尚未保存正文时 content 可为空。',
+      type: 'get',
+      method: 'get',
+      path: '/ai/knowledges/{knowledgeID}',
+      pathParams: { knowledgeID: '本地知识条目 ID，正整数；不可使用 chunkID 或来源对象 objectID' },
+      resultType: 'object',
+      resultGetter: 'data',
+      request: requestJSON,
+    },
+  ]);
+
   for (const [moduleName, actionName] of [['product', 'create'], ['product', 'update'], ['feedback', 'close']]) {
     extendModuleAction(moduleName, actionName, { request: requestJSON });
   }

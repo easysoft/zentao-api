@@ -47,13 +47,23 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModule('invalid')).toBeUndefined();
   });
 
-  test('assigns historical and db version cohorts including builtin overrides', () => {
+  test('assigns historical, db and knowledge version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(232);
+    expect(actions).toHaveLength(236);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(123);
     expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
       === JSON.stringify(['22.7', 'biz13.7', 'max8.7', 'ipd5.7']))).toBe(true);
+    for (const name of ['knowledgelib', 'knowledge']) {
+      expect(getModule(name)!.actions.every(action => JSON.stringify(action.minVersion)
+        === JSON.stringify(['biz13.7', 'max8.7', 'ipd5.7']))).toBe(true);
+      for (const version of ['22.7', 'biz13.6', 'max8.6', 'ipd5.6']) {
+        expect(getModule(name, { version })).toBeUndefined();
+      }
+      for (const version of ['biz13.7', 'max8.7', 'ipd5.7']) {
+        expect(getModule(name, { version })).toBeDefined();
+      }
+    }
     for (const name of ['productplan', 'epic', 'requirement', 'testcase', 'release']) {
       expect(getModuleAction(name, 'update')!.minVersion).toEqual(oldVersions);
     }
@@ -77,7 +87,7 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModuleAction('story', 'ls', { version: '22.0' })?.name).toBe('list');
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.0', roles: ['body'] })).toEqual([]);
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.5', roles: ['body'] }).length).toBeGreaterThan(0);
-    expect(getModuleNames()).toHaveLength(27);
+    expect(getModuleNames()).toHaveLength(29);
     expect(getModuleNames({ version: '22.0' })).toHaveLength(19);
     expect(getModuleNames({ version: '21.9' })).toEqual([]);
     expect(getModule('doc', { version: '22.0' })).toBeUndefined();
