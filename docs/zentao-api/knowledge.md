@@ -1,13 +1,14 @@
 # 知识 (knowledge)
 
-需部署商业知识库扩展，支持浏览知识、向量搜索和读取已保存正文。
+需部署商业知识库扩展，支持浏览知识、向量搜索、正文关键词搜索和读取已保存正文。
 
 ## 动作概览
 
 | SDK 动作 | 说明 | 方法 | 路径 |
 | --- | --- | --- | --- |
 | `list` | 获取知识库内知识列表 | `GET` | `/ai/knowledgelibs/{libID}/knowledges` |
-| `search` | 多知识库向量搜索 | `POST` | `/ai/knowledges/search` |
+| `embeddingsSearch` | 多知识库向量搜索 | `POST` | `/ai/knowledges/embeddingssearch` |
+| `search` | 多知识库正文关键词搜索 | `POST` | `/ai/knowledges/search` |
 | `get` | 获取知识详细内容 | `GET` | `/ai/knowledges/{knowledgeID}` |
 
 ## 获取知识库内知识列表
@@ -61,8 +62,8 @@ const result = await request("knowledge/list", {
 
 仅检索已有索引，需 ai.searchknowledgelib 权限。按匹配度降序返回片段，不分页；用 knowledgeID 获取完整正文，chunkID 仅标识片段。
 
-- SDK 调用：`request("knowledge/search", params)`
-- HTTP：`POST /ai/knowledges/search`
+- SDK 调用：`request("knowledge/embeddingsSearch", params)`
+- HTTP：`POST /ai/knowledges/embeddingssearch`
 - 动作类型：`list`
 - 最低禅道版本：`biz13.7` / `max8.7` / `ipd5.7`
 
@@ -234,7 +235,7 @@ Schema:
 ```ts
 import { request } from 'zentao-api';
 
-const result = await request("knowledge/search", {
+const result = await request("knowledge/embeddingsSearch", {
   "keyword": "如何处理接口请求超时",
   "libIDs": [
     12,
@@ -242,6 +243,224 @@ const result = await request("knowledge/search", {
   ],
   "minSimilarity": 0.7,
   "limit": 5
+});
+```
+## 多知识库正文关键词搜索
+
+需 ai.searchknowledgelib 权限，仅按字面文本匹配已保存的 content，标题不参与，不依赖向量索引。返回完整正文及 contentType，每条知识只返回一次，按知识 ID 降序分页。
+
+- SDK 调用：`request("knowledge/search", params)`
+- HTTP：`POST /ai/knowledges/search`
+- 动作类型：`list`
+- 最低禅道版本：`biz13.7` / `max8.7` / `ipd5.7`
+
+### 路径参数
+
+无路径参数。
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+请求体必填：是
+请求媒体类型：`application/json`
+
+Schema:
+
+```json
+{
+  "type": "object",
+  "required": [
+    "keywords",
+    "libIDs"
+  ],
+  "example": {
+    "keywords": [
+      "登录",
+      "超时"
+    ],
+    "libIDs": [
+      12,
+      18
+    ],
+    "matchMode": "any",
+    "pageID": 1,
+    "recPerPage": 20
+  },
+  "properties": {
+    "keywords": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "非空关键词数组，每项去除首尾空白后为 1～200 个 Unicode 字符，去重后最多 20 项；%、_ 和反斜杠按普通字符匹配"
+    },
+    "libIDs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "description": "本地知识库 ID 的非空正整数数组，例如 [12,18]；不接受字符串元素，重复 ID 自动去重"
+    },
+    "matchMode": {
+      "type": "string",
+      "defaultValue": "any",
+      "description": "正文关键词匹配方式；仅省略时使用 any，空字符串和 null 无效",
+      "options": [
+        {
+          "value": "any",
+          "label": "包含任一关键词"
+        },
+        {
+          "value": "all",
+          "label": "同一条正文包含全部关键词"
+        }
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "知识类型，省略或空字符串表示不限；text/file 不可与非空 objectType 同时使用。",
+      "options": [
+        {
+          "value": "object",
+          "label": "对象知识"
+        },
+        {
+          "value": "text",
+          "label": "文本知识"
+        },
+        {
+          "value": "file",
+          "label": "文件知识"
+        }
+      ]
+    },
+    "objectType": {
+      "type": "string",
+      "description": "来源对象类型；单独指定时按 type=object 筛选，每次只接受一个编码。",
+      "options": [
+        {
+          "value": "story",
+          "label": "需求"
+        },
+        {
+          "value": "task",
+          "label": "任务"
+        },
+        {
+          "value": "case",
+          "label": "测试用例"
+        },
+        {
+          "value": "bug",
+          "label": "Bug"
+        },
+        {
+          "value": "plan",
+          "label": "产品计划"
+        },
+        {
+          "value": "release",
+          "label": "发布"
+        },
+        {
+          "value": "feedback",
+          "label": "反馈"
+        },
+        {
+          "value": "ticket",
+          "label": "工单"
+        },
+        {
+          "value": "doc",
+          "label": "文档（含接口文档）"
+        },
+        {
+          "value": "issue",
+          "label": "问题"
+        },
+        {
+          "value": "risk",
+          "label": "风险"
+        },
+        {
+          "value": "opportunity",
+          "label": "机会"
+        },
+        {
+          "value": "practice",
+          "label": "最佳实践"
+        },
+        {
+          "value": "component",
+          "label": "组件"
+        }
+      ]
+    },
+    "pageID": {
+      "type": "integer",
+      "minimum": 1,
+      "defaultValue": 1,
+      "description": "页码，从 1 开始的正整数"
+    },
+    "recPerPage": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "defaultValue": 20,
+      "description": "每页条数，范围 1～100"
+    }
+  }
+}
+```
+
+示例:
+
+```json
+{
+  "keywords": [
+    "登录",
+    "超时"
+  ],
+  "libIDs": [
+    12,
+    18
+  ],
+  "matchMode": "any",
+  "pageID": 1,
+  "recPerPage": 20
+}
+```
+
+### 返回值
+
+- 返回形态：`list`
+- 结果字段：`data`
+- 分页字段：`pager`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("knowledge/search", {
+  "keywords": [
+    "登录",
+    "超时"
+  ],
+  "libIDs": [
+    12,
+    18
+  ],
+  "matchMode": "any",
+  "pageID": 1,
+  "recPerPage": 20
 });
 ```
 ## 获取知识详细内容

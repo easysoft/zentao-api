@@ -49,7 +49,7 @@ describe('ZenTao versions and registry filtering', () => {
 
   test('assigns historical, db and knowledge version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(236);
+    expect(actions).toHaveLength(237);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(123);
     expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
