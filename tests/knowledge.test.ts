@@ -82,9 +82,10 @@ const searchParams = {
 };
 
 test.each([searchParams, { data: searchParams }, { data: JSON.stringify(searchParams) }])(
-  'knowledge/search sends literal keyword arrays and pagination in JSON for %p', async params => {
-    const knowledge = { id: 502, libID: 12, title: '登录超时', type: 'object', objectType: 'bug', content: '# 登录超时\n\n完整正文。', contentType: 'markdown' };
-    let result = { status: 'success', data: [knowledge], pager: { pageID: 2, recPerPage: 10, recTotal: 11, pageTotal: 2 } };
+  'knowledge/search sends literal keywords and JSON pagination and preserves empty content for %p', async params => {
+    const knowledge = { id: 502, libID: 12, title: '登录超时 50%', type: 'object', objectType: 'bug', content: '# 请求日志\n\nuser_name C:\\logs a,b\n完整正文。', contentType: 'markdown' };
+    const titleOnlyKnowledge = { ...knowledge, id: 501, title: '登录 50% user_name C:\\logs a,b', content: '' };
+    let result = { status: 'success', data: [knowledge, titleOnlyKnowledge], pager: { pageID: 2, recPerPage: 10, recTotal: 12, pageTotal: 2 } };
     const received: { method: string; path: string; contentType: string | null; body: unknown }[] = [];
     const server = Bun.serve({ port: 0, async fetch(req) {
       const url = new URL(req.url);
@@ -96,7 +97,7 @@ test.each([searchParams, { data: searchParams }, { data: JSON.stringify(searchPa
       setGlobalOptions({ version: 'biz13.7' });
       const client = new ZentaoClient(server.url.href);
       await expect(request('knowledge/search', params, { client, recPerPage: '99' })).resolves.toMatchObject({
-        status: 'success', data: [knowledge], pager: { page: 2, recPerPage: 10, total: 11 },
+        status: 'success', data: [knowledge, titleOnlyKnowledge], pager: { page: 2, recPerPage: 10, total: 12 },
       });
       expect(received).toEqual([{
         method: 'POST', path: '/api.php/v2/ai/knowledges/search', contentType: 'application/json', body: searchParams,
@@ -109,9 +110,9 @@ test.each([searchParams, { data: searchParams }, { data: JSON.stringify(searchPa
       });
       expect(received.at(-1)?.body).toEqual({ keywords: ['无匹配结果'], libIDs: [12], matchMode: 'any', pageID: 1, recPerPage: 20 });
 
-      result.pager = { pageID: 99, recPerPage: 10, recTotal: 11, pageTotal: 2 };
+      result.pager = { pageID: 99, recPerPage: 10, recTotal: 12, pageTotal: 2 };
       await expect(request('knowledge/search', { keywords: ['登录'], libIDs: [12], pageID: '99' }, { client, recPerPage: '10' }))
-        .resolves.toMatchObject({ status: 'success', data: [], pager: { page: 99, recPerPage: 10, total: 11 } });
+        .resolves.toMatchObject({ status: 'success', data: [], pager: { page: 99, recPerPage: 10, total: 12 } });
       expect(received.at(-1)?.body).toEqual({ keywords: ['登录'], libIDs: [12], matchMode: 'any', pageID: 99, recPerPage: 10 });
 
       await expect(request('knowledge/search', embeddingsParams, { client })).rejects.toMatchObject({
