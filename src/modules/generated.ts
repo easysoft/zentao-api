@@ -2343,17 +2343,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/productplans',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '产品ID',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "产品ID",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string",
                                 "description": "计划名称"
@@ -2382,7 +2385,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title"
                         ]
                     },
@@ -2579,17 +2581,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/stories',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '产品ID',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "产品ID",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string"
                             },
@@ -2653,7 +2658,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title"
                         ]
                     },
@@ -3016,17 +3020,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/epics',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '产品ID',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "产品ID",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string"
                             },
@@ -3080,7 +3087,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title"
                         ]
                     },
@@ -3398,17 +3404,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/requirements',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '产品ID',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "产品ID",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string"
                             },
@@ -3462,7 +3471,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title"
                         ]
                     },
@@ -3781,17 +3789,20 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/bugs',
                 resultType: 'object',
+                params: [
+                    {
+                        name: 'productID',
+                        required: true,
+                        type: 'number',
+                        description: '所属产品',
+                    },
+                ],
                 requestBody: {
                     required: true,
                     type: 'object',
                     schema: {
                         "type": "object",
                         "properties": {
-                            "productID": {
-                                "type": "integer",
-                                "description": "所属产品",
-                                "format": "int32"
-                            },
                             "title": {
                                 "type": "string",
                                 "description": "Bug标题"
@@ -3842,7 +3853,6 @@ export const BUILTIN_MODULES = [
                             }
                         },
                         "required": [
-                            "productID",
                             "title",
                             "openedBuild"
                         ]
