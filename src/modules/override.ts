@@ -330,6 +330,9 @@ export function applyBuiltinOverrides(): void {
             data.status = 'reviewing';
           } else {
             data.needNotReview = '1';
+            if (!data.status) {
+              data.status = 'active';
+            }
           }
           return { data };
         };
