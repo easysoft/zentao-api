@@ -55,7 +55,7 @@ describe('builtin requirement review hooks', () => {
     }
   });
 
-  test.each(actions)('%s/%s skips review when reviewers are absent or empty', async (moduleName, actionName) => {
+  test.each(actions)('%s/%s defaults to active when reviewers are absent or empty', async (moduleName, actionName) => {
     const client = new ZentaoClient('http://zentao.test');
     const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
     setGlobalOptions({ version: '22.5', client });
@@ -65,8 +65,21 @@ describe('builtin requirement review hooks', () => {
         id: 7, productID: 1, title: 'No review needed', ...(reviewer === undefined ? {} : { reviewer }),
       });
       const body = transport.mock.calls.at(-1)![1]!.body;
-      expect(body).toMatchObject({ title: 'No review needed', needNotReview: '1' });
-      expect(body).not.toHaveProperty('status');
+      expect(body).toMatchObject({ title: 'No review needed', needNotReview: '1', status: 'active' });
+    }
+  });
+
+  test.each(actions)('%s/%s preserves data.status when review is skipped', async (moduleName, actionName) => {
+    const client = new ZentaoClient('http://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
+    setGlobalOptions({ version: '22.5', client });
+
+    for (const status of ['draft', 'closed']) {
+      await request(`${moduleName}/${actionName}`, {
+        id: 7, productID: 1, title: 'Keep this status', reviewer: [], data: { status },
+      });
+      const body = transport.mock.calls.at(-1)![1]!.body;
+      expect(body).toMatchObject({ title: 'Keep this status', needNotReview: '1', status });
     }
   });
 
@@ -77,7 +90,7 @@ describe('builtin requirement review hooks', () => {
     const data = Object.freeze({ title: 'Keep this title', reviewer: [], needNotReview: '0' });
 
     await request('requirement/change', { id: 7, reviewer: ['admin'], data });
-    expect(transport.mock.calls[0][1]!.body).toEqual({ ...data, needNotReview: '1' });
+    expect(transport.mock.calls[0][1]!.body).toEqual({ ...data, needNotReview: '1', status: 'active' });
     expect(data.needNotReview).toBe('0');
 
     const jsonData = { title: 'Review this title', reviewer: ['admin'], status: 'draft' };
