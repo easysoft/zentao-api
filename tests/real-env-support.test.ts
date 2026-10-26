@@ -5,15 +5,24 @@ import {
   resolveRealEnvRuntimeOptions,
   resolveRealEnvWorkflowGroup,
   createRealEnvCoverage,
-  getMissingRealEnvModule,
+  cleanupRealEnvResources,
+  formatRealEnvError,
   validateRealEnvResponse,
 } from './real-env-support';
 
 describe('real environment test support', () => {
+  test('keeps HTTP validation details without copying credentials or whole responses', () => {
+    const error = Object.assign(new Error('HTTP 400'), { details: {
+      body: JSON.stringify({ message: { category: ['required'] }, token: 'secret' }),
+    } });
+    expect(formatRealEnvError(error)).toBe('HTTP 400: {"category":["required"]}');
+    error.details.body = '<html>Server error</html>';
+    expect(formatRealEnvError(error)).toBe('HTTP 400');
+    expect(formatRealEnvError(null)).toBe('null');
+  });
+
   test('rejects HTML errors and invalid list data even when the SDK reports success', () => {
     const html = '<p>ERROR: the control file module/meeting/control.php not found.</p>';
-    expect(getMissingRealEnvModule(html)).toBe('module/meeting/control.php');
-    expect(getMissingRealEnvModule('<p>Fatal error: database failure</p>')).toBeUndefined();
     expect(() => validateRealEnvResponse({ status: 'success', data: html }, 'list')).toThrow('HTML/error page');
     expect(() => validateRealEnvResponse({ status: 'success', data: {} }, 'list')).toThrow('array');
     expect(() => validateRealEnvResponse({ status: 'fail', message: 'denied', data: {} })).toThrow('denied');
@@ -22,21 +31,37 @@ describe('real environment test support', () => {
     expect(() => validateRealEnvResponse({ status: 'success', data: { content: '<p>Document content</p>' } }, 'object')).not.toThrow();
   });
 
-  test('reports unique actions, scoped routes, exclusions and failures without hiding a failed attempt', () => {
+  test('reports every registered action and never hides a failed attempt', () => {
     const coverage = createRealEnvCoverage(['story/list', 'bug/list', 'meeting/list', 'todo/create']);
     coverage.record('story/list', 'success', 'GET /products/{id}/stories');
     coverage.record('story/list', 'success', 'GET /projects/{id}/stories');
     coverage.record('bug/list', 'fail');
     coverage.record('bug/list', 'success');
-    coverage.exclude('meeting/list', 'missing module');
     const report = coverage.report();
     expect(report.successful).toEqual(['story/list']);
     expect(report.exercised).toBe(2);
     expect(report.failed).toEqual(['bug/list']);
-    expect(report.untested).toEqual(['todo/create']);
-    expect(report.excluded).toEqual({ 'meeting/list': 'missing module' });
+    expect(report.untested).toEqual(['meeting/list', 'todo/create']);
+    expect(() => coverage.record('unknown/list', 'success')).toThrow('Unregistered API action');
     expect(report.routes).toHaveLength(2);
     expect(report.calls).toHaveLength(4);
+  });
+
+  test('cleanup continues to product deletion after an error and preserves failed resources', async () => {
+    const resources = [
+      { requestName: 'task/delete' as const, id: 1 },
+      { requestName: 'task/delete' as const, id: 1 },
+      { requestName: 'project/delete' as const, id: 2 },
+      { requestName: 'product/delete' as const, id: 3 },
+    ];
+    const deleted: number[] = [];
+    const result = await cleanupRealEnvResources(resources, async resource => {
+      deleted.push(resource.id);
+      if (resource.id === 2) throw new Error('permission denied');
+    });
+    expect(deleted).toEqual([1, 2, 3]);
+    expect(result.errors).toEqual(['project/delete #2: permission denied']);
+    expect(result.remaining).toEqual([resources[2]]);
   });
 
   test('uses a valid Scrum workflow group or an explicit environment override', () => {

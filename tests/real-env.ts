@@ -14,12 +14,15 @@ import {
   type ResponseData,
 } from '../src/index';
 import { resolveActionRequest } from '../src/modules/resolve';
+import { registerExtendedRealEnvTests } from './real-env-extended';
 import {
   createRealEnvLogger,
+  cleanupRealEnvResources,
+  type RealEnvResource,
   resolveRealEnvRuntimeOptions,
   resolveRealEnvWorkflowGroup,
   createRealEnvCoverage,
-  getMissingRealEnvModule,
+  formatRealEnvError,
   validateRealEnvResponse,
 } from './real-env-support';
 
@@ -27,8 +30,8 @@ const ENV_FILES = ['.env.local', 'env.local'] as const;
 let runtimeOptions = resolveRealEnvRuntimeOptions();
 const logger = createRealEnvLogger();
 const coverage = createRealEnvCoverage(getModuleNames().flatMap(name => getModule(name)!.actions.map(action => `${name}/${action.name}`)));
-const unavailable = new Map<string, string>();
 const extraCreated: { requestName: `${string}/${string}`; id: number }[] = [];
+const retainedResources: { api: string; id?: number; name?: string; reason: string }[] = [];
 const listParams = { recPerPage: 1000, pageID: 1 };
 
 interface RealEnvConfig {
@@ -266,16 +269,19 @@ async function apiRequest(
   logger.step(label, { api: requestName, ...summarizeParams(params) });
   const [moduleName, actionName] = requestName.split('/');
   const action = getModuleAction(moduleName, actionName)!;
+  let route: string | undefined;
   try {
-    const response = await request(requestName, params, requestOptions);
-    validateRealEnvResponse(response, action.method === 'get' ? action.resultType : undefined);
     const command = resolveActionRequest(getModule(moduleName)!, actionName, params);
-    coverage.record(requestName, 'success', `${action.method?.toUpperCase()} ${command.path.replace(/\/\d+(?=\/|$)/g, '/{id}')}`);
+    route = `${action.method?.toUpperCase()} ${command.path.replace(/\/\d+(?=\/|$)/g, '/{id}')}`;
+    const response = await request(requestName, params, requestOptions);
+    validateRealEnvResponse(response, action.resultType === 'list' ? 'list' : action.method === 'get' ? action.resultType : undefined);
+    coverage.record(requestName, 'success', route);
     logger.result(summarizeResponse(response));
     return response;
   } catch (error) {
-    coverage.record(requestName, 'fail', undefined, (error as Error).message);
-    throw new Error(`${requestName}: ${(error as Error).message}`, { cause: error });
+    const message = formatRealEnvError(error);
+    coverage.record(requestName, 'fail', route, message);
+    throw new Error(`${requestName}: ${message}`, { cause: error });
   }
 }
 
@@ -290,7 +296,7 @@ async function createTracked(
   lookup?: LookupByField,
 ): Promise<number> {
   const moduleName = deleteName.split('/')[0];
-  if (!lookup && moduleName !== 'doc' && !deleteName.endsWith('Module')) {
+  if (!lookup && moduleName !== 'doc' && moduleName !== 'workflow' && !deleteName.endsWith('Module')) {
     lookup = {
       requestName: moduleName === 'todo' ? 'my/todos' : `${moduleName}/list`,
       params: { ...listParams, browseType: ['story', 'epic', 'requirement'].includes(moduleName) ? 'allstory' : 'all',
@@ -422,109 +428,78 @@ requestOptions = {
   insecure: config.insecure,
 };
 setGlobalOptions({ client, timeout: config.timeout, insecure: config.insecure });
-// Probe only known optional modules. Authentication, SQL and other unexpected errors remain failures.
-for (const [moduleName, probe] of [
-  ['issue', 'issue/list'], ['risk', 'risk/list'], ['meeting', 'meeting/list'],
-  ['workflow', 'workflow/list'], ['storygrade', 'story/getGrades'],
-] as const) {
-  const response = await request(probe, { recPerPage: 1, pageID: 1 }, requestOptions);
-  const missing = getMissingRealEnvModule(response.data);
-  if (missing === `module/${moduleName === 'workflow' ? 'contract' : moduleName}/control.php`) {
-    const reason = `Server module unavailable: ${missing}`;
-    unavailable.set(moduleName, reason);
-    logger.info(reason);
-    const actions = moduleName === 'storygrade' ? ['story/getGrades']
-      : getModule(moduleName)!.actions.map(action => `${moduleName}/${action.name}`);
-    if (['issue', 'risk', 'meeting'].includes(moduleName)) actions.push(`my/${moduleName}s`);
-    for (const action of actions) coverage.exclude(action, reason);
-  } else {
-    validateRealEnvResponse(response, 'list');
-  }
-}
-for (const action of ['issue/create', 'risk/create', 'risk/update', 'system/create']) {
-  if (!unavailable.has(action.split('/')[0])) coverage.exclude(action, 'No delete API is available to clean up this resource.');
-}
-
+const startDate = dateAfter(0);
+const planEndDate = dateAfter(30);
+const projectEndDate = dateAfter(45);
+const executionEndDate = dateAfter(14);
 
 describe('real ZenTao product API', () => {
   beforeAll(async () => {
     productName = `zentao-api-real-${randomUUID().slice(0, 8)}`;
-    const response = await apiRequest('Create temporary product', 'product/create', {
-      name: productName,
-      type: 'normal',
-      acl: 'open',
-    });
-
-    expectSuccess(response);
-    productID = tryExtractID(response.data) ?? await findCreatedID({
-      requestName: 'product/list',
-      params: {
-        browseType: 'all',
-        orderBy: 'id_desc',
-        recPerPage: 1000,
-        pageID: 1,
-      },
-      field: 'name',
-      value: productName,
-    });
-    if (!productID) {
-      throw new Error(`Could not determine temporary product id: ${JSON.stringify(response.data)}`);
+    const lookup: LookupByField = {
+      requestName: 'product/list', params: { ...listParams, browseType: 'all', orderBy: 'id_desc' },
+      field: 'name', value: productName,
+    };
+    try {
+      productID = await createEntity('Create temporary product', 'product/create', {
+        name: productName, type: 'normal', acl: 'open',
+      }, undefined, lookup);
+    } catch (error) {
+      productID ??= await findCreatedID(lookup).catch(() => undefined);
+      throw error;
     }
     logger.result({ productID, productName });
   }, 120000);
 
   afterAll(async () => {
     const cleanupErrors: string[] = [];
-    const cleanup = async (requestName: `${string}/${string}`, id: number | undefined) => {
-      if (!client || !id) return;
-      try {
-        const response = await apiRequest(`Cleanup ${requestName}`, requestName, { id });
-        if (response.status !== 'success') {
-          cleanupErrors.push(`${requestName} #${id}: ${response.message ?? 'status fail'}`);
-        }
-      } catch (error) {
-        if (['epic/delete', 'requirement/delete'].includes(requestName) && (error as Error).message.includes('Missing required parameter: storyID')) {
-          try {
-            await apiRequest('Cleanup through shared story endpoint', 'story/delete', { id });
-            return;
-          } catch (fallbackError) {
-            cleanupErrors.push(`story/delete #${id}: ${(fallbackError as Error).message}`);
-          }
-        }
-        cleanupErrors.push(`${requestName} #${id}: ${(error as Error).message ?? String(error)}`);
-      }
-    };
-    const cleanupIDs = async (requestName: `${string}/${string}`, ids: number[]) => {
-      for (const id of [...ids].reverse()) {
-        await cleanup(requestName, id);
-      }
-      ids.length = 0;
-    };
+    let remainingResources: RealEnvResource[] = [];
+    const resources = ([
+      ...[...extraCreated].reverse(),
+      ...[...created.fileIDs].reverse().map(id => ({ requestName: 'file/delete' as const, id })),
+      ...[...created.taskIDs].reverse().map(id => ({ requestName: 'task/delete' as const, id })),
+      ...[...created.bugIDs].reverse().map(id => ({ requestName: 'bug/delete' as const, id })),
+      { requestName: 'execution/delete', id: created.executionID! },
+      { requestName: 'project/delete', id: created.projectID! },
+      ...[...created.storyIDs].reverse().map(id => ({ requestName: 'story/delete' as const, id })),
+      { requestName: 'productplan/delete', id: created.planID! },
+      { requestName: 'product/delete', id: productID! },
+      { requestName: 'program/delete', id: created.programID! },
+    ] satisfies RealEnvResource[]).filter(resource => resource.id);
 
     try {
       if (runtimeOptions.keepTestData) {
+        remainingResources = resources;
         logger.info('Keeping real environment test data because --keep-test-data is set', summarizeCreatedData());
         return;
       }
 
       logger.info('Cleaning up real environment test data', summarizeCreatedData());
-      for (const item of [...extraCreated].reverse()) await cleanup(item.requestName, item.id);
-      await cleanupIDs('file/delete', created.fileIDs);
-      await cleanupIDs('task/delete', created.taskIDs);
-      await cleanupIDs('bug/delete', created.bugIDs);
-      await cleanup('execution/delete', created.executionID);
-      await cleanup('project/delete', created.projectID);
-      await cleanupIDs('story/delete', created.storyIDs);
-      await cleanup('productplan/delete', created.planID);
-      await cleanup('product/delete', productID);
-      await cleanup('program/delete', created.programID);
+      const cleanup = await cleanupRealEnvResources(resources, async ({ requestName, id }) => {
+        try { await apiRequest(`Cleanup ${requestName}`, requestName, { id }); }
+        catch (error) {
+          if (!['epic/delete', 'requirement/delete'].includes(requestName)
+            || !(error as Error).message.includes('Missing required parameter: storyID')) throw error;
+          await apiRequest('Cleanup through shared story endpoint', 'story/delete', { id });
+        }
+      });
+      cleanupErrors.push(...cleanup.errors);
+      remainingResources = cleanup.remaining;
+      if (productID) {
+        try {
+          expectListExcludesID(await getList('product/list', { browseType: 'all', orderBy: 'id_desc' }), productID);
+        } catch (error) {
+          cleanupErrors.push(`Verify product deletion #${productID}: ${(error as Error).message}`);
+        }
+      }
     } finally {
       const report = { ...coverage.report(), keepTestData: runtimeOptions.keepTestData, cleanupErrors,
+        productID, productName, retainedResources, remainingResources,
         retained: runtimeOptions.keepTestData ? { ...summarizeCreatedData(), extraCreated } : undefined };
       mkdirSync('coverage', { recursive: true });
       writeFileSync('coverage/real-env.json', `${JSON.stringify(report, null, 2)}\n`);
       logger.info('API coverage', { exercised: report.exercised, successful: report.successful.length, total: report.total,
-        failed: report.failed.length, excluded: Object.keys(report.excluded).length,
+        failed: report.failed.length,
         untested: report.untested.length, routes: report.routes.length, report: 'coverage/real-env.json' });
       setGlobalOptions({
         client: undefined,
@@ -538,14 +513,13 @@ describe('real ZenTao product API', () => {
     if (cleanupErrors.length > 0) {
       throw new Error(`Real environment cleanup failed:\n${cleanupErrors.join('\n')}`);
     }
-  }, 120000);
+    const report = coverage.report();
+    expect(report.untested, `Unexercised API actions: ${report.untested.join(', ')}`).toEqual([]);
+    expect(report.failed, `Failed API actions: ${report.failed.join(', ')}`).toEqual([]);
+  }, 300000);
 
-  test('runs a write-heavy product lifecycle against the real API', async () => {
+  test('reads and updates the temporary product', async () => {
     const productID = requireProductID();
-    const startDate = dateAfter(0);
-    const planEndDate = dateAfter(30);
-    const projectEndDate = dateAfter(45);
-    const executionEndDate = dateAfter(14);
 
     const productDetailResponse = await apiRequest('Fetch temporary product detail', 'product/get', { id: productID });
     expectSuccess(productDetailResponse);
@@ -573,7 +547,10 @@ describe('real ZenTao product API', () => {
     const getResponse = await apiRequest('Verify updated product detail', 'product/get', { id: requireProductID() });
     expectSuccess(getResponse);
     expect(isRecord(getResponse.data) ? getResponse.data.name : undefined).toBe(updatedName);
+  }, 120000);
 
+  test('creates and reads product stories', async () => {
+    const productID = requireProductID();
     for (let index = 0; index < 3; index += 1) {
       const storyTitle = `${productName} story ${index + 1}`;
       const storyID = await createEntity(`Create story ${index + 1}`, 'story/create', maybeAssigned({
@@ -616,7 +593,9 @@ describe('real ZenTao product API', () => {
     const firstStoryResponse = await apiRequest('Fetch first story detail', 'story/get', { id: created.storyIDs[0] });
     expectSuccess(firstStoryResponse);
     expect(recordMatchesID(firstStoryResponse.data, created.storyIDs[0])).toBe(true);
+  }, 120000);
 
+  test('uploads and renames a story attachment', async () => {
     const uploadDir = mkdtempSync(join(tmpdir(), 'zentao-api-real-upload-'));
     const uploadPath = join(uploadDir, 'real-upload.txt');
     const uploadContent = `zentao-api real upload ${randomUUID()}`;
@@ -646,7 +625,10 @@ describe('real ZenTao product API', () => {
     } finally {
       rmSync(uploadDir, { recursive: true, force: true });
     }
+  }, 120000);
 
+  test('creates and updates a product plan', async () => {
+    const productID = requireProductID();
     const planTitle = `${productName} plan`;
     created.planID = await createEntity('Create product plan', 'productplan/create', {
       productID,
@@ -708,7 +690,10 @@ describe('real ZenTao product API', () => {
     const plannedStoryResponse = await apiRequest('Verify first story plan link', 'story/get', { id: created.storyIDs[0] });
     expectSuccess(plannedStoryResponse);
     expect(fieldIncludesID(unwrapRecord(plannedStoryResponse.data).plan, requirePlanID())).toBe(true);
+  }, 120000);
 
+  test('creates and updates the product project', async () => {
+    const productID = requireProductID();
     const availableProjectsResponse = await apiRequest('Fetch project workflow groups', 'project/list', {
       browseType: 'all',
       orderBy: 'id_desc',
@@ -764,7 +749,10 @@ describe('real ZenTao product API', () => {
     });
     expectSuccess(projectListResponse);
     expectListContainsID(projectListResponse.data, requireProjectID());
+  }, 120000);
 
+  test('creates and updates the project execution', async () => {
+    const productID = requireProductID();
     const executionName = `${productName} execution`;
     created.executionID = await createEntity('Create execution with product plan', 'execution/create', {
       data: {
@@ -819,7 +807,9 @@ describe('real ZenTao product API', () => {
       },
     });
     expectSuccess(executionUpdateResponse);
+  }, 120000);
 
+  test('creates and updates execution tasks', async () => {
     for (let index = 0; index < 3; index += 1) {
       const taskName = `${productName} task ${index + 1}`;
       const taskID = await createEntity(`Create task ${index + 1} from story`, 'task/create', maybeAssigned({
@@ -919,7 +909,10 @@ describe('real ZenTao product API', () => {
     });
     expectSuccess(executionStoryListResponse);
     expect(Array.isArray(executionStoryListResponse.data)).toBe(true);
+  }, 120000);
 
+  test('creates and resolves product bugs', async () => {
+    const productID = requireProductID();
     for (let index = 0; index < 3; index += 1) {
       const bugTitle = `${productName} bug ${index + 1}`;
       const bugID = await createEntity(`Create bug ${index + 1}`, 'bug/create', {
@@ -1084,6 +1077,18 @@ describe('real ZenTao product API', () => {
     }
   }
 
+  for (const moduleName of ['project', 'execution'] as const) {
+    test(`links temporary product stories to the ${moduleName}`, async () => {
+      const id = await createTracked('story/create', { productID: requireProductID(), title: `${productName} ${moduleName} linked story`,
+        category: 'feature', spec: 'Temporary linked requirement', data: { needNotReview: 1 } }, 'story/delete');
+      expect((await getRecord('story/get', id)).status).toBe('active');
+      if (moduleName === 'execution') await call('project/linkStories', { projectID: requireProjectID(), stories: [id], storyType: 'story' });
+      const params = { [`${moduleName}ID`]: moduleName === 'project' ? requireProjectID() : requireExecutionID() };
+      await call(`${moduleName}/linkStories`, { ...params, stories: [id], storyType: 'story' });
+      expectListContainsID(await getList('story/list', { ...params, browseType: 'allstory' }), id);
+    }, 60000);
+  }
+
   test('testcase CRUD with steps and product/project/execution scopes', async () => {
     const body = { productID: requireProductID(), title: `${productName} testcase`, type: 'feature', pri: 3,
       precondition: 'A temporary product exists', steps: ['Open temporary product', 'Read its name'], expects: ['Product exists', 'Name matches'],
@@ -1209,7 +1214,7 @@ describe('real ZenTao product API', () => {
         const id = await createTracked(action, { id: sourceID, productID: requireProductID(), product: requireProductID(),
           title, name: title, spec: 'Converted requirement', category: 'feature', openedBuild: ['trunk'], type: target === 'bug' ? 'codeerror' : target === 'task' ? 'devel' : 'code',
           steps: 'Converted bug', severity: 3, pri: 3, module: await getSupportModuleID(), executionID: requireExecutionID(), assignedTo: actorAccount,
-          estStarted: dateAfter(0), deadline: dateAfter(7), date: dateAfter(0) }, `${target}/delete`);
+          estStarted: dateAfter(0), deadline: dateAfter(7), date: dateAfter(0), ...(target === 'story' ? { data: maybeReviewer() } : {}) }, `${target}/delete`);
         if (target === 'todo') expectListContainsID(await getList('my/todos', { browseType: 'all' }), id);
         else {
           const detail = await getRecord(`${target}/get`, id);
@@ -1224,6 +1229,7 @@ describe('real ZenTao product API', () => {
     const id = await createTracked('todo/create', body, 'todo/delete', {
       requestName: 'my/todos', params: { ...listParams, browseType: 'all' }, field: 'name', value: body.name,
     });
+    expect((await getRecord('todo/get', id)).name).toBe(body.name);
     await call('todo/update', { id, ...body, name: `${body.name} updated` });
     expect((await getList('my/todos', { browseType: 'all' })).find(item => recordMatchesID(item, id))?.name).toBe(`${body.name} updated`);
     await deleteTracked('todo/delete', id);
@@ -1274,9 +1280,8 @@ describe('real ZenTao product API', () => {
     }, 60000);
   }
 
-  for (const action of getModule('my')!.actions) {
-    const dependency = ({ meetings: 'meeting', issues: 'issue', risks: 'risk' } as Record<string, string>)[action.name];
-    test.skipIf(unavailable.has(dependency))(`personal list my/${action.name}`, async () => {
+  for (const action of getModule('my')!.actions.filter(action => action.method === 'get')) {
+    test(`personal list my/${action.name}`, async () => {
       const response = await call(`my/${action.name}`, { recPerPage: 2, pageID: 1 });
       expect(Array.isArray(response.data)).toBe(true);
       if (response.pager) {
@@ -1287,22 +1292,11 @@ describe('real ZenTao product API', () => {
     }, 30000);
   }
 
-  test.skipIf(unavailable.has('storygrade'))('story grade options', async () => {
+  test('story grade options', async () => {
     await getList('story/getGrades');
   }, 30000);
 
-  for (const moduleName of ['issue', 'risk'] as const) {
-    test.skipIf(unavailable.has(moduleName))(`${moduleName} read APIs`, async () => {
-      const items = await getList(`${moduleName}/list`);
-      await getList(`${moduleName}/project${moduleName === 'issue' ? 'Issues' : 'Risks'}`, { projectID: requireProjectID() });
-      await getList(`${moduleName}/execution${moduleName === 'issue' ? 'Issues' : 'Risks'}`, { executionID: requireExecutionID() });
-      const id = tryExtractID(items[0]);
-      if (id) await getRecord(`${moduleName}/get`, id);
-      else coverage.exclude(`${moduleName}/get`, 'No existing record; creation has no cleanup API.');
-    }, 60000);
-  }
-
-  test.skipIf(unavailable.has('meeting'))('meeting CRUD and minutes', async () => {
+  test('meeting CRUD and minutes', async () => {
     const body = { project: requireProjectID(), execution: requireExecutionID(), name: `${productName} meeting`,
       begin: `${dateAfter(7)} 09:00`, end: `${dateAfter(7)} 10:00`, mode: 'online', host: actorAccount, participant: [actorAccount], room: 0 };
     const id = await createTracked('meeting/create', body, 'meeting/delete');
@@ -1315,7 +1309,7 @@ describe('real ZenTao product API', () => {
     expectListContainsID(await getList('meeting/executionMeetings', { executionID: requireExecutionID() }), id);
   }, 60000);
 
-  test.skipIf(unavailable.has('workflow'))('custom contract workflow CRUD', async () => {
+  test('custom contract workflow CRUD', async () => {
     const name = `${productName} contract`;
     const id = await createTracked('workflow/create', { name }, 'workflow/delete', {
       requestName: 'workflow/list', params: {}, field: 'name', value: name,
@@ -1323,9 +1317,23 @@ describe('real ZenTao product API', () => {
     await call('workflow/update', { id, name: `${name} updated` });
     const contracts = await getList('workflow/list');
     expect(contracts.find(item => recordMatchesID(item, id))?.name).toBe(`${name} updated`);
-    if (contracts.some(item => recordMatchesID(item, 1))) await getRecord('workflow/getContract', 1);
-    else coverage.exclude('workflow/getContract', 'Registry detail route is fixed to contract #1, which does not exist.');
+    // This registry action currently points at contract #1; do not read another run's record.
+    if (getModuleAction('workflow', 'getContract')!.path?.endsWith('/1') && id !== 1) {
+      throw new Error('workflow/getContract is hard-coded to contract #1 and cannot read this temporary contract.');
+    }
+    await getRecord('workflow/getContract', id);
   }, 60000);
+
+  registerExtendedRealEnvTests({
+    call, getList, getRecord, createTracked, deleteTracked,
+    product: requireProductID, project: requireProjectID, execution: requireExecutionID,
+    name: () => productName, account: () => actorAccount!, date: dateAfter,
+    raw: (name, params) => request(name, params, { ...requestOptions, raw: true }),
+    track: (requestName, id) => {
+      if (!extraCreated.some(item => item.requestName === requestName && item.id === id)) extraCreated.push({ requestName, id });
+    },
+    retain: resource => retainedResources.push({ ...resource, reason: 'No delete API is registered for this resource.' }),
+  });
 
   test('closes the temporary execution, project and product after all dependent scenarios', async () => {
     await getList('story/list', { projectID: requireProjectID(), browseType: 'allstory' });

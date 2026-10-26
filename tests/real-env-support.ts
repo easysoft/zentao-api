@@ -29,10 +29,14 @@ export interface RealEnvTestRun {
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes', 'on']);
 
-export function getMissingRealEnvModule(data: unknown): string | undefined {
-  return typeof data === 'string'
-    ? data.match(/the control file (module\/[a-z0-9_]+\/control\.php) not found/i)?.[1]
-    : undefined;
+export function formatRealEnvError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const body = (error as { details?: { body?: unknown } } | null)?.details?.body;
+  if (typeof body !== 'string') return message;
+  try {
+    const detail = JSON.parse(body)?.message;
+    return detail === undefined ? message : `${message}: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`;
+  } catch { return message; }
 }
 
 export function validateRealEnvResponse(
@@ -57,13 +61,10 @@ export function validateRealEnvResponse(
 
 export function createRealEnvCoverage(actions: readonly string[]) {
   const calls: { action: string; outcome: 'success' | 'fail'; route?: string; error?: string }[] = [];
-  const excluded = new Map<string, string>();
   return {
     record(action: string, outcome: 'success' | 'fail', route?: string, error?: string) {
+      if (!actions.includes(action)) throw new Error(`Unregistered API action: ${action}`);
       calls.push({ action, outcome, route, error });
-    },
-    exclude(action: string, reason: string) {
-      excluded.set(action, reason);
     },
     report() {
       const failed = [...new Set(calls.filter(call => call.outcome === 'fail').map(call => call.action))].sort();
@@ -73,13 +74,35 @@ export function createRealEnvCoverage(actions: readonly string[]) {
         exercised: new Set(calls.map(call => call.action)).size,
         successful,
         failed,
-        excluded: Object.fromEntries(excluded),
-        untested: actions.filter(action => !successful.includes(action) && !failed.includes(action) && !excluded.has(action)).sort(),
+        untested: actions.filter(action => !successful.includes(action) && !failed.includes(action)).sort(),
         routes: [...new Set(calls.filter(call => call.outcome === 'success' && call.route).map(call => call.route!))].sort(),
         calls,
       };
     },
   };
+}
+
+export interface RealEnvResource { requestName: `${string}/${string}`; id: number }
+
+/** Keep cleaning after a failed deletion, including the product at the end of the dependency chain. */
+export async function cleanupRealEnvResources(
+  resources: readonly RealEnvResource[],
+  remove: (resource: RealEnvResource) => Promise<unknown>,
+): Promise<{ errors: string[]; remaining: RealEnvResource[] }> {
+  const errors: string[] = [];
+  const remaining: RealEnvResource[] = [];
+  const seen = new Set<string>();
+  for (const resource of resources) {
+    const key = `${resource.requestName} #${resource.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    try { await remove(resource); }
+    catch (error) {
+      errors.push(`${key}: ${error instanceof Error ? error.message : String(error)}`);
+      remaining.push(resource);
+    }
+  }
+  return { errors, remaining };
 }
 
 export function resolveRealEnvWorkflowGroup(
