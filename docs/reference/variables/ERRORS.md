@@ -39,6 +39,7 @@ SDK 已知错误码到默认消息的映射表。
 | <a id="property-e_profile_storage_invalid"></a> `E_PROFILE_STORAGE_INVALID` | `"ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string."` | `'ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string.'` |
 | <a id="property-e_profile_storage_unavailable"></a> `E_PROFILE_STORAGE_UNAVAILABLE` | `"ZenTao profile storage is unavailable in this runtime."` | `'ZenTao profile storage is unavailable in this runtime.'` |
 | <a id="property-e_timeout"></a> `E_TIMEOUT` | `"Request timed out."` | `'Request timed out.'` |
+| <a id="property-e_unsupported_api_action"></a> `E_UNSUPPORTED_API_ACTION` | `"Action {action} has no API {apiVersion} contract."` | `'Action {action} has no API {apiVersion} contract.'` |
 | <a id="property-e_unsupported_zentao_version"></a> `E_UNSUPPORTED_ZENTAO_VERSION` | `"Action {action} does not support ZenTao {version}; minimum versions: {minVersion}"` | `'Action {action} does not support ZenTao {version}; minimum versions: {minVersion}'` |
 | <a id="property-e_upload_file_not_found"></a> `E_UPLOAD_FILE_NOT_FOUND` | `"Upload file not found: {path}"` | `'Upload file not found: {path}'` |
 | <a id="property-e_upload_file_read_failed"></a> `E_UPLOAD_FILE_READ_FAILED` | `"Failed to read upload file: {path}"` | `'Failed to read upload file: {path}'` |

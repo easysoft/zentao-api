@@ -8,6 +8,7 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
+| <a id="property-apiversion"></a> `apiVersion?` | [`ApiVersionOption`](../type-aliases/ApiVersionOption.md) | Override the API generation for this request. |
 | <a id="property-body"></a> `body?` | `unknown` | 请求体；`GET` 请求会忽略该字段。普通对象默认按 JSON 发送，`FormData` / `Blob` / `ArrayBuffer` 等会原样发送。 |
 | <a id="property-bodytype"></a> `bodyType?` | [`ClientRequestBodyType`](../type-aliases/ClientRequestBodyType.md) | 请求体序列化方式。默认 `json`；传入 `FormData` 等原生 body 时会自动按 `raw` 处理。 |
 | <a id="property-headers"></a> `headers?` | `HeadersInit` | 额外请求头；会与 SDK 自动注入的 `Token` / `Content-Type` 合并。 |

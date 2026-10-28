@@ -138,8 +138,11 @@ describe('persistent profiles', () => {
       }),
     ]);
     expect(stored.profiles[0].key).toBeUndefined();
-    expect(statSync(join(tempHome, '.config/zentao')).mode & 0o777).toBe(0o700);
-    expect(statSync(join(tempHome, '.config/zentao/zentao.json')).mode & 0o777).toBe(0o600);
+    // Windows stat mode bits do not represent POSIX owner-only permissions.
+    if (process.platform !== 'win32') {
+      expect(statSync(join(tempHome, '.config/zentao')).mode & 0o777).toBe(0o700);
+      expect(statSync(join(tempHome, '.config/zentao/zentao.json')).mode & 0o777).toBe(0o600);
+    }
   });
 
   test('concurrent SDK processes preserve profiles in the shared store', async () => {

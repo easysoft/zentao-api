@@ -36,3 +36,10 @@ export function supportsZentaoVersion(version: ZentaoVersion, minimums: readonly
   }
   return true;
 }
+
+/** API v2 was introduced with these edition major versions. */
+export function apiVersionForServer(version: string): 'v1' | 'v2' {
+  const parsed = parseZentaoVersion(version);
+  const minimum: Record<string, number> = { '': 22, biz: 13, max: 8, ipd: 5 };
+  return parsed.parts[0] >= minimum[parsed.edition] ? 'v2' : 'v1';
+}

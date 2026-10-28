@@ -1,5 +1,8 @@
 import type { ZentaoClient } from '../client/index.js';
 
+export type ApiVersion = 'v1' | 'v2';
+export type ApiVersionOption = ApiVersion | 'auto';
+
 /** 从本地 profile 恢复客户端时的选项。 */
 export interface FromProfileOptions {
   /** 是否切换为当前 profile 并更新使用时间，默认 true；false 时恢复过程只读存储。 */
@@ -8,8 +11,10 @@ export interface FromProfileOptions {
 
 /** 创建 {@link ZentaoClient} 时使用的配置。 */
 export interface ZentaoClientOptions {
-  /** 禅道站点根地址，例如 `https://zentao.example.com`；SDK 会自动拼接 `/api.php/v2`。 */
+  /** Site root; apiVersion selects the /api.php/v1 or /api.php/v2 prefix. */
   baseUrl: string;
+  /** REST API generation; defaults to v2 for backwards compatibility. */
+  apiVersion?: ApiVersionOption;
   /** 禅道 API Token；未提供时可稍后通过 {@link ZentaoClient.login} 获取并写入实例。 */
   token?: string;
   /** 默认请求超时时间，单位毫秒。 */
@@ -31,6 +36,8 @@ export type ClientResponseType = 'auto' | 'json' | 'text' | 'arrayBuffer' | 'blo
 export interface ClientRequestOptions {
   /** HTTP 方法，默认 `GET`。 */
   method?: HttpMethod;
+  /** Override the API generation for this request. */
+  apiVersion?: ApiVersionOption;
   /** 请求体；`GET` 请求会忽略该字段。普通对象默认按 JSON 发送，`FormData` / `Blob` / `ArrayBuffer` 等会原样发送。 */
   body?: unknown;
   /** 请求体序列化方式。默认 `json`；传入 `FormData` 等原生 body 时会自动按 `raw` 处理。 */

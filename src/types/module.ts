@@ -1,5 +1,5 @@
 import type { ZentaoClient } from '../client/index.js';
-import type { ClientRequestBodyType, HttpMethod } from './client.js';
+import type { ApiVersionOption, ClientRequestBodyType, HttpMethod } from './client.js';
 import type { RequestOptions, RequestProcessOptions } from './options.js';
 import type { Pager } from './response.js';
 
@@ -138,6 +138,8 @@ export type ModuleActionRequestCallback = (info: {
 export interface ModuleAction {
   /** 动作名称，例如 `list`、`get`、`close`。 */
   name: ModuleActionName;
+  /** Explicit v1 contract; actions without it are rejected on API v1. */
+  apiV1?: Partial<Omit<ModuleAction, 'apiV1'>> & { minVersion: readonly string[] };
   /** 各系列支持的最低禅道正式版本，例如 `['22.0', 'biz13.0', 'max8.0', 'ipd5.0']`；不能为空或重复系列，未列出的系列不支持。 */
   minVersion: readonly string[];
   /** 动作类型，决定高阶 request 的路径/参数解析策略，并在 `method`、`resultType` 省略时作为推导依据。 */
@@ -221,6 +223,8 @@ export interface ModuleDefinition {
 
 /** 注册库查询选项；不传版本时返回完整的当前定义，不使用全局版本。 */
 export interface ModuleQueryOptions {
+  /** Contract generation to inspect; defaults to v2. Auto requires a server version. */
+  apiVersion?: ApiVersionOption;
   /** 仅返回该禅道版本支持的动作，以及至少含有一个支持动作的模块。 */
   version?: string;
 }

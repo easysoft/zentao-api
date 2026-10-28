@@ -15,6 +15,7 @@ export const ERRORS = {
   E_LOGIN_FAILED: 'ZenTao login failed.',
   E_INVALID_ZENTAO_CONFIG: 'ZenTao configuration must be an object with a non-empty version.',
   E_INVALID_ZENTAO_VERSION: 'Invalid ZenTao version: {version}',
+  E_UNSUPPORTED_API_ACTION: 'Action {action} has no API {apiVersion} contract.',
   E_UNSUPPORTED_ZENTAO_VERSION: 'Action {action} does not support ZenTao {version}; minimum versions: {minVersion}',
   E_INVALID_PROFILE: 'Invalid ZenTao profile.',
   E_NO_PROFILE: 'No ZenTao profile is configured.',

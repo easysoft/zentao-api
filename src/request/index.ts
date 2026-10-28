@@ -1,5 +1,5 @@
 import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
-import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
+import { apiVersionForServer, parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
 import { getGlobalOptions } from '../misc/global-options.js';
 import type {
   DataRecord,
@@ -126,6 +126,7 @@ async function autoFillUpdateParams(
 
   const current = (await requestInternal(`${module.name}/${getAction.name}`, params, {
     client: options.client,
+    apiVersion: options.apiVersion,
     timeout: options.timeout,
     insecure: options.insecure,
     throwOnFail: true,
@@ -310,7 +311,7 @@ async function requestInternal<T = unknown>(
   }
   // recPerPage 是最常用的列表参数，允许在全局或本次调用中统一覆盖。
   const recPerPage = params.recPerPage ?? options.recPerPage ?? globals.recPerPage;
-  const mergedParams = {
+  const mergedParams: Record<string, unknown> = {
     ...params,
     ...(id !== undefined ? { id } : {}),
     ...(recPerPage !== undefined ? { recPerPage } : {}),
@@ -318,7 +319,7 @@ async function requestInternal<T = unknown>(
 
   // autoFill：update 动作先 GET 当前对象，用现值补齐用户未显式传入的字段，
   // 避免禅道 PUT 把未提交字段覆盖为空。
-  const action = getModuleAction(moduleName, actionName);
+  let action = getModuleAction(moduleName, actionName);
   if (!action) {
     throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });
   }
@@ -339,6 +340,26 @@ async function requestInternal<T = unknown>(
       }
     }
   }
+  const selectedApi = options.apiVersion ?? client.apiVersion ?? 'v2';
+  const apiVersion = selectedApi === 'auto' ? (version === null ? 'v2' : apiVersionForServer(version)) : selectedApi;
+  if (apiVersion === 'v1') {
+    if (!action.apiV1) throw new ZentaoError('E_UNSUPPORTED_API_ACTION', { action: name, apiVersion });
+    action = { ...action, request: undefined, beforeRequest: undefined, ...action.apiV1 };
+    if (action.type === 'create') {
+      let data = mergedParams.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); }
+        catch { throw new ZentaoError('E_INVALID_PARAM', { param: 'data', value: 'invalid JSON' }); }
+      }
+      if (isRecord(data)) for (const key of Object.keys(action.pathParams ?? {})) {
+        if (data[key] === undefined) continue;
+        if (mergedParams[key] !== undefined && String(mergedParams[key]) !== String(data[key])) {
+          throw new ZentaoError('E_INVALID_PARAM', { param: key, value: 'conflicting scope IDs' });
+        }
+        mergedParams[key] = data[key];
+      }
+    }
+  }
   if (version !== null && !supportsZentaoVersion(parseZentaoVersion(version), action.minVersion)) {
     throw new ZentaoError('E_UNSUPPORTED_ZENTAO_VERSION', {
       action: `${module.name}/${action.name}`,
@@ -350,7 +371,7 @@ async function requestInternal<T = unknown>(
     ? await autoFillUpdateParams(module, action, mergedParams, { ...options, client }, version)
     : mergedParams;
 
-  const command = resolveActionRequest(module, actionName, finalParams);
+  const command = resolveActionRequest(module, actionName, finalParams, action);
   if (command.action.beforeRequest) {
     Object.assign(command, await command.action.beforeRequest(command));
   }
@@ -359,6 +380,7 @@ async function requestInternal<T = unknown>(
   });
   const requestOptions = {
     ...preparedBody,
+    ...(options.apiVersion || client.apiVersion === 'auto' ? { apiVersion } : {}),
     timeout: options.timeout ?? globals.timeout,
     insecure: options.insecure ?? globals.insecure,
   };

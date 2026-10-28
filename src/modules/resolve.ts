@@ -211,8 +211,9 @@ export function resolveActionRequest(
   module: ModuleDefinition,
   actionName: string,
   params: Record<string, unknown> = {},
+  actionOverride?: ModuleAction,
 ): ModuleActionRequest {
-  const action = getModuleAction(module.name, actionName);
+  const action = actionOverride ?? getModuleAction(module.name, actionName);
   if (!action) {
     throw new ZentaoError('E_INVALID_ACTION', { module: module.name, action: actionName });
   }

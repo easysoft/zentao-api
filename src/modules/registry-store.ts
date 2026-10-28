@@ -169,6 +169,11 @@ export function validateAction(action: ModuleAction): void {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
   validateMinVersion(action.minVersion);
+  if (action.apiV1 !== undefined) {
+    if (!isRecord(action.apiV1)) throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+    const { apiV1, ...base } = action;
+    validateAction({ ...base, ...apiV1 });
+  }
   // method / resultType 可省略（由 normalizeAction 按 type 推导），但显式给出时必须是字符串。
   if (action.method !== undefined && typeof action.method !== 'string') {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');

@@ -1,10 +1,12 @@
 import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
-import { parseZentaoVersion } from '../misc/zentao-version.js';
+import { apiVersionForServer, parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
 import { getProfileOrThrow, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
+  ApiVersion,
+  ApiVersionOption,
   ClientRequestOptions,
   ClientResponseType,
   FromProfileOptions,
@@ -330,8 +332,9 @@ async function parseResponse(response: Response, responseType: ClientResponseTyp
 export class ZentaoClient {
   /** 禅道站点根地址，不包含 `/api.php/v2`。 */
   readonly siteUrl: string;
-  /** 禅道 API v2 根地址，等于 `siteUrl + '/api.php/v2'`。 */
+  /** Configured API root; auto selects the effective generation per request. */
   readonly baseUrl: string;
+  readonly apiVersion: ApiVersionOption;
   private token?: string;
   private readonly timeout?: number;
   private readonly insecure?: boolean;
@@ -358,10 +361,24 @@ export class ZentaoClient {
   constructor(input: ZentaoClientOptions | string) {
     const options = typeof input === 'string' ? { baseUrl: input } : input;
     this.siteUrl = normalizeSiteUrl(options.baseUrl);
-    this.baseUrl = `${this.siteUrl}/api.php/v2`;
+    this.apiVersion = options.apiVersion ?? 'v2';
+    if (!['v1', 'v2', 'auto'].includes(this.apiVersion)) {
+      throw new ZentaoError('E_INVALID_PARAM', { param: 'apiVersion', value: String(this.apiVersion) });
+    }
+    this.baseUrl = `${this.siteUrl}/api.php/${this.apiVersion === 'v1' ? 'v1' : 'v2'}`;
     this.token = options.token;
     this.timeout = options.timeout;
     this.insecure = options.insecure;
+  }
+
+  /** Resolve auto from a verified server version without mutating shared client state. */
+  async resolveApiVersion(version?: string | null, override?: ApiVersionOption): Promise<ApiVersion> {
+    const selected = override ?? this.apiVersion;
+    if (!['v1', 'v2', 'auto'].includes(selected)) throw new ZentaoError('E_INVALID_PARAM', { param: 'apiVersion', value: String(selected) });
+    if (selected !== 'auto') return selected;
+    if (version === null) return 'v2';
+    const actual = version ?? getGlobalOptions().version ?? (await this.getZentaoConfig()).version;
+    return apiVersionForServer(actual);
   }
 
   /**
@@ -389,7 +406,8 @@ export class ZentaoClient {
   async request(path: string, options: ClientRequestOptions & { responseType: 'blob' }): Promise<Blob>;
   async request<T = unknown>(path: string, options?: ClientRequestOptions): Promise<T>;
   async request(path: string, options: ClientRequestOptions = {}): Promise<unknown> {
-    return this.fetch(buildUrl(this.baseUrl, path, options.query), options, this.token);
+    const apiVersion = await this.resolveApiVersion(undefined, options.apiVersion);
+    return this.fetch(buildUrl(`${this.siteUrl}/api.php/${apiVersion}`, path, options.query), options, this.token);
   }
 
   /**
@@ -599,8 +617,9 @@ export class ZentaoClient {
    *   也可能因底层 {@link ZentaoClient.request} 而抛出 HTTP/网络/超时错误。
    */
   async login(account: string, password: string): Promise<string> {
-    const response = await this.post<LoginResponse>('/users/login', { account, password });
-    if (response.status !== 'success' || !response.token) {
+    const apiVersion = await this.resolveApiVersion();
+    const response = await this.post<LoginResponse>(apiVersion === 'v1' ? '/tokens' : '/users/login', { account, password }, { apiVersion });
+    if (!response || ((apiVersion === 'v2' || response.status !== undefined) && response.status !== 'success') || typeof response.token !== 'string' || !response.token) {
       throw new ZentaoError('E_LOGIN_FAILED');
     }
     const globals = getGlobalOptions();
@@ -614,6 +633,7 @@ export class ZentaoClient {
     let profileKey: string | undefined;
     if (globals.persistProfiles) {
       const config: ZentaoProfileConfig = {};
+      if (this.apiVersion !== 'v2') config.apiVersion = this.apiVersion;
       const timeout = globals.timeout ?? this.timeout;
       const insecure = globals.insecure ?? this.insecure;
       if (timeout !== undefined) config.timeout = timeout;
@@ -681,6 +701,7 @@ export class ZentaoClient {
     const client = new ZentaoClient({
       baseUrl: activeProfile.server,
       token: activeProfile.token,
+      apiVersion: activeProfile.config?.apiVersion,
       timeout: typeof activeProfile.config?.timeout === 'number' ? activeProfile.config.timeout : undefined,
       insecure: typeof activeProfile.config?.insecure === 'boolean' ? activeProfile.config.insecure : undefined,
     });

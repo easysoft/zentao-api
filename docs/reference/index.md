@@ -49,6 +49,8 @@
 
 | Type Alias | Description |
 | ------ | ------ |
+| [ApiVersion](type-aliases/ApiVersion.md) | - |
+| [ApiVersionOption](type-aliases/ApiVersionOption.md) | - |
 | [BuiltinRequestName](type-aliases/BuiltinRequestName.md) | 内置模块支持的请求名：`module`、`module/action` 或 `module/123`。 |
 | [ClientRequestBodyType](type-aliases/ClientRequestBodyType.md) | 请求体序列化方式。 |
 | [ClientResponseType](type-aliases/ClientResponseType.md) | 响应体解析方式。 |

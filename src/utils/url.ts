@@ -5,7 +5,7 @@ export function normalizeSiteUrl(baseUrl: string): string {
   const trimmed = baseUrl.trim().replace(/\/+$/, '');
   if (!trimmed) throw new ZentaoError('E_INVALID_BASE_URL');
 
-  const siteUrl = trimmed.replace(/\/api\.php\/v2$/i, '');
+  const siteUrl = trimmed.replace(/\/api\.php\/v[12]$/i, '');
   let parsed: URL;
   try {
     parsed = new URL(siteUrl);

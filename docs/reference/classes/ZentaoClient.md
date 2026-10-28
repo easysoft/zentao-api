@@ -60,7 +60,8 @@
 
 | Property | Modifier | Type | Description |
 | ------ | ------ | ------ | ------ |
-| <a id="property-baseurl"></a> `baseUrl` | `readonly` | `string` | 禅道 API v2 根地址，等于 `siteUrl + '/api.php/v2'`。 |
+| <a id="property-apiversion"></a> `apiVersion` | `readonly` | [`ApiVersionOption`](../type-aliases/ApiVersionOption.md) | - |
+| <a id="property-baseurl"></a> `baseUrl` | `readonly` | `string` | Configured API root; auto selects the effective generation per request. |
 | <a id="property-siteurl"></a> `siteUrl` | `readonly` | `string` | 禅道站点根地址，不包含 `/api.php/v2`。 |
 
 ## Methods
@@ -432,6 +433,25 @@
   `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
   `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
   `E_INVALID_PARAM`。
+
+***
+
+### resolveApiVersion()
+
+> **resolveApiVersion**(`version?`, `override?`): `Promise`\<[`ApiVersion`](../type-aliases/ApiVersion.md)\>
+
+Resolve auto from a verified server version without mutating shared client state.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `version?` | `string` \| `null` |
+| `override?` | [`ApiVersionOption`](../type-aliases/ApiVersionOption.md) |
+
+#### Returns
+
+`Promise`\<[`ApiVersion`](../type-aliases/ApiVersion.md)\>
 
 ***
 

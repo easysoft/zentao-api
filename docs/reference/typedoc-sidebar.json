@@ -156,6 +156,14 @@
     "collapsed": true,
     "items": [
       {
+        "text": "ApiVersion",
+        "link": "/reference/type-aliases/ApiVersion.md"
+      },
+      {
+        "text": "ApiVersionOption",
+        "link": "/reference/type-aliases/ApiVersionOption.md"
+      },
+      {
         "text": "BuiltinRequestName",
         "link": "/reference/type-aliases/BuiltinRequestName.md"
       },
