@@ -59,6 +59,8 @@ export function isZentaoConfigFetchError(error: unknown): boolean {
 export class ZentaoError extends Error {
   /** 错误码，对应 {@link ERRORS} 的 key；用于稳定地区分错误类型。 */
   readonly code: ErrorCode;
+  /** Template values, kept separate from message text and raw diagnostics. */
+  declare readonly params: Readonly<Record<string, string | number>>;
   /** 附加上下文，例如 HTTP 响应详情、原始异常或失败的禅道响应原文。 */
   readonly details?: unknown;
 
@@ -77,6 +79,7 @@ export class ZentaoError extends Error {
       }
     }
     super(message);
+    Object.defineProperty(this, 'params', { value: Object.freeze({ ...replacements }), enumerable: false });
     this.name = 'ZentaoError';
     this.code = code;
     this.details = details;
