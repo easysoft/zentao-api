@@ -7,10 +7,10 @@ import { ZentaoError } from '../misc/errors.js';
 import type { HttpMethod, ModuleActionRequestCallback } from '../types/index.js';
 
 /** 这些内置接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
-const requestJSON: ModuleActionRequestCallback = async ({ request: command, body, bodyType, client, timeout, insecure }) => {
+const requestJSON: ModuleActionRequestCallback = async ({ request: command, body, bodyType, client, timeout, insecure, actionAssistant }) => {
   const response = await client.request(command.path, {
     method: command.action.method!.toUpperCase() as HttpMethod,
-    query: command.query, body, bodyType, timeout, insecure, responseType: 'response',
+    query: command.query, body, bodyType, timeout, insecure, actionAssistant, responseType: 'response',
   });
   const responseText = await response.text();
   try {
@@ -356,13 +356,13 @@ export function applyBuiltinOverrides(): void {
 
   // 确认表单会重置缺省字段；仅补齐可写字段，不回传详情中的其他属性。
   extendModuleAction('bug', 'confirm', {
-    request: async ({ request: command, body, bodyType, client, timeout, insecure, options }) => {
+    request: async ({ request: command, body, bodyType, client, timeout, insecure, actionAssistant, options }) => {
       const data = { ...(body as Record<string, unknown>) };
       const fields = ['status', 'assignedTo', 'type', 'pri', 'deadline', 'mailto'];
       const missing = fields.filter(field => data[field] === undefined);
       if (missing.length) {
         const response = await request('bug/get', { id: command.id }, {
-          client, timeout, insecure, throwOnFail: true,
+          client, timeout, insecure, actionAssistant, throwOnFail: true,
           forceRefreshConfig: options.forceRefreshConfig,
           skipVersionCheckOnConfigError: options.skipVersionCheckOnConfigError,
         });
@@ -383,7 +383,7 @@ export function applyBuiltinOverrides(): void {
       if (data.assignedTo === 'closed') {
         throw new ZentaoError('E_INVALID_PARAM', { param: 'assignedTo', value: 'closed' });
       }
-      return requestJSON({ request: command, body: data, bodyType, client, timeout, insecure, options });
+      return requestJSON({ request: command, body: data, bodyType, client, timeout, insecure, actionAssistant, options });
     },
   });
 

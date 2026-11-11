@@ -11,7 +11,8 @@
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `info` | \{ `body`: `unknown`; `bodyType?`: [`ClientRequestBodyType`](ClientRequestBodyType.md); `client`: [`ZentaoClient`](../classes/ZentaoClient.md); `insecure?`: `boolean`; `options`: [`RequestOptions`](../interfaces/RequestOptions.md); `request`: [`ModuleActionRequest`](../interfaces/ModuleActionRequest.md); `timeout?`: `number`; \} | - |
+| `info` | \{ `actionAssistant?`: [`ActionAssistant`](ActionAssistant.md); `body`: `unknown`; `bodyType?`: [`ClientRequestBodyType`](ClientRequestBodyType.md); `client`: [`ZentaoClient`](../classes/ZentaoClient.md); `insecure?`: `boolean`; `options`: [`RequestOptions`](../interfaces/RequestOptions.md); `request`: [`ModuleActionRequest`](../interfaces/ModuleActionRequest.md); `timeout?`: `number`; \} | - |
+| `info.actionAssistant?` | [`ActionAssistant`](ActionAssistant.md) | 操作辅助工具标记，未指定时回落到全局选项；需传给客户端及回调内部的后续请求。 |
 | `info.body` | `unknown` | 准备好的请求体，例如 JSON 对象或上传用的 FormData。 |
 | `info.bodyType?` | [`ClientRequestBodyType`](ClientRequestBodyType.md) | 请求体序列化方式，可直接传给客户端。 |
 | `info.client` | [`ZentaoClient`](../classes/ZentaoClient.md) | 本次调用选定的客户端。 |

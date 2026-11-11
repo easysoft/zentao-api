@@ -39,6 +39,7 @@ describe('high-level file uploads', () => {
 
     let receivedContentType = '';
     let receivedToken = '';
+    let receivedAssistant: string | null = null;
     let receivedObjectType: FormDataEntryValue | null = null;
     let receivedObjectID: FormDataEntryValue | null = null;
     let receivedFilename = '';
@@ -47,6 +48,7 @@ describe('high-level file uploads', () => {
     const server = createMockServer(async (req) => {
       receivedContentType = req.headers.get('Content-Type') ?? '';
       receivedToken = req.headers.get('Token') ?? '';
+      receivedAssistant = req.headers.get('ZenTao-Action-Assistant');
       const form = await req.formData();
       receivedObjectType = form.get('objectType');
       receivedObjectID = form.get('objectID');
@@ -70,13 +72,14 @@ describe('high-level file uploads', () => {
         file: path,
         objectType: 'story',
         objectID: 7,
-      }, { client });
+      }, { client, actionAssistant: { name: 'AI', info: 'upload' } });
       const data: FileCreateResult | undefined = response.data;
 
       expect(response.status).toBe('success');
       expect(data).toEqual({ id: 42, url: '/file-read-42.txt' });
       expect(receivedContentType).toContain('multipart/form-data; boundary=');
       expect(receivedToken).toBe('upload-token');
+      expect(receivedAssistant ?? '').toBe('AI <upload>');
       expect(String(receivedObjectType)).toBe('story');
       expect(String(receivedObjectID)).toBe('7');
       expect(receivedFilename).toBe('upload-note.txt');

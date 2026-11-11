@@ -27,7 +27,7 @@ const packageEntry = join(root, `${entryBaseName}.ts`);
 try {
   writeFileSync(packageEntry, [
     "export { ZentaoClient, VERSION, BUILD, request } from 'zentao-api/browser';",
-    "export type { ClientRequestOptions, ResponseData } from 'zentao-api/browser';",
+    "export type { ActionAssistant, ClientRequestOptions, ResponseData } from 'zentao-api/browser';",
   ].join('\n'));
 
   await buildOrThrow({
@@ -57,6 +57,7 @@ try {
 
   let receivedBody: unknown;
   let receivedToken: string | undefined;
+  let receivedAssistant: string | null = null;
   const code = readFileSync(join(dir, 'global', 'browser-global.js'), 'utf8');
   const context = vm.createContext({
     window: {},
@@ -75,12 +76,14 @@ try {
     fetch: (_url: string, init?: RequestInit) => {
       if (new URL(_url).searchParams.get('mode') === 'getconfig') {
         assert(!new Headers(init?.headers).has('Token'), 'Configuration request must not attach Token.');
+        assert(!new Headers(init?.headers).has('ZenTao-Action-Assistant'), 'Configuration request must not attach assistant metadata.');
         assert(init?.cache === 'no-store', 'Configuration request must bypass the HTTP cache.');
         assert(init?.credentials === 'omit', 'Configuration request must omit browser credentials.');
         return Promise.resolve(Response.json({ version: '22.5' }));
       }
       const headers = new Headers(init?.headers);
       receivedToken = headers.get('Token') ?? undefined;
+      receivedAssistant = headers.get('ZenTao-Action-Assistant');
       receivedBody = init?.body;
       return Promise.resolve(Response.json({ status: 'success' }));
     },
@@ -93,6 +96,7 @@ try {
   const client = new api.ZentaoClient({
     baseUrl: 'https://zentao.example.com',
     token: 'browser-token',
+    actionAssistant: 'Browser',
   });
   await api.request('file/create', {
     file: {
@@ -101,10 +105,11 @@ try {
     },
     objectType: 'story',
     objectID: 1,
-  }, { client });
+  }, { client, actionAssistant: { name: 'AI', info: 'browser upload' } });
 
   assert(receivedBody instanceof FormData, 'Browser global high-level request did not build FormData.');
   assert(receivedToken === 'browser-token', 'Browser global request did not attach Token.');
+  assert(receivedAssistant === 'AI <browser upload>', 'Browser global request did not serialize assistant metadata.');
 } finally {
   rmSync(packageEntry, { force: true });
   rmSync(dir, { recursive: true, force: true });

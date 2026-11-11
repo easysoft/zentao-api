@@ -36,6 +36,7 @@ beforeEach(async () => {
     timeout: undefined,
     insecure: undefined,
     persistProfiles: undefined,
+    actionAssistant: undefined,
     version: undefined,
     skipVersionCheckOnConfigError: undefined,
   });
@@ -49,6 +50,7 @@ afterEach(() => {
     timeout: undefined,
     insecure: undefined,
     persistProfiles: undefined,
+    actionAssistant: undefined,
     version: undefined,
     skipVersionCheckOnConfigError: undefined,
   });
@@ -239,7 +241,9 @@ describe('persistent profiles', () => {
   });
 
   test('persists successful logins when enabled in global options', async () => {
+    const assistants: Array<string | null> = [];
     const server = createMockServer((req) => {
+      assistants.push(req.headers.get('ZenTao-Action-Assistant'));
       if (new URL(req.url).pathname.endsWith('/users/login')) {
         return Response.json({
           status: 'success',
@@ -252,8 +256,8 @@ describe('persistent profiles', () => {
     });
 
     try {
-      setGlobalOptions({ persistProfiles: true });
-      const client = new ZentaoClient({ baseUrl: server.url.toString(), timeout: 3210 });
+      setGlobalOptions({ persistProfiles: true, actionAssistant: 'Global' });
+      const client = new ZentaoClient({ baseUrl: server.url.toString(), timeout: 3210, actionAssistant: { name: 'Client' } });
 
       await client.login('admin', 'secret');
 
@@ -265,6 +269,11 @@ describe('persistent profiles', () => {
         serverConfig: { version: '22.5' },
         serverConfigFetchedAt: expect.any(String),
       }));
+      expect((await getProfile())!.config).toEqual({ timeout: 3210 });
+      setGlobalOptions({ actionAssistant: undefined });
+      const restored = await ZentaoClient.fromProfile();
+      await restored.get('/products');
+      expect(assistants).toEqual(['Global', null, null]);
     } finally {
       server.stop();
     }

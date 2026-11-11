@@ -72,6 +72,7 @@ afterEach(() => {
     limit: undefined,
     timeout: undefined,
     insecure: undefined,
+    actionAssistant: undefined,
     throwOnFail: undefined,
     autoFill: undefined,
   });
@@ -1198,7 +1199,9 @@ describe('high-level request', () => {
   test('autoFill fills omitted update fields from the current object before PUT', async () => {
     let getCalled = false;
     let putBody: Record<string, unknown> | undefined;
+    const assistants: Array<string | null> = [];
     const server = createMockServer(async (req) => {
+      assistants.push(req.headers.get('ZenTao-Action-Assistant'));
       if (req.method === 'GET') {
         getCalled = true;
         return Response.json({
@@ -1226,11 +1229,12 @@ describe('high-level request', () => {
 
     try {
       const client = new ZentaoClient({ baseUrl: server.url.toString() });
-      setGlobalOptions({ client });
+      setGlobalOptions({ client, actionAssistant: 'Global' });
 
-      await request('bug/update', { id: 7, title: 'new title' }, { autoFill: true });
+      await request('bug/update', { id: 7, title: 'new title' }, { autoFill: true, actionAssistant: { name: 'AI', info: 'update' } });
 
       expect(getCalled).toBe(true);
+      expect(assistants).toEqual(['AI <update>', 'AI <update>']);
       // 用户显式传入的 title 保留，其余字段用现值补齐。
       expect(putBody).toEqual({
         title: 'new title',

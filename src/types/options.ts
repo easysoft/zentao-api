@@ -1,4 +1,5 @@
 import type { ZentaoClient } from '../client/index.js';
+import type { ActionAssistant } from './client.js';
 import type { ProcessListOptions, ProcessSingleOptions } from './data.js';
 
 /** SDK 进程级全局默认选项，供高阶 {@link request} 调用复用。 */
@@ -9,6 +10,8 @@ export interface GlobalOptions {
   skipVersionCheckOnConfigError?: boolean;
   /** 默认客户端；通常由 `ZentaoClient.init()` 设置。 */
   client?: ZentaoClient;
+  /** 默认操作辅助工具标记；覆盖客户端默认值，可被单次请求覆盖，空字符串表示关闭，不保存到 profile。 */
+  actionAssistant?: ActionAssistant;
   /** 默认每页记录数，会映射到模块动作的 `recPerPage` 参数。 */
   recPerPage?: string;
   /** 默认限制返回列表数量，只影响 SDK 归一化后的 `data`。 */
@@ -37,6 +40,8 @@ export interface RequestOptions extends ProcessListOptions {
   skipVersionCheckOnConfigError?: boolean;
   /** 本次调用使用的客户端；优先级高于全局客户端。 */
   client?: ZentaoClient;
+  /** 本次操作辅助工具标记；覆盖全局和客户端默认值，对象整体替换，undefined 表示继承，空字符串表示关闭。 */
+  actionAssistant?: ActionAssistant;
   /** 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 */
   recPerPage?: string;
   /** 本次调用超时时间。 */

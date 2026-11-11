@@ -8,6 +8,7 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
+| <a id="property-actionassistant"></a> `actionAssistant?` | [`ActionAssistant`](../type-aliases/ActionAssistant.md) | 默认操作辅助工具标记；优先级低于全局和单次请求配置，默认不发送。 |
 | <a id="property-baseurl"></a> `baseUrl` | `string` | 禅道站点根地址，例如 `https://zentao.example.com`；SDK 会自动拼接 `/api.php/v2`。 |
 | <a id="property-insecure"></a> `insecure?` | `boolean` | 是否跳过 TLS 证书验证；仅 Node.js 运行时支持，浏览器中会抛错。 |
 | <a id="property-timeout"></a> `timeout?` | `number` | 默认请求超时时间，单位毫秒。 |

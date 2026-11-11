@@ -23,6 +23,7 @@ afterEach(() => {
     limit: undefined,
     timeout: undefined,
     insecure: undefined,
+    actionAssistant: undefined,
     throwOnFail: undefined,
     autoFill: undefined,
   });
@@ -154,9 +155,10 @@ describe('ModuleAction.beforeRequest', () => {
         request: custom ? customRequest : undefined,
       }],
     });
-    setGlobalOptions({ version: '22.5', client: defaultClient, timeout: 8000, insecure: true });
+    setGlobalOptions({ version: '22.5', client: defaultClient, timeout: 8000, insecure: true, actionAssistant: 'Global' });
     const options = Object.freeze({
       client, timeout: 0, insecure: false, pick: ['name'], raw: false,
+      actionAssistant: Object.freeze({ name: 'AI', info: 'zentao ipd_5.0' }),
       convertSingle: record => ({ ...record, name: `${record.name}!` }),
     } satisfies RequestOptions);
 
@@ -176,11 +178,13 @@ describe('ModuleAction.beforeRequest', () => {
       expect(info.client).toBe(client);
       expect(info.timeout).toBe(0);
       expect(info.insecure).toBe(false);
+      expect(info.actionAssistant).toBe(options.actionAssistant);
       expect(info.options).toBe(options);
       expect(transport).not.toHaveBeenCalled();
     } else {
       expect(transport).toHaveBeenCalledWith('/hooked/8/save', {
         method: 'PUT', query: { language: 'en' }, body: { count: 3 }, timeout: 0, insecure: false,
+        actionAssistant: options.actionAssistant,
       });
       expect(customRequest).not.toHaveBeenCalled();
     }

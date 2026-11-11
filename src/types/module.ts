@@ -1,5 +1,5 @@
 import type { ZentaoClient } from '../client/index.js';
-import type { ClientRequestBodyType, HttpMethod } from './client.js';
+import type { ActionAssistant, ClientRequestBodyType, HttpMethod } from './client.js';
 import type { RequestOptions, RequestProcessOptions } from './options.js';
 import type { Pager } from './response.js';
 
@@ -128,6 +128,8 @@ export type ModuleActionRequestCallback = (info: {
   timeout?: number;
   /** 本次请求的 TLS 选项，未指定时回落到全局选项。 */
   insecure?: boolean;
+  /** 操作辅助工具标记，未指定时回落到全局选项；需传给客户端及回调内部的后续请求。 */
+  actionAssistant?: ActionAssistant;
   /** 本次调用选定的客户端。 */
   client: ZentaoClient;
   /** 调用方传入的原始请求选项。 */

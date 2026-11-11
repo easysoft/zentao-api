@@ -5,6 +5,7 @@ import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
 import { getProfileOrThrow, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
+  ActionAssistant,
   ClientRequestOptions,
   ClientResponseType,
   FromProfileOptions,
@@ -18,6 +19,22 @@ import type {
 
 const DEFAULT_TIMEOUT = 10000;
 const CONFIG_MAX_AGE = 24 * 60 * 60 * 1000;
+const ACTION_ASSISTANT_HEADER = 'ZenTao-Action-Assistant';
+
+function serializeActionAssistant(value: ActionAssistant): string {
+  if (typeof value === 'string') return value;
+  const invalidField = /[<>\u0000-\u001f\u007f-\u009f]/;
+  if (!isRecord(value) || typeof value.name !== 'string' || !value.name.trim() || invalidField.test(value.name)
+    || (value.info !== undefined && (typeof value.info !== 'string' || invalidField.test(value.info)))) {
+    throw new ZentaoError('E_INVALID_PARAM', {
+      param: 'actionAssistant',
+      value: 'Expected a non-empty name and optional info without angle brackets or control characters.',
+    });
+  }
+  const name = value.name.trim();
+  const info = value.info?.trim();
+  return info ? `${name} <${info}>` : name;
+}
 
 function isServerConfig(value: unknown): value is ServerConfig {
   return isRecord(value) && typeof value.version === 'string' && value.version.trim().length > 0;
@@ -335,6 +352,7 @@ export class ZentaoClient {
   private token?: string;
   private readonly timeout?: number;
   private readonly insecure?: boolean;
+  private readonly actionAssistant?: ActionAssistant;
   private profileKey?: string;
   private serverConfig?: ServerConfig;
   private serverConfigFetchedAt?: string;
@@ -362,6 +380,7 @@ export class ZentaoClient {
     this.token = options.token;
     this.timeout = options.timeout;
     this.insecure = options.insecure;
+    this.actionAssistant = options.actionAssistant;
   }
 
   /**
@@ -381,8 +400,8 @@ export class ZentaoClient {
    * @returns 解析后的响应体；当响应为空字符串时返回 `undefined`。
    * @throws {ZentaoError} 可能抛出 `E_HTTP_ERROR`（非 2xx 状态）、`E_NETWORK_ERROR`（底层 fetch 失败）、
    *   `E_TIMEOUT`（超过 `timeout`）、`E_ABORTED`（外部信号取消）或
-   *   `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体时会抛
-   *   `E_INVALID_PARAM`。
+   *   `E_INSECURE_BROWSER`（浏览器中开启了 `insecure`）；传入 `ReadableStream` 请求体或无效的
+   *   `actionAssistant` 对象时会抛 `E_INVALID_PARAM`。
    */
   async request(path: string, options: ClientRequestOptions & { responseType: 'response' }): Promise<Response>;
   async request(path: string, options: ClientRequestOptions & { responseType: 'arrayBuffer' }): Promise<ArrayBuffer>;
@@ -414,6 +433,15 @@ export class ZentaoClient {
     const insecure = options.insecure ?? globals.insecure ?? this.insecure;
     assertInsecureSupported(insecure);
     const headers = new Headers(options.headers);
+    const actionAssistant = options.actionAssistant !== undefined
+      ? options.actionAssistant
+      : headers.get(ACTION_ASSISTANT_HEADER)
+        ?? (globals.actionAssistant !== undefined ? globals.actionAssistant : this.actionAssistant);
+    if (actionAssistant !== undefined) {
+      const value = serializeActionAssistant(actionAssistant);
+      if (value === '') headers.delete(ACTION_ASSISTANT_HEADER);
+      else headers.set(ACTION_ASSISTANT_HEADER, value);
+    }
     if (token) {
       headers.set('Token', token);
     }
@@ -468,7 +496,7 @@ export class ZentaoClient {
   /**
    * 匿名获取禅道站点 `/?mode=getconfig` 配置，只需站点地址，无需登录或 profile。
    *
-   * 不发送 API Token，浏览器请求显式省略 Cookie 等凭据，不受 API Token 过期影响。
+   * 不发送 API Token 或操作辅助工具标记，浏览器请求显式省略 Cookie 等凭据，不受 API Token 过期影响。
    *
    * 默认复用不超过 24 小时的缓存；缺失、过期或时间异常时重新获取。
    * `forceRefresh: true` 忽略缓存。同一客户端的并发刷新共用首次调用的传输选项；
@@ -498,6 +526,7 @@ export class ZentaoClient {
 
     const pending = this.fetch(buildUrl(this.siteUrl, '/', { mode: 'getconfig' }), {
       method: 'GET', timeout: options.timeout, insecure: options.insecure, signal: options.signal,
+      actionAssistant: '',
     }, undefined, { cache: 'no-store', credentials: 'omit' }).then(async (config) => {
       if (!isServerConfig(config)) throw new ZentaoError('E_INVALID_ZENTAO_CONFIG');
       parseZentaoVersion(config.version);

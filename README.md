@@ -204,6 +204,7 @@ const created = await client.post('/products', { name: '新产品' });
 | --- | --- | --- |
 | `baseUrl` | `string` | 禅道站点根地址；SDK 自动处理 `/api.php/v2`。 |
 | `token` | `string` | 禅道 API Token；也可稍后通过 `login()` 获取。 |
+| `actionAssistant` | `ActionAssistant` | 操作辅助工具标记，支持字符串或 `{ name, info? }`，默认不发送。 |
 | `timeout` | `number` | 默认请求超时时间，单位为毫秒，默认 `10000`。 |
 | `insecure` | `boolean` | 跳过 TLS 证书校验，仅支持 Node.js 运行时。 |
 
@@ -221,7 +222,27 @@ setGlobalOptions({
 });
 ```
 
-常用全局选项包括 `client`、`version`、`recPerPage`、`limit`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。
+常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。
+
+### 操作辅助工具标记
+
+`actionAssistant` 会设置 `ZenTao-Action-Assistant` 请求头，供已支持该功能的禅道服务端记录操作日志。可在客户端构造参数、全局选项或单次请求选项中配置：
+
+```ts
+setGlobalOptions({ actionAssistant: 'ZenTao CLI <zentao-cli 0.4.1>' });
+
+await request('product/update', { id: 1, name: '新名称' }, {
+  actionAssistant: { name: 'AI', info: 'zentao ipd_5.0' },
+}); // 发送 ZenTao-Action-Assistant: AI <zentao ipd_5.0>
+
+await client.put('/products/1', { name: '新名称' }, { actionAssistant: '' }); // 本次关闭标记
+```
+
+导出的 `ActionAssistant` 类型为 `string | { name: string; info?: string }`。对象字段会去除首尾空白，`info` 为空或缺省时只发送名称；名称必须非空，两个字段都不能包含尖括号或控制字符，否则抛出 `E_INVALID_PARAM`。字符串直接作为头值，最终头值沿用原生 `Headers` 校验，不额外编码或截断；不能直接发送中文等非 Latin-1 字符。
+
+优先级为：单次 `actionAssistant` > 单次 `headers` 中的同名头 > 全局配置 > 客户端默认值。对象整体覆盖；`undefined` 表示继承，`''` 表示关闭标记。配置不会保存到 profile，单次覆盖不会改变默认值。登录、上传及内部预取请求也会携带有效标记，匿名 `getZentaoConfig()` 探测不携带。
+
+浏览器跨域使用时，服务端的 CORS 请求头允许列表需要包含 `ZenTao-Action-Assistant`。
 
 ### 禅道版本检查
 

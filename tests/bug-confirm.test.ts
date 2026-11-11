@@ -9,13 +9,15 @@ const current = {
 afterEach(() => {
   mock.restore();
   resetModuleDefinitions();
-  setGlobalOptions({ client: undefined, version: undefined });
+  setGlobalOptions({ client: undefined, version: undefined, actionAssistant: undefined });
 });
 
 test.each(['active', 'resolved', 'closed'])('confirm preserves omitted fields and %s state using the selected client', async status => {
   const before = { ...current, status, id: 7, confirmed: 0, title: 'Do not send this', openedBy: 'qa' };
   const writes: unknown[] = [];
+  const assistants: Array<string | null> = [];
   const server = Bun.serve({ port: 0, async fetch(req) {
+    assistants.push(req.headers.get('ZenTao-Action-Assistant'));
     if (req.method === 'GET') return Response.json({ status: 'success', bug: before });
     writes.push(await req.json());
     return Response.json({ status: 'success', data: 7 });
@@ -26,11 +28,13 @@ test.each(['active', 'resolved', 'closed'])('confirm preserves omitted fields an
     const transport = spyOn(client, 'request');
     const wrongClient = new ZentaoClient('http://wrong-client.test');
     const wrongTransport = spyOn(wrongClient, 'request').mockRejectedValue(new Error('Wrong client'));
-    setGlobalOptions({ client: wrongClient, version: 'ipd5.6' });
+    setGlobalOptions({ client: wrongClient, version: 'ipd5.6', actionAssistant: 'Global' });
     const response = await request('bug/confirm', { bugID: 7, comment: 'Keep fields' }, {
       client, timeout: 4321, insecure: false, pick: ['id'], convertSingle: () => ({ id: 999 }),
+      actionAssistant: { name: 'AI', info: 'confirm' },
     });
     expect(response.status).toBe('success');
+    expect(assistants).toEqual(['AI <confirm>', 'AI <confirm>']);
     expect(writes).toEqual([{ ...current, status, mailto: ['admin', 'qa'], comment: 'Keep fields' }]);
     expect(wrongTransport).not.toHaveBeenCalled();
     expect(transport.mock.calls.map(([path, options]) => ({ path, method: options?.method, timeout: options?.timeout, insecure: options?.insecure })))

@@ -156,6 +156,10 @@
     "collapsed": true,
     "items": [
       {
+        "text": "ActionAssistant",
+        "link": "/reference/type-aliases/ActionAssistant.md"
+      },
+      {
         "text": "BuiltinRequestName",
         "link": "/reference/type-aliases/BuiltinRequestName.md"
       },

@@ -128,6 +128,7 @@ async function autoFillUpdateParams(
     client: options.client,
     timeout: options.timeout,
     insecure: options.insecure,
+    actionAssistant: options.actionAssistant,
     throwOnFail: true,
   }, version) as ResponseData).data;
   if (!isRecord(current)) return params;
@@ -361,6 +362,7 @@ async function requestInternal<T = unknown>(
     ...preparedBody,
     timeout: options.timeout ?? globals.timeout,
     insecure: options.insecure ?? globals.insecure,
+    actionAssistant: options.actionAssistant !== undefined ? options.actionAssistant : globals.actionAssistant,
   };
   const raw = command.action.request
     ? await command.action.request({ request: command, ...requestOptions, client, options })

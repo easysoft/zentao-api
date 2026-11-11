@@ -1,5 +1,13 @@
 import type { ZentaoClient } from '../client/index.js';
 
+/**
+ * 操作辅助工具标记，对应 `ZenTao-Action-Assistant` 请求头。
+ * 字符串直接作为头值；对象去除字段首尾空白后序列化为 `name <info>`，没有详情时只发送名称。
+ * 对象名称不能为空，名称和详情不能包含尖括号或控制字符；最终头值仍须符合原生 Headers 的限制。
+ * 空字符串表示关闭标记；配置仅运行时有效，不保存到 profile。
+ */
+export type ActionAssistant = string | { name: string; info?: string };
+
 /** 从本地 profile 恢复客户端时的选项。 */
 export interface FromProfileOptions {
   /** 是否切换为当前 profile 并更新使用时间，默认 true；false 时恢复过程只读存储。 */
@@ -12,6 +20,8 @@ export interface ZentaoClientOptions {
   baseUrl: string;
   /** 禅道 API Token；未提供时可稍后通过 {@link ZentaoClient.login} 获取并写入实例。 */
   token?: string;
+  /** 默认操作辅助工具标记；优先级低于全局和单次请求配置，默认不发送。 */
+  actionAssistant?: ActionAssistant;
   /** 默认请求超时时间，单位毫秒。 */
   timeout?: number;
   /** 是否跳过 TLS 证书验证；仅 Node.js 运行时支持，浏览器中会抛错。 */
@@ -37,8 +47,10 @@ export interface ClientRequestOptions {
   bodyType?: ClientRequestBodyType;
   /** 响应体解析方式。默认 `auto`，会优先尝试 JSON，失败后回落为文本；`response` 会让 signal 和 timeout 继续控制响应体。 */
   responseType?: ClientResponseType;
-  /** 额外请求头；会与 SDK 自动注入的 `Token` / `Content-Type` 合并。 */
+  /** 额外请求头；会与 SDK 自动注入的 `Token` / `Content-Type` 合并，同名助手头优先于全局和客户端默认值。 */
   headers?: HeadersInit;
+  /** 本次操作辅助工具标记；优先于 headers 中的同名头、全局和客户端默认值。undefined 表示继承，空字符串表示关闭。 */
+  actionAssistant?: ActionAssistant;
   /** URL 查询参数；对象和数组使用 deepObject 风格序列化，`undefined` 值会被跳过。 */
   query?: Record<string, unknown>;
   /** 外部取消信号；会与 SDK 自身的超时控制合并。 */

@@ -30,14 +30,17 @@ const uploadPath = join(uploadDir, 'node-smoke.txt');
 writeFileSync(uploadPath, 'node upload smoke');
 let receivedContentType = '';
 let receivedBody = '';
+let receivedAssistant;
 const server = createServer((request, response) => {
   if (request.url === '/?mode=getconfig') {
     assert.equal(request.headers.token, undefined);
+    assert.equal(request.headers['zentao-action-assistant'], undefined);
     response.writeHead(200, { 'Content-Type': 'application/json' });
     response.end(JSON.stringify({ version: '22.5' }));
     return;
   }
   receivedContentType = String(request.headers['content-type'] ?? '');
+  receivedAssistant = request.headers['zentao-action-assistant'];
   const chunks = [];
   request.on('data', (chunk) => chunks.push(chunk));
   request.on('end', () => {
@@ -54,7 +57,9 @@ try {
   });
   const address = server.address();
   assert(address && typeof address === 'object');
-  const uploadClient = new api.ZentaoClient(`http://127.0.0.1:${address.port}`);
+  const uploadClient = new api.ZentaoClient({
+    baseUrl: `http://127.0.0.1:${address.port}`, actionAssistant: { name: 'Node', info: 'smoke' },
+  });
   const rawResponse = await uploadClient.request('/raw', { responseType: 'response' });
   const rawClone = rawResponse.clone();
   assert.equal(rawClone.url, rawResponse.url);
@@ -72,14 +77,16 @@ try {
     rawClone.text(),
   ]);
   assert.equal(rawBody, rawCloneBody);
+  assert.equal(receivedAssistant, 'Node <smoke>');
 
   const uploaded = await api.request('file/create', {
     file: uploadPath,
     objectType: 'story',
     objectID: 1,
-  }, { client: uploadClient });
+  }, { client: uploadClient, actionAssistant: 'AI <upload>' });
 
   assert.equal(uploaded.data.id, 1);
+  assert.equal(receivedAssistant, 'AI <upload>');
   assert.match(receivedContentType, /^multipart\/form-data; boundary=/);
   assert.match(receivedBody, /filename="node-smoke\.txt"/);
   assert.match(receivedBody, /Content-Type: text\/plain/i);

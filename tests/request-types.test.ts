@@ -1,5 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'bun:test';
-import { getModuleAction, request, type BuiltinRequestName, type DataRecord, type RequestOptions } from '../src/index';
+import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type RequestOptions } from '../src/index';
+import type { ActionAssistant as BrowserActionAssistant } from '../src/browser';
 
 interface ProductSummary {
   id: number;
@@ -7,12 +8,13 @@ interface ProductSummary {
 }
 
 async function typedRequestExamples(): Promise<void> {
+  expectTypeOf<BrowserActionAssistant>().toEqualTypeOf<ActionAssistant>();
   const moduleOnlyName: BuiltinRequestName = 'product';
   const actionName: BuiltinRequestName = 'product/list';
   const detailName: BuiltinRequestName = 'product/1';
 
   await request(moduleOnlyName, { recPerPage: 20 });
-  await request(actionName, { recPerPage: 20, pageID: 1 });
+  await request(actionName, { recPerPage: 20, pageID: 1 }, { actionAssistant: { name: 'AI', info: 'zentao ipd_5.0' } });
 
   const products = await request('product/list', { recPerPage: 20, pageID: 1 });
   const rows: DataRecord[] | undefined = products.data;
