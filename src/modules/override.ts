@@ -354,6 +354,14 @@ export function applyBuiltinOverrides(): void {
     },
   });
 
+  // 部分服务端从 query 读取 productID；复制已解析的 body 值以保留 data 优先级与类型转换。
+  extendModuleAction('bug', 'create', {
+    beforeRequest: async ({ data, query }) => {
+      if (data?.productID === undefined) return {};
+      return { query: { ...query, productID: data.productID } };
+    },
+  });
+
   // 确认表单会重置缺省字段；仅补齐可写字段，不回传详情中的其他属性。
   extendModuleAction('bug', 'confirm', {
     request: async ({ request: command, body, bodyType, client, timeout, insecure, actionAssistant, options }) => {
