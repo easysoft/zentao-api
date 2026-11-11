@@ -1,3 +1,4 @@
+import type { ApiVersionOption } from './client.js';
 import type { ZentaoClient } from '../client/index.js';
 import type { ProcessListOptions, ProcessSingleOptions } from './data.js';
 
@@ -31,6 +32,8 @@ export interface GlobalOptions {
 
 /** 高阶 `request("moduleName")` / `request("moduleName/methodName")` / `request("moduleName/<objectID>")` 的单次调用选项。 */
 export interface RequestOptions extends ProcessListOptions {
+  /** Override the client API generation for this call. */
+  apiVersion?: ApiVersionOption;
   /** 强制刷新服务器配置并用实际版本校验本次请求，优先于全局 version；不会改写全局版本。 */
   forceRefreshConfig?: boolean;
   /** 配置网络或响应获取失败时跳过本次版本检查；优先于全局设置，默认 false，不忽略版本不匹配或格式错误。 */

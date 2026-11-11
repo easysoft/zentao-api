@@ -8,4 +8,5 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
+| <a id="property-apiversion"></a> `apiVersion?` | [`ApiVersionOption`](../type-aliases/ApiVersionOption.md) | Contract generation to inspect; defaults to v2. Auto requires a server version. |
 | <a id="property-version"></a> `version?` | `string` | 仅返回该禅道版本支持的动作，以及至少含有一个支持动作的模块。 |

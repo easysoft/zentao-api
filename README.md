@@ -75,6 +75,10 @@ const products = await request('product/list');
 
 请从环境变量或安全配置中读取账号、密码和 token，不要将凭据提交到代码仓库。
 
+## REST API v1 兼容
+
+设置 `apiVersion: 'auto'` 可按服务器版本选择 v1/v2，或显式使用 `v1`。SDK 默认保持 v2。v1 支持开源版 21.2 的常用查询、产品/Bug/任务/需求维护及部分状态流转；未定义的动作明确报错。参见 [API v1 支持范围](./docs/guide/api-v1.md)。
+
 ## 两种调用方式
 
 | 调用方式 | 适合场景 | 返回值 |

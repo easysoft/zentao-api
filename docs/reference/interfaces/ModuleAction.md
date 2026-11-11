@@ -8,6 +8,7 @@
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
+| <a id="property-apiv1"></a> `apiV1?` | `Partial`\<`Omit`\<`ModuleAction`, `"apiV1"`\>\> & `object` | Explicit v1 contract; actions without it are rejected on API v1. |
 | <a id="property-beforerequest"></a> `beforeRequest?` | [`ModuleActionBeforeRequestCallback`](../type-aliases/ModuleActionBeforeRequestCallback.md) | 请求体准备前执行的回调，可修改解析后的请求并返回请求描述的部分字段作为补丁。 |
 | <a id="property-description"></a> `description?` | `string` | 动作说明。 |
 | <a id="property-display"></a> `display?` | `string` | 面向用户展示的动作名称。 |

@@ -1,3 +1,4 @@
+import { applyV1Contracts } from './v1.js';
 import { extendModuleAction, defineModules, defineModuleActions } from './define.js';
 import { extractResult } from './resolve.js';
 import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
@@ -512,4 +513,5 @@ export function applyBuiltinOverrides(): void {
       return action;
     });
   });
+  applyV1Contracts();
 }

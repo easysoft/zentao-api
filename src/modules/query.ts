@@ -1,5 +1,5 @@
 import type { ModuleAction, ModuleActionParam, ModuleActionParamRole, ModuleDefinition, ModuleQueryOptions } from '../types/index.js';
-import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
+import { apiVersionForServer, parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
 import { objectProps } from './object-props.js';
 import { getModuleMapState, getModulesState } from './registry-store.js';
 
@@ -16,8 +16,14 @@ import { getModuleMapState, getModulesState } from './registry-store.js';
 export function getModule(moduleName: string, options: ModuleQueryOptions = {}): ModuleDefinition | undefined {
   const version = options.version === undefined ? undefined : parseZentaoVersion(options.version);
   const module = getModuleMapState().get(moduleName.toLowerCase());
-  if (!version || !module) return module;
-  const actions = module.actions.filter(action => supportsZentaoVersion(version, action.minVersion));
+  if (!module) return module;
+  const apiVersion = options.apiVersion === 'auto' && options.version ? apiVersionForServer(options.version) : options.apiVersion ?? 'v2';
+  if (!version && apiVersion !== 'v1') return module;
+  const actions = module.actions.flatMap(action => {
+    if (apiVersion === 'v1' && !action.apiV1) return [];
+    const selected = apiVersion === 'v1' ? Object.freeze({ ...action, ...action.apiV1 }) : action;
+    return !version || supportsZentaoVersion(version, selected.minVersion) ? [selected] : [];
+  });
   return actions.length ? Object.freeze({ ...module, actions: Object.freeze(actions) }) : undefined;
 }
 
@@ -114,7 +120,7 @@ export function getModuleActionParams(moduleName: string, actionName: string, op
 export function getModuleNames(options: ModuleQueryOptions = {}): string[] {
   const version = options.version === undefined ? undefined : parseZentaoVersion(options.version);
   return getModulesState()
-    .filter(module => !version || module.actions.some(action => supportsZentaoVersion(version, action.minVersion)))
+    .filter(module => getModule(module.name, options) !== undefined)
     .map(module => module.name);
 }
 

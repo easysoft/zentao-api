@@ -1,3 +1,4 @@
+import type { ApiVersionOption } from './client.js';
 import type { ServerConfig } from './response.js';
 
 /**
@@ -16,6 +17,8 @@ export interface ZentaoProfileConfig {
   insecure?: boolean;
   /** 请求超时时间，单位毫秒。 */
   timeout?: number;
+  /** Preferred REST API generation. */
+  apiVersion?: ApiVersionOption;
   /** 上层应用是否在批量操作出错时停止执行后续操作。 */
   batchFailFast?: boolean;
   /** 上层应用格式化 JSON 时是否添加缩进。 */

@@ -85,7 +85,7 @@ try {
   assert(pack.exitCode === 0, `Bun package creation failed: ${new TextDecoder().decode(pack.stderr)}`);
   const listing = Bun.spawnSync(['tar', '-tzf', archive]);
   assert(listing.exitCode === 0, `Cannot inspect package: ${new TextDecoder().decode(listing.stderr)}`);
-  packedFiles = new Set(new TextDecoder().decode(listing.stdout).trim().split('\n')
+  packedFiles = new Set(new TextDecoder().decode(listing.stdout).trim().split(/\r?\n/)
     .filter(file => !file.endsWith('/')).map(file => file.replace(/^package\//, '')));
 } finally {
   rmSync(packDir, { recursive: true, force: true });
