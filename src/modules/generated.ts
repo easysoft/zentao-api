@@ -2634,6 +2634,10 @@ export const BUILTIN_MODULES = [
                                 "type": "string",
                                 "description": "指派给"
                             },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                            },
                             "reviewer": {
                                 "type": "array",
                                 "items": {
@@ -2862,6 +2866,10 @@ export const BUILTIN_MODULES = [
                                 "type": "string",
                                 "description": "需求名称"
                             },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                            },
                             "reviewer": {
                                 "type": "array",
                                 "items": {
@@ -3071,6 +3079,10 @@ export const BUILTIN_MODULES = [
                                 "type": "string",
                                 "description": "指派给"
                             },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                            },
                             "reviewer": {
                                 "type": "array",
                                 "items": {
@@ -3243,6 +3255,10 @@ export const BUILTIN_MODULES = [
                             "title": {
                                 "type": "string",
                                 "description": "需求名称"
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
                             },
                             "reviewer": {
                                 "type": "array",
@@ -3453,6 +3469,10 @@ export const BUILTIN_MODULES = [
                                 "type": "string",
                                 "description": "指派给"
                             },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                            },
                             "reviewer": {
                                 "type": "array",
                                 "items": {
@@ -3632,6 +3652,10 @@ export const BUILTIN_MODULES = [
                             "verify": {
                                 "type": "string",
                                 "description": "验收标准"
+                            },
+                            "status": {
+                                "type": "string",
+                                "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
                             },
                             "reviewer": {
                                 "type": "array",
@@ -13143,8 +13167,8 @@ export const BUILTIN_MODULES = [
                         name: 'browseType',
                         required: false,
                         type: 'string',
-                        description: '待处理筛选类型，默认 myChecking，取值不区分大小写',
-                        defaultValue: 'myChecking',
+                        description: '待处理筛选类型，默认 mychecking，取值不区分大小写',
+                        defaultValue: 'mychecking',
                         options: [
                             { value: 'mychecking', label: '待我检查' },
                             { value: 'checked', label: '已检查' },

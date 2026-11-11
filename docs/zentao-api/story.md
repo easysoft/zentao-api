@@ -179,6 +179,10 @@ Schema:
       "type": "string",
       "description": "指派给"
     },
+    "status": {
+      "type": "string",
+      "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+    },
     "reviewer": {
       "type": "array",
       "items": {
@@ -250,6 +254,7 @@ const result = await request("story/create", {
   "source": "<string>",
   "verify": "<string>",
   "assignedTo": "<string>",
+  "status": "<string>",
   "reviewer": [
     "<string>"
   ],
@@ -629,6 +634,10 @@ Schema:
       "type": "string",
       "description": "需求名称"
     },
+    "status": {
+      "type": "string",
+      "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+    },
     "reviewer": {
       "type": "array",
       "items": {
@@ -674,6 +683,7 @@ import { request } from 'zentao-api';
 const result = await request("story/change", {
   "storyID": 1,
   "title": "<string>",
+  "status": "<string>",
   "reviewer": [
     "<string>"
   ],

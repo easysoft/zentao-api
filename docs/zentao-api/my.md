@@ -1370,7 +1370,7 @@ const result = await request("my/audits", {
 
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `browseType` | string | 否 | `myChecking` | 待处理筛选类型，默认 myChecking，取值不区分大小写<br>`mychecking` 待我检查<br>`checked` 已检查<br>`wait` 未检查<br>`checking` 检查中<br>`assignto` 指派给我<br>`delay` 已延期<br>`iscycle` 周期性计划<br>`all` 全部 |
+| `browseType` | string | 否 | `mychecking` | 待处理筛选类型，默认 mychecking，取值不区分大小写<br>`mychecking` 待我检查<br>`checked` 已检查<br>`wait` 未检查<br>`checking` 检查中<br>`assignto` 指派给我<br>`delay` 已延期<br>`iscycle` 周期性计划<br>`all` 全部 |
 | `orderBy` | string | 否 |  | 排序字段。 |
 | `recPerPage` | number | 否 |  | 每页数量，不超过1000 |
 | `pageID` | number | 否 |  | 页码，从第1页开始 |
@@ -1391,7 +1391,7 @@ const result = await request("my/audits", {
 import { request } from 'zentao-api';
 
 const result = await request("my/auditPlans", {
-  "browseType": "myChecking",
+  "browseType": "mychecking",
   "orderBy": "<string>",
   "recPerPage": 1,
   "pageID": 1

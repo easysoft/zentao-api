@@ -28,6 +28,16 @@ test('activity lists leave server defaults unset and forward explicit browse typ
   }
 });
 
+test('audit plan defaults match their options without changing case-sensitive task filters', () => {
+  const module = getModule('my')!;
+  const browseType = getModuleAction('my', 'auditPlans')!.params!.find(param => param.name === 'browseType')!;
+  expect(browseType.defaultValue).toBe('mychecking');
+  expect(browseType.options!.map(option => option.value)).toContain(browseType.defaultValue);
+  expect(resolveActionRequest(module, 'auditPlans').query).toMatchObject({ browseType: 'mychecking' });
+  expect(resolveActionRequest(module, 'auditPlans', { browseType: 'checked' }).query).toMatchObject({ browseType: 'checked' });
+  expect(resolveActionRequest(module, 'tasks').query).toMatchObject({ browseType: 'assignedTo' });
+});
+
 test('workflow definitions coexist with contract actions and preserve child paths and JSON writes', async () => {
   const received: Array<{ method: string; path: string; body?: unknown }> = [];
   const server = Bun.serve({ port: 0, async fetch(req) {

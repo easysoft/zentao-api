@@ -5,6 +5,7 @@ import {
   defineModules,
   extendModuleAction,
   getModuleAction,
+  getModuleActionParams,
   request,
   setGlobalOptions,
   type ModuleActionBeforeRequestCallback,
@@ -39,6 +40,12 @@ describe('builtin requirement review hooks', () => {
     ['epic', 'change'],
   ] as const;
 
+  test.each(actions)('%s/%s exposes status as an optional body parameter', (moduleName, actionName) => {
+    expect(getModuleActionParams(moduleName, actionName, { roles: ['body'] })).toContainEqual(expect.objectContaining({
+      name: 'status', role: 'body', type: 'string', required: false,
+    }));
+  });
+
   test.each(actions)('%s/%s sends reviewing status when reviewers are provided', async (moduleName, actionName) => {
     const client = new ZentaoClient('http://zentao.test');
     const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
@@ -46,7 +53,7 @@ describe('builtin requirement review hooks', () => {
 
     for (const reviewer of [['admin'], 'admin']) {
       await request(`${moduleName}/${actionName}`, {
-        id: 7, productID: 1, title: 'Review this requirement', reviewer,
+        id: 7, productID: 1, title: 'Review this requirement', reviewer, status: 'draft',
       });
       const body = transport.mock.calls.at(-1)![1]!.body;
       expect(body).toMatchObject({
@@ -70,17 +77,19 @@ describe('builtin requirement review hooks', () => {
     }
   });
 
-  test.each(actions)('%s/%s preserves data.status when review is skipped', async (moduleName, actionName) => {
+  test.each(actions)('%s/%s preserves explicit statuses and data precedence when review is skipped', async (moduleName, actionName) => {
     const client = new ZentaoClient('http://zentao.test');
     const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success' });
     setGlobalOptions({ version: '22.5', client });
 
     for (const status of ['draft', 'closed']) {
-      await request(`${moduleName}/${actionName}`, {
-        id: 7, productID: 1, title: 'Keep this status', reviewer: [], data: { status },
-      });
-      const body = transport.mock.calls.at(-1)![1]!.body;
-      expect(body).toMatchObject({ title: 'Keep this status', needNotReview: '1', status });
+      for (const params of [{ status }, { status: 'ignored', data: { status } }, { status: 'ignored', data: JSON.stringify({ status }) }]) {
+        await request(`${moduleName}/${actionName}`, {
+          id: 7, productID: 1, title: 'Keep this status', reviewer: [], ...params,
+        });
+        const body = transport.mock.calls.at(-1)![1]!.body;
+        expect(body).toMatchObject({ title: 'Keep this status', needNotReview: '1', status });
+      }
     }
   });
 

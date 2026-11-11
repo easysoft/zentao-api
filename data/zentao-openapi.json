@@ -8535,6 +8535,10 @@
                                         "type": "string",
                                         "description": "指派给"
                                     },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                                    },
                                     "reviewer": {
                                         "type": "array",
                                         "items": {
@@ -10109,6 +10113,10 @@
                                     "title": {
                                         "type": "string",
                                         "description": "需求名称"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
                                     },
                                     "reviewer": {
                                         "type": "array",
@@ -11924,6 +11932,10 @@
                                         "type": "string",
                                         "description": "指派给"
                                     },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                                    },
                                     "reviewer": {
                                         "type": "array",
                                         "items": {
@@ -12218,6 +12230,10 @@
                                     "title": {
                                         "type": "string",
                                         "description": "需求名称"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
                                     },
                                     "reviewer": {
                                         "type": "array",
@@ -13059,6 +13075,10 @@
                                         "type": "string",
                                         "description": "指派给"
                                     },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
+                                    },
                                     "reviewer": {
                                         "type": "array",
                                         "items": {
@@ -13360,6 +13380,10 @@
                                     "verify": {
                                         "type": "string",
                                         "description": "验收标准"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "description": "无有效评审人时默认 active，可显式指定状态；有有效评审人时固定为 reviewing。"
                                     },
                                     "reviewer": {
                                         "type": "array",
@@ -64015,11 +64039,11 @@
                     {
                         "name": "browseType",
                         "in": "query",
-                        "description": "待处理筛选类型，默认 myChecking，取值不区分大小写。(mychecking 待我检查 | checked 已检查 | wait 未检查 | checking 检查中 | assignto 指派给我 | delay 已延期 | iscycle 周期性计划 | all 全部)",
+                        "description": "待处理筛选类型，默认 mychecking，取值不区分大小写。(mychecking 待我检查 | checked 已检查 | wait 未检查 | checking 检查中 | assignto 指派给我 | delay 已延期 | iscycle 周期性计划 | all 全部)",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "myChecking"
+                            "example": "mychecking"
                         }
                     },
                     {
