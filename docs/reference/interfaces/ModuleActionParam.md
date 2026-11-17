@@ -17,4 +17,5 @@
 | <a id="property-required"></a> `required?` | `boolean` | 是否必填。 |
 | <a id="property-role"></a> `role?` | [`ModuleActionParamRole`](../type-aliases/ModuleActionParamRole.md) | 参数角色。 |
 | <a id="property-style"></a> `style?` | `string` | OpenAPI 查询参数序列化样式，例如 `deepObject`。 |
+| <a id="property-texttype"></a> `textType?` | `"text"` \| `"markdown"` \| `"html"` | 文本内容格式。 |
 | <a id="property-type"></a> `type?` | `"string"` \| `"number"` \| `"boolean"` \| `"object"` \| `"array"` | 参数值类型，用于基础类型转换。 |

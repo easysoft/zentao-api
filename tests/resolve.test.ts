@@ -514,6 +514,57 @@ describe('module queries', () => {
   test('returns an empty object for an unknown object type', () => {
     expect(getObjectProps('unknown')).toEqual({});
   });
+
+  test.each([
+    ['bug', 'create', 'steps'],
+    ['project', 'createStory', 'spec'],
+    ['doc', 'update', 'content'],
+  ])('exposes HTML text metadata for %s/%s.%s', (moduleName, actionName, name) => {
+    expect(getModuleActionParams(moduleName, actionName, { roles: ['body'] })).toContainEqual(expect.objectContaining({
+      name, type: 'string', textType: 'html', description: expect.stringMatching(/\(HTML\)$/),
+    }));
+  });
+
+  test('infers HTML across parameter roles without changing descriptions or registry definitions', () => {
+    defineModules({
+      name: 'richtext',
+      actions: [{
+        minVersion: ['22.0'], name: 'create', type: 'create', path: '/richtext/{content}',
+        pathParams: { content: '路径内容 (HTML)' },
+        params: [
+          { name: 'query', description: '查询内容 (HTML)' },
+          { name: 'plain', textType: 'text' },
+          { name: 'markdown', textType: 'markdown' },
+          { name: 'mention', description: '正文 (HTML) 示例' },
+          { name: 'missing' },
+        ],
+        requestBody: { schema: {
+          type: 'object', required: ['content'],
+          properties: {
+            content: { type: 'string', description: '正文 (HTML)', textType: 'text' },
+            count: { type: 'integer' },
+          },
+        } },
+      }],
+    });
+    const original = structuredClone(getModuleAction('richtext', 'create'));
+    const params = getModuleActionParams('richtext', 'create');
+    expect(params.filter(param => param.textType === 'html')).toEqual([
+      { name: 'content', role: 'path', required: true, description: '路径内容 (HTML)', textType: 'html' },
+      { name: 'query', role: 'query', description: '查询内容 (HTML)', textType: 'html' },
+      { name: 'content', role: 'body', required: true, type: 'string', description: '正文 (HTML)', textType: 'html' },
+    ]);
+    expect(params.find(param => param.name === 'plain')?.textType).toBe('text');
+    expect(params.find(param => param.name === 'markdown')?.textType).toBe('markdown');
+    for (const name of ['mention', 'missing', 'count']) {
+      expect(params.find(param => param.name === name)).not.toHaveProperty('textType');
+    }
+    expect(params.find(param => param.name === 'count')?.type).toBe('number');
+    for (const role of ['path', 'query', 'body'] as const) {
+      expect(getModuleActionParams('richtext', 'create', { roles: [role] })).toEqual(params.filter(param => param.role === role));
+    }
+    expect(getModuleAction('richtext', 'create')).toEqual(original);
+  });
 });
 
 describe('result and pager extraction', () => {

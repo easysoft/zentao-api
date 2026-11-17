@@ -6,6 +6,8 @@
 
 获取指定模块下的某个动作的参数。
 
+说明以 `(HTML)` 结尾的参数返回 `textType: 'html'`，保留原始说明。
+
 ## Parameters
 
 | Parameter | Type | Description |

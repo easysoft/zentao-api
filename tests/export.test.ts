@@ -35,6 +35,7 @@ function defineExportFixture(): void {
             properties: {
               name: { type: 'string', description: 'Fixture name' },
               amount: { type: 'number' },
+              content: { type: 'string', description: 'Fixture content (HTML)' },
             },
           },
         },
@@ -64,6 +65,14 @@ describe('exportRegistry', () => {
         role: 'body',
         required: false,
         type: 'number',
+      },
+      {
+        name: 'content',
+        role: 'body',
+        required: false,
+        type: 'string',
+        description: 'Fixture content (HTML)',
+        textType: 'html',
       },
     ]);
     expect(Object.hasOwn(action, 'requestBody')).toBe(false);

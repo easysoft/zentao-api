@@ -29,6 +29,8 @@ export interface ModuleActionParam {
   defaultValue?: unknown;
   /** 参数值类型，用于基础类型转换。 */
   type?: 'string' | 'number' | 'boolean' | 'array' | 'object';
+  /** 文本内容格式。 */
+  textType?: 'text' | 'html' | 'markdown';
   /** OpenAPI schema format，例如 `binary` 或 `int32`。 */
   format?: string;
   /** OpenAPI 查询参数序列化样式，例如 `deepObject`。 */

@@ -45,6 +45,8 @@ export function getModuleAction(moduleName: string, actionName: string, options?
 /**
  * 获取指定模块下的某个动作的参数。
  *
+ * 说明以 `(HTML)` 结尾的参数返回 `textType: 'html'`，保留原始说明。
+ *
  * @param moduleName - 模块名（大小写不敏感）。
  * @param actionName - 动作名（大小写不敏感）；支持 `ls` 作为 `list` 的别名。
  * @param options - 选项。
@@ -99,6 +101,9 @@ export function getModuleActionParams(moduleName: string, actionName: string, op
         type: schema.type as 'string' | 'number' | 'boolean',
       });
     }
+  }
+  for (const param of params) {
+    if (param.description?.endsWith('(HTML)')) param.textType = 'html';
   }
   return params;
 }
