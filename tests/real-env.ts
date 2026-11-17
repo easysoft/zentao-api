@@ -1280,7 +1280,7 @@ describe('real ZenTao product API', () => {
     }, 60000);
   }
 
-  for (const action of getModule('my')!.actions.filter(action => action.method === 'get')) {
+  for (const action of getModule('my')!.actions.filter(action => action.method === 'get' && action.resultType === 'list')) {
     test(`personal list my/${action.name}`, async () => {
       const response = await call(`my/${action.name}`, { recPerPage: 2, pageID: 1 });
       expect(Array.isArray(response.data)).toBe(true);

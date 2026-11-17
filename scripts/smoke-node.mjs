@@ -36,11 +36,18 @@ const server = createServer((request, response) => {
     assert.equal(request.headers.token, undefined);
     assert.equal(request.headers['zentao-action-assistant'], undefined);
     response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify({ version: '22.5' }));
+    response.end(JSON.stringify({ version: '23.0' }));
     return;
   }
   receivedContentType = String(request.headers['content-type'] ?? '');
   receivedAssistant = request.headers['zentao-action-assistant'];
+  if (request.url?.startsWith('/api.php/v2/files/1/read?')) {
+    const bytes = Buffer.from([0, 255, 195, 40]);
+    const base64 = new URL(request.url, 'http://localhost').searchParams.get('stream') === '1';
+    response.writeHead(200, { 'Content-Type': base64 ? 'text/plain' : 'application/octet-stream' });
+    response.end(base64 ? bytes.toString('base64') : bytes);
+    return;
+  }
   const chunks = [];
   request.on('data', (chunk) => chunks.push(chunk));
   request.on('end', () => {
@@ -92,6 +99,12 @@ try {
   assert.match(receivedBody, /Content-Type: text\/plain/i);
   assert.match(receivedBody, /node upload smoke/);
   assert.match(receivedBody, /name="objectID"[\s\S]*\r\n\r\n1\r\n/);
+
+  const content = await api.request('file/read', { id: 1 }, { client: uploadClient, pick: ['id'] });
+  assert(content.data instanceof ArrayBuffer);
+  assert.deepEqual(new Uint8Array(content.data), new Uint8Array([0, 255, 195, 40]));
+  const base64 = await api.request('file/read', { fileID: 1, stream: 1 }, { client: uploadClient });
+  assert.equal(base64.data, Buffer.from([0, 255, 195, 40]).toString('base64'));
 } finally {
   await new Promise((resolveClose) => server.close(resolveClose));
   rmSync(uploadDir, { recursive: true, force: true });

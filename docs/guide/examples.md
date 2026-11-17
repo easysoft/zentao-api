@@ -119,6 +119,17 @@ const raw = await client.request('/products/1', {
 });
 ```
 
+## 当前用户基础资料
+
+禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，可以查询当前 Token 对应用户的基础资料：
+
+```ts
+const me = await request('my/info');
+console.log(me.data?.account, me.data?.realname);
+```
+
+返回字段为 `id、dept、account、realname、nickname、avatar、role、type`，其中 `avatar` 可为空字符串或 `null`。
+
 ## 上传附件与下载二进制
 
 Node.js/Bun 中，高阶 `request()` 可以直接读取本地文件路径并按 `multipart/form-data` 上传。单个文件的默认大小上限为 50 MiB，可通过 `maxUploadBytes` 调整。
@@ -145,6 +156,17 @@ await request('file/create', {
 });
 ```
 
+禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，上传文档编辑器图片可增加可选的 `extra`：
+
+```ts
+await request('file/create', {
+  file: '/tmp/editor-image.png',
+  extra: 'editor',
+});
+```
+
+`extra` 也可放在 `params.data` 中，优先于平铺参数。省略时不发送，原有上传调用及最低版本保持不变；该字段仅用于上传。
+
 也可以直接使用底层客户端。它会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体；普通对象默认按 JSON 发送。
 
 ```ts
@@ -159,13 +181,38 @@ await client.request('/files', {
 });
 ```
 
-需要下载文件或其他二进制内容时，指定 `responseType`：
+查询附件元数据使用 `file/get`，最低版本为 `22.5 / biz13.5 / max8.5 / ipd5.5`：
 
 ```ts
-const bytes = await client.request<ArrayBuffer>('/files/42', {
+const attachment = await request('file/get', { fileID: 42 });
+const sameAttachment = await request('file/42');
+// fileID 也接受既有 Base64 编码 gid，按原值传入，由 SDK 编码路径段。
+```
+
+禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，使用 `file/read` 读取内容：
+
+```ts
+const content = await request('file/read', { fileID: 42 });
+if (content.data instanceof ArrayBuffer) {
+  const bytes = new Uint8Array(content.data);
+  console.log(bytes.byteLength);
+}
+
+const base64 = await request('file/read', { fileID: 42, stream: 1 });
+console.log(base64.data); // Base64 字符串
+```
+
+`stream` 默认为 `0`，也接受字符串 `"0"`、`"1"`。静态结果类型为 `ArrayBuffer | string`；`raw: true` 直接返回内容。两种模式都完整载入内存，HTTP 错误沿用 `E_HTTP_ERROR`，错误正文保留在 `details.body`。
+
+也可以通过底层客户端选择响应类型；`/files/42` 返回元数据，`/files/42/read` 返回文件内容：
+
+```ts
+const bytes = await client.request('/files/42/read', {
   responseType: 'arrayBuffer',
 });
 ```
+
+大文件需要流式读取时，使用 `responseType: 'response'` 并消费返回的 `response.body`。
 
 ## 限制返回列表数量
 

@@ -9,6 +9,8 @@
 | `create` | 上传附件，使用【表单formdata】方式提交，不支持json | `POST` | `/files` |
 | `update` | 编辑附件，修改附件的名称 | `PUT` | `/files/{fileID}` |
 | `delete` | 删除附件 | `DELETE` | `/files/{fileID}` |
+| `get` | 获取附件信息 | `GET` | `/files/{fileID}` |
+| `read` | 读取附件内容 | `GET` | `/files/{fileID}/read` |
 
 ## 上传附件，使用【表单formdata】方式提交，不支持json
 
@@ -51,6 +53,20 @@ Schema:
       "description": "关联对象ID",
       "format": "int32",
       "required": false
+    },
+    "extra": {
+      "type": "string",
+      "description": "附件标记，23.0 / biz14.0 / max9.0 / ipd6.0 起支持；editor 用于文档编辑器图片，省略或其他值按空字符串处理",
+      "options": [
+        {
+          "value": "",
+          "label": "普通附件"
+        },
+        {
+          "value": "editor",
+          "label": "文档编辑器图片"
+        }
+      ]
     }
   },
   "required": [
@@ -81,7 +97,8 @@ import { request } from 'zentao-api';
 const result = await request("file/create", {
   "file": "/path/to/file",
   "objectType": "<string>",
-  "objectID": 1
+  "objectID": 1,
+  "extra": "<string>"
 });
 ```
 ## 编辑附件，修改附件的名称
@@ -176,5 +193,82 @@ import { request } from 'zentao-api';
 
 const result = await request("file/delete", {
   "fileID": 1
+});
+```
+## 获取附件信息
+
+查询附件元数据；fileID 支持数字 ID 或既有 Base64 编码 gid。读取文件内容请使用 file/read。
+
+- SDK 调用：`request("file/get", params)`
+- HTTP：`GET /files/{fileID}`
+- 动作类型：`get`
+- 最低禅道版本：`22.5` / `biz13.5` / `max8.5` / `ipd5.5`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `fileID` | 附件 ID 或 Base64 编码 gid |
+
+### 查询参数
+
+无查询参数。
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`object`
+- 结果字段：`file`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("file/get", {
+  "fileID": 1
+});
+```
+## 读取附件内容
+
+默认返回 ArrayBuffer；stream=1 返回 Base64 字符串。两种模式均完整载入内存，大文件流式读取可使用底层客户端的 responseType: response。
+
+- SDK 调用：`request("file/read", params)`
+- HTTP：`GET /files/{fileID}/read`
+- 动作类型：`get`
+- 最低禅道版本：`23.0` / `biz14.0` / `max9.0` / `ipd6.0`
+
+### 路径参数
+
+| 参数 | 说明 |
+| --- | --- |
+| `fileID` | 附件数字 ID |
+
+### 查询参数
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `stream` | number | 否 | `0` | 返回格式<br>`0` 原始文件内容<br>`1` Base64 文本 |
+
+### 请求体
+
+无请求体。
+
+### 返回值
+
+- 返回形态：`object`
+- 结果字段：`custom`
+
+### SDK 示例
+
+```ts
+import { request } from 'zentao-api';
+
+const result = await request("file/read", {
+  "fileID": 1,
+  "stream": 0
 });
 ```

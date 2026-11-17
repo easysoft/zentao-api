@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, test } from 'bun:test';
-import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type FileCreateParams, type RequestOptions } from '../src/index';
+import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type FileCreateParams, type RequestOptions, type RequestResultFor } from '../src/index';
 import type { ActionAssistant as BrowserActionAssistant } from '../src/browser';
 
 interface ProductSummary {
@@ -31,11 +31,24 @@ async function typedRequestExamples(): Promise<void> {
     file: '/tmp/report.txt',
     objectType: 'story',
     objectID: 1,
+    extra: 'editor',
   });
   uploaded.data?.id.toFixed();
   const unattachedParams: FileCreateParams = { file: '/tmp/report.txt' };
   const unattached = await request('file/create', unattachedParams);
   unattached.data?.id.toFixed();
+  expectTypeOf<FileCreateParams['extra']>().toEqualTypeOf<string | undefined>();
+
+  const infoName: BuiltinRequestName = 'my/info';
+  const fileName: BuiltinRequestName = 'file/get';
+  const readName: BuiltinRequestName = 'file/read';
+  expectTypeOf((await request(infoName)).data).toEqualTypeOf<DataRecord | undefined>();
+  expectTypeOf((await request(fileName, { fileID: 'Zy1hYmM=' })).data).toEqualTypeOf<DataRecord | undefined>();
+  expectTypeOf((await request('file/123')).data).toEqualTypeOf<DataRecord | undefined>();
+  expectTypeOf((await request(readName, { fileID: 123 })).data).toEqualTypeOf<ArrayBuffer | string | undefined>();
+  expectTypeOf((await request(readName, { id: 123, stream: '1' })).data).toEqualTypeOf<ArrayBuffer | string | undefined>();
+  expectTypeOf<RequestResultFor<'file/read'>>().toEqualTypeOf<ArrayBuffer | string>();
+  expectTypeOf(await request(readName, { fileID: 123 }, { raw: true })).toEqualTypeOf<unknown>();
 
   const narrowed = await request<ProductSummary[]>('product/list', {});
   narrowed.data?.forEach((product) => product.name.toUpperCase());

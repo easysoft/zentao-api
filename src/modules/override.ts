@@ -441,6 +441,66 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
+  const version23 = ['23.0', 'biz14.0', 'max9.0', 'ipd6.0'];
+  defineModuleActions('my', {
+    name: 'info',
+    minVersion: version23,
+    display: '获取当前用户基础资料',
+    description: '返回当前 Token 用户的 id、dept、account、realname、nickname、avatar、role、type；avatar 可为空字符串或 null。',
+    type: 'get',
+    method: 'get',
+    path: '/my/info',
+    resultType: 'object',
+    resultGetter: 'user',
+    request: requestJSON,
+  });
+  defineModuleActions('file', [
+    {
+      name: 'get',
+      minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
+      display: '获取附件信息',
+      description: '查询附件元数据；fileID 支持数字 ID 或既有 Base64 编码 gid。读取文件内容请使用 file/read。',
+      type: 'get',
+      method: 'get',
+      path: '/files/{fileID}',
+      pathParams: { fileID: '附件 ID 或 Base64 编码 gid' },
+      resultType: 'object',
+      resultGetter: 'file',
+      // Base64 中的 +、/ 必须保持为路径参数的一部分。
+      beforeRequest: async ({ path }) => ({ path: `/files/${encodeURIComponent(path.slice('/files/'.length))}` }),
+      request: requestJSON,
+    },
+    {
+      name: 'read',
+      minVersion: version23,
+      display: '读取附件内容',
+      description: '默认返回 ArrayBuffer；stream=1 返回 Base64 字符串。两种模式均完整载入内存，大文件流式读取可使用底层客户端的 responseType: response。',
+      type: 'get',
+      method: 'get',
+      path: '/files/{fileID}/read',
+      pathParams: { fileID: '附件数字 ID' },
+      resultType: 'object',
+      resultGetter: data => data,
+      params: [{
+        name: 'stream',
+        type: 'number',
+        defaultValue: 0,
+        description: '返回格式',
+        options: [{ value: 0, label: '原始文件内容' }, { value: 1, label: 'Base64 文本' }],
+      }],
+      request: async ({ request: command, client, timeout, insecure, actionAssistant }) => {
+        const stream = command.query?.stream;
+        if (stream !== 0 && stream !== 1 && stream !== '0' && stream !== '1') {
+          throw new ZentaoError('E_INVALID_PARAM', { param: 'stream', value: String(stream) });
+        }
+        return client.request(command.path, {
+          method: 'GET', query: command.query, timeout, insecure, actionAssistant,
+          responseType: stream === 1 || stream === '1' ? 'text' : 'arrayBuffer',
+        });
+      },
+    },
+  ]);
+
   // 附件可不关联业务对象，创建和更新时均不强制关联参数。
   ['create', 'update'].forEach((actionName) => {
     extendModuleAction('file', actionName, (action) => {
@@ -459,6 +519,11 @@ export function applyBuiltinOverrides(): void {
         if (actionName === 'create') {
           action.requestBody.mediaType = 'multipart/form-data';
           if (schema.properties.file) schema.properties.file.format = 'binary';
+          schema.properties.extra = {
+            type: 'string',
+            description: '附件标记，23.0 / biz14.0 / max9.0 / ipd6.0 起支持；editor 用于文档编辑器图片，省略或其他值按空字符串处理',
+            options: [{ value: '', label: '普通附件' }, { value: 'editor', label: '文档编辑器图片' }],
+          };
         }
       }
       return action;

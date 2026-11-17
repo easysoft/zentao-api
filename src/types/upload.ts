@@ -32,6 +32,8 @@ export type FileCreateParams = Record<string, unknown> & {
   file: FileUploadSource;
   objectType?: 'bug' | 'story' | 'task' | 'testcase' | (string & {});
   objectID?: number;
+  /** 附件标记，23.0 / biz14.0 / max9.0 / ipd6.0 起支持 editor（文档编辑器图片）；其他值由服务端按空字符串处理。 */
+  extra?: string;
 };
 
 /** `request("file/create")` 归一化后的结果。 */

@@ -71,6 +71,7 @@ try {
     AbortController,
     Headers,
     Response,
+    ArrayBuffer,
     FormData,
     Blob,
     fetch: (_url: string, init?: RequestInit) => {
@@ -79,12 +80,16 @@ try {
         assert(!new Headers(init?.headers).has('ZenTao-Action-Assistant'), 'Configuration request must not attach assistant metadata.');
         assert(init?.cache === 'no-store', 'Configuration request must bypass the HTTP cache.');
         assert(init?.credentials === 'omit', 'Configuration request must omit browser credentials.');
-        return Promise.resolve(Response.json({ version: '22.5' }));
+        return Promise.resolve(Response.json({ version: '23.0' }));
       }
       const headers = new Headers(init?.headers);
       receivedToken = headers.get('Token') ?? undefined;
       receivedAssistant = headers.get('ZenTao-Action-Assistant');
       receivedBody = init?.body;
+      if (new URL(_url).pathname === '/api.php/v2/files/1/read') {
+        return Promise.resolve(new Response(new URL(_url).searchParams.get('stream') === '1'
+          ? 'AP/DKA==' : new Uint8Array([0, 255, 195, 40])));
+      }
       return Promise.resolve(Response.json({ status: 'success' }));
     },
   });
@@ -110,6 +115,12 @@ try {
   assert(receivedBody instanceof FormData, 'Browser global high-level request did not build FormData.');
   assert(receivedToken === 'browser-token', 'Browser global request did not attach Token.');
   assert(receivedAssistant === 'AI <browser upload>', 'Browser global request did not serialize assistant metadata.');
+
+  const content = await api.request('file/read', { fileID: 1 }, { client, pick: ['id'] });
+  assert(content.data instanceof ArrayBuffer, 'Browser file/read did not preserve ArrayBuffer.');
+  assert(Array.from(new Uint8Array(content.data)).join(',') === '0,255,195,40', 'Browser file/read changed binary content.');
+  const base64 = await api.request('file/read', { id: 1, stream: '1' }, { client });
+  assert(base64.data === 'AP/DKA==', 'Browser file/read did not preserve Base64 text.');
 } finally {
   rmSync(packageEntry, { force: true });
   rmSync(dir, { recursive: true, force: true });

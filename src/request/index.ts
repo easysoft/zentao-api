@@ -23,7 +23,7 @@ type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActio
 type BuiltinListRequestName = BuiltinModuleName;
 type BuiltinNamedRequestName = {
   [M in BuiltinModuleName]: `${M}/${BuiltinActionName<M>}`;
-}[BuiltinModuleName];
+}[BuiltinModuleName] | 'my/info' | 'file/get' | 'file/read';
 type BuiltinIdRequestName = `${BuiltinModuleName}/${number}`;
 /** 内置模块支持的请求名：`module`、`module/action` 或 `module/123`。 */
 export type BuiltinRequestName = BuiltinListRequestName | BuiltinNamedRequestName | BuiltinIdRequestName;
@@ -51,9 +51,11 @@ export type RequestResultFor<Name extends BuiltinRequestName> = ActionMetaOf<Nam
   ? DataRecord[]
   : Name extends 'file/create'
     ? FileCreateResult
-    : ActionMetaOf<Name> extends { resultType: 'object' }
-      ? DataRecord
-      : unknown;
+    : Name extends 'file/read'
+      ? ArrayBuffer | string
+      : ActionMetaOf<Name> extends { resultType: 'object' }
+        ? DataRecord
+        : unknown;
 
 /** 将 `moduleName`、`moduleName/methodName` 或 `moduleName/<objectID>` 请求名拆成模块名、动作名和对象 ID。 */
 function splitRequestName(name: string): { moduleName: string; actionName: string; id?: number } {
@@ -183,6 +185,7 @@ function hasListProcessing(options: ProcessListOptions): boolean {
  * - 其他形态原样返回。
  */
 function applyProcessing(data: unknown, options: RequestProcessOptions): unknown {
+  if (data instanceof ArrayBuffer) return data;
   if (Array.isArray(data)) {
     if (!hasListProcessing(options)) return data;
     if (data.every(isRecord)) {

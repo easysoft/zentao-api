@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import {
   ZentaoClient,
   defineModules,
+  exportRegistry,
   getModuleAction,
   getModuleActionParams,
   request,
@@ -35,12 +36,51 @@ describe('high-level file uploads', () => {
   test('keeps file association fields optional after a registry reset', () => {
     resetModuleDefinitions();
     const params = getModuleActionParams('file', 'create', { roles: ['body'] });
-    for (const name of ['objectType', 'objectID']) {
+    for (const name of ['objectType', 'objectID', 'extra']) {
       expect(params).toContainEqual(expect.objectContaining({ name, required: false }));
     }
     expect(params.filter(param => param.required).map(param => param.name)).toEqual(['file']);
     expect(getModuleActionParams('file', 'update', { roles: ['body'] })
       .filter(param => param.required).map(param => param.name)).toEqual(['fileName']);
+    expect(getModuleActionParams('file', 'update', { roles: ['body'] }).some(param => param.name === 'extra')).toBe(false);
+    expect(exportRegistry().file.actions.find(action => action.name === 'create')?.bodyParams)
+      .toContainEqual(expect.objectContaining({ name: 'extra', type: 'string', required: false }));
+  });
+
+  test('keeps multipart extra optional and honors data precedence without validating server values', async () => {
+    const forms: FormData[] = [];
+    const server = createMockServer(async req => {
+      expect(req.method).toBe('POST');
+      expect(new URL(req.url).pathname).toBe('/api.php/v2/files');
+      expect(new URL(req.url).search).toBe('');
+      forms.push(await req.formData());
+      return Response.json({ status: 'success', id: 46, url: '/file-read-46.png', data: { id: 46, url: '/file-read-46.png' } });
+    });
+    try {
+      const client = new ZentaoClient(server.url.href);
+      const file = new Blob(['image']);
+      for (const [version, params, expected] of [
+        ['22.0', { file }, null],
+        ['biz13.0', { file }, null],
+        ['max8.0', { file }, null],
+        ['ipd5.0', { file }, null],
+        ['23.0', { file, extra: '' }, ''],
+        ['23.0', { file, extra: 'editor' }, 'editor'],
+        ['23.0', { file, extra: 'unknown' }, 'unknown'],
+        ['23.0', { file, extra: 'editor', data: { extra: '' } }, ''],
+        ['23.0', { file, extra: '', data: JSON.stringify({ extra: 'editor' }) }, 'editor'],
+        ['23.0', { data: { file, extra: 'editor' } }, 'editor'],
+      ] as const) {
+        setGlobalOptions({ version });
+        const uploaded = await request('file/create', params, { client });
+        expect(uploaded.data).toEqual({ id: 46, url: '/file-read-46.png' });
+        expect(forms.at(-1)?.get('extra')).toBe(expected);
+        expect(forms.at(-1)?.get('objectType')).toBeNull();
+        expect(forms.at(-1)?.get('objectID')).toBeNull();
+        expect(await (forms.at(-1)?.get('file') as File).text()).toBe('image');
+      }
+      expect(forms).toHaveLength(10);
+    } finally { server.stop(true); }
   });
 
   test.each([

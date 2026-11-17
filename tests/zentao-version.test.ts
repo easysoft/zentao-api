@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 import {
   ZentaoClient, defineModules, defineModuleActions, extendModuleAction, exportRegistry,
   getModule, getModuleAction, getModuleActionParams, getModuleNames, isModuleName,
@@ -10,6 +10,7 @@ import { parseZentaoVersion, supportsZentaoVersion, validateMinVersion } from '.
 const oldVersions = ['22.0', 'biz13.0', 'max8.0', 'ipd5.0'];
 const newVersions = ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'];
 const latestVersions = ['22.7', 'biz13.7', 'max8.7', 'ipd5.7'];
+const version23 = ['23.0', 'biz14.0', 'max9.0', 'ipd6.0'];
 
 afterEach(() => {
   resetModuleDefinitions();
@@ -50,10 +51,11 @@ describe('ZenTao versions and registry filtering', () => {
 
   test('assigns historical, db, knowledge and coder version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(361);
+    expect(actions).toHaveLength(364);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
-    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(123);
+    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(124);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(latestVersions))).toHaveLength(132);
+    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(version23))).toHaveLength(2);
     expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
       === JSON.stringify(latestVersions))).toBe(true);
     for (const [moduleName, actionName] of [['space', 'list'], ['repo', 'list'], ['repo', 'create'], ['product', 'repos'], ['my', 'createSSH']]) {
@@ -81,6 +83,36 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModuleAction('file', 'create')!.minVersion).toEqual(oldVersions);
     expect(getModuleAction('story', 'getGrades')!.minVersion).toEqual(newVersions);
     expect(exportRegistry().story.actions.find(action => action.name === 'getGrades')!.minVersion).toEqual(newVersions);
+  });
+
+  test('enforces profile and file version boundaries without raising the upload minimum', async () => {
+    resetModuleDefinitions();
+    const client = new ZentaoClient('http://zentao.invalid');
+    const transport = spyOn(client, 'request').mockRejectedValue(new Error('Unexpected request'));
+    try {
+      for (const [module, action, minimums, previous] of [
+        ['my', 'info', version23, latestVersions],
+        ['file', 'read', version23, latestVersions],
+        ['file', 'get', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],
+      ] as const) {
+        expect(getModuleAction(module, action)?.minVersion).toEqual(minimums);
+        for (const version of minimums) {
+          expect(getModuleAction(module, action, { version })).toBeDefined();
+          expect(getModuleAction(module, action, { version: `${version}.1` })).toBeDefined();
+        }
+        for (const version of previous) {
+          expect(getModuleAction(module, action, { version })).toBeUndefined();
+          setGlobalOptions({ version });
+          await expect(request(`${module}/${action}`, { fileID: 1 }, { client })).rejects.toMatchObject({
+            code: 'E_UNSUPPORTED_ZENTAO_VERSION', details: { version, minVersion: minimums },
+          });
+        }
+      }
+      for (const version of oldVersions) {
+        expect(getModuleAction('file', 'create', { version })).toBeDefined();
+      }
+      expect(transport).not.toHaveBeenCalled();
+    } finally { transport.mockRestore(); }
   });
 
   test('filters all query helpers without consulting globals or modifying registry references', () => {
