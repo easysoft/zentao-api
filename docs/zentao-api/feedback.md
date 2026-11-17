@@ -113,7 +113,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     },
     "feedbackBy": {
       "type": "string",
@@ -319,7 +319,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "工单描述"
+      "description": "工单描述 (HTML)"
     }
   },
   "required": [
@@ -568,7 +568,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "任务描述"
+      "description": "任务描述 (HTML)"
     }
   },
   "required": [
@@ -694,7 +694,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     },
     "feedbackBy": {
       "type": "string",

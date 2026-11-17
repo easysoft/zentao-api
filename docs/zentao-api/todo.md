@@ -67,7 +67,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "待办详情"
+      "description": "待办详情 (HTML)"
     }
   },
   "required": [
@@ -204,7 +204,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "待办详情"
+      "description": "待办详情 (HTML)"
     }
   },
   "required": [

@@ -110,7 +110,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     },
     "assignedTo": {
       "type": "string",
@@ -451,7 +451,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     },
     "assignedTo": {
       "type": "string",

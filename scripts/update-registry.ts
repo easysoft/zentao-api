@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateMinVersion } from '../src/misc/zentao-version.js';
+import { objectProps } from '../src/modules/object-props.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -618,6 +619,24 @@ interface RegistryRequestBody {
     example?: unknown;
 }
 
+export function addHtmlPropertyDescriptions(schema: Record<string, unknown>, tag?: string): Record<string, unknown> {
+    const descriptions = objectProps[tag?.toLowerCase() ?? ''];
+    const properties = schema.properties;
+    if (!descriptions || !properties || typeof properties !== 'object' || Array.isArray(properties)) return schema;
+
+    let updatedProperties: Record<string, unknown> | undefined;
+    for (const [name, property] of Object.entries(properties)) {
+        const objectDescription = descriptions[name];
+        if (typeof objectDescription !== 'string' || !objectDescription.endsWith('(HTML)')
+            || !property || typeof property !== 'object' || Array.isArray(property)) continue;
+        const description = typeof property.description === 'string' ? property.description : '';
+        if (description.endsWith('(HTML)')) continue;
+        updatedProperties ??= { ...properties };
+        updatedProperties[name] = { ...property, description: description ? `${description} (HTML)` : '(HTML)' };
+    }
+    return updatedProperties ? { ...schema, properties: updatedProperties } : schema;
+}
+
 function buildRequestBody(op: OpenAPIOperation): RegistryRequestBody | undefined {
     const rb = op.requestBody;
     if (!rb) return undefined;
@@ -633,7 +652,7 @@ function buildRequestBody(op: OpenAPIOperation): RegistryRequestBody | undefined
 
     const result: RegistryRequestBody = {
         type: 'object',
-        schema: content.schema,
+        schema: addHtmlPropertyDescriptions(content.schema, op.tags?.[0]),
     };
     if (rb.required) result.required = true;
     if (mediaType !== 'application/json') result.mediaType = mediaType;
@@ -901,7 +920,7 @@ function buildRegistry(): RegistryBuildResult {
                 propertyBlocks.set('params', paramsBlock);
             }
             for (const [property, value] of mappedProperties) {
-                propertyBlocks.set(property, formatMappedActionProperty(property, value));
+                propertyBlocks.set(property, formatMappedActionProperty(property, value, first.operation.tags?.[0]));
             }
             const body = [...propertyBlocks.values()].join('');
             actionBodies.push(body);
@@ -1001,7 +1020,7 @@ function buildRegistry(): RegistryBuildResult {
 
             for (const [property, value] of Object.entries(entry.mapping ?? {})) {
                 if (property === 'module') continue;
-                propertyBlocks.set(property, formatMappedActionProperty(property, value));
+                propertyBlocks.set(property, formatMappedActionProperty(property, value, entry.op.tags?.[0]));
             }
 
             const body = [...propertyBlocks.values()].join('');
@@ -1111,11 +1130,15 @@ function formatTypePropertyName(name: string): string {
     return /^[$A-Z_a-z][$\w]*$/.test(name) ? name : `'${escapeStr(name)}'`;
 }
 
-function formatMappedActionProperty(property: string, value: unknown): string {
+function formatMappedActionProperty(property: string, value: unknown, tag?: string): string {
     const key = formatTypePropertyName(property);
     if (property === 'minVersion') {
         validateMinVersion(value);
         return `                minVersion: [${value.map(version => `'${escapeStr(version)}'`).join(', ')}],\n`;
+    }
+    if (property === 'requestBody' && value && typeof value === 'object' && 'schema' in value
+        && value.schema && typeof value.schema === 'object' && !Array.isArray(value.schema)) {
+        value = { ...value, schema: addHtmlPropertyDescriptions(value.schema as Record<string, unknown>, tag) };
     }
     const literal = typeof value === 'string'
         ? `'${escapeStr(value)}'`

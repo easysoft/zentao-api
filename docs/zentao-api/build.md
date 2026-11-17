@@ -124,7 +124,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     }
   },
   "required": [
@@ -239,7 +239,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "描述"
+      "description": "描述 (HTML)"
     }
   },
   "required": [

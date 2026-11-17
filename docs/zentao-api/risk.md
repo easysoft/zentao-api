@@ -242,11 +242,11 @@ Schema:
     },
     "prevention": {
       "type": "string",
-      "description": "应对措施"
+      "description": "应对措施 (HTML)"
     },
     "remedy": {
       "type": "string",
-      "description": "响应措施"
+      "description": "响应措施 (HTML)"
     }
   },
   "required": [
@@ -418,15 +418,15 @@ Schema:
     },
     "prevention": {
       "type": "string",
-      "description": "应对措施"
+      "description": "应对措施 (HTML)"
     },
     "remedy": {
       "type": "string",
-      "description": "响应措施"
+      "description": "响应措施 (HTML)"
     },
     "resolution": {
       "type": "string",
-      "description": "解决措施"
+      "description": "解决措施 (HTML)"
     }
   },
   "required": [

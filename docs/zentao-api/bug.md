@@ -172,7 +172,7 @@ Schema:
     },
     "steps": {
       "type": "string",
-      "description": "重现步骤"
+      "description": "重现步骤 (HTML)"
     },
     "story": {
       "type": "integer",
@@ -326,7 +326,7 @@ Schema:
     },
     "steps": {
       "type": "string",
-      "description": "重现步骤"
+      "description": "重现步骤 (HTML)"
     },
     "project": {
       "type": "integer",

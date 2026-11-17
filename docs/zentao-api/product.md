@@ -161,7 +161,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "产品描述"
+      "description": "产品描述 (HTML)"
     },
     "QD": {
       "type": "string",
@@ -568,7 +568,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "产品描述"
+      "description": "产品描述 (HTML)"
     },
     "QD": {
       "type": "string",

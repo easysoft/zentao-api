@@ -1097,7 +1097,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
     },
     "contentType": {
       "type": "string",
@@ -1179,7 +1179,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
     },
     "contentType": {
       "type": "string",
@@ -1261,7 +1261,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
     },
     "contentType": {
       "type": "string",
@@ -1343,7 +1343,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
     },
     "contentType": {
       "type": "string",
@@ -1957,7 +1957,7 @@ Schema:
     },
     "content": {
       "type": "string",
-      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+      "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
     },
     "contentType": {
       "type": "string",

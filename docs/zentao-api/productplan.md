@@ -115,7 +115,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "计划描述"
+      "description": "计划描述 (HTML)"
     }
   },
   "required": [
@@ -244,7 +244,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "计划描述"
+      "description": "计划描述 (HTML)"
     }
   },
   "required": [

@@ -397,7 +397,7 @@ Schema:
     },
     "spec": {
       "type": "string",
-      "description": "需求描述"
+      "description": "需求描述 (HTML)"
     },
     "pri": {
       "type": "integer",
@@ -517,7 +517,7 @@ Schema:
     },
     "steps": {
       "type": "string",
-      "description": "重现步骤"
+      "description": "重现步骤 (HTML)"
     }
   },
   "required": [
@@ -638,7 +638,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "任务描述"
+      "description": "任务描述 (HTML)"
     }
   },
   "required": [
@@ -770,11 +770,11 @@ Schema:
     },
     "prevention": {
       "type": "string",
-      "description": "应对措施。"
+      "description": "应对措施。 (HTML)"
     },
     "remedy": {
       "type": "string",
-      "description": "响应措施。"
+      "description": "响应措施。 (HTML)"
     }
   },
   "required": [

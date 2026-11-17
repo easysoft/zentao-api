@@ -525,7 +525,7 @@ Schema:
   "properties": {
     "minutes": {
       "type": "string",
-      "description": "会议纪要"
+      "description": "会议纪要 (HTML)"
     }
   }
 }

@@ -101,7 +101,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "项目集描述"
+      "description": "项目集描述 (HTML)"
     }
   },
   "required": [
@@ -221,7 +221,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "项目集描述"
+      "description": "项目集描述 (HTML)"
     }
   },
   "required": [

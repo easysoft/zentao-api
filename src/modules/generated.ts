@@ -334,7 +334,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "项目集描述"
+                                "description": "项目集描述 (HTML)"
                             }
                         },
                         "required": [
@@ -398,7 +398,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "项目集描述"
+                                "description": "项目集描述 (HTML)"
                             }
                         },
                         "required": [
@@ -590,7 +590,7 @@ export const BUILTIN_MODULES = [
                                 "items": {
                                     "type": "string"
                                 },
-                                "description": "产品描述"
+                                "description": "产品描述 (HTML)"
                             },
                             "QD": {
                                 "type": "string",
@@ -810,7 +810,7 @@ export const BUILTIN_MODULES = [
                                 "items": {
                                     "type": "string"
                                 },
-                                "description": "产品描述"
+                                "description": "产品描述 (HTML)"
                             },
                             "QD": {
                                 "type": "string",
@@ -1156,7 +1156,7 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "需求描述"
+                                "description": "需求描述 (HTML)"
                             },
                             "pri": {
                                 "type": "integer",
@@ -1239,7 +1239,7 @@ export const BUILTIN_MODULES = [
                             },
                             "steps": {
                                 "type": "string",
-                                "description": "重现步骤"
+                                "description": "重现步骤 (HTML)"
                             }
                         },
                         "required": [
@@ -1322,7 +1322,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "任务描述"
+                                "description": "任务描述 (HTML)"
                             }
                         },
                         "required": [
@@ -1414,11 +1414,11 @@ export const BUILTIN_MODULES = [
                             },
                             "prevention": {
                                 "type": "string",
-                                "description": "应对措施。"
+                                "description": "应对措施。 (HTML)"
                             },
                             "remedy": {
                                 "type": "string",
-                                "description": "响应措施。"
+                                "description": "响应措施。 (HTML)"
                             }
                         },
                         "required": [
@@ -2378,7 +2378,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "计划描述"
+                                "description": "计划描述 (HTML)"
                             }
                         },
                         "required": [
@@ -2449,7 +2449,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "计划描述"
+                                "description": "计划描述 (HTML)"
                             }
                         },
                         "required": [
@@ -2615,7 +2615,7 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "需求描述"
+                                "description": "需求描述 (HTML)"
                             },
                             "category": {
                                 "type": "integer",
@@ -2628,7 +2628,7 @@ export const BUILTIN_MODULES = [
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             },
                             "assignedTo": {
                                 "type": "string",
@@ -2879,11 +2879,11 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "需求描述"
+                                "description": "需求描述 (HTML)"
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             }
                         },
                         "required": [
@@ -3060,7 +3060,7 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "业务需求描述"
+                                "description": "业务需求描述 (HTML)"
                             },
                             "category": {
                                 "type": "integer",
@@ -3073,7 +3073,7 @@ export const BUILTIN_MODULES = [
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             },
                             "assignedTo": {
                                 "type": "string",
@@ -3269,11 +3269,11 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "需求描述"
+                                "description": "需求描述 (HTML)"
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             }
                         },
                         "required": [
@@ -3450,7 +3450,7 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "用户需求描述"
+                                "description": "用户需求描述 (HTML)"
                             },
                             "category": {
                                 "type": "integer",
@@ -3463,7 +3463,7 @@ export const BUILTIN_MODULES = [
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             },
                             "assignedTo": {
                                 "type": "string",
@@ -3647,11 +3647,11 @@ export const BUILTIN_MODULES = [
                             },
                             "spec": {
                                 "type": "string",
-                                "description": "需求描述"
+                                "description": "需求描述 (HTML)"
                             },
                             "verify": {
                                 "type": "string",
-                                "description": "验收标准"
+                                "description": "验收标准 (HTML)"
                             },
                             "status": {
                                 "type": "string",
@@ -3853,7 +3853,7 @@ export const BUILTIN_MODULES = [
                             },
                             "steps": {
                                 "type": "string",
-                                "description": "重现步骤"
+                                "description": "重现步骤 (HTML)"
                             },
                             "story": {
                                 "type": "integer",
@@ -3943,7 +3943,7 @@ export const BUILTIN_MODULES = [
                             },
                             "steps": {
                                 "type": "string",
-                                "description": "重现步骤"
+                                "description": "重现步骤 (HTML)"
                             },
                             "project": {
                                 "type": "integer",
@@ -4699,7 +4699,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "任务描述"
+                                "description": "任务描述 (HTML)"
                             }
                         },
                         "required": [
@@ -4791,7 +4791,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "任务描述"
+                                "description": "任务描述 (HTML)"
                             }
                         }
                     },
@@ -5331,7 +5331,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -5678,11 +5678,11 @@ export const BUILTIN_MODULES = [
                             },
                             "prevention": {
                                 "type": "string",
-                                "description": "应对措施"
+                                "description": "应对措施 (HTML)"
                             },
                             "remedy": {
                                 "type": "string",
-                                "description": "响应措施"
+                                "description": "响应措施 (HTML)"
                             }
                         },
                         "required": [
@@ -5788,15 +5788,15 @@ export const BUILTIN_MODULES = [
                             },
                             "prevention": {
                                 "type": "string",
-                                "description": "应对措施"
+                                "description": "应对措施 (HTML)"
                             },
                             "remedy": {
                                 "type": "string",
-                                "description": "响应措施"
+                                "description": "响应措施 (HTML)"
                             },
                             "resolution": {
                                 "type": "string",
-                                "description": "解决措施"
+                                "description": "解决措施 (HTML)"
                             }
                         },
                         "required": [
@@ -6263,7 +6263,7 @@ export const BUILTIN_MODULES = [
                         "properties": {
                             "minutes": {
                                 "type": "string",
-                                "description": "会议纪要"
+                                "description": "会议纪要 (HTML)"
                             }
                         }
                     },
@@ -6390,7 +6390,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             },
                             "feedbackBy": {
                                 "type": "string",
@@ -6523,7 +6523,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "工单描述"
+                                "description": "工单描述 (HTML)"
                             }
                         },
                         "required": [
@@ -6673,7 +6673,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "任务描述"
+                                "description": "任务描述 (HTML)"
                             }
                         },
                         "required": [
@@ -6740,7 +6740,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             },
                             "feedbackBy": {
                                 "type": "string",
@@ -6967,7 +6967,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             },
                             "assignedTo": {
                                 "type": "string",
@@ -7175,7 +7175,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             },
                             "assignedTo": {
                                 "type": "string",
@@ -7567,7 +7567,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -7645,7 +7645,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -7804,7 +7804,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -7886,7 +7886,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -8051,7 +8051,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -8117,7 +8117,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "描述"
+                                "description": "描述 (HTML)"
                             }
                         },
                         "required": [
@@ -10271,7 +10271,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
                             },
                             "contentType": {
                                 "type": "string",
@@ -10319,7 +10319,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
                             },
                             "contentType": {
                                 "type": "string",
@@ -10367,7 +10367,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
                             },
                             "contentType": {
                                 "type": "string",
@@ -10415,7 +10415,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
                             },
                             "contentType": {
                                 "type": "string",
@@ -10731,7 +10731,7 @@ export const BUILTIN_MODULES = [
                             },
                             "content": {
                                 "type": "string",
-                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照"
+                                "description": "文档正文，使用Markdown格式；系统会转换为块编辑器内容并生成HTML快照 (HTML)"
                             },
                             "contentType": {
                                 "type": "string",
@@ -10879,7 +10879,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "待办详情"
+                                "description": "待办详情 (HTML)"
                             }
                         },
                         "required": [
@@ -10957,7 +10957,7 @@ export const BUILTIN_MODULES = [
                             },
                             "desc": {
                                 "type": "string",
-                                "description": "待办详情"
+                                "description": "待办详情 (HTML)"
                             }
                         },
                         "required": [

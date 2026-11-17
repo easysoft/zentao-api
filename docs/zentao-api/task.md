@@ -171,7 +171,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "任务描述"
+      "description": "任务描述 (HTML)"
     },
     "parent": {
       "type": "integer",
@@ -331,7 +331,7 @@ Schema:
     },
     "desc": {
       "type": "string",
-      "description": "任务描述"
+      "description": "任务描述 (HTML)"
     },
     "parent": {
       "type": "integer",

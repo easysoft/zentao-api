@@ -160,7 +160,7 @@ Schema:
     },
     "spec": {
       "type": "string",
-      "description": "需求描述"
+      "description": "需求描述 (HTML)"
     },
     "category": {
       "type": "integer",
@@ -173,7 +173,7 @@ Schema:
     },
     "verify": {
       "type": "string",
-      "description": "验收标准"
+      "description": "验收标准 (HTML)"
     },
     "assignedTo": {
       "type": "string",
@@ -647,11 +647,11 @@ Schema:
     },
     "spec": {
       "type": "string",
-      "description": "需求描述"
+      "description": "需求描述 (HTML)"
     },
     "verify": {
       "type": "string",
-      "description": "验收标准"
+      "description": "验收标准 (HTML)"
     }
   },
   "required": []
