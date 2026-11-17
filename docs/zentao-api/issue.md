@@ -41,6 +41,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`issue`
 - 结果字段：`issues`
 - 分页字段：`pager`
 
@@ -89,6 +90,7 @@ const result = await request("issue/list", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`issue`
 - 结果字段：`issues`
 - 分页字段：`pager`
 
@@ -138,6 +140,7 @@ const result = await request("issue/projectIssues", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`issue`
 - 结果字段：`issues`
 - 分页字段：`pager`
 
@@ -260,6 +263,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`issue`
 
 ### SDK 示例
 
@@ -304,6 +308,7 @@ const result = await request("issue/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`issue`
 - 结果字段：`issue`
 
 ### SDK 示例

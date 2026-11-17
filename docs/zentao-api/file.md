@@ -89,6 +89,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`file`
 
 ### SDK 示例
 
@@ -151,6 +152,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`file`
 
 ### SDK 示例
 
@@ -186,6 +188,7 @@ const result = await request("file/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -222,6 +225,7 @@ const result = await request("file/delete", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`file`
 - 结果字段：`file`
 
 ### SDK 示例
@@ -261,6 +265,7 @@ const result = await request("file/get", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 - 结果字段：`custom`
 
 ### SDK 示例

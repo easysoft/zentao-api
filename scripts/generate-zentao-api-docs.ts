@@ -3,6 +3,7 @@ import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { getModule, getModuleNames } from '../src/modules/registry.js';
 import type { ModuleAction, ModuleActionParam, ModuleDefinition } from '../src/types/index.js';
+import { defaultResultObjectType } from '../src/modules/result-object-type.js';
 
 export interface RenderedZentaoApiDocs {
   index: string;
@@ -134,10 +135,24 @@ function renderRequestBody(action: ModuleAction): string {
   ].join('\n');
 }
 
-function renderResponse(action: ModuleAction): string {
+function renderResponse(action: ModuleAction, moduleName: string): string {
   const lines = [
     `- 返回形态：\`${action.resultType}\``,
   ];
+  const objectType = action.resultObjectType === undefined
+    ? defaultResultObjectType(moduleName, action.resultType ?? (action.type === 'list' ? 'list'
+      : ['get', 'create', 'update'].includes(action.type) ? 'object' : 'text'))
+    : action.resultObjectType;
+  if (objectType === null) {
+    lines.push('- 对象类型：无统一对象类型');
+  } else if (typeof objectType === 'string') {
+    lines.push(`- 对象类型：\`${objectType}\``);
+  } else {
+    lines.push(`- 对象类型：读取调用参数 \`params[${JSON.stringify(objectType.param)}]\``);
+    if (objectType.map && Object.keys(objectType.map).length) {
+      lines.push(`- 类型映射：\`${JSON.stringify(objectType.map)}\`；未命中时保留参数值`);
+    }
+  }
   if (action.resultGetter) {
     lines.push(`- 结果字段：\`${typeof action.resultGetter === 'string' ? action.resultGetter : 'custom'}\``);
   }
@@ -204,7 +219,7 @@ function renderAction(module: ModuleDefinition, action: ModuleAction): string {
     '',
     '### 返回值',
     '',
-    renderResponse(action),
+    renderResponse(action, module.name),
     '',
     '### SDK 示例',
     '',

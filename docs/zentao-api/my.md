@@ -68,6 +68,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`todo`
 - 结果字段：`todos`
 - 分页字段：`pager`
 
@@ -114,6 +115,7 @@ const result = await request("my/todos", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`task`
 - 结果字段：`tasks`
 - 分页字段：`pager`
 
@@ -162,6 +164,7 @@ const result = await request("my/tasks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`bug`
 - 结果字段：`bugs`
 - 分页字段：`pager`
 
@@ -210,6 +213,7 @@ const result = await request("my/bugs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`story`
 - 结果字段：`stories`
 - 分页字段：`pager`
 
@@ -258,6 +262,7 @@ const result = await request("my/stories", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`epic`
 - 结果字段：`epics`
 - 分页字段：`pager`
 
@@ -306,6 +311,7 @@ const result = await request("my/epics", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`requirement`
 - 结果字段：`requirements`
 - 分页字段：`pager`
 
@@ -352,6 +358,7 @@ const result = await request("my/requirements", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`testtask`
 - 结果字段：`testtasks`
 - 分页字段：`pager`
 
@@ -395,6 +402,7 @@ const result = await request("my/testtasks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`project`
 - 结果字段：`projects`
 - 分页字段：`pager`
 
@@ -439,6 +447,7 @@ const result = await request("my/projects", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`feedback`
 - 结果字段：`feedbacks`
 - 分页字段：`pager`
 
@@ -485,6 +494,7 @@ const result = await request("my/feedbacks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`ticket`
 - 结果字段：`tickets`
 - 分页字段：`pager`
 
@@ -532,6 +542,7 @@ const result = await request("my/tickets", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`testcase`
 - 结果字段：`testcases`
 - 分页字段：`pager`
 
@@ -577,6 +588,7 @@ const result = await request("my/testcases", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`meeting`
 - 结果字段：`meetings`
 - 分页字段：`pager`
 
@@ -620,6 +632,7 @@ const result = await request("my/meetings", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`issue`
 - 结果字段：`issues`
 - 分页字段：`pager`
 
@@ -666,6 +679,7 @@ const result = await request("my/issues", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`risk`
 - 结果字段：`risks`
 - 分页字段：`pager`
 
@@ -713,6 +727,7 @@ const result = await request("my/risks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`task`
 - 结果字段：`tasks`
 - 分页字段：`pager`
 
@@ -759,6 +774,7 @@ const result = await request("my/activityTasks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`bug`
 - 结果字段：`bugs`
 - 分页字段：`pager`
 
@@ -805,6 +821,7 @@ const result = await request("my/activityBugs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`story`
 - 结果字段：`stories`
 - 分页字段：`pager`
 
@@ -851,6 +868,7 @@ const result = await request("my/activityStories", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`epic`
 - 结果字段：`epics`
 - 分页字段：`pager`
 
@@ -897,6 +915,7 @@ const result = await request("my/activityEpics", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`requirement`
 - 结果字段：`requirements`
 - 分页字段：`pager`
 
@@ -941,6 +960,7 @@ const result = await request("my/activityRequirements", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`testtask`
 - 结果字段：`testtasks`
 - 分页字段：`pager`
 
@@ -985,6 +1005,7 @@ const result = await request("my/activityTestTasks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`testcase`
 - 结果字段：`testcases`
 - 分页字段：`pager`
 
@@ -1029,6 +1050,7 @@ const result = await request("my/activityTestCases", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doc`
 - 结果字段：`docs`
 - 分页字段：`pager`
 
@@ -1071,6 +1093,7 @@ const result = await request("my/activityDocs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`issue`
 - 结果字段：`issues`
 - 分页字段：`pager`
 
@@ -1115,6 +1138,7 @@ const result = await request("my/activityIssues", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`risk`
 - 结果字段：`risks`
 - 分页字段：`pager`
 
@@ -1161,6 +1185,7 @@ const result = await request("my/activityRisks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`reviewissue`
 - 结果字段：`reviewissues`
 - 分页字段：`pager`
 
@@ -1207,6 +1232,7 @@ const result = await request("my/activityReviewIssues", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`feedback`
 - 结果字段：`feedbacks`
 - 分页字段：`pager`
 
@@ -1251,6 +1277,7 @@ const result = await request("my/activityFeedbacks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`audit`
 - 结果字段：`audits`
 - 分页字段：`pager`
 
@@ -1296,6 +1323,7 @@ const result = await request("my/activityAudits", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`reviewissue`
 - 结果字段：`reviewissues`
 - 分页字段：`pager`
 
@@ -1341,6 +1369,7 @@ const result = await request("my/reviewIssues", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`audit`
 - 结果字段：`audits`
 - 分页字段：`pager`
 
@@ -1383,6 +1412,7 @@ const result = await request("my/audits", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`auditplan`
 - 结果字段：`auditplans`
 - 分页字段：`pager`
 
@@ -1425,6 +1455,7 @@ const result = await request("my/auditPlans", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`nc`
 - 结果字段：`ncs`
 - 分页字段：`pager`
 
@@ -1503,6 +1534,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 - 结果字段：`message`
 
 ### SDK 示例
@@ -1539,6 +1571,7 @@ const result = await request("my/createSSH", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`user`
 - 结果字段：`user`
 
 ### SDK 示例

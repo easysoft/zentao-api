@@ -67,6 +67,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -113,6 +114,8 @@ const result = await request("relation/link", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：读取调用参数 `params["relatedObjectType"]`
+- 类型映射：`{"projectdeliverable":"deliverable"}`；未命中时保留参数值
 - 结果字段：`objects`
 - 分页字段：`pager`
 
@@ -156,6 +159,7 @@ const result = await request("relation/candidates", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：无统一对象类型
 - 结果字段：`relations`
 
 ### SDK 示例
@@ -194,6 +198,7 @@ const result = await request("relation/list", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

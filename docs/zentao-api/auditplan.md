@@ -47,6 +47,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`auditplan`
 - 结果字段：`auditplans`
 - 分页字段：`pager`
 
@@ -171,6 +172,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`auditplan`
 
 ### SDK 示例
 
@@ -268,6 +270,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -403,6 +406,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`auditplan`
 
 ### SDK 示例
 
@@ -458,6 +462,7 @@ const result = await request("auditplan/batchCreate", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`auditplan`
 - 结果字段：`auditplan`
 
 ### SDK 示例
@@ -548,6 +553,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`auditplan`
 
 ### SDK 示例
 
@@ -589,6 +595,7 @@ const result = await request("auditplan/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

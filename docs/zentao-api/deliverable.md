@@ -42,6 +42,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`deliverable`
 - 结果字段：`deliverables`
 - 分页字段：`pager`
 
@@ -85,6 +86,7 @@ const result = await request("deliverable/list", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 - 结果字段：`deliverables`
 
 ### SDK 示例
@@ -178,6 +180,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -216,6 +219,7 @@ const result = await request("deliverable/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`deliverable`
 - 结果字段：`deliverable`
 
 ### SDK 示例
@@ -251,6 +255,7 @@ const result = await request("deliverable/get", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

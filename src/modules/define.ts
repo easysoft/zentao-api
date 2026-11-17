@@ -65,6 +65,7 @@ export function defineModules(input: ModuleDefinition | ModuleDefinition[], opti
  * 不做深度合并：同名动作整体替换，未知动作追加。这避免在 schema、参数数组等字段上出现隐式合并规则。
  *
  * `method` / `resultType` 可省略：写入时按动作 `type` 自动推导（见 {@link ModuleAction}）。
+ * `resultObjectType` 可省略：对象和列表补齐所属模块名，其他形态补齐 `null`。
  *
  * @param moduleName - 目标模块名（大小写不敏感）。
  * @param input - 单个或一组动作定义。
@@ -83,7 +84,7 @@ export function defineModuleActions(moduleName: string, input: ModuleAction | Mo
   for (const action of asArray(input)) {
     validateAction(action);
     const index = findActionIndex(actions, String(action.name));
-    const frozen = freezeAction(deepClone(action));
+    const frozen = freezeAction(deepClone(action), module.name);
     // 同名动作替换，未知动作追加；不做深度合并，避免 schema/数组字段出现隐式规则。
     if (index >= 0) {
       actions[index] = frozen;
@@ -138,7 +139,7 @@ export function extendModuleAction(
   // 对象：作为补丁与原动作深度合并。
   const next = typeof action === 'function' ? action(deepClone(current)) : deepMerge(current, action);
   validateAction(next);
-  actions[actionIndex] = freezeAction(next);
+  actions[actionIndex] = freezeAction(next, module.name);
 
   const nextModule = freezeModule({ ...module, actions });
   const modules = getModulesState();

@@ -45,6 +45,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`product`
 - 结果字段：`products`
 - 分页字段：`pager`
 
@@ -89,6 +90,7 @@ const result = await request("product/list", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`product`
 - 结果字段：`products`
 - 分页字段：`pager`
 
@@ -205,6 +207,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`product`
 
 ### SDK 示例
 
@@ -272,6 +275,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -335,6 +339,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -399,6 +404,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -463,6 +469,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -499,6 +506,7 @@ const result = await request("product/createTestcaseModule", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`product`
 - 结果字段：`product`
 
 ### SDK 示例
@@ -612,6 +620,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -658,6 +667,7 @@ const result = await request("product/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -694,6 +704,7 @@ const result = await request("product/delete", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`repo`
 - 结果字段：`repos`
 
 ### SDK 示例

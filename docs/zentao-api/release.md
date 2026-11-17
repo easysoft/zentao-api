@@ -42,6 +42,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`release`
 - 结果字段：`releases`
 - 分页字段：`pager`
 
@@ -148,6 +149,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`release`
 
 ### SDK 示例
 
@@ -249,6 +251,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -291,6 +294,7 @@ const result = await request("release/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

@@ -44,6 +44,80 @@ describe('registry generator scoped-list merge', () => {
   });
 });
 
+test('generates object types and rejects inconsistent or invalid scoped metadata without rewriting output', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'zentao-registry-object-types-'));
+  try {
+    for (const path of ['scripts/update-registry.ts', 'src/modules/object-props.ts', 'src/modules/result-object-type.ts', 'src/misc/zentao-version.ts', 'src/misc/errors.ts']) {
+      mkdirSync(dirname(join(root, path)), { recursive: true });
+      copyFileSync(new URL(`../${path}`, import.meta.url), join(root, path));
+    }
+    mkdirSync(join(root, 'data'));
+    const list = { tags: ['Widget'], responses: { 200: { content: { 'application/json': {
+      schema: { properties: { widgets: { type: 'array' } } },
+    } } } } };
+    const op = { tags: ['Widget'] };
+    const paths = {
+      '/parents/{parentID}/widgets': { get: list },
+      '/groups/{groupID}/widgets': { get: list },
+      '/widgets': { post: op },
+      '/widgets/{widgetID}': { get: op, put: op },
+      '/widgets/{widgetID}/activate': { put: op },
+      '/candidates': { get: list },
+    };
+    writeFileSync(join(root, 'data/zentao-openapi.json'), JSON.stringify({ tags: [{ name: 'Widget' }], paths }));
+    const mapping: Record<string, Record<string, unknown>> = Object.fromEntries(
+      Object.entries(paths).flatMap(([path, methods]) => Object.keys(methods).map(method => [`${method} ${path}`, { minVersion: ['22.0'] }])),
+    );
+    const first = mapping['get /parents/{parentID}/widgets'];
+    const second = mapping['get /groups/{groupID}/widgets'];
+    first.resultObjectType = 'widget'; // An explicit default must agree with an omitted default.
+    Object.assign(mapping['post /widgets'], { module: 'container', name: 'createWidget', resultObjectType: 'widget' });
+    mapping['put /widgets/{widgetID}'].resultObjectType = null;
+    mapping['put /widgets/{widgetID}/activate'].resultObjectType = 'widget';
+    Object.assign(mapping['get /candidates'], { name: 'candidates', resultObjectType: { param: 'kind', map: { old: 'new' } } });
+    const run = (...args: string[]) => {
+      writeFileSync(join(root, 'scripts/zentao-api-map.json'), JSON.stringify(mapping));
+      return spawnSync(process.execPath, [join(root, 'scripts/update-registry.ts'), ...args], { encoding: 'utf8' });
+    };
+    let result = run();
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+    result = run('--check');
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+    const output = join(root, 'src/modules/generated.ts');
+    const { BUILTIN_MODULES: modules }: { BUILTIN_MODULES: ModuleDefinition[] } = await import(pathToFileURL(output).href);
+    const widget = modules.find(module => module.name === 'widget')!;
+    expect(widget.actions.find(action => action.name === 'get')!.resultObjectType).toBe('widget');
+    expect(widget.actions.find(action => action.name === 'update')!.resultObjectType).toBeNull();
+    expect(widget.actions.find(action => action.name === 'activate')).toMatchObject({ resultType: 'text', resultObjectType: 'widget' });
+    expect(widget.actions.find(action => action.name === 'list')).toMatchObject({
+      path: '/{scope}/{scopeID}/widgets', resultGetter: 'widgets', resultObjectType: 'widget',
+      pathParams: { scope: { options: [{ value: 'parents', label: 'parents' }, { value: 'groups', label: 'groups' }] } },
+    });
+    expect(widget.actions.find(action => action.name === 'candidates')!.resultObjectType).toEqual({ param: 'kind', map: { old: 'new' } });
+    expect(modules.find(module => module.name === 'container')!.actions[0].resultObjectType).toBe('widget');
+    const original = readFileSync(output, 'utf8');
+    for (const value of [null, 'other', { param: 'kind' }]) {
+      first.resultObjectType = value;
+      result = run();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('Conflicting resultObjectType for merged widget/list action.');
+      expect(readFileSync(output, 'utf8')).toBe(original);
+    }
+    first.resultObjectType = { param: 'kind', map: { a: 'b', c: 'd' } };
+    second.resultObjectType = { map: { c: 'd', a: 'b' }, param: 'kind' };
+    result = run();
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+    const valid = readFileSync(output, 'utf8');
+    for (const value of ['', [], { param: '' }, { param: 'kind', map: { a: 1 } }]) {
+      mapping['get /candidates'].resultObjectType = value;
+      result = run();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('Invalid resultObjectType in action mapping "get /candidates".');
+      expect(readFileSync(output, 'utf8')).toBe(valid);
+    }
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
 describe('registry generator HTML descriptions', () => {
   test('copies changed nodes while preserving input, nested properties and schema constraints', () => {
     const schema = Object.freeze({
@@ -99,7 +173,7 @@ describe('registry generator HTML descriptions', () => {
   test('uses original tags for native and mapped bodies while preserving mapping precedence', async () => {
     const root = mkdtempSync(join(tmpdir(), 'zentao-registry-html-'));
     try {
-      for (const path of ['scripts/update-registry.ts', 'src/modules/object-props.ts', 'src/misc/zentao-version.ts', 'src/misc/errors.ts']) {
+      for (const path of ['scripts/update-registry.ts', 'src/modules/object-props.ts', 'src/modules/result-object-type.ts', 'src/misc/zentao-version.ts', 'src/misc/errors.ts']) {
         mkdirSync(dirname(join(root, path)), { recursive: true });
         copyFileSync(new URL(`../${path}`, import.meta.url), join(root, path));
       }

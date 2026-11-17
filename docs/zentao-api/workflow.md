@@ -84,6 +84,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflow_contract`
 - 结果字段：`dataList`
 - 分页字段：`pager`
 
@@ -116,6 +117,7 @@ const result = await request("workflow/list");
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow_contract`
 - 结果字段：`data`
 
 ### SDK 示例
@@ -156,6 +158,7 @@ const result = await request("workflow/getContract");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflow`
 - 结果字段：`flows`
 - 分页字段：`pager`
 
@@ -199,6 +202,7 @@ const result = await request("workflow/flows", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflowfield`
 - 结果字段：`fields`
 
 ### SDK 示例
@@ -234,6 +238,7 @@ const result = await request("workflow/fields", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflowaction`
 - 结果字段：`actions`
 
 ### SDK 示例
@@ -269,6 +274,7 @@ const result = await request("workflow/actions", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflowlabel`
 - 结果字段：`labels`
 
 ### SDK 示例
@@ -304,6 +310,7 @@ const result = await request("workflow/labels", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflow`
 - 结果字段：`tables`
 
 ### SDK 示例
@@ -337,6 +344,7 @@ const result = await request("workflow/tables", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflowdatasource`
 - 结果字段：`datasources`
 - 分页字段：`pager`
 
@@ -369,6 +377,7 @@ const result = await request("workflow/datasources");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`workflowrule`
 - 结果字段：`rules`
 - 分页字段：`pager`
 
@@ -426,6 +435,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow_contract`
 
 ### SDK 示例
 
@@ -494,6 +504,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -571,6 +582,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -656,6 +668,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowfield`
 
 ### SDK 示例
 
@@ -737,6 +750,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -850,6 +864,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowlabel`
 
 ### SDK 示例
 
@@ -928,6 +943,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -1012,6 +1028,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowdatasource`
 
 ### SDK 示例
 
@@ -1086,6 +1103,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowrule`
 
 ### SDK 示例
 
@@ -1122,6 +1140,7 @@ const result = await request("workflow/createRule", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 - 结果字段：`flow`
 
 ### SDK 示例
@@ -1157,6 +1176,7 @@ const result = await request("workflow/getFlow", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowfield`
 - 结果字段：`field`
 
 ### SDK 示例
@@ -1192,6 +1212,7 @@ const result = await request("workflow/getField", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowaction`
 - 结果字段：`action`
 
 ### SDK 示例
@@ -1227,6 +1248,7 @@ const result = await request("workflow/getAction", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowlabel`
 - 结果字段：`label`
 
 ### SDK 示例
@@ -1262,6 +1284,7 @@ const result = await request("workflow/getLabel", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 - 结果字段：`flow`
 
 ### SDK 示例
@@ -1297,6 +1320,7 @@ const result = await request("workflow/getTable", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowdatasource`
 - 结果字段：`datasource`
 
 ### SDK 示例
@@ -1332,6 +1356,7 @@ const result = await request("workflow/getDatasource", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowrule`
 - 结果字段：`rule`
 
 ### SDK 示例
@@ -1392,6 +1417,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow_contract`
 
 ### SDK 示例
 
@@ -1466,6 +1492,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -1535,6 +1562,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowfield`
 
 ### SDK 示例
 
@@ -1602,6 +1630,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -1695,6 +1724,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowlabel`
 
 ### SDK 示例
 
@@ -1765,6 +1795,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -1851,6 +1882,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowdatasource`
 
 ### SDK 示例
 
@@ -1928,6 +1960,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`workflowrule`
 
 ### SDK 示例
 
@@ -1965,6 +1998,7 @@ const result = await request("workflow/updateRule", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -1999,6 +2033,7 @@ const result = await request("workflow/delete", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2033,6 +2068,7 @@ const result = await request("workflow/deleteFlow", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowfield`
 
 ### SDK 示例
 
@@ -2067,6 +2103,7 @@ const result = await request("workflow/deleteField", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -2101,6 +2138,7 @@ const result = await request("workflow/deleteAction", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowlabel`
 
 ### SDK 示例
 
@@ -2135,6 +2173,7 @@ const result = await request("workflow/deleteLabel", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2169,6 +2208,7 @@ const result = await request("workflow/deleteTable", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowdatasource`
 
 ### SDK 示例
 
@@ -2203,6 +2243,7 @@ const result = await request("workflow/deleteDatasource", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowrule`
 
 ### SDK 示例
 
@@ -2237,6 +2278,7 @@ const result = await request("workflow/deleteRule", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2271,6 +2313,7 @@ const result = await request("workflow/activateFlow", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2340,6 +2383,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2402,6 +2446,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2459,6 +2504,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -2516,6 +2562,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2591,6 +2638,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2656,6 +2704,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2715,6 +2764,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -2772,6 +2822,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflow`
 
 ### SDK 示例
 
@@ -2837,6 +2888,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 
@@ -2914,6 +2966,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2992,6 +3045,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -3076,6 +3130,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`workflowaction`
 
 ### SDK 示例
 

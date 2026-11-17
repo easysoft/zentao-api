@@ -35,6 +35,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`knowledgelib`
 - 结果字段：`data`
 - 分页字段：`pager`
 

@@ -18,6 +18,7 @@ import type { BuiltinActionMeta, BuiltinModuleName } from '../modules/generated.
 import { extractPager, extractResult, resolveActionRequest } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
+import { resolveResultObjectType } from '../modules/result-object-type.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
@@ -209,6 +210,14 @@ function applyProcessing(data: unknown, options: RequestProcessOptions): unknown
   return data;
 }
 
+function attachResultObjectType<T>(response: ResponseData<T>, command: ReturnType<typeof resolveActionRequest>): ResponseData<T> {
+  if (response.status === 'success') {
+    const type = resolveResultObjectType(command.action.resultObjectType, command.params, response.data);
+    if (type !== undefined) response.resultObjectType = type;
+  }
+  return response;
+}
+
 /** 将禅道原始响应归一化为稳定的 ResponseData 结构。 */
 function normalizeResponse<T>(
   command: ReturnType<typeof resolveActionRequest>,
@@ -216,7 +225,7 @@ function normalizeResponse<T>(
   options: RequestProcessOptions,
 ): ResponseData<T> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return { status: 'success', data: raw as T };
+    return attachResultObjectType({ status: 'success', data: raw as T }, command);
   }
 
   const record = raw as Record<string, unknown>;
@@ -241,7 +250,7 @@ function normalizeResponse<T>(
   const apiCode = extractApiCode(record);
   if (apiCode !== undefined) response.apiCode = apiCode;
   if (status === 'fail') response.raw = record;
-  return response;
+  return attachResultObjectType(response, command);
 }
 
 /**

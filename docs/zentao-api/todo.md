@@ -94,6 +94,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`todo`
 
 ### SDK 示例
 
@@ -135,6 +136,7 @@ const result = await request("todo/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`todo`
 - 结果字段：`todo`
 
 ### SDK 示例
@@ -231,6 +233,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -273,6 +276,7 @@ const result = await request("todo/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

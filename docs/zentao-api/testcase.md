@@ -47,6 +47,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`testcase`
 - 结果字段：`testcases`
 - 分页字段：`pager`
 
@@ -90,6 +91,7 @@ const result = await request("testcase/list", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`tree`
 
 ### SDK 示例
@@ -227,6 +229,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`testcase`
 
 ### SDK 示例
 
@@ -278,6 +281,7 @@ const result = await request("testcase/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`testcase`
 - 结果字段：`testcase`
 
 ### SDK 示例
@@ -398,6 +402,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`testcase`
 
 ### SDK 示例
 
@@ -475,6 +480,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -511,6 +517,7 @@ const result = await request("testcase/updateModule", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -545,6 +552,7 @@ const result = await request("testcase/delete", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

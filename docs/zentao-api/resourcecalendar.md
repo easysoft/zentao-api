@@ -36,6 +36,7 @@
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 - 结果字段：`resourceCalendars`
 
 ### SDK 示例

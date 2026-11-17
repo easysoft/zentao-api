@@ -721,6 +721,7 @@ describe('high-level request', () => {
 
     await expect(request('product', { page: 2 }, { sort: 'id:desc', pick: ['id'] })).resolves.toEqual({
       status: 'success',
+      resultObjectType: 'product',
       data: [{ id: 2 }],
       pager: { total: 5, page: 2, recPerPage: 2 },
     });
@@ -815,6 +816,7 @@ describe('high-level request', () => {
       expect(new URL(receivedUrl).searchParams.get('recPerPage')).toBe('50');
       expect(response).toEqual({
         status: 'success',
+        resultObjectType: 'product',
         data: [{ id: 1 }, { id: 2 }],
         pager: { total: 2, page: 1, recPerPage: 50 },
       });
@@ -1035,14 +1037,17 @@ describe('high-level request', () => {
 
       await expect(request('doc/7', {}, { client })).resolves.toEqual({
         status: 'success',
+        resultObjectType: 'doc',
         data: expected,
       });
       await expect(request('doc/7', {}, { client, pick: [] })).resolves.toEqual({
         status: 'success',
+        resultObjectType: 'doc',
         data: expected,
       });
       await expect(request('doc/7', {}, { client, pick: ['rawContent'] })).resolves.toEqual({
         status: 'success',
+        resultObjectType: 'doc',
         data: { rawContent },
       });
     } finally {
@@ -1068,6 +1073,7 @@ describe('high-level request', () => {
 
       await expect(request('doc/8', {}, { client })).resolves.toEqual({
         status: 'success',
+        resultObjectType: 'doc',
         data: {
           id: 8,
           content: '<p>HTML body</p>',

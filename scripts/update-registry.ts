@@ -9,8 +9,11 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
 import { validateMinVersion } from '../src/misc/zentao-version.js';
 import { objectProps } from '../src/modules/object-props.js';
+import { defaultResultObjectType, isResultObjectType } from '../src/modules/result-object-type.js';
+import type { ModuleActionResultObjectType } from '../src/types/module.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -473,6 +476,18 @@ function resolveActionResultType(
     throw new Error(`Invalid resultType in action mapping "${mappingKey}".`);
 }
 
+function resolveActionResultObjectType(
+    mapping: ActionMapping | undefined,
+    moduleName: string,
+    resultType: ClassifiedAction['resultType'],
+    mappingKey: string,
+): ModuleActionResultObjectType {
+    const value = mapping?.resultObjectType;
+    if (value === undefined) return defaultResultObjectType(moduleName, resultType);
+    if (isResultObjectType(value)) return value;
+    throw new Error(`Invalid resultObjectType in action mapping "${mappingKey}".`);
+}
+
 function classifyOperation(httpMethod: string, path: string): ClassifiedAction {
     const method = httpMethod.toLowerCase() as ClassifiedAction['method'];
     const segments = path.split('/').filter(Boolean);
@@ -860,7 +875,7 @@ function buildRegistry(): RegistryBuildResult {
             const mappedProperties = new Map<string, unknown>();
             for (const scoped of scopedLists) {
                 for (const [property, value] of Object.entries(scoped.mapping ?? {})) {
-                    if (property === 'module' || property === 'name') continue;
+                    if (property === 'module' || property === 'name' || property === 'resultObjectType') continue;
                     if (mappedProperties.has(property)
                         && JSON.stringify(mappedProperties.get(property)) !== JSON.stringify(value)) {
                         throw new Error(
@@ -877,6 +892,14 @@ function buildRegistry(): RegistryBuildResult {
                 'list',
                 actionMapKey('get', first.originalPath),
             );
+            const objectTypes = scopedLists.map(scoped => {
+                const key = actionMapKey('get', scoped.originalPath);
+                const scopedType = resolveActionResultType(scoped.mapping, 'list', 'list', key);
+                return resolveActionResultObjectType(scoped.mapping, moduleName, scopedType, key);
+            });
+            if (objectTypes.some(value => !isDeepStrictEqual(value, objectTypes[0]))) {
+                throw new Error(`Conflicting resultObjectType for merged ${moduleName}/list action.`);
+            }
 
             const scopeDisplayParts = scopeOptions.map(o => o.label).join('/');
             const listDisplay = `获取${display}列表，支持获取${scopeDisplayParts}下的${display}`;
@@ -897,6 +920,7 @@ function buildRegistry(): RegistryBuildResult {
                 propertyBlocks.set('path', `                path: '${escapeStr(`/{scope}/{scopeID}/${first.childResource}`)}',\n`);
             }
             propertyBlocks.set('resultType', `                resultType: '${resultType}',\n`);
+            propertyBlocks.set('resultObjectType', formatMappedActionProperty('resultObjectType', objectTypes[0]));
             if (pagerGetter) {
                 propertyBlocks.set('pagerGetter', `                pagerGetter: '${escapeStr(pagerGetter)}',\n`);
             }
@@ -977,6 +1001,8 @@ function buildRegistry(): RegistryBuildResult {
             propertyBlocks.set('method', `                method: '${actionMethod}',\n`);
             propertyBlocks.set('path', `                path: '${escapeStr(bracePath)}',\n`);
             propertyBlocks.set('resultType', `                resultType: '${resultType}',\n`);
+            propertyBlocks.set('resultObjectType', formatMappedActionProperty('resultObjectType',
+                resolveActionResultObjectType(entry.mapping, moduleName, resultType, reference.mappingKey)));
 
             if (pagerGetter) {
                 propertyBlocks.set('pagerGetter', `                pagerGetter: '${escapeStr(pagerGetter)}',\n`);
@@ -1019,7 +1045,7 @@ function buildRegistry(): RegistryBuildResult {
             }
 
             for (const [property, value] of Object.entries(entry.mapping ?? {})) {
-                if (property === 'module') continue;
+                if (property === 'module' || property === 'resultObjectType') continue;
                 propertyBlocks.set(property, formatMappedActionProperty(property, value, entry.op.tags?.[0]));
             }
 

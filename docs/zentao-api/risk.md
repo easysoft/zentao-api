@@ -42,6 +42,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`risk`
 - 结果字段：`risks`
 - 分页字段：`pager`
 
@@ -90,6 +91,7 @@ const result = await request("risk/list", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`risk`
 - 结果字段：`risks`
 - 分页字段：`pager`
 
@@ -139,6 +141,7 @@ const result = await request("risk/projectRisks", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`risk`
 - 结果字段：`risks`
 - 分页字段：`pager`
 
@@ -282,6 +285,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`risk`
 
 ### SDK 示例
 
@@ -330,6 +334,7 @@ const result = await request("risk/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`risk`
 - 结果字段：`risk`
 
 ### SDK 示例
@@ -456,6 +461,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

@@ -43,6 +43,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`build`
 - 结果字段：`builds`
 - 分页字段：`pager`
 
@@ -157,6 +158,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`build`
 
 ### SDK 示例
 
@@ -272,6 +274,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -315,6 +318,7 @@ const result = await request("build/update", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

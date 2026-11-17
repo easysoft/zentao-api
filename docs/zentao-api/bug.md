@@ -51,6 +51,7 @@ Bug管理，支持获取Bug列表，支持获取项目/产品/执行下的Bug、
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`bug`
 - 结果字段：`bugs`
 - 分页字段：`pager`
 
@@ -94,6 +95,7 @@ const result = await request("bug/list", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`tree`
 
 ### SDK 示例
@@ -215,6 +217,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`bug`
 
 ### SDK 示例
 
@@ -261,6 +264,7 @@ const result = await request("bug/create", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`bug`
 - 结果字段：`bug`
 
 ### SDK 示例
@@ -373,6 +377,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`bug`
 
 ### SDK 示例
 
@@ -447,6 +452,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -483,6 +489,7 @@ const result = await request("bug/updateModule", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -517,6 +524,7 @@ const result = await request("bug/delete", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -587,6 +595,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`bug`
 
 ### SDK 示例
 
@@ -648,6 +657,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`bug`
 
 ### SDK 示例
 
@@ -739,6 +749,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`bug`
 
 ### SDK 示例
 
@@ -826,6 +837,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：`bug`
 
 ### SDK 示例
 

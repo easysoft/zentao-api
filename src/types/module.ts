@@ -43,6 +43,19 @@ export interface ModuleActionParam {
 
 /** 模块动作结果形态。 */
 export type ModuleActionResultType = 'text' | 'object' | 'list';
+/**
+ * 返回业务对象的 SDK 资源类型，或从调用参数读取类型的可序列化规则。
+ * `null` 表示没有统一对象类型；类型名称不要求是已注册的模块名。
+ */
+export type ModuleActionResultObjectType =
+  | string
+  | {
+      /** 从 `beforeRequest` 执行后的 `params[param]` 读取非空字符串。 */
+      readonly param: string;
+      /** 参数值到 SDK 类型名的映射；未命中时保留原值。 */
+      readonly map?: Readonly<Record<string, string>>;
+    }
+  | null;
 /** 列表分页信息别名。 */
 export type ListPagerInfo = Pager;
 
@@ -170,6 +183,12 @@ export interface ModuleAction {
    * 当 `type` 无法推导出结果形态时抛出 `E_INDETERMINATE_ACTION_RESULT_TYPE`。
    */
   resultType?: ModuleActionResultType;
+  /**
+   * 返回的业务对象类型。省略时，`object` / `list` 在注册时补齐为所属模块名，其他形态补齐为 `null`。
+   * 显式 `null` 禁用默认推导，适用于状态响应、混合列表或没有业务对象的结果。
+   * 返回实体或 `{id}` 的动作可声明类型，包括 `resultType: 'text'` 的动作。
+   */
+  resultObjectType?: ModuleActionResultObjectType;
   /**
    * 从原始响应中提取分页信息的位置或函数：
    * 字符串为字段路径（支持 `a.b` 嵌套）、对象为字段映射、函数则接收原始响应与调用参数。

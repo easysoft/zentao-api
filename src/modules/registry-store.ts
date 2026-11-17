@@ -9,6 +9,7 @@ import type {
 } from '../types/index.js';
 import { isRecord } from '../utils/object.js';
 import { BUILTIN_MODULES } from './generated.js';
+import { defaultResultObjectType, isResultObjectType } from './result-object-type.js';
 
 // 动作类型到 HTTP 方法 / 结果形态的默认推导表：当动作未显式声明 method / resultType 时按 type 补齐。
 const METHOD_BY_TYPE: Partial<Record<ModuleActionType, ModuleActionMethod>> = {
@@ -88,13 +89,13 @@ export function deepFreeze<T>(value: T): T {
 }
 
 /**
- * 按 {@link ModuleAction.type} 就地补齐省略的 `method` / `resultType`。
+ * 按动作类型和所属模块就地补齐省略的 `method` / `resultType` / `resultObjectType`。
  *
  * 已显式声明的字段保持不变；当 `type` 无法推导出对应默认值时抛错，提示显式指定。
  *
  * @throws {ZentaoError} `E_INDETERMINATE_ACTION_METHOD` / `E_INDETERMINATE_ACTION_RESULT_TYPE`
  */
-export function normalizeAction(action: ModuleAction): ModuleAction {
+export function normalizeAction(action: ModuleAction, moduleName: string): ModuleAction {
   if (action.method === undefined) {
     const method = METHOD_BY_TYPE[action.type];
     if (method === undefined) {
@@ -109,16 +110,19 @@ export function normalizeAction(action: ModuleAction): ModuleAction {
     }
     action.resultType = resultType;
   }
+  if (action.resultObjectType === undefined) {
+    action.resultObjectType = defaultResultObjectType(moduleName, action.resultType);
+  }
   return action;
 }
 
-export function freezeAction(action: ModuleAction): ModuleAction {
+export function freezeAction(action: ModuleAction, moduleName: string): ModuleAction {
   validateAction(action);
-  return deepFreeze(normalizeAction(action));
+  return deepFreeze(normalizeAction(action, moduleName));
 }
 
 export function freezeModule(module: ModuleDefinition): ModuleDefinition {
-  module.actions.forEach(freezeAction);
+  module.actions.forEach(action => freezeAction(action, module.name));
   return deepFreeze(module);
 }
 
@@ -132,11 +136,11 @@ export function findActionIndex(source: readonly ModuleAction[], actionName: str
   return source.findIndex((action) => String(action.name).toLowerCase() === key);
 }
 
-export function mergeActions(base: readonly ModuleAction[], extension: readonly ModuleAction[]): ModuleAction[] {
+export function mergeActions(base: readonly ModuleAction[], extension: readonly ModuleAction[], moduleName: string): ModuleAction[] {
   const next: ModuleAction[] = base.slice();
   for (const action of extension) {
     const index = findActionIndex(next, String(action.name));
-    const frozen = freezeAction(deepClone(action));
+    const frozen = freezeAction(deepClone(action), moduleName);
     if (index >= 0) {
       next[index] = frozen;
     } else {
@@ -150,7 +154,7 @@ export function mergeModule(base: ModuleDefinition, extension: ModuleDefinition)
   return freezeModule({
     ...base,
     ...deepClone(extension),
-    actions: mergeActions(base.actions, extension.actions),
+    actions: mergeActions(base.actions, extension.actions, extension.name),
   });
 }
 
@@ -174,6 +178,9 @@ export function validateAction(action: ModuleAction): void {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
   if (action.resultType !== undefined && typeof action.resultType !== 'string') {
+    throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
+  }
+  if (action.resultObjectType !== undefined && !isResultObjectType(action.resultObjectType)) {
     throw new ZentaoError('E_INVALID_ACTION_DEFINITION');
   }
   if (action.beforeRequest !== undefined && typeof action.beforeRequest !== 'function') {

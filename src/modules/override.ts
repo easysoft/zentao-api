@@ -231,6 +231,7 @@ export function applyBuiltinOverrides(): void {
     path: '/products/{productID}/repos',
     pathParams: { productID: '产品 ID，正整数' },
     resultType: 'list',
+    resultObjectType: 'repo',
     resultGetter: 'repos',
     request: requestCoderJSON,
   });
@@ -451,6 +452,7 @@ export function applyBuiltinOverrides(): void {
     method: 'get',
     path: '/my/info',
     resultType: 'object',
+    resultObjectType: 'user',
     resultGetter: 'user',
     request: requestJSON,
   });
@@ -480,6 +482,7 @@ export function applyBuiltinOverrides(): void {
       path: '/files/{fileID}/read',
       pathParams: { fileID: '附件数字 ID' },
       resultType: 'object',
+      resultObjectType: null,
       resultGetter: data => data,
       params: [{
         name: 'stream',
@@ -572,6 +575,7 @@ export function applyBuiltinOverrides(): void {
     method: 'get',
     path: '/storygrades',
     resultType: 'list',
+    resultObjectType: 'storygrade',
     resultGetter: 'grades',
   });
 

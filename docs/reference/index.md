@@ -70,6 +70,7 @@
 | [ModuleActionRequestCallback](type-aliases/ModuleActionRequestCallback.md) | 自定义动作的请求发送逻辑，在版本检查、参数解析和请求体准备完成后调用。 返回原始响应数据，后续仍按动作定义提取结果、分页并应用请求选项；抛出的错误原样传递。 |
 | [ModuleActionRequestMediaType](type-aliases/ModuleActionRequestMediaType.md) | 高阶请求支持的请求体媒体类型。 |
 | [ModuleActionResultFieldMap](type-aliases/ModuleActionResultFieldMap.md) | 从原始响应中重映射业务数据字段的映射表。 键为输出字段名，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
+| [ModuleActionResultObjectType](type-aliases/ModuleActionResultObjectType.md) | 返回业务对象的 SDK 资源类型，或从调用参数读取类型的可序列化规则。 `null` 表示没有统一对象类型；类型名称不要求是已注册的模块名。 |
 | [ModuleActionResultType](type-aliases/ModuleActionResultType.md) | 模块动作结果形态。 |
 | [ModuleActionType](type-aliases/ModuleActionType.md) | 模块动作类型：基础 CRUD 或自定义动作。 |
 | [ModuleName](type-aliases/ModuleName.md) | 内置模块名称，同时允许用户扩展自定义模块名。 |

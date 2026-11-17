@@ -240,6 +240,10 @@
         "link": "/reference/type-aliases/ModuleActionResultFieldMap.md"
       },
       {
+        "text": "ModuleActionResultObjectType",
+        "link": "/reference/type-aliases/ModuleActionResultObjectType.md"
+      },
+      {
         "text": "ModuleActionResultType",
         "link": "/reference/type-aliases/ModuleActionResultType.md"
       },

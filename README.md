@@ -134,6 +134,7 @@ interface ResponseData<T> {
   status: 'success' | 'fail';
   message?: string;
   data?: T;
+  resultObjectType?: string;
   pager?: {
     total: number;
     page: number;
@@ -152,7 +153,10 @@ interface ProductSummary {
 
 const result = await request<ProductSummary[]>('product/list', {});
 result.data?.forEach((product) => console.log(product.name));
+console.log(result.resultObjectType); // 'product'
 ```
+
+`resultObjectType` 标识结果对象的 SDK 资源类型。成功返回对象或列表时提供，空列表也保留；失败、无统一类型或动态参数无法解析时省略。`{id}` 可以标注类型，仅返回状态或消息的内置接口不标注。筛选、摘取和转换保留 action 声明的类型，不改写业务记录内的 `objectType`。
 
 需要完整服务端响应时，传入 `{ raw: true }`。此时会跳过响应归一化、本地数据处理和 `throwOnFail`：
 
@@ -383,6 +387,20 @@ const supportedParams = getModuleActionParams('story', 'create', { version: 'biz
 ```
 
 模块查询只使用显式传入的 `version`，省略时返回当前完整定义，不受全局版本影响。过滤后没有动作的模块不返回。旧 Action 后续新增的参数仍按当前定义返回，不做参数级版本过滤。
+
+Action 的 `resultObjectType` 支持三种定义，`getModuleAction()` 和 `exportRegistry()` 均保留它：
+
+| 定义 | 含义 |
+| --- | --- |
+| `'bug'` | 固定的结果对象类型，不要求存在同名模块 |
+| `null` | 无统一对象类型，并阻止默认推导 |
+| `{param: 'relatedObjectType', map: {projectdeliverable: 'deliverable'}}` | 从最终调用参数读取类型，按映射转换；未命中时保留原值 |
+
+省略时，在注册阶段为 `object` / `list` 动作补齐所属模块名，为其他形态补齐 `null`。动态规则读取 `beforeRequest` 执行后的 `params[param]`，要求是非空字符串。显式类型也适用于返回 `{id}` 的 `text` 动作。
+
+内置类型沿用 SDK 资源名，如 `testcase`、`change` 和 `deliverable`。`my/info` 返回 `user`，`product/repos` 返回 `repo`；`relation/list` 可能混合多种对象，整体类型为 `null`，可读取各条记录已有的 `objectType`。类型字段不保证 `getObjectProps()` 已收录该类型的字段词典。
+
+生成定义的例外在 `scripts/zentao-api-map.json` 中配置 `resultObjectType`，再运行注册表生成器；同一 scoped-list 的各来源必须具有一致的有效类型。
 
 未注册的 API 可以新增为自定义模块：
 

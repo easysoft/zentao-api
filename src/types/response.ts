@@ -12,6 +12,11 @@ export interface ResponseData<T = unknown> {
   raw?: Record<string, unknown>;
   /** 根据模块动作 `resultGetter` 提取后的业务数据。 */
   data?: T;
+  /**
+   * 成功返回对象或列表时，按 action 声明和最终调用参数解析的 SDK 资源类型；空列表也保留类型。
+   * 无统一类型、参数无法解析或失败时省略。类型不随本地筛选、摘取和转换改变。
+   */
+  resultObjectType?: string;
   /** 统一分页信息。 */
   pager?: {
     /** 总记录数。 */

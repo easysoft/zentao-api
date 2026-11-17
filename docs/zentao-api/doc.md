@@ -70,6 +70,7 @@
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`docspace`
 - 结果字段：`spaces`
 
 ### SDK 示例
@@ -101,6 +102,7 @@ const result = await request("doc/mySpaces");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`docspace`
 - 结果字段：`spaces`
 
 ### SDK 示例
@@ -132,6 +134,7 @@ const result = await request("doc/teamSpaces");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`docspace`
 - 结果字段：`spaces`
 
 ### SDK 示例
@@ -163,6 +166,7 @@ const result = await request("doc/productSpaces");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`docspace`
 - 结果字段：`spaces`
 
 ### SDK 示例
@@ -196,6 +200,7 @@ const result = await request("doc/projectSpaces");
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doclib`
 - 结果字段：`libs`
 
 ### SDK 示例
@@ -231,6 +236,7 @@ const result = await request("doc/myLibs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doclib`
 - 结果字段：`libs`
 
 ### SDK 示例
@@ -266,6 +272,7 @@ const result = await request("doc/teamLibs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doclib`
 - 结果字段：`libs`
 
 ### SDK 示例
@@ -301,6 +308,7 @@ const result = await request("doc/productLibs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doclib`
 - 结果字段：`libs`
 
 ### SDK 示例
@@ -337,6 +345,7 @@ const result = await request("doc/projectLibs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doc`
 - 结果字段：`docs`
 
 ### SDK 示例
@@ -374,6 +383,7 @@ const result = await request("doc/myDocs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doc`
 - 结果字段：`docs`
 
 ### SDK 示例
@@ -411,6 +421,7 @@ const result = await request("doc/teamDocs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doc`
 - 结果字段：`docs`
 
 ### SDK 示例
@@ -448,6 +459,7 @@ const result = await request("doc/productDocs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`doc`
 - 结果字段：`docs`
 
 ### SDK 示例
@@ -485,6 +497,7 @@ const result = await request("doc/projectDocs", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`modules`
 
 ### SDK 示例
@@ -522,6 +535,7 @@ const result = await request("doc/myModules", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`modules`
 
 ### SDK 示例
@@ -559,6 +573,7 @@ const result = await request("doc/teamModules", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`modules`
 
 ### SDK 示例
@@ -596,6 +611,7 @@ const result = await request("doc/productModules", {
 ### 返回值
 
 - 返回形态：`list`
+- 对象类型：`module`
 - 结果字段：`modules`
 
 ### SDK 示例
@@ -655,6 +671,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`docspace`
 
 ### SDK 示例
 
@@ -712,6 +729,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`docspace`
 
 ### SDK 示例
 
@@ -771,6 +789,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doclib`
 
 ### SDK 示例
 
@@ -856,6 +875,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doclib`
 
 ### SDK 示例
 
@@ -948,6 +968,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doclib`
 
 ### SDK 示例
 
@@ -1040,6 +1061,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doclib`
 
 ### SDK 示例
 
@@ -1125,6 +1147,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 
 ### SDK 示例
 
@@ -1207,6 +1230,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 
 ### SDK 示例
 
@@ -1289,6 +1313,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 
 ### SDK 示例
 
@@ -1371,6 +1396,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 
 ### SDK 示例
 
@@ -1442,6 +1468,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -1511,6 +1538,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -1580,6 +1608,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -1649,6 +1678,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`module`
 
 ### SDK 示例
 
@@ -1686,6 +1716,7 @@ const result = await request("doc/createProjectModule", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`docspace`
 - 结果字段：`space`
 
 ### SDK 示例
@@ -1721,6 +1752,7 @@ const result = await request("doc/getSpace", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doclib`
 - 结果字段：`lib`
 
 ### SDK 示例
@@ -1756,6 +1788,7 @@ const result = await request("doc/getLib", {
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 - 结果字段：`custom`
 
 ### SDK 示例
@@ -1816,6 +1849,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -1901,6 +1935,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -1985,6 +2020,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：`doc`
 
 ### SDK 示例
 
@@ -2048,6 +2084,7 @@ Schema:
 ### 返回值
 
 - 返回形态：`object`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2083,6 +2120,7 @@ const result = await request("doc/updateModule", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2117,6 +2155,7 @@ const result = await request("doc/deleteSpace", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2151,6 +2190,7 @@ const result = await request("doc/deleteLib", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 
@@ -2185,6 +2225,7 @@ const result = await request("doc/delete", {
 ### 返回值
 
 - 返回形态：`text`
+- 对象类型：无统一对象类型
 
 ### SDK 示例
 

@@ -3,6 +3,21 @@ import type { ModuleDefinition } from '../src/types';
 import { renderZentaoApiDocs } from '../scripts/generate-zentao-api-docs';
 
 describe('ZenTao API docs generator', () => {
+  test('renders fixed, default, absent and parameter-driven result types', () => {
+    const base = { minVersion: ['22.0'], type: 'get' as const, path: '/fixture', resultType: 'object' as const };
+    const { pages } = renderZentaoApiDocs([{ name: 'fixture', actions: [
+      { ...base, name: 'default' },
+      { ...base, name: 'fixed', resultObjectType: 'user' },
+      { ...base, name: 'mixed', resultObjectType: null },
+      { ...base, name: 'dynamic', resultObjectType: { param: 'kind', map: { projectdeliverable: 'deliverable' } } },
+    ] }]);
+    expect(pages[0].content).toContain('- 对象类型：`fixture`');
+    expect(pages[0].content).toContain('- 对象类型：`user`');
+    expect(pages[0].content).toContain('- 对象类型：无统一对象类型');
+    expect(pages[0].content).toContain('读取调用参数 `params["kind"]`');
+    expect(pages[0].content).toContain('`{"projectdeliverable":"deliverable"}`；未命中时保留参数值');
+  });
+
   test('renders module index and action details from registry module definitions', () => {
     const modules: ModuleDefinition[] = [
       {

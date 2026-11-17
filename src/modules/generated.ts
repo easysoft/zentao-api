@@ -21,6 +21,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/users',
                 resultType: 'list',
+                resultObjectType: 'user',
                 pagerGetter: 'pager',
                 resultGetter: 'users',
                 params: [
@@ -87,6 +88,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/users',
                 resultType: 'object',
+                resultObjectType: 'user',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -126,6 +128,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/users/{userID}',
                 resultType: 'object',
+                resultObjectType: 'user',
                 resultGetter: 'user',
                 pathParams: {
                     userID: '用户ID',
@@ -138,6 +141,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/users/{userID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     userID: '用户ID',
                 },
@@ -216,6 +220,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/users/{userID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     userID: '用户ID',
                 },
@@ -237,6 +242,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/programs',
                 resultType: 'list',
+                resultObjectType: 'program',
                 pagerGetter: 'pager',
                 resultGetter: 'programs',
                 params: [
@@ -310,6 +316,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/programs',
                 resultType: 'object',
+                resultObjectType: 'program',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -359,6 +366,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/programs/{programID}',
                 resultType: 'object',
+                resultObjectType: 'program',
                 resultGetter: 'program',
                 pathParams: {
                     programID: '项目集ID',
@@ -371,6 +379,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/programs/{programID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     programID: '项目集ID',
                 },
@@ -423,6 +432,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/programs/{programID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     programID: '项目集ID',
                 },
@@ -444,6 +454,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products',
                 resultType: 'list',
+                resultObjectType: 'product',
                 pagerGetter: 'pager',
                 resultGetter: 'products',
                 params: [
@@ -495,6 +506,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/programs/{programID}/products',
                 resultType: 'list',
+                resultObjectType: 'product',
                 pagerGetter: 'pager',
                 resultGetter: 'products',
                 pathParams: {
@@ -550,6 +562,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/products',
                 resultType: 'object',
+                resultObjectType: 'product',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -632,6 +645,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/products/{productID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -656,6 +670,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/products/{productID}/story/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -689,6 +704,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/products/{productID}/bug/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -722,6 +738,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/products/{productID}/testcase/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -755,6 +772,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}',
                 resultType: 'object',
+                resultObjectType: 'product',
                 resultGetter: 'product',
                 pathParams: {
                     productID: '产品ID',
@@ -767,6 +785,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/products/{productID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -852,6 +871,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/products/{productID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -873,6 +893,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects',
                 resultType: 'list',
+                resultObjectType: 'project',
                 pagerGetter: 'pager',
                 resultGetter: 'projects',
                 params: [
@@ -944,6 +965,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/programs/{programID}/projects',
                 resultType: 'list',
+                resultObjectType: 'project',
                 pagerGetter: 'pager',
                 resultGetter: 'projects',
                 pathParams: {
@@ -1000,6 +1022,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/team',
                 resultType: 'list',
+                resultObjectType: 'team',
                 resultGetter: 'members',
                 params: [
                     {
@@ -1017,6 +1040,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/members',
                 resultType: 'list',
+                resultObjectType: 'team',
                 resultGetter: 'members',
                 pathParams: {
                     projectID: '项目ID',
@@ -1029,6 +1053,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects',
                 resultType: 'object',
+                resultObjectType: 'project',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -1102,6 +1127,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1136,6 +1162,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/stories',
                 resultType: 'object',
+                resultObjectType: 'story',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1198,6 +1225,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/bugs',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1266,6 +1294,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/tasks',
                 resultType: 'object',
+                resultObjectType: 'task',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1350,6 +1379,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/risks',
                 resultType: 'object',
+                resultObjectType: 'risk',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1450,6 +1480,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/stories/link',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1490,6 +1521,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/projects/{projectID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1566,6 +1598,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/projects/{projectID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1577,6 +1610,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/projects/{projectID}/members',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -1667,6 +1701,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions',
                 resultType: 'list',
+                resultObjectType: 'execution',
                 pagerGetter: 'pager',
                 resultGetter: 'executions',
                 params: [
@@ -1738,6 +1773,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/executions',
                 resultType: 'list',
+                resultObjectType: 'execution',
                 pagerGetter: 'pager',
                 resultGetter: 'executions',
                 pathParams: {
@@ -1794,6 +1830,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/team',
                 resultType: 'list',
+                resultObjectType: 'team',
                 resultGetter: 'members',
                 params: [
                     {
@@ -1811,6 +1848,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/members',
                 resultType: 'list',
+                resultObjectType: 'team',
                 resultGetter: 'members',
                 pathParams: {
                     executionID: '执行ID',
@@ -1823,6 +1861,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions',
                 resultType: 'object',
+                resultObjectType: 'execution',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -1942,6 +1981,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions/{executionID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -1976,6 +2016,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions/{executionID}/task/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -2009,6 +2050,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions/{executionID}/stories/link',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -2049,6 +2091,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}',
                 resultType: 'object',
+                resultObjectType: 'execution',
                 resultGetter: 'execution',
                 pathParams: {
                     executionID: '执行ID',
@@ -2061,6 +2104,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/executions/{executionID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -2167,6 +2211,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/executions/{executionID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -2178,6 +2223,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/executions/{executionID}/members',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -2268,6 +2314,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/productplans',
                 resultType: 'list',
+                resultObjectType: 'productplan',
                 pagerGetter: 'pager',
                 resultGetter: 'productplans',
                 pathParams: {
@@ -2343,6 +2390,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/productplans',
                 resultType: 'object',
+                resultObjectType: 'productplan',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -2404,6 +2452,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/productplans/{planID}',
                 resultType: 'object',
+                resultObjectType: 'productplan',
                 resultGetter: 'productplan',
                 pathParams: {
                     planID: '产品计划ID',
@@ -2416,6 +2465,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/productplans/{planID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     planID: '产品计划ID',
                 },
@@ -2473,6 +2523,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/productplans/{planID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     planID: '产品计划ID',
                 },
@@ -2494,6 +2545,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/stories',
                 resultType: 'list',
+                resultObjectType: 'story',
                 pagerGetter: 'pager',
                 resultGetter: 'stories',
                 pathParams: {
@@ -2567,6 +2619,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/story/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -2579,6 +2632,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/stories',
                 resultType: 'object',
+                resultObjectType: 'story',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -2686,6 +2740,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/stories/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'story',
                 resultGetter: 'story',
                 pathParams: {
                     storyID: '需求ID',
@@ -2698,6 +2753,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/stories/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'story',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -2767,6 +2823,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/story/modules/{moduleID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -2800,6 +2857,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/stories/{storyID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -2811,6 +2869,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/story/modules/{moduleID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -2822,6 +2881,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/stories/{storyID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -2853,6 +2913,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/stories/{storyID}/change',
                 resultType: 'text',
+                resultObjectType: 'story',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -2907,6 +2968,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/stories/{storyID}/close',
                 resultType: 'text',
+                resultObjectType: 'story',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -2951,6 +3013,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/epics',
                 resultType: 'list',
+                resultObjectType: 'epic',
                 pagerGetter: 'pager',
                 resultGetter: 'epics',
                 pathParams: {
@@ -3024,6 +3087,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/epics',
                 resultType: 'object',
+                resultObjectType: 'epic',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -3119,6 +3183,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/epics/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'epic',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3131,6 +3196,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/epics/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'epic',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3201,6 +3267,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/epics/{storyID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3212,6 +3279,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/epics/{storyID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3243,6 +3311,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/epics/{storyID}/change',
                 resultType: 'text',
+                resultObjectType: 'epic',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3297,6 +3366,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/epics/{storyID}/close',
                 resultType: 'text',
+                resultObjectType: 'epic',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3341,6 +3411,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/requirements',
                 resultType: 'list',
+                resultObjectType: 'requirement',
                 pagerGetter: 'pager',
                 resultGetter: 'requirements',
                 pathParams: {
@@ -3414,6 +3485,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/requirements',
                 resultType: 'object',
+                resultObjectType: 'requirement',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -3509,6 +3581,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/requirements/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'requirement',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3521,6 +3594,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/requirements/{storyID}',
                 resultType: 'object',
+                resultObjectType: 'requirement',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3590,6 +3664,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/requirements/{storyID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3601,6 +3676,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/requirements/{storyID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3632,6 +3708,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/requirements/{storyID}/change',
                 resultType: 'text',
+                resultObjectType: 'requirement',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3683,6 +3760,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/requirements/{storyID}/close',
                 resultType: 'text',
+                resultObjectType: 'requirement',
                 pathParams: {
                     storyID: '需求ID',
                 },
@@ -3727,6 +3805,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/bugs',
                 resultType: 'list',
+                resultObjectType: 'bug',
                 pagerGetter: 'pager',
                 resultGetter: 'bugs',
                 pathParams: {
@@ -3793,6 +3872,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/bug/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -3805,6 +3885,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/bugs',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -3895,6 +3976,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/bugs/{bugID}',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 resultGetter: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
@@ -3907,6 +3989,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bugs/{bugID}',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -3989,6 +4072,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bug/modules/{moduleID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4022,6 +4106,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/bugs/{bugID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -4033,6 +4118,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/bug/modules/{moduleID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4044,6 +4130,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bugs/{bugID}/activate',
                 resultType: 'text',
+                resultObjectType: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -4085,6 +4172,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bugs/{bugID}/close',
                 resultType: 'text',
+                resultObjectType: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -4109,6 +4197,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bugs/{bugID}/confirm',
                 resultType: 'text',
+                resultObjectType: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -4170,6 +4259,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/bugs/{bugID}/resolve',
                 resultType: 'text',
+                resultObjectType: 'bug',
                 pathParams: {
                     bugID: 'Bug ID',
                 },
@@ -4229,6 +4319,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/testcases',
                 resultType: 'list',
+                resultObjectType: 'testcase',
                 pagerGetter: 'pager',
                 resultGetter: 'testcases',
                 pathParams: {
@@ -4293,6 +4384,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/testcase/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -4305,6 +4397,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/testcases',
                 resultType: 'object',
+                resultObjectType: 'testcase',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -4411,6 +4504,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/testcases/{caseID}',
                 resultType: 'object',
+                resultObjectType: 'testcase',
                 resultGetter: 'testcase',
                 pathParams: {
                     caseID: '测试用例ID',
@@ -4423,6 +4517,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/testcases/{caseID}',
                 resultType: 'object',
+                resultObjectType: 'testcase',
                 pathParams: {
                     caseID: '测试用例ID',
                 },
@@ -4513,6 +4608,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/testcase/modules/{moduleID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4546,6 +4642,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/testcases/{caseID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     caseID: '测试用例ID',
                 },
@@ -4557,6 +4654,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/testcase/modules/{moduleID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4578,6 +4676,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/tasks',
                 resultType: 'list',
+                resultObjectType: 'task',
                 pagerGetter: 'pager',
                 resultGetter: 'tasks',
                 pathParams: {
@@ -4634,6 +4733,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/task/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -4646,6 +4746,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/tasks',
                 resultType: 'object',
+                resultObjectType: 'task',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -4728,6 +4829,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/tasks/{taskID}',
                 resultType: 'object',
+                resultObjectType: 'task',
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4740,6 +4842,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tasks/{taskID}',
                 resultType: 'object',
+                resultObjectType: 'task',
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4815,6 +4918,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/task/modules/{moduleID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4848,6 +4952,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/tasks/{taskID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4859,6 +4964,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/task/modules/{moduleID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -4870,6 +4976,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tasks/{taskID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4907,6 +5014,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tasks/{taskID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4931,6 +5039,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tasks/{taskID}/finish',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -4989,6 +5098,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tasks/{taskID}/start',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     taskID: '任务ID',
                 },
@@ -5050,6 +5160,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/issues',
                 resultType: 'list',
+                resultObjectType: 'issue',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
                 params: [
@@ -5124,6 +5235,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/issues',
                 resultType: 'list',
+                resultObjectType: 'issue',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
                 pathParams: {
@@ -5201,6 +5313,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/issues',
                 resultType: 'list',
+                resultObjectType: 'issue',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
                 pathParams: {
@@ -5278,6 +5391,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/issues',
                 resultType: 'object',
+                resultObjectType: 'issue',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -5362,6 +5476,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/issues/{issueID}',
                 resultType: 'object',
+                resultObjectType: 'issue',
                 resultGetter: 'issue',
                 pathParams: {
                     issueID: '问题ID',
@@ -5384,6 +5499,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/risks',
                 resultType: 'list',
+                resultObjectType: 'risk',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
                 params: [
@@ -5458,6 +5574,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/risks',
                 resultType: 'list',
+                resultObjectType: 'risk',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
                 pathParams: {
@@ -5535,6 +5652,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/risks',
                 resultType: 'list',
+                resultObjectType: 'risk',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
                 pathParams: {
@@ -5612,6 +5730,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/risks',
                 resultType: 'object',
+                resultObjectType: 'risk',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -5717,6 +5836,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/risks/{riskID}',
                 resultType: 'object',
+                resultObjectType: 'risk',
                 resultGetter: 'risk',
                 pathParams: {
                     riskID: '风险ID',
@@ -5729,6 +5849,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/risks/{riskID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     riskID: '风险ID',
                 },
@@ -5835,6 +5956,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/meetings',
                 resultType: 'list',
+                resultObjectType: 'meeting',
                 pagerGetter: 'pager',
                 resultGetter: 'meetings',
                 params: [
@@ -5903,6 +6025,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/meetings',
                 resultType: 'list',
+                resultObjectType: 'meeting',
                 pagerGetter: 'pager',
                 resultGetter: 'meetings',
                 pathParams: {
@@ -5974,6 +6097,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/executions/{executionID}/meetings',
                 resultType: 'list',
+                resultObjectType: 'meeting',
                 pagerGetter: 'pager',
                 resultGetter: 'meetings',
                 pathParams: {
@@ -6045,6 +6169,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/meetings',
                 resultType: 'object',
+                resultObjectType: 'meeting',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -6142,6 +6267,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/meetings/{meetingID}',
                 resultType: 'object',
+                resultObjectType: 'meeting',
                 resultGetter: 'meeting',
                 pathParams: {
                     meetingID: '会议ID',
@@ -6154,6 +6280,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/meetings/{meetingID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     meetingID: '会议ID',
                 },
@@ -6241,6 +6368,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/meetings/{meetingID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     meetingID: '会议ID',
                 },
@@ -6252,6 +6380,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/meetings/{meetingID}/minutes',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     meetingID: '会议ID',
                 },
@@ -6289,6 +6418,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/feedbacks',
                 resultType: 'list',
+                resultObjectType: 'feedback',
                 pagerGetter: 'pager',
                 resultGetter: 'feedbacks',
                 pathParams: {
@@ -6364,6 +6494,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks',
                 resultType: 'object',
+                resultObjectType: 'feedback',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -6424,6 +6555,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks/{feedbackID}/bugs',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6494,6 +6626,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks/{feedbackID}/tickets',
                 resultType: 'object',
+                resultObjectType: 'ticket',
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6548,6 +6681,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks/{feedbackID}/todos',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6584,6 +6718,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks/{feedbackID}/stories',
                 resultType: 'object',
+                resultObjectType: 'story',
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6637,6 +6772,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/feedbacks/{feedbackID}/tasks',
                 resultType: 'object',
+                resultObjectType: 'task',
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6699,6 +6835,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/feedbacks/{feedbackID}',
                 resultType: 'object',
+                resultObjectType: 'feedback',
                 resultGetter: 'feedback',
                 pathParams: {
                     feedbackID: '反馈ID',
@@ -6711,6 +6848,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/feedbacks/{feedbackID}',
                 resultType: 'object',
+                resultObjectType: 'feedback',
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6774,6 +6912,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/feedbacks/{feedbackID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6785,6 +6924,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/feedbacks/{feedbackID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6816,6 +6956,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/feedbacks/{feedbackID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     feedbackID: '反馈ID',
                 },
@@ -6865,6 +7006,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/tickets',
                 resultType: 'list',
+                resultObjectType: 'ticket',
                 pagerGetter: 'pager',
                 resultGetter: 'tickets',
                 pathParams: {
@@ -6941,6 +7083,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/tickets',
                 resultType: 'object',
+                resultObjectType: 'ticket',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -7011,6 +7154,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/tickets/{ticketID}/stories',
                 resultType: 'object',
+                resultObjectType: 'story',
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7064,6 +7208,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/tickets/{ticketID}/bugs',
                 resultType: 'object',
+                resultObjectType: 'bug',
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7134,6 +7279,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/tickets/{ticketID}',
                 resultType: 'object',
+                resultObjectType: 'ticket',
                 resultGetter: 'ticket',
                 pathParams: {
                     ticketID: '工单ID',
@@ -7146,6 +7292,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tickets/{ticketID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7215,6 +7362,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/tickets/{ticketID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7226,6 +7374,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tickets/{ticketID}/activate',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7257,6 +7406,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/tickets/{ticketID}/close',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     ticketID: '工单ID',
                 },
@@ -7302,6 +7452,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/systems',
                 resultType: 'list',
+                resultObjectType: 'system',
                 pagerGetter: 'pager',
                 pathParams: {
                     productID: '所属产品ID',
@@ -7343,6 +7494,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/systems',
                 resultType: 'object',
+                resultObjectType: null,
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -7398,6 +7550,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/systems/{systemID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     systemID: '应用ID',
                 },
@@ -7452,6 +7605,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/builds',
                 resultType: 'list',
+                resultObjectType: 'build',
                 pagerGetter: 'pager',
                 resultGetter: 'builds',
                 pathParams: {
@@ -7524,6 +7678,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/builds',
                 resultType: 'object',
+                resultObjectType: 'build',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -7599,6 +7754,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/builds/{buildID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     buildID: '版本ID',
                 },
@@ -7677,6 +7833,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/builds/{buildID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     buildID: '版本ID',
                 },
@@ -7698,6 +7855,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/testtasks',
                 resultType: 'list',
+                resultObjectType: 'testtask',
                 pagerGetter: 'pager',
                 resultGetter: 'testtasks',
                 pathParams: {
@@ -7754,6 +7912,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/testtasks',
                 resultType: 'object',
+                resultObjectType: 'testtask',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -7838,6 +7997,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/testtasks/{testtaskID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     testtaskID: '测试单ID',
                 },
@@ -7918,6 +8078,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/testtasks/{testtaskID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     testtaskID: '测试单ID',
                 },
@@ -7939,6 +8100,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/products/{productID}/releases',
                 resultType: 'list',
+                resultObjectType: 'release',
                 pagerGetter: 'pager',
                 resultGetter: 'releases',
                 pathParams: {
@@ -8014,6 +8176,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/releases',
                 resultType: 'object',
+                resultObjectType: 'release',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8082,6 +8245,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/releases/{releaseID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     releaseID: '发布ID',
                 },
@@ -8146,6 +8310,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/releases/{releaseID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     releaseID: '发布ID',
                 },
@@ -8167,6 +8332,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/files',
                 resultType: 'object',
+                resultObjectType: 'file',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8207,6 +8373,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/files/{fileID}',
                 resultType: 'object',
+                resultObjectType: 'file',
                 pathParams: {
                     fileID: '附件ID',
                 },
@@ -8237,6 +8404,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/files/{fileID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     fileID: '附件ID',
                 },
@@ -8258,6 +8426,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflow/contract',
                 resultType: 'list',
+                resultObjectType: 'workflow_contract',
                 pagerGetter: 'pager',
                 resultGetter: 'dataList',
             }, {
@@ -8268,6 +8437,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflow/contract/1',
                 resultType: 'object',
+                resultObjectType: 'workflow_contract',
                 resultGetter: 'data',
             }, {
                 name: 'flows',
@@ -8277,6 +8447,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows',
                 resultType: 'list',
+                resultObjectType: 'workflow',
                 pagerGetter: 'pager',
                 resultGetter: 'flows',
                 params: [
@@ -8355,6 +8526,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows/{module}/fields',
                 resultType: 'list',
+                resultObjectType: 'workflowfield',
                 resultGetter: 'fields',
                 pathParams: {
                     module: 'module',
@@ -8367,6 +8539,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows/{module}/actions',
                 resultType: 'list',
+                resultObjectType: 'workflowaction',
                 resultGetter: 'actions',
                 pathParams: {
                     module: 'module',
@@ -8379,6 +8552,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows/{module}/labels',
                 resultType: 'list',
+                resultObjectType: 'workflowlabel',
                 resultGetter: 'labels',
                 pathParams: {
                     module: 'module',
@@ -8391,6 +8565,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows/{module}/tables',
                 resultType: 'list',
+                resultObjectType: 'workflow',
                 resultGetter: 'tables',
                 pathParams: {
                     module: 'module',
@@ -8403,6 +8578,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowdatasources',
                 resultType: 'list',
+                resultObjectType: 'workflowdatasource',
                 pagerGetter: 'pager',
                 resultGetter: 'datasources',
             }, {
@@ -8413,6 +8589,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowrules',
                 resultType: 'list',
+                resultObjectType: 'workflowrule',
                 pagerGetter: 'pager',
                 resultGetter: 'rules',
             }, {
@@ -8423,6 +8600,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflow/contract',
                 resultType: 'object',
+                resultObjectType: 'workflow_contract',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8450,6 +8628,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8488,6 +8667,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows/{flowID}/copy',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -8534,6 +8714,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows/{module}/fields',
                 resultType: 'object',
+                resultObjectType: 'workflowfield',
                 pathParams: {
                     module: 'module',
                 },
@@ -8586,6 +8767,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows/{module}/actions',
                 resultType: 'object',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     module: 'module',
                 },
@@ -8633,6 +8815,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows/{module}/labels',
                 resultType: 'object',
+                resultObjectType: 'workflowlabel',
                 pathParams: {
                     module: 'module',
                 },
@@ -8714,6 +8897,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflows/{module}/tables',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 pathParams: {
                     module: 'module',
                 },
@@ -8750,6 +8934,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflowdatasources',
                 resultType: 'object',
+                resultObjectType: 'workflowdatasource',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8803,6 +8988,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/workflowrules',
                 resultType: 'object',
+                resultObjectType: 'workflowrule',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -8842,6 +9028,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflows/{flowID}',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 resultGetter: 'flow',
                 pathParams: {
                     flowID: 'flowID',
@@ -8854,6 +9041,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowfields/{fieldID}',
                 resultType: 'object',
+                resultObjectType: 'workflowfield',
                 resultGetter: 'field',
                 pathParams: {
                     fieldID: 'fieldID',
@@ -8866,6 +9054,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowactions/{actionID}',
                 resultType: 'object',
+                resultObjectType: 'workflowaction',
                 resultGetter: 'action',
                 pathParams: {
                     actionID: 'actionID',
@@ -8878,6 +9067,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowlabels/{labelID}',
                 resultType: 'object',
+                resultObjectType: 'workflowlabel',
                 resultGetter: 'label',
                 pathParams: {
                     labelID: 'labelID',
@@ -8890,6 +9080,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowtables/{tableID}',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 resultGetter: 'flow',
                 pathParams: {
                     tableID: 'tableID',
@@ -8902,6 +9093,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowdatasources/{datasourceID}',
                 resultType: 'object',
+                resultObjectType: 'workflowdatasource',
                 resultGetter: 'datasource',
                 pathParams: {
                     datasourceID: 'datasourceID',
@@ -8914,6 +9106,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowrules/{ruleID}',
                 resultType: 'object',
+                resultObjectType: 'workflowrule',
                 resultGetter: 'rule',
                 pathParams: {
                     ruleID: 'ruleID',
@@ -8926,6 +9119,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflow/contract/{contractID}',
                 resultType: 'object',
+                resultObjectType: 'workflow_contract',
                 pathParams: {
                     contractID: '合同ID',
                 },
@@ -8956,6 +9150,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9000,6 +9195,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowfields/{fieldID}',
                 resultType: 'object',
+                resultObjectType: 'workflowfield',
                 pathParams: {
                     fieldID: 'fieldID',
                 },
@@ -9036,6 +9232,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowactions/{actionID}',
                 resultType: 'object',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9072,6 +9269,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowlabels/{labelID}',
                 resultType: 'object',
+                resultObjectType: 'workflowlabel',
                 pathParams: {
                     labelID: 'labelID',
                 },
@@ -9134,6 +9332,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowtables/{tableID}',
                 resultType: 'object',
+                resultObjectType: 'workflow',
                 pathParams: {
                     tableID: 'tableID',
                 },
@@ -9164,6 +9363,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowdatasources/{datasourceID}',
                 resultType: 'object',
+                resultObjectType: 'workflowdatasource',
                 pathParams: {
                     datasourceID: 'datasourceID',
                 },
@@ -9220,6 +9420,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowrules/{ruleID}',
                 resultType: 'object',
+                resultObjectType: 'workflowrule',
                 pathParams: {
                     ruleID: 'ruleID',
                 },
@@ -9262,6 +9463,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflow/contract/{contractID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     contractID: '合同ID',
                 },
@@ -9273,6 +9475,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflows/{flowID}',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9284,6 +9487,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowfields/{fieldID}',
                 resultType: 'text',
+                resultObjectType: 'workflowfield',
                 pathParams: {
                     fieldID: 'fieldID',
                 },
@@ -9295,6 +9499,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowactions/{actionID}',
                 resultType: 'text',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9306,6 +9511,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowlabels/{labelID}',
                 resultType: 'text',
+                resultObjectType: 'workflowlabel',
                 pathParams: {
                     labelID: 'labelID',
                 },
@@ -9317,6 +9523,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowtables/{tableID}',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     tableID: 'tableID',
                 },
@@ -9328,6 +9535,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowdatasources/{datasourceID}',
                 resultType: 'text',
+                resultObjectType: 'workflowdatasource',
                 pathParams: {
                     datasourceID: 'datasourceID',
                 },
@@ -9339,6 +9547,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/workflowrules/{ruleID}',
                 resultType: 'text',
+                resultObjectType: 'workflowrule',
                 pathParams: {
                     ruleID: 'ruleID',
                 },
@@ -9350,6 +9559,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/activate',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9361,6 +9571,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/deactivate',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9372,6 +9583,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/release',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9412,6 +9624,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{module}/setApproval',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     module: 'module',
                 },
@@ -9442,6 +9655,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowactions/{actionID}/setCSS',
                 resultType: 'text',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9469,6 +9683,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/setCSS',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9496,6 +9711,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{module}/setExport',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     module: 'module',
                 },
@@ -9541,6 +9757,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/setFulltextSearch',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9573,6 +9790,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowactions/{actionID}/setJS',
                 resultType: 'text',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9600,6 +9818,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{flowID}/setJS',
                 resultType: 'text',
+                resultObjectType: 'workflow',
                 pathParams: {
                     flowID: 'flowID',
                 },
@@ -9627,6 +9846,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowactions/{actionID}/setNotice',
                 resultType: 'text',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9662,6 +9882,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{module}/setSearch',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     module: 'module',
                 },
@@ -9707,6 +9928,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflows/{module}/setValue',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     module: 'module',
                 },
@@ -9752,6 +9974,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/workflowactions/{actionID}/setVerification',
                 resultType: 'text',
+                resultObjectType: 'workflowaction',
                 pathParams: {
                     actionID: 'actionID',
                 },
@@ -9813,6 +10036,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces',
                 resultType: 'list',
+                resultObjectType: 'docspace',
                 resultGetter: 'spaces',
             }, {
                 name: 'teamSpaces',
@@ -9822,6 +10046,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces',
                 resultType: 'list',
+                resultObjectType: 'docspace',
                 resultGetter: 'spaces',
             }, {
                 name: 'productSpaces',
@@ -9831,6 +10056,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces',
                 resultType: 'list',
+                resultObjectType: 'docspace',
                 resultGetter: 'spaces',
             }, {
                 name: 'projectSpaces',
@@ -9840,6 +10066,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces',
                 resultType: 'list',
+                resultObjectType: 'docspace',
                 resultGetter: 'spaces',
             }, {
                 name: 'myLibs',
@@ -9849,6 +10076,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs',
                 resultType: 'list',
+                resultObjectType: 'doclib',
                 resultGetter: 'libs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -9861,6 +10089,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs',
                 resultType: 'list',
+                resultObjectType: 'doclib',
                 resultGetter: 'libs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -9873,6 +10102,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs',
                 resultType: 'list',
+                resultObjectType: 'doclib',
                 resultGetter: 'libs',
                 pathParams: {
                     productID: '产品ID',
@@ -9885,6 +10115,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs',
                 resultType: 'list',
+                resultObjectType: 'doclib',
                 resultGetter: 'libs',
                 pathParams: {
                     projectID: '项目ID',
@@ -9897,6 +10128,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'list',
+                resultObjectType: 'doc',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -9910,6 +10142,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'list',
+                resultObjectType: 'doc',
                 resultGetter: 'docs',
                 pathParams: {
                     spaceID: '空间ID',
@@ -9923,6 +10156,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/docs',
                 resultType: 'list',
+                resultObjectType: 'doc',
                 pathParams: {
                     productID: '产品ID',
                     libID: '文档库ID',
@@ -9936,6 +10170,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/docs',
                 resultType: 'list',
+                resultObjectType: 'doc',
                 pathParams: {
                     projectID: '项目ID',
                     libID: '文档库ID',
@@ -9949,6 +10184,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 resultGetter: 'modules',
                 pathParams: {
                     spaceID: '空间ID',
@@ -9962,6 +10198,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 resultGetter: 'modules',
                 pathParams: {
                     spaceID: '空间ID',
@@ -9975,6 +10212,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 resultGetter: 'modules',
                 pathParams: {
                     productID: '产品ID',
@@ -9988,6 +10226,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/modules',
                 resultType: 'list',
+                resultObjectType: 'module',
                 resultGetter: 'modules',
                 pathParams: {
                     projectID: '项目ID',
@@ -10001,6 +10240,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/my/spaces',
                 resultType: 'object',
+                resultObjectType: 'docspace',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -10028,6 +10268,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/team/spaces',
                 resultType: 'object',
+                resultObjectType: 'docspace',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -10055,6 +10296,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/my/spaces/{spaceID}/libs',
                 resultType: 'object',
+                resultObjectType: 'doclib',
                 pathParams: {
                     spaceID: '空间ID',
                 },
@@ -10085,6 +10327,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/team/spaces/{spaceID}/libs',
                 resultType: 'object',
+                resultObjectType: 'doclib',
                 pathParams: {
                     spaceID: '空间ID',
                 },
@@ -10140,6 +10383,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/product/spaces/{productID}/libs',
                 resultType: 'object',
+                resultObjectType: 'doclib',
                 pathParams: {
                     productID: '产品ID',
                 },
@@ -10195,6 +10439,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/project/spaces/{projectID}/libs',
                 resultType: 'object',
+                resultObjectType: 'doclib',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -10250,6 +10495,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -10298,6 +10544,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/docs',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -10346,6 +10593,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/docs',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 pathParams: {
                     productID: '产品ID',
                     libID: '文档库ID',
@@ -10394,6 +10642,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/docs',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 pathParams: {
                     projectID: '项目ID',
                     libID: '文档库ID',
@@ -10442,6 +10691,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/my/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -10479,6 +10729,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/team/spaces/{spaceID}/libs/{libID}/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     spaceID: '空间ID',
                     libID: '文档库ID',
@@ -10516,6 +10767,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/product/spaces/{productID}/libs/{libID}/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     productID: '产品ID',
                     libID: '文档库ID',
@@ -10553,6 +10805,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/doc/project/spaces/{projectID}/libs/{libID}/modules',
                 resultType: 'object',
+                resultObjectType: 'module',
                 pathParams: {
                     projectID: '项目ID',
                     libID: '文档库ID',
@@ -10590,6 +10843,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/spaces/{spaceID}',
                 resultType: 'object',
+                resultObjectType: 'docspace',
                 resultGetter: 'space',
                 pathParams: {
                     spaceID: '空间ID',
@@ -10602,6 +10856,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/libs/{libID}',
                 resultType: 'object',
+                resultObjectType: 'doclib',
                 resultGetter: 'lib',
                 pathParams: {
                     libID: '文档库ID',
@@ -10614,6 +10869,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/doc/docs/{docID}',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 resultGetter: 'doc',
                 pathParams: {
                     docID: '文档ID',
@@ -10626,6 +10882,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/doc/spaces/{spaceID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     spaceID: '空间ID',
                 },
@@ -10656,6 +10913,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/doc/libs/{libID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     libID: '文档库ID',
                 },
@@ -10711,6 +10969,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/doc/docs/{docID}',
                 resultType: 'object',
+                resultObjectType: 'doc',
                 pathParams: {
                     docID: '文档ID',
                 },
@@ -10758,6 +11017,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/doc/modules/{moduleID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -10788,6 +11048,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/doc/spaces/{spaceID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     spaceID: '空间ID',
                 },
@@ -10799,6 +11060,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/doc/libs/{libID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     libID: '文档库ID',
                 },
@@ -10810,6 +11072,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/doc/docs/{docID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     docID: '文档ID',
                 },
@@ -10821,6 +11084,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/doc/modules/{moduleID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     moduleID: '模块ID',
                 },
@@ -10842,6 +11106,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/todos',
                 resultType: 'object',
+                resultObjectType: 'todo',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -10905,6 +11170,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/todos/{todoID}',
                 resultType: 'object',
+                resultObjectType: 'todo',
                 resultGetter: 'todo',
                 pathParams: {
                     todoID: '待办ID',
@@ -10917,6 +11183,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/todos/{todoID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     todoID: '待办ID',
                 },
@@ -10983,6 +11250,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/todos/{todoID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     todoID: '待办ID',
                 },
@@ -11004,6 +11272,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/todos',
                 resultType: 'list',
+                resultObjectType: 'todo',
                 pagerGetter: 'pager',
                 resultGetter: 'todos',
                 params: [
@@ -11081,6 +11350,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/tasks',
                 resultType: 'list',
+                resultObjectType: 'task',
                 pagerGetter: 'pager',
                 resultGetter: 'tasks',
                 params: [
@@ -11216,6 +11486,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/bugs',
                 resultType: 'list',
+                resultObjectType: 'bug',
                 pagerGetter: 'pager',
                 resultGetter: 'bugs',
                 params: [
@@ -11343,6 +11614,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/stories',
                 resultType: 'list',
+                resultObjectType: 'story',
                 pagerGetter: 'pager',
                 resultGetter: 'stories',
                 params: [
@@ -11470,6 +11742,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/epics',
                 resultType: 'list',
+                resultObjectType: 'epic',
                 pagerGetter: 'pager',
                 resultGetter: 'epics',
                 params: [
@@ -11597,6 +11870,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/requirements',
                 resultType: 'list',
+                resultObjectType: 'requirement',
                 pagerGetter: 'pager',
                 resultGetter: 'requirements',
                 params: [
@@ -11724,6 +11998,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/testtasks',
                 resultType: 'list',
+                resultObjectType: 'testtask',
                 pagerGetter: 'pager',
                 resultGetter: 'testtasks',
                 params: [
@@ -11803,6 +12078,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/projects',
                 resultType: 'list',
+                resultObjectType: 'project',
                 pagerGetter: 'pager',
                 resultGetter: 'projects',
                 params: [
@@ -11859,6 +12135,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/feedbacks',
                 resultType: 'list',
+                resultObjectType: 'feedback',
                 pagerGetter: 'pager',
                 resultGetter: 'feedbacks',
                 params: [
@@ -11933,6 +12210,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/tickets',
                 resultType: 'list',
+                resultObjectType: 'ticket',
                 pagerGetter: 'pager',
                 resultGetter: 'tickets',
                 params: [
@@ -12008,6 +12286,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/testcases',
                 resultType: 'list',
+                resultObjectType: 'testcase',
                 pagerGetter: 'pager',
                 resultGetter: 'testcases',
                 params: [
@@ -12115,6 +12394,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/meetings',
                 resultType: 'list',
+                resultObjectType: 'meeting',
                 pagerGetter: 'pager',
                 resultGetter: 'meetings',
                 params: [
@@ -12166,6 +12446,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/issues',
                 resultType: 'list',
+                resultObjectType: 'issue',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
                 params: [
@@ -12269,6 +12550,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/risks',
                 resultType: 'list',
+                resultObjectType: 'risk',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
                 params: [
@@ -12392,6 +12674,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/tasks',
                 resultType: 'list',
+                resultObjectType: 'task',
                 pagerGetter: 'pager',
                 resultGetter: 'tasks',
                 params: [
@@ -12446,6 +12729,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/bugs',
                 resultType: 'list',
+                resultObjectType: 'bug',
                 pagerGetter: 'pager',
                 resultGetter: 'bugs',
                 params: [
@@ -12500,6 +12784,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/stories',
                 resultType: 'list',
+                resultObjectType: 'story',
                 pagerGetter: 'pager',
                 resultGetter: 'stories',
                 params: [
@@ -12554,6 +12839,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/epics',
                 resultType: 'list',
+                resultObjectType: 'epic',
                 pagerGetter: 'pager',
                 resultGetter: 'epics',
                 params: [
@@ -12608,6 +12894,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/requirements',
                 resultType: 'list',
+                resultObjectType: 'requirement',
                 pagerGetter: 'pager',
                 resultGetter: 'requirements',
                 params: [
@@ -12662,6 +12949,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/testtasks',
                 resultType: 'list',
+                resultObjectType: 'testtask',
                 pagerGetter: 'pager',
                 resultGetter: 'testtasks',
                 params: [
@@ -12698,6 +12986,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/testcases',
                 resultType: 'list',
+                resultObjectType: 'testcase',
                 pagerGetter: 'pager',
                 resultGetter: 'testcases',
                 params: [
@@ -12752,6 +13041,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/docs',
                 resultType: 'list',
+                resultObjectType: 'doc',
                 pagerGetter: 'pager',
                 resultGetter: 'docs',
                 params: [
@@ -12788,6 +13078,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/issues',
                 resultType: 'list',
+                resultObjectType: 'issue',
                 pagerGetter: 'pager',
                 resultGetter: 'issues',
                 params: [
@@ -12824,6 +13115,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/risks',
                 resultType: 'list',
+                resultObjectType: 'risk',
                 pagerGetter: 'pager',
                 resultGetter: 'risks',
                 params: [
@@ -12878,6 +13170,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/reviewissues',
                 resultType: 'list',
+                resultObjectType: 'reviewissue',
                 pagerGetter: 'pager',
                 resultGetter: 'reviewissues',
                 params: [
@@ -12932,6 +13225,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/feedbacks',
                 resultType: 'list',
+                resultObjectType: 'feedback',
                 pagerGetter: 'pager',
                 resultGetter: 'feedbacks',
                 params: [
@@ -12986,6 +13280,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/activity/audits',
                 resultType: 'list',
+                resultObjectType: 'audit',
                 pagerGetter: 'pager',
                 resultGetter: 'audits',
                 params: [
@@ -13022,6 +13317,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/reviewissues',
                 resultType: 'list',
+                resultObjectType: 'reviewissue',
                 pagerGetter: 'pager',
                 resultGetter: 'reviewissues',
                 params: [
@@ -13111,6 +13407,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/audits',
                 resultType: 'list',
+                resultObjectType: 'audit',
                 pagerGetter: 'pager',
                 resultGetter: 'audits',
                 params: [
@@ -13160,6 +13457,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/auditplans',
                 resultType: 'list',
+                resultObjectType: 'auditplan',
                 pagerGetter: 'pager',
                 resultGetter: 'auditplans',
                 params: [
@@ -13207,6 +13505,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/my/ncs',
                 resultType: 'list',
+                resultObjectType: 'nc',
                 pagerGetter: 'pager',
                 resultGetter: 'ncs',
                 params: [
@@ -13261,6 +13560,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/processes',
                 resultType: 'list',
+                resultObjectType: 'process',
                 resultGetter: 'processList',
                 pathParams: {
                     scope: {description: '过程裁剪所属范围', options: [{value: 'projects', label: '项目'}, {value: 'executions', label: '执行'}]},
@@ -13295,6 +13595,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/processes',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -13334,6 +13635,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions/{executionID}/processes',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -13383,6 +13685,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/auditplans',
                 resultType: 'list',
+                resultObjectType: 'auditplan',
                 pagerGetter: 'pager',
                 resultGetter: 'auditplans',
                 pathParams: {
@@ -13465,6 +13768,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/auditplans',
                 resultType: 'object',
+                resultObjectType: 'auditplan',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -13549,6 +13853,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/auditplans/{auditplanID}/check',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     auditplanID: 'auditplanID',
                 },
@@ -13605,6 +13910,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/auditplans/batch',
                 resultType: 'text',
+                resultObjectType: 'auditplan',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -13702,6 +14008,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/auditplans/{auditplanID}',
                 resultType: 'object',
+                resultObjectType: 'auditplan',
                 resultGetter: 'auditplan',
                 pathParams: {
                     auditplanID: 'auditplanID',
@@ -13714,6 +14021,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/auditplans/{auditplanID}',
                 resultType: 'object',
+                resultObjectType: 'auditplan',
                 pathParams: {
                     auditplanID: 'auditplanID',
                 },
@@ -13774,6 +14082,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/auditplans/{auditplanID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     auditplanID: 'auditplanID',
                 },
@@ -13795,6 +14104,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/ncs',
                 resultType: 'list',
+                resultObjectType: 'nc',
                 pagerGetter: 'pager',
                 resultGetter: 'ncs',
                 pathParams: {
@@ -13852,6 +14162,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/ncs',
                 resultType: 'object',
+                resultObjectType: 'nc',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -13918,6 +14229,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/executions/{executionID}/ncs',
                 resultType: 'object',
+                resultObjectType: 'nc',
                 pathParams: {
                     executionID: '执行ID',
                 },
@@ -13978,6 +14290,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/ncs/{ncID}',
                 resultType: 'object',
+                resultObjectType: 'nc',
                 resultGetter: 'nc',
                 pathParams: {
                     ncID: 'ncID',
@@ -13990,6 +14303,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/ncs/{ncID}',
                 resultType: 'object',
+                resultObjectType: 'nc',
                 pathParams: {
                     ncID: 'ncID',
                 },
@@ -14065,6 +14379,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/ncs/{ncID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     ncID: 'ncID',
                 },
@@ -14086,6 +14401,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/{scope}/{scopeID}/opportunities',
                 resultType: 'list',
+                resultObjectType: 'opportunity',
                 pagerGetter: 'pager',
                 resultGetter: 'opportunities',
                 pathParams: {
@@ -14164,6 +14480,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/opportunities',
                 resultType: 'object',
+                resultObjectType: 'opportunity',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -14264,6 +14581,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/opportunities/batch',
                 resultType: 'text',
+                resultObjectType: 'opportunity',
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -14366,6 +14684,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/opportunities/{opportunityID}',
                 resultType: 'object',
+                resultObjectType: 'opportunity',
                 resultGetter: 'opportunity',
                 pathParams: {
                     opportunityID: 'opportunityID',
@@ -14378,6 +14697,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/opportunities/{opportunityID}',
                 resultType: 'object',
+                resultObjectType: 'opportunity',
                 pathParams: {
                     opportunityID: 'opportunityID',
                 },
@@ -14464,6 +14784,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/opportunities/{opportunityID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     opportunityID: 'opportunityID',
                 },
@@ -14485,6 +14806,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/deliverables',
                 resultType: 'list',
+                resultObjectType: 'deliverable',
                 pagerGetter: 'pager',
                 resultGetter: 'deliverables',
                 pathParams: {
@@ -14548,6 +14870,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/deliverable-options',
                 resultType: 'object',
+                resultObjectType: null,
                 resultGetter: 'deliverables',
                 pathParams: {
                     projectID: '项目ID',
@@ -14561,6 +14884,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/deliverables',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -14624,6 +14948,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/deliverables/{deliverableID}',
                 resultType: 'object',
+                resultObjectType: 'deliverable',
                 resultGetter: 'deliverable',
                 pathParams: {
                     deliverableID: 'deliverableID',
@@ -14636,6 +14961,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/deliverables/{deliverableID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     deliverableID: 'deliverableID',
                 },
@@ -14657,6 +14983,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/baselines',
                 resultType: 'list',
+                resultObjectType: 'baseline',
                 pagerGetter: 'pager',
                 resultGetter: 'baselines',
                 pathParams: {
@@ -14707,6 +15034,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/baselines',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -14764,6 +15092,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/baselines/{baselineID}',
                 resultType: 'object',
+                resultObjectType: 'baseline',
                 resultGetter: 'baseline',
                 pathParams: {
                     baselineID: 'baselineID',
@@ -14776,6 +15105,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/baselines/{baselineID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     baselineID: 'baselineID',
                 },
@@ -14828,6 +15158,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/baselines/{baselineID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     baselineID: 'baselineID',
                 },
@@ -14849,6 +15180,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/projects/{projectID}/changes',
                 resultType: 'list',
+                resultObjectType: 'change',
                 pagerGetter: 'pager',
                 resultGetter: 'projectchanges',
                 pathParams: {
@@ -14900,6 +15232,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/projects/{projectID}/changes',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     projectID: '项目ID',
                 },
@@ -14960,6 +15293,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/changes/{changeID}',
                 resultType: 'object',
+                resultObjectType: 'change',
                 resultGetter: 'projectchange',
                 pathParams: {
                     changeID: 'changeID',
@@ -14972,6 +15306,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/changes/{changeID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     changeID: 'changeID',
                 },
@@ -15032,6 +15367,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/changes/{changeID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     changeID: 'changeID',
                 },
@@ -15053,6 +15389,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/relations/{objectType}/{objectID}/{relatedObjectType}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     objectType: 'objectType',
                     objectID: 'objectID',
@@ -15090,6 +15427,12 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/relations/{objectType}/{objectID}/candidates/{relatedObjectType}',
                 resultType: 'list',
+                resultObjectType: {
+                    "param": "relatedObjectType",
+                    "map": {
+                        "projectdeliverable": "deliverable"
+                    }
+                },
                 pagerGetter: 'pager',
                 resultGetter: 'objects',
                 pathParams: {
@@ -15131,6 +15474,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/relations/{objectType}/{objectID}',
                 resultType: 'list',
+                resultObjectType: null,
                 resultGetter: 'relations',
                 pathParams: {
                     objectType: 'objectType',
@@ -15144,6 +15488,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/relations/{relationID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     relationID: 'relationID',
                 },
@@ -15166,6 +15511,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/workflowgroups',
                 resultType: 'list',
+                resultObjectType: 'workflowgroup',
                 pagerGetter: 'pager',
                 resultGetter: 'groups',
                 params: [
@@ -15218,6 +15564,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/resourcecalendars',
                 resultType: 'object',
+                resultObjectType: null,
                 resultGetter: 'resourceCalendars',
                 params: [
                     {
@@ -15279,6 +15626,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/weeklies',
                 resultType: 'list',
+                resultObjectType: 'weekly',
                 pagerGetter: 'pager',
                 resultGetter: 'reports',
                 params: [
@@ -15333,6 +15681,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/weeklies',
                 resultType: 'object',
+                resultObjectType: 'weekly',
                 requestBody: {
                     required: true,
                     type: 'object',
@@ -15392,6 +15741,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/weeklies/{reportID}',
                 resultType: 'object',
+                resultObjectType: 'weekly',
                 resultGetter: 'report',
                 pathParams: {
                     reportID: 'reportID',
@@ -15404,6 +15754,7 @@ export const BUILTIN_MODULES = [
                 method: 'put',
                 path: '/weeklies/{reportID}',
                 resultType: 'object',
+                resultObjectType: null,
                 pathParams: {
                     reportID: 'reportID',
                 },
@@ -15460,6 +15811,7 @@ export const BUILTIN_MODULES = [
                 method: 'delete',
                 path: '/weeklies/{reportID}',
                 resultType: 'text',
+                resultObjectType: null,
                 pathParams: {
                     reportID: 'reportID',
                 },
@@ -15481,6 +15833,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/db/tables',
                 resultType: 'list',
+                resultObjectType: null,
                 resultGetter: 'tables',
             }, {
                 name: 'query',
@@ -15490,6 +15843,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/db/query',
                 resultType: 'list',
+                resultObjectType: null,
                 resultGetter: 'rows',
                 requestBody: {
                     required: true,
@@ -15541,6 +15895,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/db/tables/{table}',
                 resultType: 'object',
+                resultObjectType: null,
                 resultGetter: 'table',
                 pathParams: {
                     "table": "数据库表名，例如 zt_config"
@@ -15582,6 +15937,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/ai/knowledgelibs',
                 resultType: 'list',
+                resultObjectType: 'knowledgelib',
                 pagerGetter: 'pager',
                 resultGetter: 'data',
                 params: [
@@ -15636,6 +15992,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/ai/knowledgelibs/{libID}/knowledges',
                 resultType: 'list',
+                resultObjectType: 'knowledge',
                 pagerGetter: 'pager',
                 resultGetter: 'data',
                 pathParams: {
@@ -15746,6 +16103,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/ai/knowledges/embeddingssearch',
                 resultType: 'list',
+                resultObjectType: null,
                 resultGetter: 'data',
                 requestBody: {
                     "required": true,
@@ -15886,6 +16244,7 @@ export const BUILTIN_MODULES = [
                 method: 'post',
                 path: '/ai/knowledges/search',
                 resultType: 'list',
+                resultObjectType: 'knowledge',
                 pagerGetter: 'pager',
                 resultGetter: 'data',
                 requestBody: {
@@ -16049,6 +16408,7 @@ export const BUILTIN_MODULES = [
                 method: 'get',
                 path: '/ai/knowledges/{knowledgeID}',
                 resultType: 'object',
+                resultObjectType: 'knowledge',
                 resultGetter: 'data',
                 pathParams: {
                     "knowledgeID": "本地知识条目 ID，正整数；不可使用 chunkID 或来源对象 objectID"

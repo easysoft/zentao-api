@@ -9,6 +9,7 @@
 不做深度合并：同名动作整体替换，未知动作追加。这避免在 schema、参数数组等字段上出现隐式合并规则。
 
 `method` / `resultType` 可省略：写入时按动作 `type` 自动推导（见 [ModuleAction](../interfaces/ModuleAction.md)）。
+`resultObjectType` 可省略：对象和列表补齐所属模块名，其他形态补齐 `null`。
 
 ## Parameters
 
