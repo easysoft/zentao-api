@@ -11,5 +11,5 @@
 | Name | Type |
 | ------ | ------ |
 | `file` | [`FileUploadSource`](FileUploadSource.md) |
-| `objectID` | `number` |
-| `objectType` | `"bug"` \| `"story"` \| `"task"` \| `"testcase"` \| `string` & `object` |
+| `objectID?` | `number` |
+| `objectType?` | `"bug"` \| `"story"` \| `"task"` \| `"testcase"` \| `string` & `object` |

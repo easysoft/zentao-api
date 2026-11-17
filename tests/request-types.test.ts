@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, test } from 'bun:test';
-import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type RequestOptions } from '../src/index';
+import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type FileCreateParams, type RequestOptions } from '../src/index';
 import type { ActionAssistant as BrowserActionAssistant } from '../src/browser';
 
 interface ProductSummary {
@@ -33,6 +33,9 @@ async function typedRequestExamples(): Promise<void> {
     objectID: 1,
   });
   uploaded.data?.id.toFixed();
+  const unattachedParams: FileCreateParams = { file: '/tmp/report.txt' };
+  const unattached = await request('file/create', unattachedParams);
+  unattached.data?.id.toFixed();
 
   const narrowed = await request<ProductSummary[]>('product/list', {});
   narrowed.data?.forEach((product) => product.name.toUpperCase());

@@ -123,6 +123,8 @@ const raw = await client.request('/products/1', {
 
 Node.js/Bun 中，高阶 `request()` 可以直接读取本地文件路径并按 `multipart/form-data` 上传。单个文件的默认大小上限为 50 MiB，可通过 `maxUploadBytes` 调整。
 
+不关联业务对象时，可省略 `objectType` 和 `objectID`。
+
 ```ts
 await request('file/create', {
   file: '/tmp/zentao-api-upload.txt',

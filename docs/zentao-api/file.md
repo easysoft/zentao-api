@@ -43,18 +43,18 @@ Schema:
     },
     "objectType": {
       "type": "string",
-      "description": "关联对象类型(bug 缺陷 | story 需求 | task 任务 | testcase 用例)"
+      "description": "关联对象类型(bug 缺陷 | story 需求 | task 任务 | testcase 用例)",
+      "required": false
     },
     "objectID": {
       "type": "integer",
       "description": "关联对象ID",
-      "format": "int32"
+      "format": "int32",
+      "required": false
     }
   },
   "required": [
-    "file",
-    "objectType",
-    "objectID"
+    "file"
   ]
 }
 ```

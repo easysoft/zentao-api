@@ -441,14 +441,28 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
-  // OpenAPI 使用 JSON 描述 SDK 的本地文件路径入参，但实际请求仍需转换为 multipart/form-data
-  extendModuleAction('file', 'create', (action) => {
-    if (action.requestBody) {
-      action.requestBody.mediaType = 'multipart/form-data';
-      const properties = action.requestBody.schema?.properties as Record<string, Record<string, unknown>>;
-      if (properties?.file) properties.file.format = 'binary';
-    }
-    return action;
+  // 附件可不关联业务对象，创建和更新时均不强制关联参数。
+  ['create', 'update'].forEach((actionName) => {
+    extendModuleAction('file', actionName, (action) => {
+      if (action.requestBody) {
+        const schema = action.requestBody.schema as {
+          properties: Record<string, Record<string, unknown>>;
+          required?: string[];
+        };
+        if (schema.required) {
+          schema.required = schema.required.filter(name => name !== 'objectType' && name !== 'objectID');
+        }
+        for (const name of ['objectType', 'objectID']) {
+          if (schema.properties[name]) schema.properties[name].required = false;
+        }
+        // OpenAPI 的本地文件路径入参仍需转换为 multipart/form-data。
+        if (actionName === 'create') {
+          action.requestBody.mediaType = 'multipart/form-data';
+          if (schema.properties.file) schema.properties.file.format = 'binary';
+        }
+      }
+      return action;
+    });
   });
 
   // 获取文档详情时支持将文档原始 JSON 内容转换为 Markdown

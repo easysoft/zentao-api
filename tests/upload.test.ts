@@ -6,6 +6,7 @@ import {
   ZentaoClient,
   defineModules,
   getModuleAction,
+  getModuleActionParams,
   request,
   setGlobalOptions,
   type FileCreateResult,
@@ -29,6 +30,45 @@ describe('high-level file uploads', () => {
 
     expect(action?.requestBody?.mediaType).toBe('multipart/form-data');
     expect(properties.file.format).toBe('binary');
+  });
+
+  test('keeps file association fields optional after a registry reset', () => {
+    resetModuleDefinitions();
+    const params = getModuleActionParams('file', 'create', { roles: ['body'] });
+    for (const name of ['objectType', 'objectID']) {
+      expect(params).toContainEqual(expect.objectContaining({ name, required: false }));
+    }
+    expect(params.filter(param => param.required).map(param => param.name)).toEqual(['file']);
+    expect(getModuleActionParams('file', 'update', { roles: ['body'] })
+      .filter(param => param.required).map(param => param.name)).toEqual(['fileName']);
+  });
+
+  test.each([
+    { label: 'omitted association', params: {}, objectType: null, objectID: null },
+    { label: 'explicit empty association', params: { objectType: '', objectID: 0 }, objectType: '', objectID: '0' },
+  ])('uploads with $label and renames without association fields', async ({ params, objectType, objectID }) => {
+    let receivedForm: FormData | undefined;
+    let receivedUpdate: unknown;
+    const server = createMockServer(async (req) => {
+      if (req.method === 'POST') receivedForm = await req.formData();
+      if (req.method === 'PUT') receivedUpdate = await req.json();
+      return Response.json({ status: 'success', data: { id: 45 } });
+    });
+
+    try {
+      const client = new ZentaoClient(server.url.toString());
+      const uploaded = await request('file/create', { file: new Blob(['unattached']), ...params }, { client });
+      expect(uploaded.data?.id).toBe(45);
+      expect(receivedForm?.get('objectType')).toBe(objectType);
+      expect(receivedForm?.get('objectID')).toBe(objectID);
+      expect(await (receivedForm?.get('file') as File).text()).toBe('unattached');
+
+      const updated = await request('file/update', { id: 45, fileName: 'renamed.txt' }, { client });
+      expect(updated.status).toBe('success');
+      expect(receivedUpdate).toEqual({ fileName: 'renamed.txt' });
+    } finally {
+      server.stop();
+    }
   });
 
   test('uploads a local path as multipart and normalizes the response', async () => {

@@ -30,8 +30,8 @@ export type FileUploadSource = string | Blob | FileUploadPathInput | FileUploadD
 /** `request("file/create")` 的参数。 */
 export type FileCreateParams = Record<string, unknown> & {
   file: FileUploadSource;
-  objectType: 'bug' | 'story' | 'task' | 'testcase' | (string & {});
-  objectID: number;
+  objectType?: 'bug' | 'story' | 'task' | 'testcase' | (string & {});
+  objectID?: number;
 };
 
 /** `request("file/create")` 归一化后的结果。 */

@@ -164,6 +164,8 @@ const raw = await request('product/list', {}, { raw: true });
 
 Node.js/Bun 可以直接把本地文件路径交给高阶 `request()`；SDK 会根据模块注册表构造 `multipart/form-data`。浏览器中请传 `File` 或 `Blob`，不能传本地路径。
 
+不关联业务对象时，可省略 `objectType` 和 `objectID`。
+
 ```ts
 const uploaded = await request('file/create', {
   file: '/tmp/zentao-api-upload.txt',
