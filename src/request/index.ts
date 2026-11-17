@@ -265,7 +265,7 @@ function normalizeResponse<T>(
  * `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
  *
  * 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
- * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions.autoFill}。
+ * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions#autoFill}。
  *
  * @typeParam T 归一化响应中期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
  * @param name - 请求名，例如 `product`、`product/list` 或 `product/1`。

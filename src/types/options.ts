@@ -27,7 +27,7 @@ export interface GlobalOptions {
   /**
    * 是否在执行 `update` 操作时自动填充未传入的字段，默认 false。
    *
-   * 优先级低于单次请求选项；语义见 {@link RequestOptions.autoFill}。
+   * 优先级低于单次请求选项；语义见 {@link RequestOptions#autoFill}。
    */
   autoFill?: boolean;
 }
