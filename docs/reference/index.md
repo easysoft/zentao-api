@@ -14,6 +14,7 @@
 | [ApiListResponse](interfaces/ApiListResponse.md) | 禅道 API 列表响应结构。 |
 | [ApiResponse](interfaces/ApiResponse.md) | 禅道 API 通用响应结构，允许携带任意业务字段。 |
 | [ClientRequestOptions](interfaces/ClientRequestOptions.md) | `ZentaoClient.request()` 的单次请求选项。 |
+| [CreateLinkOptions](interfaces/CreateLinkOptions.md) | 创建禅道页面链接的参数。参数名和参数值由调用方按需 URL 编码，SDK 不二次编码。 |
 | [DataRecordFilter](interfaces/DataRecordFilter.md) | 单条过滤条件，字段名支持 `.` 访问子字段。 |
 | [DataRecordFilterGroup](interfaces/DataRecordFilterGroup.md) | 一组过滤条件，组内按 `operator` 组合；多组之间按 AND 组合。 |
 | [DefineModulesOptions](interfaces/DefineModulesOptions.md) | [defineModules](functions/defineModules.md) 的选项。 |
@@ -34,12 +35,14 @@
 | [ModuleDefinition](interfaces/ModuleDefinition.md) | 禅道模块定义，由多个动作组成。 |
 | [ModuleQueryOptions](interfaces/ModuleQueryOptions.md) | 注册库查询选项；不传版本时返回完整的当前定义，不使用全局版本。 |
 | [Pager](interfaces/Pager.md) | 禅道 API 原始分页结构。 |
+| [ParseLinkOptions](interfaces/ParseLinkOptions.md) | 解析禅道页面链接的选项。 |
 | [ProcessListOptions](interfaces/ProcessListOptions.md) | [processData](functions/processData.md) 处理列表时的选项；执行顺序为 转换 → 过滤 → 搜索 → 排序 → 限制数量 → 摘取。 |
 | [ProcessSingleOptions](interfaces/ProcessSingleOptions.md) | [processData](functions/processData.md) 处理单条对象时的选项；执行顺序为 转换 → 摘取。 |
 | [RequestOptions](interfaces/RequestOptions.md) | 高阶 `request("moduleName")` / `request("moduleName/methodName")` / `request("moduleName/<objectID>")` 的单次调用选项。 |
 | [ResponseData](interfaces/ResponseData.md) | 高阶 `request()` 归一化后的返回数据。 |
 | [ServerConfig](interfaces/ServerConfig.md) | 禅道 `?mode=getconfig` 返回的服务端配置。 |
 | [ZentaoClientOptions](interfaces/ZentaoClientOptions.md) | 创建 [ZentaoClient](classes/ZentaoClient.md) 时使用的配置。 |
+| [ZentaoLink](interfaces/ZentaoLink.md) | 解析得到的禅道链接；空输入和外链仅返回 url 及必要的 external 标记。 |
 | [ZentaoProfile](interfaces/ZentaoProfile.md) | 本地持久化的禅道账号 profile。 |
 | [ZentaoProfileConfig](interfaces/ZentaoProfileConfig.md) | 保存到本地 profile 中的客户端偏好配置。 SDK 自动恢复 `timeout` / `insecure`；其余字段仅供上层应用读取和解释。 自定义值应使用 JSON 数据，不保留 Date、Map 等类型信息，不支持 BigInt 或循环对象。 |
 | [ZentaoProfileRecord](interfaces/ZentaoProfileRecord.md) | 运行时返回的 profile，会额外带上 `account@server` 形式的 key。 |
@@ -60,6 +63,8 @@
 | [FileCreateParams](type-aliases/FileCreateParams.md) | `request("file/create")` 的参数。 |
 | [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
+| [LinkProfile](type-aliases/LinkProfile.md) | 链接处理只使用站点地址与服务器配置，无需账号或 Token。 |
+| [LinkRequestType](type-aliases/LinkRequestType.md) | 禅道页面路由模式。 |
 | [ListPagerInfo](type-aliases/ListPagerInfo.md) | 列表分页信息别名。 |
 | [ModuleActionBeforeRequestCallback](type-aliases/ModuleActionBeforeRequestCallback.md) | 请求发送前的回调，在版本检查、autoFill 和参数解析完成后、请求体准备前调用。 可直接修改本次请求，或返回 `path`、`query`、`data`、`params`、`id` 的部分字段作为补丁。 返回值浅合并到解析后的请求描述中，同名字段以返回值为准；对象字段整体替换。 合并后的请求用于请求体准备、请求发送和响应处理，不会重新执行版本检查、autoFill 或参数解析。 回调抛出或拒绝时终止本次请求，错误原样传递。 |
 | [ModuleActionGetterFn](type-aliases/ModuleActionGetterFn.md) | 从原始响应中提取数据时使用的函数形态。 |
@@ -94,6 +99,7 @@
 | Function | Description |
 | ------ | ------ |
 | [addProfile](functions/addProfile.md) | 添加或覆盖一个本地 profile，并把它设置为当前使用的 profile。 |
+| [createLink](functions/createLink.md) | 根据 profile 的服务器配置创建禅道页面链接，同步执行且不访问存储或网络。 |
 | [defineModuleActions](functions/defineModuleActions.md) | 为已存在的模块追加或覆盖动作。 |
 | [defineModules](functions/defineModules.md) | 注册或扩展模块定义。 |
 | [deleteProfile](functions/deleteProfile.md) | 删除指定 profile。 |
@@ -110,6 +116,7 @@
 | [getProfile](functions/getProfile.md) | 获取指定 profile。 |
 | [getProfileKey](functions/getProfileKey.md) | 根据 profile 的账号和禅道站点地址生成稳定 key。 |
 | [isModuleName](functions/isModuleName.md) | 判断模块名是否已注册。 |
+| [parseLink](functions/parseLink.md) | 解析禅道页面链接，同步执行且不读取浏览器当前位置、存储或网络。 |
 | [pickFields](functions/pickFields.md) | 对列表中的每条对象摘取指定字段。 |
 | [pickFieldsSingle](functions/pickFieldsSingle.md) | 从单条对象中摘取指定字段，支持通过 `.` 访问子字段，保留嵌套结构。 |
 | [processData](functions/processData.md) | 处理单条对象：按 转换 → 摘取 的顺序执行。 |

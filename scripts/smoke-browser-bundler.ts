@@ -26,8 +26,8 @@ const packageEntry = join(root, `${entryBaseName}.ts`);
 
 try {
   writeFileSync(packageEntry, [
-    "export { ZentaoClient, VERSION, BUILD, request } from 'zentao-api/browser';",
-    "export type { ActionAssistant, ClientRequestOptions, ResponseData } from 'zentao-api/browser';",
+    "export { ZentaoClient, VERSION, BUILD, request, createLink, parseLink } from 'zentao-api/browser';",
+    "export type { ActionAssistant, ClientRequestOptions, ResponseData, LinkProfile, CreateLinkOptions, ParseLinkOptions, ZentaoLink } from 'zentao-api/browser';",
   ].join('\n'));
 
   await buildOrThrow({
@@ -58,6 +58,7 @@ try {
   let receivedBody: unknown;
   let receivedToken: string | undefined;
   let receivedAssistant: string | null = null;
+  let requestCount = 0;
   const code = readFileSync(join(dir, 'global', 'browser-global.js'), 'utf8');
   const context = vm.createContext({
     window: {},
@@ -75,6 +76,7 @@ try {
     FormData,
     Blob,
     fetch: (_url: string, init?: RequestInit) => {
+      requestCount++;
       if (new URL(_url).searchParams.get('mode') === 'getconfig') {
         assert(!new Headers(init?.headers).has('Token'), 'Configuration request must not attach Token.');
         assert(!new Headers(init?.headers).has('ZenTao-Action-Assistant'), 'Configuration request must not attach assistant metadata.');
@@ -97,6 +99,18 @@ try {
   vm.runInContext(code, context);
   const api = (context as { ZentaoAPI?: typeof import('../src/index') }).ZentaoAPI;
   assert(api?.VERSION === '0.0.0-smoke', 'Browser global VERSION was not injected.');
+
+  const linkProfile = {
+    server: 'https://zentao.example.com/zentao',
+    serverConfig: {
+      version: '23.0', systemMode: 'ALM', sprintConcept: '0', sessionVar: 'zentaosid',
+      requestType: 'GET', requestFix: '-', moduleVar: 'm', methodVar: 'f', viewVar: 't',
+    },
+  };
+  const pageLink = api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7', relative: true });
+  assert(pageLink === '/zentao/index.php?m=bug&f=view&bugID=7', 'Browser createLink did not use profile routing.');
+  assert(api.parseLink(linkProfile, pageLink, { requestType: 'auto' }).vars?.[0][1] === '7', 'Browser parseLink did not parse GET parameters.');
+  assert(requestCount === 0, 'Link helpers must not make network requests.');
 
   const client = new api.ZentaoClient({
     baseUrl: 'https://zentao.example.com',

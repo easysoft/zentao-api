@@ -71,6 +71,54 @@ await request('product/list', {}, { skipVersionCheckOnConfigError: true });
 
 跳过选项不忽略版本不匹配、版本格式错误、取消或 profile 存储错误；直接调用 `getZentaoConfig()` 始终返回配置或抛错。
 
+## 生成与解析页面链接
+
+`createLink()` 和 `parseLink()` 显式接收 profile，同步使用 `server` 与 `serverConfig`，适用于 Node 和浏览器。它们只处理链接字符串，不读取 profile 存储或请求服务器。
+
+```ts
+import { createLink, getProfile, parseLink } from 'zentao-api';
+
+const profile = await getProfile();
+if (!profile) throw new Error('请先保存禅道 profile');
+
+const options = { moduleName: 'bug', methodName: 'view', vars: 'bugID=7' };
+const url = createLink(profile, options); // 默认返回完整网址。
+const path = createLink(profile, { ...options, relative: true }); // 返回以 / 开头的站内路径。
+const link = parseLink(profile, url);
+console.log(link.moduleName, link.methodName, link.vars);
+
+// 同时处理不同路由形式的链接时，可自动识别。
+const parsed = parseLink(profile, path, { requestType: 'auto' });
+```
+
+支持 `GET`、`PATH_INFO`、`PATH_INFO2` 三种模式。例如站点为 `https://zentao.example.com/zentao`、使用默认分隔符和参数名时，上述 Bug 链接分别为：
+
+| 模式 | 站内路径 |
+| --- | --- |
+| `GET` | `/zentao/index.php?m=bug&f=view&bugID=7` |
+| `PATH_INFO` | `/zentao/bug-view-7.html` |
+| `PATH_INFO2` | `/zentao/index.php/bug-view-7.html` |
+
+路由信息来自 `serverConfig`，客户端偏好 `config` 不参与链接处理。创建时必须提供有效 `requestType`；GET 模式需要 `moduleVar`、`methodVar`、`viewVar`，路径模式需要 `requestFix`（支持 `-`、`/` 等自定义分隔符）。解析默认采用配置模式，显式 `requestType` 可以覆盖；`auto` 还需要 `moduleVar`、`methodVar` 来识别 GET 查询参数。自动识别优先采用入口和路径路由，附加的 `m/f` 查询参数不会覆盖已有路径；站点根路径可通过这些查询参数识别 GET。缺少字段抛出 `E_MISSING_PARAM`，不支持的模式抛出 `E_INVALID_PARAM`。
+
+配置接口通常不提供 `webRoot`、`router`、`defaultView`：辅助方法默认从 `server` 推导根路径，使用该目录下的 `index.php` 入口及 `html` 视图。显式提供这些配置时优先使用配置值；可选 `instCode` 会追加为实例目录，并避免重复添加已有后缀。`webRoot` 和 `router` 必须是同源且不带查询参数、锚点的路径。缺失服务器配置时，可由调用方先通过 `client.getZentaoConfig()` 获取，再放入传入对象的 `serverConfig`；链接处理本身无需账号或 Token。
+
+方法参数 `vars` 支持 `'bugID=7&from=list'`、`['bugID=7', 'from=list']`、`[['bugID', '7'], ['from', 'list']]`。路径模式只使用各项的值，顺序对应页面方法参数。`params` 始终追加为查询参数，`$` 开头的键被跳过；`viewType` 指定视图，`hash` 指定锚点。
+
+```ts
+const url = createLink(profile, {
+  moduleName: 'search',
+  methodName: 'index',
+  vars: [['word', encodeURIComponent('中文 & +')]],
+  params: { onlybody: 'yes', tid: 'tab1' },
+  hash: 'results',
+});
+```
+
+参数名和值由调用方按需编码，创建时保留已有 `%xx`，不二次编码。解析时，GET 查询值按查询字符串规则解码（`+` 表示空格），重复键以逗号合并；路径变量保持原编码，参数名为空，并映射到 `params.$1`、`params.$2` 等。保留路径值的约定与原页面 helper 一致。
+
+相对输入以当前 profile 的页面根路径为基准。同源安装目录及显式配置的 `router` 入口属于内部链接，入口位于安装目录外时仍可正确解析；入口的相邻文件或目录不会因此被视为内部路径。其他 origin、上述路径之外及非 HTTP(S) 链接返回 `{ external: true, url }`；空输入返回 `{ url }`。内部结果包含模块、方法、视图、变量、查询参数、hash、`tid`、`isOnlyBody` 和实际路由模式；GET 的 `vars` 排除路由参数、`onlybody` 与 `tid`。辅助方法不会修改输入对象或数组。
+
 ## 管理 profile
 
 Profile 的 `config` 同时保存 SDK 和上层应用的偏好：

@@ -14,6 +14,14 @@ assert.equal(typeof api.request, 'function');
 assert.equal(api.VERSION, packageJson.version);
 assert.match(api.BUILD, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
 
+const linkProfile = {
+  server: 'https://zentao.example.com/zentao',
+  serverConfig: { requestType: 'PATH_INFO2', requestFix: '-' },
+};
+const pageLink = api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7' });
+assert.equal(pageLink, 'https://zentao.example.com/zentao/index.php/bug-view-7.html');
+assert.equal(api.parseLink(linkProfile, pageLink).vars[0][1], '7');
+
 const client = new api.ZentaoClient('https://zentao.example.com/api.php/v2');
 assert.equal(client.baseUrl, 'https://zentao.example.com/api.php/v2');
 await assert.rejects(
@@ -114,5 +122,7 @@ const browserApi = await import(pathToFileURL(join(root, 'dist/browser.js')).hre
 assert.equal(typeof browserApi.ZentaoClient, 'function');
 assert.equal(browserApi.VERSION, api.VERSION);
 assert.equal(browserApi.BUILD, api.BUILD);
+assert.equal(browserApi.createLink, api.createLink);
+assert.equal(browserApi.parseLink, api.parseLink);
 
 console.log(`Node ${process.version} package smoke test passed.`);

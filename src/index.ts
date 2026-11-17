@@ -33,6 +33,8 @@ export {
   type RequestResultFor,
 } from './request/index.js';
 export {
+  createLink,
+  parseLink,
   pickFields,
   pickFieldsSingle,
   filterData,

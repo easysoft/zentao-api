@@ -84,6 +84,14 @@ export interface ServerConfig {
   methodVar: string;
   viewVar: string;
   sessionVar: string;
+  /** 页面根路径，例如 `/zentao/`；链接辅助方法默认从 profile.server 推导。 */
+  webRoot?: string;
+  /** GET / PATH_INFO2 页面入口路径；默认使用页面根路径下的 `index.php`。 */
+  router?: string;
+  /** 页面默认视图；链接辅助方法默认使用 `html`。 */
+  defaultView?: string;
+  /** 可选实例路径，链接辅助方法会避免重复添加已有的实例后缀。 */
+  instCode?: string;
   /** 保留服务端返回的其他配置字段。 */
   [key: string]: unknown;
 }

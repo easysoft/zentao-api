@@ -30,6 +30,10 @@
         "link": "/reference/interfaces/ClientRequestOptions.md"
       },
       {
+        "text": "CreateLinkOptions",
+        "link": "/reference/interfaces/CreateLinkOptions.md"
+      },
+      {
         "text": "DataRecordFilter",
         "link": "/reference/interfaces/DataRecordFilter.md"
       },
@@ -110,6 +114,10 @@
         "link": "/reference/interfaces/Pager.md"
       },
       {
+        "text": "ParseLinkOptions",
+        "link": "/reference/interfaces/ParseLinkOptions.md"
+      },
+      {
         "text": "ProcessListOptions",
         "link": "/reference/interfaces/ProcessListOptions.md"
       },
@@ -132,6 +140,10 @@
       {
         "text": "ZentaoClientOptions",
         "link": "/reference/interfaces/ZentaoClientOptions.md"
+      },
+      {
+        "text": "ZentaoLink",
+        "link": "/reference/interfaces/ZentaoLink.md"
       },
       {
         "text": "ZentaoProfile",
@@ -198,6 +210,14 @@
       {
         "text": "HttpMethod",
         "link": "/reference/type-aliases/HttpMethod.md"
+      },
+      {
+        "text": "LinkProfile",
+        "link": "/reference/type-aliases/LinkProfile.md"
+      },
+      {
+        "text": "LinkRequestType",
+        "link": "/reference/type-aliases/LinkRequestType.md"
       },
       {
         "text": "ListPagerInfo",
@@ -308,6 +328,10 @@
         "link": "/reference/functions/addProfile.md"
       },
       {
+        "text": "createLink",
+        "link": "/reference/functions/createLink.md"
+      },
+      {
         "text": "defineModuleActions",
         "link": "/reference/functions/defineModuleActions.md"
       },
@@ -370,6 +394,10 @@
       {
         "text": "isModuleName",
         "link": "/reference/functions/isModuleName.md"
+      },
+      {
+        "text": "parseLink",
+        "link": "/reference/functions/parseLink.md"
       },
       {
         "text": "pickFields",

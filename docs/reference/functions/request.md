@@ -17,7 +17,7 @@
 `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
-用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions#autoFill](../interfaces/RequestOptions.md#property-autofill)。
 
 ### Parameters
 
@@ -52,7 +52,7 @@
 `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
-用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions#autoFill](../interfaces/RequestOptions.md#property-autofill)。
 
 ### Type Parameters
 
@@ -93,7 +93,7 @@
 `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
-用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions#autoFill](../interfaces/RequestOptions.md#property-autofill)。
 
 ### Type Parameters
 
@@ -134,7 +134,7 @@
 `skipVersionCheckOnConfigError` 可允许本次跳过检查，但不能忽略明确的版本不匹配。
 
 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
-用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions.autoFill](../interfaces/RequestOptions.md#property-autofill)。
+用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 [RequestOptions#autoFill](../interfaces/RequestOptions.md#property-autofill)。
 
 ### Parameters
 
