@@ -56,7 +56,8 @@ Schema:
     },
     "extra": {
       "type": "string",
-      "description": "附件标记，23.0 / biz14.0 / max9.0 / ipd6.0 起支持；editor 用于文档编辑器图片，省略或其他值按空字符串处理",
+      "defaultValue": "editor",
+      "description": "附件标记，默认 editor（文档编辑器图片），23.0 / biz14.0 / max9.0 / ipd6.0 起支持；显式空字符串用于普通附件，其他值由服务端按空字符串处理",
       "options": [
         {
           "value": "",

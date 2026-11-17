@@ -44,10 +44,10 @@ describe('high-level file uploads', () => {
       .filter(param => param.required).map(param => param.name)).toEqual(['fileName']);
     expect(getModuleActionParams('file', 'update', { roles: ['body'] }).some(param => param.name === 'extra')).toBe(false);
     expect(exportRegistry().file.actions.find(action => action.name === 'create')?.bodyParams)
-      .toContainEqual(expect.objectContaining({ name: 'extra', type: 'string', required: false }));
+      .toContainEqual(expect.objectContaining({ name: 'extra', type: 'string', required: false, defaultValue: 'editor' }));
   });
 
-  test('keeps multipart extra optional and honors data precedence without validating server values', async () => {
+  test('defaults multipart extra to editor and honors explicit values and data precedence', async () => {
     const forms: FormData[] = [];
     const server = createMockServer(async req => {
       expect(req.method).toBe('POST');
@@ -60,10 +60,13 @@ describe('high-level file uploads', () => {
       const client = new ZentaoClient(server.url.href);
       const file = new Blob(['image']);
       for (const [version, params, expected] of [
-        ['22.0', { file }, null],
-        ['biz13.0', { file }, null],
-        ['max8.0', { file }, null],
-        ['ipd5.0', { file }, null],
+        ['22.0', { file }, 'editor'],
+        ['biz13.0', { file }, 'editor'],
+        ['max8.0', { file }, 'editor'],
+        ['ipd5.0', { file }, 'editor'],
+        ['23.0', { file }, 'editor'],
+        ['23.0', { data: { file } }, 'editor'],
+        ['23.0', { file, data: '{}' }, 'editor'],
         ['23.0', { file, extra: '' }, ''],
         ['23.0', { file, extra: 'editor' }, 'editor'],
         ['23.0', { file, extra: 'unknown' }, 'unknown'],
@@ -79,7 +82,7 @@ describe('high-level file uploads', () => {
         expect(forms.at(-1)?.get('objectID')).toBeNull();
         expect(await (forms.at(-1)?.get('file') as File).text()).toBe('image');
       }
-      expect(forms).toHaveLength(10);
+      expect(forms).toHaveLength(13);
     } finally { server.stop(true); }
   });
 

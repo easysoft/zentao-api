@@ -165,7 +165,7 @@ await request('file/create', {
 });
 ```
 
-`extra` 也可放在 `params.data` 中，优先于平铺参数。省略时不发送，原有上传调用及最低版本保持不变；该字段仅用于上传。
+`extra` 也可放在 `params.data` 中，优先于平铺参数。省略时默认发送 `'editor'`，普通附件可显式传 `extra: ''`。上传接口的最低版本保持不变；该字段仅用于上传。
 
 也可以直接使用底层客户端。它会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体；普通对象默认按 JSON 发送。
 
