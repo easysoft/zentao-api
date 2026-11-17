@@ -110,6 +110,10 @@ try {
   const pageLink = api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7', relative: true });
   assert(pageLink === '/zentao/index.php?m=bug&f=view&bugID=7', 'Browser createLink did not use profile routing.');
   assert(api.parseLink(linkProfile, pageLink, { requestType: 'auto' }).vars?.[0][1] === '7', 'Browser parseLink did not parse GET parameters.');
+  api.setGlobalOptions({ relative: true });
+  assert(api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7' }) === pageLink, 'Browser createLink did not inherit global relative.');
+  assert(api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7', relative: false }) === `https://zentao.example.com${pageLink}`, 'Browser createLink did not honor explicit relative: false.');
+  api.setGlobalOptions({ relative: undefined });
   assert(requestCount === 0, 'Link helpers must not make network requests.');
 
   const client = new api.ZentaoClient({

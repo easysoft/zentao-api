@@ -6,7 +6,7 @@
 
 根据 profile 的服务器配置创建禅道页面链接，同步执行且不访问存储或网络。
 
-支持 GET、PATH_INFO、PATH_INFO2。默认生成完整网址，`relative: true` 返回站内路径。
+支持 GET、PATH_INFO、PATH_INFO2。`relative` 优先级为单次选项 > 全局选项 > false（完整网址）；true 返回站内路径。
 `vars` 和 `params` 沿用页面 helper 的约定：调用方按需编码，SDK 不二次编码；不修改输入。
 
 ## Parameters

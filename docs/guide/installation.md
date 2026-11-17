@@ -63,6 +63,7 @@ const bugs = await request('bug/list', { productID: 1 });
 | `skipVersionCheckOnConfigError` | `boolean` | 配置获取失败时允许登录继续或请求跳过版本检查，默认 `false`；不忽略明确的版本不匹配。 |
 | `recPerPage` | `string` | 默认每页记录数，映射到模块动作的 `recPerPage` 参数。 |
 | `limit` | `string` | 限制 SDK 归一化后 `data` 的数量，不改变服务端页大小。 |
+| `relative` | `boolean` | `createLink()` 默认返回站内路径，默认 `false`；单次调用可覆盖。 |
 | `timeout` | `number` | 默认请求超时时间，毫秒。 |
 | `insecure` | `boolean` | 跳过 TLS 证书验证，仅 Node.js 支持。 |
 | `persistProfiles` | `boolean` | 登录成功后是否把账号、Token 写入本地 profile。 |

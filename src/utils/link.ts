@@ -1,4 +1,5 @@
 import { ZentaoError } from '../misc/errors.js';
+import { getGlobalOptions } from '../misc/global-options.js';
 import type { CreateLinkOptions, LinkProfile, LinkRequestType, ParseLinkOptions, ServerConfig, ZentaoLink } from '../types/index.js';
 import { normalizeSiteUrl } from './url.js';
 
@@ -76,7 +77,7 @@ function parseParams(search: URLSearchParams): Record<string, string> {
 /**
  * 根据 profile 的服务器配置创建禅道页面链接，同步执行且不访问存储或网络。
  *
- * 支持 GET、PATH_INFO、PATH_INFO2。默认生成完整网址，`relative: true` 返回站内路径。
+ * 支持 GET、PATH_INFO、PATH_INFO2。`relative` 优先级为单次选项 > 全局选项 > false（完整网址）；true 返回站内路径。
  * `vars` 和 `params` 沿用页面 helper 的约定：调用方按需编码，SDK 不二次编码；不修改输入。
  *
  * @param profile - 使用 server 与 serverConfig，无需账号或 Token。
@@ -113,7 +114,8 @@ export function createLink(profile: LinkProfile, options: CreateLinkOptions): st
     hasQuery = true;
   }
   if (typeof options.hash === 'string') parts.push(options.hash.startsWith('#') ? '' : '#', options.hash);
-  return (options.relative ? '' : root.origin) + parts.join('');
+  const relative = options.relative ?? getGlobalOptions().relative ?? false;
+  return (relative ? '' : root.origin) + parts.join('');
 }
 
 /**

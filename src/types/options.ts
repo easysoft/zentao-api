@@ -2,7 +2,7 @@ import type { ZentaoClient } from '../client/index.js';
 import type { ActionAssistant } from './client.js';
 import type { ProcessListOptions, ProcessSingleOptions } from './data.js';
 
-/** SDK 进程级全局默认选项，供高阶 {@link request} 调用复用。 */
+/** SDK 进程级全局默认选项，供请求和 {@link createLink} 等辅助方法复用。 */
 export interface GlobalOptions {
   /** 当前禅道正式版本，例如 `biz13.5`；普通高阶请求直接使用，单次强制刷新时使用实际版本。不会自动写入 profile。 */
   version?: string;
@@ -16,6 +16,8 @@ export interface GlobalOptions {
   recPerPage?: string;
   /** 默认限制返回列表数量，只影响 SDK 归一化后的 `data`。 */
   limit?: string;
+  /** createLink 默认返回站内路径；单次调用的 relative 优先，默认 false（完整网址）。 */
+  relative?: boolean;
   /** 默认请求超时时间，优先级低于单次请求选项。 */
   timeout?: number;
   /** 默认 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 */

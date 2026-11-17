@@ -228,7 +228,7 @@ setGlobalOptions({
 });
 ```
 
-常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。
+常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`relative`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。`relative` 设置 `createLink()` 的链接形式，默认 `false`（完整网址），单次显式 `false` 可覆盖全局 `true`。
 
 ### 操作辅助工具标记
 

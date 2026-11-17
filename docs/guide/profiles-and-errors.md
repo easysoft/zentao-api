@@ -91,6 +91,17 @@ console.log(link.moduleName, link.methodName, link.vars);
 const parsed = parseLink(profile, path, { requestType: 'auto' });
 ```
 
+可通过全局选项设置 `createLink()` 的链接形式。优先级为单次 `relative` > 全局 `relative` > `false`（完整网址）；显式 `false` 可以覆盖全局 `true`。
+
+```ts
+import { setGlobalOptions } from 'zentao-api';
+
+setGlobalOptions({ relative: true });
+createLink(profile, options); // 站内路径。
+createLink(profile, { ...options, relative: false }); // 本次返回完整网址。
+setGlobalOptions({ relative: undefined }); // 清除全局默认值。
+```
+
 支持 `GET`、`PATH_INFO`、`PATH_INFO2` 三种模式。例如站点为 `https://zentao.example.com/zentao`、使用默认分隔符和参数名时，上述 Bug 链接分别为：
 
 | 模式 | 站内路径 |

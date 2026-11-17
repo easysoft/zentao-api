@@ -20,7 +20,7 @@ export interface CreateLinkOptions {
   hash?: string;
   /** 始终追加到查询字符串的参数；跳过 `$` 开头的键，null/undefined 转为空值。 */
   params?: Record<string, unknown>;
-  /** 返回以 `/` 开头的站内路径；默认 false，返回完整网址。 */
+  /** 返回以 `/` 开头的站内路径；优先于全局 relative，均未设置时为 false（完整网址）。 */
   relative?: boolean;
 }
 

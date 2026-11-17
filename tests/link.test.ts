@@ -1,6 +1,10 @@
-import { describe, expect, test } from 'bun:test';
-import { createLink, parseLink, type CreateLinkOptions, type LinkProfile, type LinkRequestType, type ServerConfig } from '../src/index';
+import { afterEach, describe, expect, test } from 'bun:test';
+import { createLink, getGlobalOptions, parseLink, setGlobalOptions, type CreateLinkOptions, type LinkProfile, type LinkRequestType, type ServerConfig } from '../src/index';
 import { createLink as browserCreateLink, parseLink as browserParseLink } from '../src/browser';
+
+afterEach(() => {
+  setGlobalOptions({ relative: undefined });
+});
 
 function profile(requestType: LinkRequestType = 'PATH_INFO', overrides: Partial<ServerConfig> = {}): LinkProfile {
   return {
@@ -29,6 +33,27 @@ describe('page links', () => {
     });
     expect(browserCreateLink).toBe(createLink);
     expect(browserParseLink).toBe(parseLink);
+  });
+
+  test.each(['GET', 'PATH_INFO', 'PATH_INFO2'] as const)('inherits and overrides the global relative default in %s', (type) => {
+    const current = profile(type);
+    const options = Object.freeze({ moduleName: 'bug', methodName: 'view', vars: 'id=7' });
+    const absolute = createLink(current, options);
+    const relative = createLink(current, { ...options, relative: true });
+
+    setGlobalOptions({ relative: true });
+    expect(createLink(current, options)).toBe(relative);
+    expect(createLink(current, { ...options, relative: undefined })).toBe(relative);
+    expect(createLink(current, { ...options, relative: false })).toBe(absolute);
+    expect(getGlobalOptions().relative).toBe(true);
+
+    setGlobalOptions({ relative: false });
+    expect(createLink(current, options)).toBe(absolute);
+    expect(createLink(current, { ...options, relative: true })).toBe(relative);
+    expect(getGlobalOptions().relative).toBe(false);
+
+    setGlobalOptions({ relative: undefined });
+    expect(createLink(current, options)).toBe(absolute);
   });
 
   test.each(['GET', 'PATH_INFO', 'PATH_INFO2'] as const)('uses custom routing fields in %s', (type) => {
