@@ -8365,6 +8365,14 @@ export const BUILTIN_MODULES = [
                         "objectID": 1
                     },
                 },
+                params: [
+                    {
+                        "name": "uid",
+                        "type": "string",
+                        "required": false,
+                        "description": "本次对象保存的唯一上传批次，以同一 Token 和 uid 保存对象时绑定图片。需 23.0 / biz14.0 / max9.0 / ipd6.0 或更新版本并支持客户端 uid。"
+                    }
+                ],
             }, {
                 name: 'update',
                 minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],

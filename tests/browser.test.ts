@@ -12,7 +12,7 @@ describe('browser bundle', () => {
     const bodies: unknown[] = [];
     const context = vm.createContext({
       window: {}, self: {}, console, setTimeout, clearTimeout, structuredClone, URL, URLSearchParams,
-      AbortController, Headers, Response, FormData, Blob,
+      AbortController, Headers, Response, FormData, Blob, crypto,
       fetch: async (url: string, init?: RequestInit) => {
         calls.push(url);
         const parsed = new URL(url);
@@ -24,9 +24,10 @@ describe('browser bundle', () => {
         if (parsed.pathname === '/api.php/v2/files') {
           const form = init?.body as FormData;
           expect(form.get('file')).toBeInstanceOf(Blob);
-          expect(form.get('objectType')).toBe('article');
-          expect(form.get('objectID')).toBe('7');
-          return Response.json({ status: 'success', id: 41 });
+          expect([...form.keys()]).toEqual(['file']);
+          expect(parsed.searchParams.get('uid')).toMatch(/^[A-Za-z0-9_-]+$/);
+          expect(parsed.searchParams.get('extra')).toBe('editor');
+          return Response.json({ status: 'success', data: { id: 41, url: '/zentao/file-read-41.png' } });
         }
         expect(parsed.pathname).toBe('/api.php/v2/articles/7');
         return Response.json({ status: 'success', id: 7 });
@@ -46,15 +47,18 @@ describe('browser bundle', () => {
       fileResolver: { 'image-1': { blob: new Blob(['png'], { type: 'image/png' }) } },
     });
     expect(response.status).toBe('success');
-    expect(calls).toHaveLength(3);
-    expect(JSON.parse(bodies[1] as string).content).toBe(input.replace('src="image-1"', 'src="/file-read-41.png"'));
+    expect(calls).toHaveLength(2);
+    expect(JSON.parse(bodies[1] as string)).toEqual({
+      uid: new URL(calls[0]).searchParams.get('uid'),
+      content: input.replace('src="image-1"', 'src="/zentao/file-read-41.png"'),
+    });
     expect((context as any).document).toBeUndefined();
     expect((context as any).process).toBeUndefined();
 
     const local = await api.request('article/update', { id: 7, content: '<img src="file:///tmp/image.png">' });
     expect(local.fileWarnings[0].code).toBe('E_UPLOAD_PATH_UNSUPPORTED');
     expect(JSON.parse(bodies.at(-1) as string).content).toContain('alt="Local file paths');
-    expect(calls).toHaveLength(4);
+    expect(calls).toHaveLength(3);
   });
 
   test('exposes window.ZentaoAPI with build info and rejects insecure requests in browser runtime', async () => {

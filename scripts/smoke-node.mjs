@@ -36,6 +36,8 @@ await assert.rejects(
 const uploadDir = mkdtempSync(join(tmpdir(), 'zentao-api-node-smoke-'));
 const uploadPath = join(uploadDir, 'node-smoke.txt');
 writeFileSync(uploadPath, 'node upload smoke');
+const imagePath = join(uploadDir, 'node-smoke.png');
+writeFileSync(imagePath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/R3kAAAAASUVORK5CYII=', 'base64'));
 let receivedContentType = '';
 let receivedBody = '';
 let receivedAssistant;
@@ -63,9 +65,8 @@ const server = createServer((request, response) => {
     receivedBody = Buffer.concat(chunks).toString('utf8');
     receivedRequests.push({ path: request.url, method: request.method, body: receivedBody });
     response.writeHead(200, { 'Content-Type': 'application/json' });
-    if (request.url === '/api.php/v2/files/1/link') {
-      assert.equal(request.method, 'PUT');
-      response.end(JSON.stringify({ status: 'success', id: 1, ...JSON.parse(receivedBody) }));
+    if (request.url?.startsWith('/api.php/v2/files?')) {
+      response.end(JSON.stringify({ status: 'success', id: 1, url: '/zentao/file-read-1.png' }));
       return;
     }
     response.end(JSON.stringify({ status: 'success', data: { id: 1, url: '/file-read-1.txt' } }));
@@ -126,19 +127,25 @@ try {
     requestBody: { schema: { type: 'object', properties: { content: { type: 'string', description: '(HTML)' } } } },
   }] });
   const beforeHTML = receivedRequests.length;
+  const anchor = `<a href="${pathToFileURL(uploadPath).href}">download.txt</a>`;
   const created = await api.request('htmlsmoke/create', {
-    content: `<a href="${pathToFileURL(uploadPath).href}">download.txt</a><img src="file:24" alt="existing.png">`,
+    content: `${anchor}<img src="${pathToFileURL(imagePath).href}"><img src="file:24" alt="existing.png">`,
   }, { client: uploadClient });
   assert.equal(created.status, 'success');
   assert.equal(created.fileWarnings, undefined);
   const htmlRequests = receivedRequests.slice(beforeHTML);
-  assert.deepEqual(htmlRequests.map(({ path, method }) => [path, method]), [
-    ['/api.php/v2/files', 'POST'], ['/api.php/v2/htmlsmoke', 'POST'], ['/api.php/v2/files/1/link', 'PUT'],
-  ]);
-  assert.match(htmlRequests[0].body, /filename="download\.txt"/);
-  assert.equal(JSON.parse(htmlRequests[1].body).content,
-    '<a href="/file-read-1.txt" download="download.txt">download.txt</a><img src="/file-read-24.png" alt="existing.png">');
-  assert.deepEqual(JSON.parse(htmlRequests[2].body), { objectType: 'htmlsmoke', objectID: 1 });
+  assert.equal(htmlRequests.length, 2);
+  const uploadURL = new URL(htmlRequests[0].path, 'http://localhost');
+  assert.equal(uploadURL.pathname, '/api.php/v2/files');
+  assert.equal(uploadURL.searchParams.get('extra'), 'editor');
+  assert.match(uploadURL.searchParams.get('uid'), /^[A-Za-z0-9_-]+$/);
+  assert.equal(htmlRequests[0].method, 'POST');
+  assert.match(htmlRequests[0].body, /filename="node-smoke\.png"/);
+  assert.equal(htmlRequests[1].method, 'POST');
+  assert.equal(htmlRequests[1].path, '/api.php/v2/htmlsmoke');
+  assert.deepEqual(JSON.parse(htmlRequests[1].body), {
+    uid: uploadURL.searchParams.get('uid'), content: `${anchor}<img src="/zentao/file-read-1.png"><img src="/file-read-24.png" alt="existing.png">`,
+  });
 } finally {
   await new Promise((resolveClose) => server.close(resolveClose));
   rmSync(uploadDir, { recursive: true, force: true });

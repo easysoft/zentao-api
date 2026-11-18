@@ -1,5 +1,7 @@
 import { ZentaoError } from './errors.js';
 
+export const VERSION_23_MINIMUMS = Object.freeze(['23.0', 'biz14.0', 'max9.0', 'ipd6.0']);
+
 interface ZentaoVersion {
   edition: string;
   parts: number[];
@@ -35,4 +37,12 @@ export function supportsZentaoVersion(version: ZentaoVersion, minimums: readonly
     if (difference !== 0) return difference > 0;
   }
   return true;
+}
+
+/** null 表示调用方已选择在配置获取失败时跳过版本检查。 */
+export function assertSupportedVersion(version: string | null, minimums: readonly string[], action: string): void {
+  if (version === null || supportsZentaoVersion(parseZentaoVersion(version), minimums)) return;
+  throw new ZentaoError('E_UNSUPPORTED_ZENTAO_VERSION', {
+    action, version, minVersion: minimums.join(', '),
+  }, { action, version, minVersion: minimums });
 }

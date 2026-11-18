@@ -1,17 +1,15 @@
-import type { ZentaoClient } from '../client/index.js';
+import { captureFileSession, type ZentaoClient } from '../client/index.js';
 import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
-import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
-import { getModuleAction } from '../modules/query.js';
-import { extractResult } from '../modules/resolve.js';
+import { assertSupportedVersion, VERSION_23_MINIMUMS } from '../misc/zentao-version.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
-import type { FileHandlingOptions, FileUploadSource, FileWarning, LinkProfile, ModuleActionRequest, ResolvedFile, ResponseData } from '../types/index.js';
+import type { FileHandlingOptions, FileUploadSource, FileWarning, LinkProfile, ModuleActionRequest, ResolvedFile } from '../types/index.js';
 import { isRecord } from '../utils/object.js';
 import { createLink, parseLink } from '../utils/link.js';
-import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReference } from './html-files.js';
+import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReference, type HtmlFileReplacement } from './html-files.js';
 import { inferExtension, normalizeFilename } from './prepare-body.js';
 
-type FileRequest = (action: 'create' | 'get' | 'link' | 'delete', params: Record<string, unknown>) => Promise<ResponseData>;
+type FileRequest = (action: 'create' | 'delete', params: Record<string, unknown>, checkSession?: () => void) => Promise<Record<string, unknown>>;
 interface Context extends FileHandlingOptions {
   client: ZentaoClient;
   version: string | null;
@@ -24,7 +22,8 @@ type Source =
   | { kind: 'id'; id: number; name?: string }
   | { kind: 'upload'; path?: string; blob?: Blob; name: string; error?: unknown };
 interface Upload {
-  id: number;
+  id?: number;
+  url?: string;
   reference: HtmlFileReference;
 }
 
@@ -51,6 +50,33 @@ function plainRecord(value: unknown): value is Record<string, unknown> {
 
 async function importNode<T>(specifier: string): Promise<T> {
   return import(specifier) as Promise<T>;
+}
+
+async function newFileUid(): Promise<string> {
+  if (!globalThis.crypto && isNodeRuntime()) return (await importNode<typeof import('node:crypto')>('node:crypto')).randomUUID();
+  const bytes = globalThis.crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/** Put the batch identifier in the upload query or the object's JSON body. */
+export function setFileUid(command: ModuleActionRequest, value: unknown, version: string | null): string {
+  // PHP treats "0" as empty. "used" is an album key; "1" and "apiv2" are shared server defaults.
+  if (typeof value !== 'string' || !value || /[^A-Za-z0-9_-]/.test(value) || ['0', '1', 'used', 'apiv2'].includes(value)) {
+    throw new ZentaoError('E_INVALID_PARAM', { param: 'uid', value: typeof value === 'string' ? value : typeof value });
+  }
+  assertSupportedVersion(version, VERSION_23_MINIMUMS, `${command.module}/${command.action.name}`);
+  if (command.module === 'file' && command.action.name === 'create') {
+    const { uid: _uid, extra, ...form } = command.data ?? {};
+    command.data = form;
+    command.query = { ...command.query, uid: value, extra };
+  } else {
+    command.data = { ...command.data, uid: value };
+  }
+  return value;
+}
+
+export function isFileWriteFailure(raw: Record<string, unknown>): boolean {
+  return raw.status === 'fail' || raw.status === 'error' || raw.result === 'fail' || raw.result === 'error';
 }
 
 async function localPath(path: string): Promise<string> {
@@ -121,49 +147,52 @@ function extension(source: Source, reference: HtmlFileReference): string {
   return 'png';
 }
 
-/** Owns only files uploaded by this request, through submission and association. */
+/** Owns only the images uploaded during this object save. */
 export class HtmlFileRequest {
   readonly warnings: FileWarning[] = [];
   private readonly uploads: Upload[] = [];
-  private objectType?: string;
-  private objectID?: number;
+  private linkProfile?: Promise<LinkProfile>;
+  checkSession?: () => void;
 
-  constructor(private readonly command: ModuleActionRequest, private readonly context: Context) {}
+  constructor(private readonly command: ModuleActionRequest, private readonly context: Context, private uid?: string) {
+    if (uid) this.checkSession = context.client[captureFileSession]();
+  }
+
+  private profile(): Promise<LinkProfile> {
+    return this.linkProfile ??= this.context.client.getZentaoConfig({
+      timeout: this.context.timeout, insecure: this.context.insecure,
+    }).then(serverConfig => ({ server: this.context.client.siteUrl, serverConfig }));
+  }
+
+  private async fileLink(path: string) {
+    const profile = await this.profile();
+    const auto = profile.serverConfig?.moduleVar && profile.serverConfig.methodVar;
+    const link = parseLink(profile, path, auto ? { requestType: 'auto' } : {});
+    return !link.external && link.moduleName === 'file' && link.methodName === 'read' ? link : undefined;
+  }
 
   private async warn(stage: FileWarning['stage'], error: unknown, reference?: HtmlFileReference, fileID?: number): Promise<void> {
+    const creating = this.command.action.type === 'create';
+    const objectType = creating ? resolveResultObjectType(this.command.action.resultObjectType, this.command.params, {}) : this.command.module;
     const warning: FileWarning = {
       stage,
       code: error instanceof ZentaoError ? error.code : 'E_FILE_OPERATION_FAILED',
       message: error instanceof Error ? error.message : String(error),
       ...(reference ? { field: reference.field, path: reference.path, name: reference.name } : {}),
       ...(fileID !== undefined ? { fileID } : {}),
-      ...(this.objectType ? { objectType: this.objectType } : {}),
-      ...(this.objectID !== undefined ? { objectID: this.objectID } : {}),
+      ...(this.uid ? { uid: this.uid } : {}),
+      ...(objectType ? { objectType } : {}),
+      ...(!creating && this.command.id ? { objectID: this.command.id } : {}),
     };
     this.warnings.push(warning);
     // Notifications must not turn a completed write into a reported failure.
     try { await this.context.onFileError?.({ ...warning }); } catch { /* notification only */ }
   }
 
-  private assertVersion(actionName: 'create' | 'link', version: string): void {
-    const action = getModuleAction('file', actionName);
-    if (!action) throw new ZentaoError('E_INVALID_ACTION', { module: 'file', action: actionName });
-    if (!supportsZentaoVersion(parseZentaoVersion(version), action.minVersion)) {
-      throw new ZentaoError('E_UNSUPPORTED_ZENTAO_VERSION', {
-        action: `file/${actionName}`, version, minVersion: action.minVersion.join(', '),
-      }, { action: `file/${actionName}`, version, minVersion: action.minVersion });
-    }
-  }
-
   async prepare(): Promise<void> {
-    if (String(this.command.action.method).toUpperCase() === 'GET') return;
     const documents = parseHtmlFiles(this.command.data, this.command.action);
     const references = documents.flatMap(document => document.references);
     if (!references.length) return;
-    let profilePromise: Promise<LinkProfile> | undefined;
-    const profile = () => profilePromise ??= this.context.client.getZentaoConfig({
-      timeout: this.context.timeout, insecure: this.context.insecure,
-    }).then(serverConfig => ({ server: this.context.client.siteUrl, serverConfig }));
     const sources = new Map<HtmlFileReference, Source>();
     const resolver = this.context.fileResolver;
 
@@ -174,8 +203,7 @@ export class HtmlFileRequest {
       if (!intrinsic && !resolver) continue;
       if (!intrinsic && mayBeFileLink(reference.path)) {
         try {
-          const link = parseLink(await profile(), reference.path);
-          if (!link.external && link.moduleName === 'file' && link.methodName === 'read') continue;
+          if (await this.fileLink(reference.path)) continue;
         } catch {
           // A resolver can still supply a network URL without working page routing.
         }
@@ -201,31 +229,16 @@ export class HtmlFileRequest {
       }
     }
     if (!sources.size) return;
-    const needsUpload = [...sources.values()].some(source => source.kind === 'upload');
-    const needsLink = [...sources.values()].some(source => source.kind !== 'url');
-    let linkProfile: LinkProfile | undefined;
-    if (needsLink) {
-      linkProfile = await profile();
-      createLink(linkProfile, { moduleName: 'file', methodName: 'read', vars: 'fileID=1', viewType: 'png', relative: true });
-    }
-    if (needsUpload) {
-      this.objectType = this.command.action.type === 'create'
-        ? resolveResultObjectType(this.command.action.resultObjectType, this.command.params, {})
-        : this.command.module;
-      this.objectID = this.command.action.type === 'create' ? undefined : positiveID(this.command.id);
-      if (!this.objectType || (this.command.action.type !== 'create' && !this.objectID)) {
-        throw new ZentaoError('E_FILE_TARGET_UNKNOWN');
-      }
-      const version = this.context.version ?? linkProfile!.serverConfig!.version;
-      this.assertVersion('create', version);
-      if (this.command.action.type === 'create') this.assertVersion('link', version);
+    if (!this.uid && [...sources.values()].some(source => source.kind === 'upload')) {
+      this.uid = setFileUid(this.command, await newFileUid(), this.context.version);
+      this.checkSession = this.context.client[captureFileSession]();
     }
 
-    const replacements = new Map<HtmlFileReference, { url?: string; name?: string; error?: string }>();
-    const uploaded = new Map<string | Blob, Map<string, { id?: number; error?: unknown }>>();
+    const replacements = new Map<HtmlFileReference, HtmlFileReplacement>();
+    const uploaded = new Map<string | Blob, Map<string, { id?: number; url?: string; error?: unknown }>>();
     for (const [reference, source] of sources) {
       if (source.kind === 'url') {
-        replacements.set(reference, { url: source.url, name: source.name });
+        replacements.set(reference, { url: source.url });
         continue;
       }
       let id: number;
@@ -243,13 +256,13 @@ export class HtmlFileRequest {
             const file: FileUploadSource = source.blob
               ? { data: source.blob, filename: source.name }
               : { path: source.path!, filename: source.name };
-            const response = await this.context.requestFile('create', {
-              file,
-              ...(this.objectID ? { objectType: this.objectType, objectID: this.objectID } : {}),
-            });
-            outcome.id = positiveID(isRecord(response.data) ? response.data.id : undefined);
-            if (!outcome.id) throw new ZentaoError('E_FILE_UPLOAD_FAILED');
-            this.uploads.push({ id: outcome.id, reference });
+            const response = await this.context.requestFile('create', { file, uid: this.uid, extra: 'editor' }, this.checkSession);
+            const data = isRecord(response.data) ? response.data : {};
+            outcome.id = positiveID(response.id) ?? positiveID(data.id) ?? positiveID(response.data);
+            const url = typeof response.url === 'string' && response.url.trim() ? response.url : data.url;
+            if (typeof url === 'string' && url.trim()) outcome.url = url;
+            if (!outcome.id && !outcome.url) throw new ZentaoError('E_FILE_UPLOAD_FAILED');
+            this.uploads.push({ id: outcome.id, url: outcome.url, reference });
           } catch (error) { outcome.error = error; }
         }
         if (Object.hasOwn(outcome, 'error')) {
@@ -258,12 +271,16 @@ export class HtmlFileRequest {
           replacements.set(reference, { error: outcome.error instanceof Error ? outcome.error.message : String(outcome.error) });
           continue;
         }
+        if (outcome.url) {
+          replacements.set(reference, { url: outcome.url });
+          continue;
+        }
         id = outcome.id!;
       }
-      const url = createLink(linkProfile!, {
+      const url = createLink(await this.profile(), {
         moduleName: 'file', methodName: 'read', vars: `fileID=${id}`, viewType: extension(source, reference), relative: true,
       });
-      replacements.set(reference, { url, name: source.name || `file-read-${id}.${extension(source, reference)}` });
+      replacements.set(reference, { url });
     }
     const changes = rewriteHtmlFiles(documents, replacements);
     if (Object.keys(changes).length) this.command.data = { ...this.command.data, ...changes };
@@ -272,8 +289,14 @@ export class HtmlFileRequest {
   async cleanup(): Promise<void> {
     const pending = this.uploads.splice(0);
     for (const upload of pending) {
-      try { await this.context.requestFile('delete', { fileID: upload.id }); }
-      catch (error) {
+      try {
+        if (upload.id === undefined && upload.url && mayBeFileLink(upload.url)) {
+          const route = await this.fileLink(upload.url);
+          upload.id = positiveID(route?.params?.fileID ?? route?.params?.$1);
+        }
+        if (upload.id === undefined) throw new ZentaoError('E_FILE_UPLOAD_FAILED');
+        await this.context.requestFile('delete', { fileID: upload.id }, this.checkSession);
+      } catch (error) {
         this.uploads.push(upload);
         await this.warn('cleanup', error, upload.reference, upload.id);
       }
@@ -282,8 +305,9 @@ export class HtmlFileRequest {
 
   /** Preserve the primary error and attach enough context to reconcile uncertain writes. */
   errorWithFiles(error: unknown): unknown {
-    if (!this.uploads.length && !this.warnings.length) return error;
-    const extra = { fileIDs: this.uploads.map(upload => upload.id), fileWarnings: [...this.warnings] };
+    if (!this.uid && !this.warnings.length) return error;
+    const fileIDs = this.uploads.flatMap(upload => upload.id === undefined ? [] : [upload.id]);
+    const extra = { uid: this.uid, fileIDs, fileWarnings: [...this.warnings] };
     if (error instanceof ZentaoError) {
       return new ZentaoError(error.code, error.params, {
         ...(plainRecord(error.details) ? error.details : { cause: error.details }), ...extra,
@@ -299,33 +323,25 @@ export class HtmlFileRequest {
     return Object.assign(new Error(error instanceof Error ? error.message : String(error), { cause: error }), { details: extra });
   }
 
-  async complete(raw: unknown): Promise<void> {
-    if (!this.uploads.length || this.command.action.type !== 'create') return;
-    if (isRecord(raw) && raw.status === 'fail') {
-      await this.cleanup();
-      return;
-    }
-    let result: unknown;
-    try { result = isRecord(raw) ? extractResult(this.command.action, raw, this.command.params, {}) : raw; } catch { /* retained below */ }
-    this.objectID = positiveID(isRecord(result) ? result.id : result);
-    if (!this.objectID && isRecord(raw)) this.objectID = positiveID(raw.id);
-    if (!this.objectID) {
-      for (const upload of this.uploads) await this.warn('associate', new ZentaoError('E_FILE_OBJECT_ID_MISSING'), upload.reference, upload.id);
-      return;
-    }
-    for (const upload of this.uploads) {
-      try {
-        await this.context.requestFile('link', { fileID: upload.id, objectType: this.objectType, objectID: this.objectID });
-      } catch (error) {
-        // Some servers associate editor uploads while creating the object, before file/link runs.
-        if (error instanceof ZentaoError && error.code === 'E_HTTP_ERROR' && isRecord(error.details) && error.details.status === 409) {
-          try {
-            const current = (await this.context.requestFile('get', { fileID: upload.id })).data;
-            if (isRecord(current) && current.objectType === this.objectType && positiveID(current.objectID) === this.objectID) continue;
-          } catch { /* Preserve the original conflict when the current association cannot be verified. */ }
-        }
-        await this.warn('associate', error, upload.reference, upload.id);
+  async saveError(error: unknown): Promise<unknown> {
+    if (this.uploads.length && error instanceof ZentaoError) {
+      // Network failures, HTTP 408 and 5xx can follow a successful save.
+      const status = error.code === 'E_HTTP_ERROR' && isRecord(error.details) ? Number(error.details.status) : 0;
+      const rejected = [400, 401, 403, 404, 405, 409, 412, 413, 415, 422, 429].includes(status);
+      if (rejected || ['E_API_FAILED', 'E_INVALID_PARAM', 'E_FILE_SESSION_CHANGED'].includes(error.code)) {
+        await this.cleanup();
       }
     }
+    return this.errorWithFiles(error);
+  }
+
+  async complete(raw: unknown): Promise<void> {
+    if (!this.uid) return;
+    if (isRecord(raw) && !(raw.status === 'fail' && typeof raw.httpStatus === 'number' && typeof raw.responseText === 'string')) {
+      if (isFileWriteFailure(raw)) return this.cleanup();
+      if (raw.status === 'success' || raw.result === 'success' || positiveID(raw.id) || (isRecord(raw.data) && positiveID(raw.data.id))) return;
+    }
+    if (positiveID(raw)) return;
+    throw this.errorWithFiles(new ZentaoError('E_FILE_SAVE_UNCONFIRMED', undefined, raw));
   }
 }

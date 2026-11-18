@@ -57,13 +57,11 @@ async function typedRequestExamples(): Promise<void> {
 
   const infoName: BuiltinRequestName = 'my/info';
   const fileName: BuiltinRequestName = 'file/get';
-  const linkName: BuiltinRequestName = 'file/link';
+  expectTypeOf<Extract<'file/link', BuiltinRequestName>>().toBeNever();
+  expectTypeOf<FileCreateParams['uid']>().toEqualTypeOf<string | undefined>();
   const readName: BuiltinRequestName = 'file/read';
   expectTypeOf((await request(infoName)).data).toEqualTypeOf<DataRecord | undefined>();
   expectTypeOf((await request(fileName, { fileID: 'Zy1hYmM=' })).data).toEqualTypeOf<DataRecord | undefined>();
-  expectTypeOf((await request(linkName, { fileID: 42, objectType: 'story', objectID: 7 })).data)
-    .toEqualTypeOf<DataRecord | undefined>();
-  expectTypeOf<RequestResultFor<'file/link'>>().toEqualTypeOf<DataRecord>();
   expectTypeOf((await request('file/123')).data).toEqualTypeOf<DataRecord | undefined>();
   expectTypeOf((await request(readName, { fileID: 123 })).data).toEqualTypeOf<ArrayBuffer | string | undefined>();
   expectTypeOf((await request(readName, { id: 123, stream: '1' })).data).toEqualTypeOf<ArrayBuffer | string | undefined>();

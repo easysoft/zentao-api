@@ -42,14 +42,10 @@ describe('HTML file reference parsing', () => {
       '<img src="file:5">',
       '<a href="https://example.com"></a>',
     ].join('');
-    expect(parseHtmlFiles({ content: html }, action)[0].references.map(({ path, name, tag }) => ({ path, name, tag }))).toEqual([
-      { path: 'file://one&two.png', name: 'a "file".png', tag: 'img' },
-      { path: 'custom', name: 'download.pdf', tag: 'a' },
-      { path: 'custom', name: 'title.pdf', tag: 'a' },
-      { path: 'custom', name: 'nested & text.pdf', tag: 'a' },
-      { path: 'https://example.com/hello%20world.png?size=1', name: 'hello world.png', tag: 'img' },
-      { path: 'file:5', name: undefined, tag: 'img' },
-      { path: 'https://example.com', name: undefined, tag: 'a' },
+    expect(parseHtmlFiles({ content: html }, action)[0].references.map(({ path, name }) => ({ path, name }))).toEqual([
+      { path: 'file://one&two.png', name: 'a "file".png' },
+      { path: 'https://example.com/hello%20world.png?size=1', name: 'hello world.png' },
+      { path: 'file:5', name: undefined },
     ]);
   });
 
@@ -70,10 +66,9 @@ describe('HTML file reference parsing', () => {
       .toBe('<IMG SRC="/file-read-1.png" sRc="ignored" ALT=first alt=ignored>');
   });
 
-  test('keeps malformed unfinished tags untouched and accepts omitted closing anchor tags', () => {
+  test('skips unfinished images and standalone anchors', () => {
     expect(parseHtmlFiles({ content: '<img src="file:1"' }, action)).toEqual([]);
-    expect(rewrite('<a href=file:2>read.pdf', { url: '/file-read-2.pdf' }))
-      .toBe('<a href="/file-read-2.pdf" download="read.pdf">read.pdf');
+    expect(parseHtmlFiles({ content: '<a href=file:2>read.pdf' }, action)).toEqual([]);
   });
 });
 
@@ -84,20 +79,15 @@ describe('HTML file reference rewriting', () => {
       .toBe('before\n <IMG class = "x" SRC="/file-read-1.png?a=&quot;x&quot;&amp;b=&lt;&gt;" alt="old" /> <b>unchanged &copy;</b>');
   });
 
-  test('adds download names and replaces existing download attributes', () => {
-    expect(rewrite('<a href="file:1" class=x>original.pdf</a>', { url: '/file-read-1.pdf', name: 'renamed & "new".pdf' }))
-      .toBe('<a href="/file-read-1.pdf" class=x download="renamed &amp; &quot;new&quot;.pdf">original.pdf</a>');
-    expect(rewrite('<a HREF="file:1" DOWNLOAD>original.pdf</a>', { url: '/file-read-1.pdf', name: 'name.pdf' }))
-      .toBe('<a HREF="/file-read-1.pdf" DOWNLOAD="name.pdf">original.pdf</a>');
-    expect(rewrite('<a href="file:1"></a>', { url: '/file-read-1.png' }))
-      .toBe('<a href="/file-read-1.png"></a>');
+  test('only rewrites the image inside a download link', () => {
+    const anchor = '<A HREF="file:42" DOWNLOAD="name.pdf" TITLE="keep">';
+    const html = anchor + '<IMG SRC="file:1">original &amp; text</A>';
+    expect(rewrite(html, { url: '/file-read-1.png' })).toBe(anchor + '<IMG SRC="/file-read-1.png">original &amp; text</A>');
   });
 
-  test('failure messages retain the original source and only update alt or title', () => {
+  test('failure messages retain the original source and update alt', () => {
     expect(rewrite('<img src="file://a.png" alt="name.png" />', { error: 'No "file" <here> & gone' }))
       .toBe('<img src="file://a.png" alt="No &quot;file&quot; &lt;here&gt; &amp; gone" />');
-    expect(rewrite('<a href=file://a.pdf download="name.pdf">Download</a>', { error: 'Failed' }))
-      .toBe('<a href=file://a.pdf download="name.pdf" title="Failed">Download</a>');
   });
 
   test('inserts safely before self-closing markers and after unquoted attribute values', () => {

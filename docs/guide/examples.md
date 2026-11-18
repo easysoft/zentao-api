@@ -173,13 +173,19 @@ await request('file/create', {
 await request('file/update', { fileID: 42, fileName: 'report.pdf' });
 ```
 
-禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，使用 `file/link`（`PUT /files/{fileID}/link`）将无归属文件关联到对象。`fileID` 必须为数字 ID，`objectType` 和 `objectID` 均必填：
+要为同一对象预上传图片，给 `file/create` 传入唯一的 `uid`。随后用同一客户端和 Token 保存对象，在保存参数中传入相同的值。以下 Node.js 示例把预上传的图片显示在 Bug 步骤里。
 
 ```ts
-await request('file/link', { fileID: 42, objectType: 'story', objectID: 1001 });
-```
+import { randomUUID } from 'node:crypto';
 
-目标部署需提供该接口。服务端只接受 `objectType` 为空的文件；已经关联的文件会返回 HTTP 409，即使再次指定相同对象也不能重复关联。
+const uid = randomUUID();
+const uploaded = await request('file/create', { uid, file: '/tmp/screenshot.png' }, { client, throwOnFail: true });
+await request('bug/update', {
+  id: 46,
+  uid,
+  steps: `<img src="file:${uploaded.data!.id}" alt="复现截图">`,
+}, { client });
+```
 
 也可以直接使用底层客户端。它会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体；普通对象默认按 JSON 发送。
 
@@ -228,9 +234,11 @@ const bytes = await client.request('/files/42/read', {
 
 大文件需要流式读取时，使用 `responseType: 'response'` 并消费返回的 `response.body`。
 
-## HTML 富文本文件
+<a id="html-富文本文件"></a>
 
-`request()` 仅处理请求体中描述以 `(HTML)` 结尾或 `textType: 'html'` 的顶层字符串字段。处理发生在 `beforeRequest` 之后，因此钩子修改后的 HTML 同样有效；调用方的原始参数保持不变。
+## HTML 富文本图片
+
+`request()` 仅处理请求体中描述以 `(HTML)` 结尾或 `textType: 'html'` 的顶层字符串字段。SDK 在 `beforeRequest` 后识别 `<img src>`。`<a>` 的属性和文字原样提交，链接内的图片也会处理。
 
 Node.js/Bun 可以在 HTML 中使用本地文件 URL：
 
@@ -239,14 +247,13 @@ const result = await request('story/update', {
   id: 1001,
   title: '登录需求',
   spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">'
-    + '<a href="file:///tmp/report.pdf">report.pdf</a>'
     + '<img src="file:42" alt="existing.png">',
 });
 
 console.log(result.fileWarnings);
 ```
 
-`file:///tmp/report.pdf` 表示绝对路径；`file://path/to/report.pdf` 是相对当前工作目录的简写。已有 `file:42` 只转换链接，不重复上传。生成链接固定为站内路径，例如 `/file-read-42.png`，并遵循服务器的 GET/PATH_INFO 路由配置。下载链接会补充 `download` 文件名。
+`file:///tmp/screenshot.png` 表示绝对路径，`file://path/to/screenshot.png` 表示相对当前工作目录的路径。SDK 将上传返回的 `url` 写入图片 `src`，保留部署子目录和查询参数。对于 `file:42` 或仅返回 ID 的上传响应，SDK 按服务器路由配置生成站内链接，例如 `/file-read-42.png`。
 
 浏览器通过解析器提供用户选中的 File 或 Blob：
 
@@ -279,43 +286,26 @@ setGlobalOptions({
 
 `loadLocalAttachment` 由应用提供。单次请求的同名选项覆盖全局配置，解析器对象整体替换。每个引用只解析一次，并在任何文件上传之前完成全部解析；未命中、抛错或返回无效来源会终止请求。
 
-文件名的提取顺序为图片 `alt`，或链接非空的 `download` → `title` → 链接文字，最后回退到来源文件名。映射依次按引用路径、文件名查找自身属性；映射值为字符串时用命中的 key 作文件名。函数返回值或对象值未指定名称时沿用输入名称。
+文件名优先取图片的 `alt`，再取来源路径中的文件名。映射依次按引用路径、文件名查找自身属性；映射值为字符串时用命中的 key 作文件名。函数返回值或对象值未指定名称时沿用输入名称。
 
-HTTP(S)、协议相对 URL、已有禅道文件链接及普通锚点、邮件链接直接保留。没有解析器时，`image-1`、`images/a.png`、`/uploads/a.png` 等原始引用保持不变；配置解析器后，本地和自定义引用必须成功解析。解析器返回的网络 URL 直接替换，不下载或上传。
+HTTP(S)、协议相对 URL 和已有禅道图片链接直接保留。没有解析器时，`image-1`、`images/a.png`、`/uploads/a.png` 等原始引用保持不变；配置解析器后，本地和自定义引用必须成功解析。解析器返回的网络 URL 直接替换，不下载或上传。
 
-修改对象时，上传直接关联目标对象；创建对象时，先上传无归属文件、替换 HTML，再创建对象并通过 `file/link` 关联。关联使用真实的新对象 ID，`pick`、`convertSingle` 和 `raw` 不会跳过或影响这一步。此流程需要目标部署支持前述 `file/link` 接口。
+### 上传与对象保存
 
-### 文件错误与部分完成
+有图片需要上传时，SDK 为本次保存生成一个随机 `uid`。同一对象的各个富文本字段共用这个值。每张新图片通过 `POST /files?uid=X&extra=editor` 的 multipart 字段 `file` 上传，随后对象写请求在 JSON 体中提交同一个 `uid`。服务端在保存对象时绑定整批图片。相同来源和文件名在一次请求中只上传一次，各图片依次上传，沿用 `maxUploadBytes` 的单文件限制。
 
-默认 `continueOnFileUploadError: true`：上传或本地读取失败后保留原引用，将图片 `alt` 或链接 `title` 改为错误消息，再提交对象。要求全部上传成功时设置：
+手动预上传的图片可以与自动上传的图片共用同一批次。`params.data.uid` 优先于 `params.uid`。显式值只接受字母、数字、下划线和连字符，`0`、`1`、`apiv2` 和 `used` 为保留值。每个对象使用独立的值，上传和保存期间使用同一个 Token。已有图片 URL 或文件 ID 也可以配合显式 `uid` 保存。
 
-```ts
-await request('story/update', params, {
-  continueOnFileUploadError: false,
-  onFileError: warning => console.warn(warning),
-});
-```
+`uid` 绑定要求 `23.0 / biz14.0 / max9.0 / ipd6.0` 或更新版本，并且部署须包含服务端提交 `0a4de3a66f5` 或等效修复。较早构建会覆盖客户端提供的 `uid`。服务端按批次绑定全部上传，只有需要归属到该对象的图片才应使用这个值。
 
-严格模式会停止主请求并清理本次已上传文件。对象明确创建失败时也会清理；已有 `file:<ID>` 引用不会删除。清理失败会保留主错误，并通过警告提供未删除的文件 ID。
+### 失败与恢复
 
-对象创建成功但返回结果缺少 ID，或后续文件关联失败时，仍返回创建成功结果，并通过 `fileWarnings` 和 `onFileError` 提供 `stage: 'associate'` 警告。警告包含错误码、消息、原始引用及可用的 `fileID`、`objectType`、`objectID`，可据此核对或修复关联。通知回调抛错不会改变主请求结果。
+- 解析器失败时，请求在开始上传前中止。
+- 上传或读取本地图片失败时，默认保留原 `src`，把错误写入 `alt` 并继续保存。设置 `continueOnFileUploadError: false` 可中止保存。
+- 提交前中止，或服务端明确拒绝保存时，SDK 清理本次请求新上传的图片。预上传图片和已有文件 ID 由调用方管理。清理失败时，`cleanup` 警告包含 `uid`、原始图片路径和已知的文件 ID。
+- 传输中断、超时或保存响应无法确认时，SDK 保留图片。异常的 `details.uid` 和 `details.fileIDs` 可用于查询对象状态及文件归属，再决定是否重试或清理。
 
-部分服务端在创建对象时已自动关联编辑器附件。`file/link` 返回 HTTP 409 时，SDK 额外调用一次 `file/get`，仅在类型和 ID 均与本次对象一致时视为成功；归属不同或查询失败仍保留关联警告，不重试写入。
-
-关联请求超时或断线时，由调用方先通过 `file/get` 查询文件元数据：已关联到预期对象则无需重试，仍无归属时才调用 `file/link`。
-
-创建请求超时或断线时，服务端可能已完成创建。SDK 保留本次上传文件，在异常的 `details.fileIDs` 中提供待核对 ID，`details.fileWarnings` 提供已有警告；确认对象状态后再关联或清理，避免直接重复创建。
-
-`raw: true` 仍执行全部附件流程，并保持原始响应不变，警告仅通过 `onFileError` 接收：
-
-```ts
-const raw = await request('story/create', params, {
-  raw: true,
-  onFileError: warning => console.warn(warning),
-});
-```
-
-HTML 由 `parse5` 在 Node 和浏览器中一致解析，只改写目标属性，不执行脚本或加载引用资源。没有 HTML 文件引用时不增加网络请求；同一请求内按最终来源与文件名去重后串行上传，沿用 `maxUploadBytes` 的单文件限制。
+普通响应通过 `fileWarnings` 提供警告。`onFileError` 可用于普通请求和 `raw: true` 的请求，接收 `resolve`、`upload` 和 `cleanup` 阶段的通知。
 
 ## 限制返回列表数量
 

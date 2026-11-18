@@ -19,7 +19,7 @@ export interface ResponseData<T = unknown> {
    * 无统一类型、参数无法解析或失败时省略。类型不随本地筛选、摘取和转换改变。
    */
   resultObjectType?: string;
-  /** HTML 文件处理中的警告；仅有警告时提供，主对象已创建但文件关联失败时仍保留成功状态。 */
+  /** 富文本图片解析、上传或清理时产生的警告。 */
   fileWarnings?: FileWarning[];
   /** 统一分页信息。 */
   pager?: {

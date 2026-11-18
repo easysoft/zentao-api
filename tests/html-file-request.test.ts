@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
-  ZentaoClient, ZentaoError, defineModules, extendModuleAction, request, setGlobalOptions,
+  ZentaoClient, ZentaoError, defineModuleActions, defineModules, extendModuleAction, request, setGlobalOptions,
   type ClientRequestOptions, type FileWarning, type ServerConfig,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
@@ -46,9 +46,6 @@ function setup(handler?: Handler, mainResult: unknown = { status: 'success', dat
     const custom = await handler?.(call);
     if (custom !== undefined) return custom;
     if (path === '/files') return { status: 'success', data: { id: nextFileID++ } };
-    if (/^\/files\/\d+\/link$/.test(path) && options.method === 'PUT') {
-      return { status: 'success', id: Number(path.split('/')[2]), ...options.body as Record<string, unknown> };
-    }
     if (/^\/files\/\d+$/.test(path) && options.method === 'DELETE') return { status: 'success' };
     if (path.startsWith('/files/')) throw new Error(`Unexpected file request: ${options.method} ${path}`);
     return mainResult;
@@ -58,7 +55,6 @@ function setup(handler?: Handler, mainResult: unknown = { status: 'success', dat
   return {
     client, calls, getConfig, transport,
     uploads: () => calls.filter(call => call.path === '/files'),
-    associations: () => calls.filter(call => /^\/files\/\d+\/link$/.test(call.path) && call.options.method === 'PUT'),
     removals: () => calls.filter(call => /^\/files\/\d+$/.test(call.path) && call.options.method === 'DELETE'),
     objects: () => calls.filter(call => !call.path.startsWith('/files')),
   };
@@ -81,133 +77,233 @@ afterEach(() => {
   setGlobalOptions({
     version: undefined, client: undefined, fileResolver: undefined,
     continueOnFileUploadError: undefined, onFileError: undefined,
-    autoFill: undefined, throwOnFail: undefined, relative: undefined,
+    autoFill: undefined, throwOnFail: undefined, relative: undefined, persistProfiles: undefined,
     timeout: undefined, insecure: undefined, actionAssistant: undefined, limit: undefined,
   });
 });
 
 describe('HTML file references in high-level requests', () => {
-  test('uploads once across HTML fields, creates, then associates using the created object ID', async () => {
+  test('uploads once across HTML fields and binds both references in the save request', async () => {
     const h = setup();
     const source = blob();
     const params = Object.freeze({
       title: 'Created', content: '<p><img src="image-1" alt="photo.png"></p>',
-      spec: '<a href="image-1" title="photo.png">Download</a>', plain: '<img src="ignore">',
+      spec: '<a href="image-1" title="photo.png"><img src="image-1" alt="photo.png"></a>', plain: '<img src="ignore">',
     });
     const before = JSON.stringify(params);
     const response = await request('article/create', params, { fileResolver: { 'image-1': { blob: source } } });
-
-    expect(response.status).toBe('success');
-    expect(h.calls.map(call => [call.path, call.options.method])).toEqual([
-      ['/files', 'POST'], ['/articles', 'POST'], ['/files/100/link', 'PUT'],
-    ]);
-    const form = multipart(h.uploads()[0]);
-    expect(form.get('objectType')).toBeNull();
-    expect(form.get('objectID')).toBeNull();
-    expect((form.get('file') as File).name).toBe('photo.png');
+    expect(h.calls.map(call => [call.path, call.options.method])).toEqual([['/files', 'POST'], ['/articles', 'POST']]);
+    const upload = h.uploads()[0];
+    const uid = upload.options.query?.uid;
+    expect(uid).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(upload.options.query).toEqual({ uid, extra: 'editor' });
+    expect([...multipart(upload).keys()]).toEqual(['file']);
+    expect((multipart(upload).get('file') as File).name).toBe('photo.png');
     expect(data(h.objects()[0])).toMatchObject({
-      content: '<p><img src="/file-read-100.png" alt="photo.png"></p>',
-      spec: '<a href="/file-read-100.png" title="photo.png" download="photo.png">Download</a>',
-      plain: '<img src="ignore">',
+      uid, content: '<p><img src="/file-read-100.png" alt="photo.png"></p>',
+      spec: '<a href="image-1" title="photo.png"><img src="/file-read-100.png" alt="photo.png"></a>', plain: '<img src="ignore">',
     });
-    expect(data(h.associations()[0])).toEqual({ objectType: 'article', objectID: 77 });
     expect(h.getConfig).toHaveBeenCalledTimes(1);
     expect(response).not.toHaveProperty('fileWarnings');
     expect(JSON.stringify(params)).toBe(before);
   });
 
-  test('uploads a real local file URL directly to the existing object', async () => {
+  test('uploads a local image and uses the server URL including its subdirectory and query', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'zentao-html-file-'));
-    const file = join(dir, 'file with spaces.pdf');
-    writeFileSync(file, 'PDF contents');
+    const file = join(dir, 'file with spaces.png');
+    writeFileSync(file, 'image contents');
     try {
-      const h = setup();
-      await request('article/update', {
-        id: 9, content: `<a href="${pathToFileURL(file).href}">report.pdf</a>`,
+      const url = '/zentao/index.php?m=file&f=read&t=png&fileID=53';
+      const h = setup(call => call.path === '/files' ? { status: 'success', url, data: { id: 53 } } : undefined);
+      await request('article/update', { id: 9, content: `<img src="${pathToFileURL(file).href}" alt="report.png">` });
+      const upload = h.uploads()[0];
+      const form = await new Response(multipart(upload)).formData();
+      expect([...form.keys()]).toEqual(['file']);
+      expect((form.get('file') as File).name).toBe('report.png');
+      expect(await (form.get('file') as File).text()).toBe('image contents');
+      expect(data(h.objects()[0])).toMatchObject({
+        uid: upload.options.query?.uid, content: '<img src="/zentao/index.php?m=file&amp;f=read&amp;t=png&amp;fileID=53" alt="report.png">',
       });
-      // Bun.file retains its source name in FormData.get; inspect the serialized upload name.
-      const form = await new Response(multipart(h.uploads()[0])).formData();
-      expect(form.get('objectType')).toBe('article');
-      expect(form.get('objectID')).toBe('9');
-      expect((form.get('file') as File).name).toBe('report.pdf');
-      expect(await (form.get('file') as File).text()).toBe('PDF contents');
-      expect(data(h.objects()[0]).content).toBe('<a href="/file-read-100.pdf" download="report.pdf">report.pdf</a>');
-      expect(h.associations()).toHaveLength(0);
+      expect(h.getConfig).not.toHaveBeenCalled();
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 
-  test('creates a project story without mistaking its project ID for the new story ID', async () => {
-    const h = setup();
-    await request('project/createStory', {
-      projectID: 12, title: 'Story', spec: '<img src="source" alt="story.png">',
-    }, { fileResolver: { source: { blob: blob() } } });
-    expect(multipart(h.uploads()[0]).get('objectID')).toBeNull();
-    expect(h.objects()[0].path).toBe('/projects/12/stories');
-    expect(data(h.associations()[0])).toEqual({ objectType: 'story', objectID: 77 });
+  test.each([
+    ['project/createStory', 'POST', '/projects/12/stories', 'spec', { projectID: 12, title: 'Story' }],
+    ['bug/update', 'PUT', '/bugs/8', 'steps', { id: 8 }],
+    ['story/change', 'PUT', '/stories/8/change', 'spec', { id: 8, title: 'Changed' }],
+    ['meeting/minutes', 'PUT', '/meetings/8/minutes', 'minutes', { meetingID: 8 }],
+  ] as const)('%s sends two distinct images and one object save over HTTP', async (name, method, path, field, params) => {
+    const calls: string[] = [];
+    const uploadUids: Array<string | null> = [];
+    let saved: Record<string, unknown> = {};
+    const server = Bun.serve({ port: 0, async fetch(req) {
+      const url = new URL(req.url);
+      calls.push(`${req.method} ${url.pathname}`);
+      if (url.searchParams.get('mode') === 'getconfig') return Response.json(config);
+      expect(req.headers.get('Token')).toBe('object-token');
+      if (url.pathname === '/api.php/v2/files') {
+        expect(url.searchParams.get('extra')).toBe('editor');
+        expect([...(await req.formData()).keys()]).toEqual(['file']);
+        uploadUids.push(url.searchParams.get('uid'));
+        const id = uploadUids.length;
+        return Response.json({ status: 'success', id, url: `/zentao/${id}.png` });
+      }
+      expect(req.headers.get('Content-Type')).toContain('application/json');
+      saved = await req.json() as Record<string, unknown>;
+      return Response.json({ status: 'success' });
+    } });
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.href, token: 'object-token' });
+      await client.getZentaoConfig();
+      await request(name, { ...params, [field]: '<img src="one"><img src="two"><img src="one">' }, {
+        client, autoFill: false, fileResolver: { one: { blob: blob() }, two: { blob: blob() } },
+      });
+      expect(calls).toEqual(['GET /', 'POST /api.php/v2/files', 'POST /api.php/v2/files', `${method} /api.php/v2${path}`]);
+      expect(uploadUids[0]).toMatch(/^[A-Za-z0-9_-]+$/);
+      expect(uploadUids[1]).toBe(uploadUids[0]);
+      expect(saved.uid).toBe(uploadUids[0]);
+      expect(saved[field]).toBe('<img src="/zentao/1.png"><img src="/zentao/2.png"><img src="/zentao/1.png">');
+    } finally { server.stop(true); }
+  });
+
+  test.each([42, { status: 'success', data: 42 }])('uses the configured route for a bare upload ID: %p', async upload => {
+    const h = setup(call => call.path === '/files' ? upload : undefined);
+    await request('article/create', { content: '<img src="source">' }, { fileResolver: { source: { blob: blob() } } });
+    expect(data(h.objects()[0]).content).toBe('<img src="/file-read-42.png">');
+    expect(h.calls.map(call => call.path)).toEqual(['/files', '/articles']);
   });
 
   test.each([
-    ['story/change', 'story', { id: 8, title: 'Changed', spec: '<img src="source">' }],
-    ['meeting/minutes', 'meeting', { meetingID: 8, minutes: '<img src="source">' }],
-  ] as const)('processes the existing-object action %s', async (name, objectType, params) => {
-    const h = setup();
-    await request(name, params, { fileResolver: { source: { blob: blob(), name: 'note.png' } } });
-    const form = multipart(h.uploads()[0]);
-    expect(form.get('objectType')).toBe(objectType);
-    expect(form.get('objectID')).toBe('8');
-    expect(h.associations()).toHaveLength(0);
+    ['/editor-assets/new.png?size=full', undefined],
+    ['/index.php?m=file&f=read&t=png&fileID=45', 45],
+  ] as const)('uses a URL-only upload and cleans it when the route identifies the new file: %s', async (url, id) => {
+    const h = setup(call => call.path === '/files' ? { status: 'success', data: { url } } : undefined,
+      { status: 'fail', message: 'Invalid title' });
+    const response = await request('article/create', { uid: 'url-batch', content: '<img src="source">' }, {
+      fileResolver: { source: { blob: blob() } },
+    });
+    expect(data(h.objects()[0]).content).toBe(`<img src="${url.replaceAll('&', '&amp;')}">`);
+    if (id) {
+      expect(response.fileWarnings).toBeUndefined();
+      expect(h.removals().map(call => call.path)).toEqual([`/files/${id}`]);
+    } else {
+      expect(response.fileWarnings).toEqual([expect.objectContaining({ stage: 'cleanup', uid: 'url-batch', path: 'source' })]);
+      expect(h.calls.map(call => call.path)).toEqual(['/files', '/articles']);
+    }
   });
 
-  test('gets the ID before pick and convertSingle change the public response', async () => {
-    const h = setup();
+  test('saves without a response ID and applies pick and convertSingle normally', async () => {
+    const h = setup(undefined, { status: 'success', data: { title: 'Created' } });
     const response = await request('article/create', { content: '<img src="source">' }, {
       fileResolver: { source: { blob: blob() } }, pick: ['title'],
-      convertSingle: value => ({ ...value, id: 999, title: 'Converted' }),
+      convertSingle: value => ({ ...value, title: 'Converted' }),
     });
     expect(response.data).toEqual({ title: 'Converted' });
-    expect(data(h.associations()[0])).toEqual({ objectType: 'article', objectID: 77 });
+    expect(response.fileWarnings).toBeUndefined();
+    expect(h.calls).toHaveLength(2);
   });
 
-  test('raw returns the identical object after association and provides warnings through the callback', async () => {
-    const raw = { status: 'success', id: 77 };
-    const h = setup(call => call.path === '/files/100/link' ? { status: 'fail', message: 'Cannot associate' } : undefined, raw);
+  test('raw preserves the save acknowledgement and sends upload warnings to the callback', async () => {
+    const raw = { status: 'success' };
+    const h = setup(call => call.path === '/files' ? { status: 'error', message: 'Cannot upload' } : undefined, raw);
     const warnings: FileWarning[] = [];
     const result = await request('article/create', { content: '<img src="source">' }, {
-      raw: true, fileResolver: { source: { blob: blob() } },
-      onFileError: async warning => { warnings.push(warning); },
+      raw: true, fileResolver: { source: { blob: blob() } }, onFileError: warning => { warnings.push(warning); },
     });
     expect(result).toBe(raw);
     expect(raw).not.toHaveProperty('fileWarnings');
-    expect(h.associations()).toHaveLength(1);
-    expect(warnings).toContainEqual(expect.objectContaining({ stage: 'associate', fileID: 100, objectID: 77 }));
-    expect(h.removals()).toHaveLength(0);
+    expect(warnings).toContainEqual(expect.objectContaining({ stage: 'upload', uid: data(h.objects()[0]).uid }));
   });
 
-  test.each([
-    { objectType: 'article', objectID: 77, warning: false },
-    { objectType: 'article', objectID: '77', warning: false },
-    { objectType: 'article', objectID: 78, warning: true },
-    { objectType: 'story', objectID: 77, warning: true },
-    { objectType: '', objectID: 0, warning: true },
-  ])('verifies a conflicting association against its exact target: %p', async ({ objectType, objectID, warning }) => {
+  test('forwards explicit batch IDs even when all images were pre-uploaded', async () => {
+    const h = setup();
+    const content = '<img src="/zentao/file-read-42.png">';
+    for (const params of [
+      { uid: 'pre-uploads', content },
+      { uid: 'unused', data: { uid: 'pre-uploads', content } },
+      { uid: 'unused', data: JSON.stringify({ uid: 'pre-uploads', content }) },
+    ]) await request('article/create', params);
+    expect(h.objects().map(call => data(call))).toEqual(Array(3).fill({ uid: 'pre-uploads', content }));
+    expect(h.uploads()).toHaveLength(0);
+  });
+
+  test('isolates concurrent batches on the same Token and keeps each upload with its own save', async () => {
+    const uploads = new Map<string, string[]>();
+    const saves = new Map<string, string>();
+    const server = Bun.serve({ port: 0, async fetch(req) {
+      const url = new URL(req.url);
+      expect(req.headers.get('Token')).toBe('shared-token');
+      if (url.pathname === '/api.php/v2/files') {
+        const uid = url.searchParams.get('uid')!;
+        expect(uid).toMatch(/^[A-Za-z0-9_-]+$/);
+        expect(url.searchParams.get('extra')).toBe('editor');
+        const entries = uploads.get(uid) ?? [];
+        uploads.set(uid, entries);
+        const form = await req.formData();
+        entries.push((form.get('file') as File).name);
+        expect([...form.keys()]).toEqual(['file']);
+        return Response.json({ status: 'success', id: entries.length, url: `/zentao/${uid}/${entries.length}.png` });
+      }
+      const { uid, steps } = await req.json() as { uid: string; steps: string };
+      expect(req.method).toBe('PUT');
+      expect(steps).toBe(`<img src="/zentao/${uid}/1.png"><img src="/zentao/${uid}/2.png">`);
+      saves.set(url.pathname, uid);
+      return Response.json({ status: 'success' });
+    } });
+    try {
+      const client = new ZentaoClient({ baseUrl: server.url.href, token: 'shared-token' });
+      setGlobalOptions({ version: '23.0' });
+      await Promise.all([10, 11].map(id => request('bug/update', {
+        id, steps: '<img src="left"><img src="right">',
+      }, { client, fileResolver: ({ path }) => ({ blob: blob(), name: `${id}-${path}.png` }) })));
+      expect(saves.size).toBe(2);
+      expect(uploads.size).toBe(2);
+      for (const id of [10, 11]) {
+        expect(uploads.get(saves.get(`/api.php/v2/bugs/${id}`)!)).toEqual([`${id}-left.png`, `${id}-right.png`]);
+      }
+    } finally { server.stop(true); }
+  });
+
+  test('shares an explicit uid between manual pre-upload, additional images and the save', async () => {
+    let nextID = 42;
     const h = setup(call => {
-      if (call.path === '/files/100/link') {
-        throw new ZentaoError('E_HTTP_ERROR', { status: 409, statusText: 'Conflict' }, { status: 409 });
-      }
-      if (call.path === '/files/100' && call.options.method === 'GET') {
-        return Response.json({ status: 'success', file: { id: 100, objectType, objectID } });
-      }
+      if (call.path !== '/files') return;
+      const id = nextID++;
+      return { status: 'success', data: { id, url: `/file-read-${id}.png` } };
     });
-    const onFileError = mock();
-    const response = await request('article/create', { content: '<img src="source" alt="image.png">' }, {
-      fileResolver: { source: { blob: blob() } }, onFileError,
+    const preupload = await request('file/create', { uid: 'manual_43', file: blob() });
+    await request('article/update', {
+      id: 7, uid: 'flat', data: { uid: 'manual_43', content: `<img src="${preupload.data!.url}"><img src="new">` },
+    }, { fileResolver: { new: { blob: blob() } } });
+    expect(h.calls.map(call => call.path)).toEqual(['/files', '/files', '/articles/7']);
+    expect(h.uploads().map(call => call.options.query?.uid)).toEqual(['manual_43', 'manual_43']);
+    expect(data(h.objects()[0])).toEqual({ uid: 'manual_43', content: '<img src="/file-read-42.png"><img src="/file-read-43.png">' });
+  });
+
+  test('autoFill never copies a prior upload batch into a new save', async () => {
+    const h = setup(call => call.options.method === 'GET' ? { status: 'success', data: { uid: 'prior-batch', title: 'Saved title' } } : undefined);
+    defineModuleActions('article', { name: 'get', type: 'get', path: '/articles/{articleID}', minVersion: ['23.0'], pathParams: { articleID: 'ID' } });
+    extendModuleAction('article', 'update', {
+      method: 'PUT', requestBody: { schema: { ...bodySchema, properties: { ...bodySchema.properties, uid: { type: 'string' } } } },
     });
-    expect(response.status).toBe('success');
-    expect(response.fileWarnings?.length ?? 0).toBe(warning ? 1 : 0);
-    expect(onFileError).toHaveBeenCalledTimes(warning ? 1 : 0);
-    expect(h.associations()).toHaveLength(1);
-    expect(h.calls.filter(call => call.path === '/files/100' && call.options.method === 'GET')).toHaveLength(1);
-    expect(h.removals()).toHaveLength(0);
+    await request('article/update', { id: 9, content: '<img src="new">' }, { autoFill: true, fileResolver: { new: { blob: blob() } } });
+    const uid = h.uploads()[0].options.query?.uid;
+    expect(uid).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(uid).not.toBe('prior-batch');
+    expect(data(h.calls.at(-1)!)).toMatchObject({ uid, title: 'Saved title' });
+  });
+
+  test('validates explicit uid before uploading or saving', async () => {
+    const h = setup();
+    for (const uid of ['', null, 12, [], '0', '1', 'apiv2', 'used', 'bad/uid', 'has space', 'last\n']) {
+      await expect(request('article/create', { data: { uid }, content: '<img src="source">' }, {
+        fileResolver: { source: { blob: blob() } },
+      })).rejects.toMatchObject({ code: 'E_INVALID_PARAM', params: { param: 'uid' } });
+      await expect(request('file/create', { file: blob(), data: { uid } }))
+        .rejects.toMatchObject({ code: 'E_INVALID_PARAM', params: { param: 'uid' } });
+    }
+    expect(h.calls).toHaveLength(0);
   });
 
   test('awaits the resolver once per reference and preserves names when the result omits one', async () => {
@@ -230,17 +326,17 @@ describe('HTML file references in high-level requests', () => {
     try {
       const h = setup();
       await request('article/update', {
-        id: 9, content: '<img src="path-key" alt="label.png"><a href="unknown-key">report.pdf</a>',
+        id: 9, content: '<img src="path-key" alt="label.png"><img src="unknown-key" alt="other.png">',
       }, { fileResolver: {
         'path-key': { blob: blob(), name: 'preferred.png' },
         'label.png': { url: 'https://wrong.test/image.png' },
-        'report.pdf': file,
+        'other.png': file,
       } });
       expect(h.uploads()).toHaveLength(2);
       expect((multipart(h.uploads()[0]).get('file') as File).name).toBe('preferred.png');
       const secondForm = await new Response(multipart(h.uploads()[1])).formData();
-      expect((secondForm.get('file') as File).name).toBe('report.pdf');
-      expect(data(h.objects()[0]).content).toContain('/file-read-101.pdf');
+      expect((secondForm.get('file') as File).name).toBe('other.png');
+      expect(data(h.objects()[0]).content).toContain('/file-read-101.png');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 
@@ -258,10 +354,10 @@ describe('HTML file references in high-level requests', () => {
 
   test('a resolver URL rewrites the reference without uploading or loading route config', async () => {
     const h = setup();
-    await request('article/update', { id: 9, content: '<a href="report.pdf">Report</a>' }, {
-      fileResolver: { 'report.pdf': { url: 'https://cdn.test/report.pdf?a=1&b=2', name: 'report.pdf' } },
+    await request('article/update', { id: 9, content: '<img src="cover.png" alt="Cover">' }, {
+      fileResolver: { 'cover.png': { url: 'https://cdn.test/cover.png?a=1&b=2' } },
     });
-    expect(data(h.objects()[0]).content).toBe('<a href="https://cdn.test/report.pdf?a=1&amp;b=2" download="report.pdf">Report</a>');
+    expect(data(h.objects()[0]).content).toBe('<img src="https://cdn.test/cover.png?a=1&amp;b=2" alt="Cover">');
     expect(h.uploads()).toHaveLength(0);
     expect(h.getConfig).not.toHaveBeenCalled();
   });
@@ -270,14 +366,13 @@ describe('HTML file references in high-level requests', () => {
     const h = setup();
     setGlobalOptions({ relative: false });
     await request('article/create', { content: '<img src="file:7" alt="image.png"><a href="file:8">report.pdf</a>' });
-    expect(data(h.objects()[0]).content).toBe('<img src="/file-read-7.png" alt="image.png"><a href="/file-read-8.pdf" download="report.pdf">report.pdf</a>');
+    expect(data(h.objects()[0]).content).toBe('<img src="/file-read-7.png" alt="image.png"><a href="file:8">report.pdf</a>');
     expect(h.uploads()).toHaveLength(0);
-    expect(h.associations()).toHaveLength(0);
   });
 
   test('existing relative ZenTao file links bypass the resolver', async () => {
     const h = setup();
-    const html = '<img src="/file-read-7.png"><a href="file-read-8.pdf">Download</a>';
+    const html = '<img src="/file-read-7.png"><img src="/index.php?m=file&amp;f=read&amp;fileID=7"><a href="file-read-8.pdf">Download</a>';
     const resolver = mock(() => { throw new Error('Existing links do not need resolution'); });
     await request('article/update', { id: 9, content: html }, { fileResolver: resolver });
     expect(data(h.objects()[0]).content).toBe(html);
@@ -297,6 +392,17 @@ describe('HTML file references in high-level requests', () => {
     expect(h.getConfig).not.toHaveBeenCalled();
     expect(data(h.objects()[0]).content).toBe(params.content);
     expect(data(h.objects()[0]).plain).toBe(params.plain);
+  });
+
+  test('a local download link bypasses the resolver and write batch entirely', async () => {
+    const h = setup();
+    const content = '<a href="file:///missing.pdf" download title="keep">Read <b>&amp;</b></a>';
+    const resolver = mock(() => { throw new Error('Unexpected resolver call'); });
+    await request('article/create', { content }, { fileResolver: resolver, continueOnFileUploadError: false });
+    expect(h.calls.map(call => call.path)).toEqual(['/articles']);
+    expect(data(h.calls[0])).toEqual({ content });
+    expect(resolver).not.toHaveBeenCalled();
+    expect(h.getConfig).not.toHaveBeenCalled();
   });
 
   test('uses final hook data and preserves params.data precedence without modifying caller data', async () => {
@@ -345,7 +451,6 @@ describe('HTML file references in high-level requests', () => {
       expect(call.options).toMatchObject({ timeout: 1250, insecure: false, actionAssistant: assistant });
     }
     expect(h.calls.every(call => call.options.method !== 'GET')).toBe(true);
-    expect(h.associations()).toHaveLength(1);
   });
 });
 
@@ -369,22 +474,21 @@ describe('HTML file failure lifecycle', () => {
     expect(h.calls).toHaveLength(0);
   });
 
-  test('default upload failure keeps the source and annotates img alt or a title', async () => {
+  test('default upload failure annotates the image and preserves the complete anchor', async () => {
     const h = setup(call => call.path === '/files' ? { status: 'fail', message: 'File "too large" <limit>' } : undefined);
     const warnings: FileWarning[] = [];
     const response = await request('article/create', { content: '<img src="one" alt="photo.png"><a href="two">report.pdf</a>' }, {
       fileResolver: { one: { blob: blob() }, two: { blob: blob() } }, onFileError: warning => { warnings.push(warning); },
     });
     expect(response.status).toBe('success');
-    expect(response.fileWarnings).toHaveLength(2);
-    expect(warnings).toHaveLength(2);
+    expect(response.fileWarnings).toHaveLength(1);
+    expect(warnings).toHaveLength(1);
     expect(warnings.every(warning => warning.stage === 'upload')).toBe(true);
     const html = String(data(h.objects()[0]).content);
     expect(html).toContain('src="one"');
     expect(html).toContain('href="two"');
     expect(html).toContain('&quot;too large&quot; &lt;limit&gt;');
-    expect(html).toContain('title="');
-    expect(h.associations()).toHaveLength(0);
+    expect(html).toContain('<a href="two">report.pdf</a>');
   });
 
   test('local read and upload-size failures follow the configured upload failure policy', async () => {
@@ -411,7 +515,6 @@ describe('HTML file failure lifecycle', () => {
     expect(warning).toHaveBeenCalledTimes(1);
     expect(data(h.objects()[0]).content).toContain('src="source"');
     expect(data(h.objects()[0]).content).not.toContain('/file-read-undefined');
-    expect(h.associations()).toHaveLength(0);
   });
 
   test('strict upload failure cleans previously uploaded files and never sends the main request', async () => {
@@ -432,7 +535,40 @@ describe('HTML file failure lifecycle', () => {
     if (throwOnFail) await expect(pending).rejects.toMatchObject({ code: 'E_API_FAILED' });
     else await expect(pending).resolves.toMatchObject({ status: 'fail', message: 'Cannot create' });
     expect(h.removals().map(call => call.path)).toEqual(['/files/100']);
-    expect(h.associations()).toHaveLength(0);
+  });
+
+  test('prevents a new Token from submitting or deleting files from the previous session', async () => {
+    const h = setup(async call => {
+      if (call.path === '/users/login') return { status: 'success', token: 'other-session' };
+      if (call.path === '/files') {
+        await h.client.login('another-user', 'test-password');
+        return { status: 'success', id: 49, url: '/file-read-49.png' };
+      }
+    });
+    setGlobalOptions({ persistProfiles: false });
+    spyOn(h.client, 'fetch').mockResolvedValue(config);
+    await expect(request('article/update', { id: 9, uid: 'original-batch', content: '<img src="source">' }, {
+      fileResolver: { source: { blob: blob() } },
+    })).rejects.toMatchObject({ code: 'E_FILE_SESSION_CHANGED', details: {
+      uid: 'original-batch', fileIDs: [49], fileWarnings: [expect.objectContaining({ stage: 'cleanup', fileID: 49 })],
+    } });
+    expect(h.calls.map(call => call.path)).toEqual(['/files', '/users/login']);
+  });
+
+  test('a pre-uploaded batch keeps its session through the Bug confirmation prefetch', async () => {
+    const h = setup(async call => {
+      if (call.path === '/users/login') return { status: 'success', token: 'other-session' };
+      if (call.path === '/bugs/7') {
+        await h.client.login('another-user', 'test-password');
+        return { status: 'success', bug: { status: 'active', assignedTo: 'qa', type: 'codeerror', pri: 2, deadline: '', mailto: [] } };
+      }
+    });
+    setGlobalOptions({ persistProfiles: false });
+    spyOn(h.client, 'fetch').mockResolvedValue(config);
+    await expect(request('bug/confirm', { id: 7, uid: 'manual-batch' })).rejects.toMatchObject({
+      code: 'E_FILE_SESSION_CHANGED', details: { uid: 'manual-batch', fileIDs: [] },
+    });
+    expect(h.calls.map(call => call.path)).toEqual(['/bugs/7', '/users/login']);
   });
 
   test('a timed-out creation retains files and reports their IDs for reconciliation', async () => {
@@ -441,9 +577,8 @@ describe('HTML file failure lifecycle', () => {
     });
     await expect(request('article/create', { content: '<img src="source">' }, {
       fileResolver: { source: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_TIMEOUT', details: expect.objectContaining({ fileIDs: [100] }) });
+    })).rejects.toMatchObject({ code: 'E_TIMEOUT', details: expect.objectContaining({ uid: expect.any(String), fileIDs: [100] }) });
     expect(h.removals()).toHaveLength(0);
-    expect(h.associations()).toHaveLength(0);
   });
 
   test.each(['E_NETWORK_ERROR', 'E_TIMEOUT'] as const)('%s preserves its native cause when file context is attached', async code => {
@@ -480,56 +615,6 @@ describe('HTML file failure lifecycle', () => {
     expect(h.removals()).toHaveLength(0);
   });
 
-  test('association failures return success with warnings and do not prevent remaining associations', async () => {
-    const h = setup(call => call.path === '/files/100/link' && call.options.method === 'PUT'
-      ? { status: 'fail', message: 'Cannot associate first file' } : undefined);
-    const response = await request('article/create', { content: '<img src="one"><img src="two">' }, {
-      fileResolver: { one: { blob: blob() }, two: { blob: blob() } },
-      onFileError: async () => { throw new Error('Notification must not change success'); },
-    });
-    expect(response.status).toBe('success');
-    expect(response.data).toMatchObject({ id: 77 });
-    expect(response.fileWarnings).toContainEqual(expect.objectContaining({ stage: 'associate', fileID: 100, objectType: 'article', objectID: 77 }));
-    expect(h.associations().map(call => call.path)).toEqual(['/files/100/link', '/files/101/link']);
-    expect(h.removals()).toHaveLength(0);
-  });
-
-  test('file/link conflict preserves the created object and files without retrying or falling back to rename', async () => {
-    const h = setup(call => {
-      if (call.path === '/files/100/link' && call.options.method === 'PUT') {
-        throw new ZentaoError('E_HTTP_ERROR', { status: 409, statusText: 'Conflict' }, {
-          status: 409, body: { status: 'fail', message: 'File already belongs to an object' },
-        });
-      }
-    });
-    const response = await request('article/create', { content: '<img src="source" alt="image.png">' }, {
-      fileResolver: { source: { blob: blob() } },
-    });
-    expect(response).toMatchObject({ status: 'success', data: { id: 77, title: 'Created' } });
-    expect(response.fileWarnings).toContainEqual(expect.objectContaining({
-      stage: 'associate', code: 'E_HTTP_ERROR', fileID: 100, objectType: 'article', objectID: 77,
-      message: expect.stringContaining('409'),
-    }));
-    expect(h.calls.map(call => [call.path, call.options.method])).toEqual([
-      ['/files', 'POST'], ['/articles', 'POST'], ['/files/100/link', 'PUT'], ['/files/100', 'GET'],
-    ]);
-    expect(data(h.objects()[0]).content).toBe('<img src="/file-read-100.png" alt="image.png">');
-    expect(h.removals()).toHaveLength(0);
-  });
-
-  test('creation success without an ID retains files and exposes association warnings', async () => {
-    const h = setup(undefined, { status: 'success' });
-    const response = await request('article/create', { content: '<img src="source">' }, {
-      fileResolver: { source: { blob: blob() } },
-    });
-    expect(response.status).toBe('success');
-    expect(response.fileWarnings).toContainEqual(expect.objectContaining({
-      stage: 'associate', code: 'E_FILE_OBJECT_ID_MISSING', fileID: 100,
-    }));
-    expect(h.associations()).toHaveLength(0);
-    expect(h.removals()).toHaveLength(0);
-  });
-
   test('cleanup failure preserves the original creation failure and identifies the orphaned file', async () => {
     const h = setup(call => call.options.method === 'DELETE' ? { status: 'fail', message: 'Delete denied' } : undefined,
       { status: 'fail', message: 'Creation denied' });
@@ -544,22 +629,20 @@ describe('HTML file failure lifecycle', () => {
   });
 
   test.each([
-    '<html>Fatal error: undefined method</html>',
-    { result: 'fail', message: 'Association denied' },
-    { status: 'success', result: 'fail', message: 'Association denied' },
-  ])('malformed or explicitly failed file association response becomes a warning: %p', async fileResult => {
-    const h = setup(call => call.path === '/files/100/link' && call.options.method === 'PUT' ? fileResult : undefined);
-    const response = await request('article/create', { content: '<img src="source">' }, {
-      fileResolver: { source: { blob: blob() } },
-    });
-    expect(response.status).toBe('success');
-    expect(response.fileWarnings).toContainEqual(expect.objectContaining({ stage: 'associate', fileID: 100 }));
-    expect(h.associations()).toHaveLength(1);
+    '<html>Incomplete response</html>',
+    { status: 'fail', httpStatus: 200, responseText: 'PHP error' },
+    { message: 'unrecognized acknowledgement' },
+  ])('preserves files and uid when the save response is inconclusive: %p', async raw => {
+    const h = setup(undefined, raw);
+    await expect(request('article/update', { id: 8, uid: 'retry-batch', content: '<img src="new">' }, {
+      fileResolver: { new: { blob: blob() } },
+    })).rejects.toMatchObject({ code: 'E_FILE_SAVE_UNCONFIRMED', details: { uid: 'retry-batch', fileIDs: [100] } });
     expect(h.removals()).toHaveLength(0);
   });
 
   test.each([
     'PHP Fatal error: cleanup did not finish',
+    {},
     { result: 'fail', message: 'Cleanup denied' },
     { status: 'success', result: 'fail', message: 'Cleanup denied' },
   ])('malformed or explicitly failed file cleanup response preserves the main failure: %p', async fileResult => {
@@ -573,29 +656,36 @@ describe('HTML file failure lifecycle', () => {
     expect(h.removals()).toHaveLength(1);
   });
 
-  test('rejects an indeterminate target before upload and validates routing before side effects', async () => {
-    const h = setup();
-    extendModuleAction('article', 'create', { resultObjectType: null });
-    await expect(request('article/create', { content: '<img src="source">' }, {
-      fileResolver: { source: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_FILE_TARGET_UNKNOWN' });
-    expect(h.calls).toHaveLength(0);
-    extendModuleAction('article', 'create', { resultObjectType: 'article' });
-    h.getConfig.mockResolvedValue({ ...config, requestType: 'INVALID' });
-    await expect(request('article/create', { content: '<img src="source">' }, {
-      fileResolver: { source: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_INVALID_PARAM' });
-    expect(h.calls).toHaveLength(0);
+  test('cleans only this request’s image after a rejected edit with pre-uploaded files', async () => {
+    const h = setup(undefined, { status: 'error', message: 'Invalid edit' });
+    const result = await request('article/update', { id: 9, uid: 'pre-uploads', content: '<img src="file:17"><img src="new">' }, {
+      fileResolver: { new: { blob: blob() } },
+    });
+    expect(result.status).toBe('fail');
+    expect(h.removals().map(call => call.path)).toEqual(['/files/100']);
   });
 
-  test('rejects unsupported post-creation association before uploading or creating the object', async () => {
+  test.each([[409, true], [422, true], [500, false], [408, false]] as const)('only cleans after a definitive HTTP rejection (%i)', async (status, rejected) => {
+    const h = setup(call => {
+      if (call.path === '/articles/8') throw new ZentaoError('E_HTTP_ERROR', { status, statusText: 'Error' }, { status });
+    });
+    await expect(request('article/update', { id: 8, uid: 'http-batch', content: '<img src="new">' }, {
+      fileResolver: { new: { blob: blob() } },
+    })).rejects.toMatchObject({
+      code: 'E_HTTP_ERROR', details: { status, uid: 'http-batch', fileIDs: rejected ? [] : [100] },
+    });
+    expect(h.removals()).toHaveLength(rejected ? 1 : 0);
+  });
+
+  test('rejects uid binding before uploading, including saves using pre-uploaded images', async () => {
     const h = setup();
     extendModuleAction('article', 'create', { minVersion: ['22.5'] });
     setGlobalOptions({ version: '22.5' });
     h.getConfig.mockResolvedValue({ ...config, version: '22.5' });
     await expect(request('article/create', { content: '<img src="source">' }, {
       fileResolver: { source: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_UNSUPPORTED_ZENTAO_VERSION', params: { action: 'file/link' } });
+    })).rejects.toMatchObject({ code: 'E_UNSUPPORTED_ZENTAO_VERSION', params: { action: 'article/create' } });
+    await expect(request('article/create', { uid: 'manual-batch' })).rejects.toMatchObject({ code: 'E_UNSUPPORTED_ZENTAO_VERSION' });
     expect(h.calls).toHaveLength(0);
   });
 });

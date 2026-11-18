@@ -14,3 +14,4 @@
 | `file` | [`FileUploadSource`](FileUploadSource.md) | - |
 | `objectID?` | `number` | - |
 | `objectType?` | `"bug"` \| `"story"` \| `"task"` \| `"testcase"` \| `string` & `object` | - |
+| `uid?` | `string` | 上传批次。保存同一对象时在 JSON 体中携带相同 uid，并使用同一个 Token。 |

@@ -51,11 +51,11 @@ describe('ZenTao versions and registry filtering', () => {
 
   test('assigns historical, db, knowledge and coder version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(365);
+    expect(actions).toHaveLength(364);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(124);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(latestVersions))).toHaveLength(132);
-    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(version23))).toHaveLength(3);
+    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(version23))).toHaveLength(2);
     expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
       === JSON.stringify(latestVersions))).toBe(true);
     for (const [moduleName, actionName] of [['space', 'list'], ['repo', 'list'], ['repo', 'create'], ['product', 'repos'], ['my', 'createSSH']]) {
@@ -93,7 +93,6 @@ describe('ZenTao versions and registry filtering', () => {
       for (const [module, action, minimums, previous] of [
         ['my', 'info', version23, latestVersions],
         ['file', 'read', version23, latestVersions],
-        ['file', 'link', version23, latestVersions],
         ['file', 'update', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],
         ['file', 'get', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],
       ] as const) {

@@ -2,7 +2,7 @@
 
 # Interface: FileHandlingOptions
 
-高阶请求的 HTML 文件处理配置；单次请求优先于全局选项。
+高阶请求的 HTML 图片处理配置；单次请求优先于全局选项。
 
 ## Extended by
 

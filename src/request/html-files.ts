@@ -10,7 +10,6 @@ export interface HtmlFileReference {
   field: string;
   path: string;
   name?: string;
-  tag: 'img' | 'a';
   attributes: Readonly<Record<string, SourceRange>>;
   insertOffset: number;
 }
@@ -24,7 +23,6 @@ export interface HtmlFileDocument {
 
 export interface HtmlFileReplacement {
   url?: string;
-  name?: string;
   error?: string;
 }
 
@@ -63,19 +61,6 @@ function sourceFilename(path: string): string | undefined {
   }
 }
 
-function linkText(element: HtmlElement): string | undefined {
-  const parts: string[] = [];
-  const stack: HtmlNode[] = [...element.childNodes].reverse();
-  while (stack.length) {
-    const node = stack.pop()!;
-    if ('value' in node) parts.push(node.value);
-    else if ('childNodes' in node) {
-      for (let i = node.childNodes.length - 1; i >= 0; i--) stack.push(node.childNodes[i]);
-    }
-  }
-  return nonempty(parts.join(''));
-}
-
 function parseReferences(field: string, html: string): HtmlFileReference[] {
   const fragment = parseFragment(html, { sourceCodeLocationInfo: true });
   const stack: HtmlNode[] = [...fragment.childNodes].reverse();
@@ -91,17 +76,13 @@ function parseReferences(field: string, html: string): HtmlFileReference[] {
       const content = (node as DefaultTreeAdapterMap['template']).content;
       for (let i = content.childNodes.length - 1; i >= 0; i--) stack.push(content.childNodes[i]);
     }
-    if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || (node.tagName !== 'img' && node.tagName !== 'a')) continue;
-    const sourceName = node.tagName === 'img' ? 'src' : 'href';
-    const path = attribute(node, sourceName);
+    if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.tagName !== 'img') continue;
+    const path = attribute(node, 'src');
     const location = node.sourceCodeLocation;
-    const source = location?.attrs?.[sourceName];
+    const source = location?.attrs?.src;
     const startTag = location?.startTag;
     if (!path || !source || !startTag || html[startTag.endOffset - 1] !== '>' || seenOffsets.has(source.startOffset)) continue;
     seenOffsets.add(source.startOffset);
-    const name = node.tagName === 'img'
-      ? nonempty(attribute(node, 'alt'))
-      : nonempty(attribute(node, 'download')) || nonempty(attribute(node, 'title')) || linkText(node);
     let insertOffset = startTag.endOffset - 1;
     // An unquoted value may itself end in '/', which is not a self-closing marker.
     const slash = insertOffset - 1;
@@ -111,8 +92,7 @@ function parseReferences(field: string, html: string): HtmlFileReference[] {
     references.push({
       field,
       path,
-      name: name || sourceFilename(path),
-      tag: node.tagName,
+      name: nonempty(attribute(node, 'alt')) || sourceFilename(path),
       attributes: location.attrs!,
       insertOffset,
     });
@@ -129,7 +109,7 @@ export function parseHtmlFiles(data: Record<string, unknown> | undefined, action
   for (const [field, schema] of Object.entries(properties)) {
     if (!isRecord(schema) || (schema.textType !== 'html' && !(typeof schema.description === 'string' && schema.description.endsWith('(HTML)')))) continue;
     const html = data[field];
-    if (typeof html !== 'string' || !/<(?:img|a)(?=[\t\n\f\r />])/i.test(html)) continue;
+    if (typeof html !== 'string' || !/<img(?=[\t\n\f\r />])/i.test(html)) continue;
     const references = parseReferences(field, html);
     if (references.length) documents.push({ field, html, references });
   }
@@ -151,25 +131,16 @@ export function rewriteHtmlFiles(
     for (const reference of document.references) {
       const replacement = replacements.get(reference);
       if (!replacement) continue;
-      const attributes: Array<[string, string]> = [];
-      if (replacement.error !== undefined) {
-        attributes.push([reference.tag === 'img' ? 'alt' : 'title', replacement.error]);
-      } else if (replacement.url !== undefined) {
-        attributes.push([reference.tag === 'img' ? 'src' : 'href', replacement.url]);
-        const name = replacement.name ?? reference.name;
-        if (reference.tag === 'a' && name) attributes.push(['download', name]);
+      const name = replacement.error === undefined ? 'src' : 'alt';
+      const value = replacement.error ?? replacement.url;
+      if (value === undefined) continue;
+      const range = reference.attributes[name];
+      if (range) {
+        const spelling = document.html.slice(range.startOffset, range.endOffset).match(/^[^\t\n\f\r =/>]+/)?.[0] || name;
+        edits.push({ start: range.startOffset, end: range.endOffset, value: `${spelling}="${escapeAttribute(value)}"` });
+      } else {
+        edits.push({ start: reference.insertOffset, end: reference.insertOffset, value: ` ${name}="${escapeAttribute(value)}"` });
       }
-      let added = '';
-      for (const [name, value] of attributes) {
-        const range = reference.attributes[name];
-        if (range) {
-          const spelling = document.html.slice(range.startOffset, range.endOffset).match(/^[^\t\n\f\r =/>]+/)?.[0] || name;
-          edits.push({ start: range.startOffset, end: range.endOffset, value: `${spelling}="${escapeAttribute(value)}"` });
-        } else {
-          added += ` ${name}="${escapeAttribute(value)}"`;
-        }
-      }
-      if (added) edits.push({ start: reference.insertOffset, end: reference.insertOffset, value: added });
     }
     if (!edits.length) continue;
     edits.sort((a, b) => a.start - b.start || a.end - b.end);

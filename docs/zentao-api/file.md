@@ -9,7 +9,6 @@
 | `create` | 上传附件，使用【表单formdata】方式提交，不支持json | `POST` | `/files` |
 | `update` | 编辑附件，修改附件的名称 | `PUT` | `/files/{fileID}` |
 | `delete` | 删除附件 | `DELETE` | `/files/{fileID}` |
-| `link` | 关联附件到对象 | `PUT` | `/files/{fileID}/link` |
 | `get` | 获取附件信息 | `GET` | `/files/{fileID}` |
 | `read` | 读取附件内容 | `GET` | `/files/{fileID}/read` |
 
@@ -26,7 +25,9 @@
 
 ### 查询参数
 
-无查询参数。
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `uid` | string | 否 |  | 本次对象保存的唯一上传批次，以同一 Token 和 uid 保存对象时绑定图片。需 23.0 / biz14.0 / max9.0 / ipd6.0 或更新版本并支持客户端 uid。 |
 
 ### 请求体
 
@@ -98,6 +99,7 @@ Schema:
 import { request } from 'zentao-api';
 
 const result = await request("file/create", {
+  "uid": "<string>",
   "file": "/path/to/file",
   "objectType": "<string>",
   "objectID": 1,
@@ -198,77 +200,6 @@ import { request } from 'zentao-api';
 
 const result = await request("file/delete", {
   "fileID": 1
-});
-```
-## 关联附件到对象
-
-将尚未关联对象（objectType 为空）的附件关联到对象；objectType 和 objectID 均必填，已关联的附件返回 409。
-
-- SDK 调用：`request("file/link", params)`
-- HTTP：`PUT /files/{fileID}/link`
-- 动作类型：`action`
-- 最低禅道版本：`23.0` / `biz14.0` / `max9.0` / `ipd6.0`
-
-### 路径参数
-
-| 参数 | 说明 |
-| --- | --- |
-| `fileID` | 附件数字 ID |
-
-### 查询参数
-
-无查询参数。
-
-### 请求体
-
-请求体必填：是
-
-Schema:
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "objectType": {
-      "type": "string",
-      "description": "关联对象类型"
-    },
-    "objectID": {
-      "type": "integer",
-      "format": "int32",
-      "description": "关联对象ID"
-    }
-  },
-  "required": [
-    "objectType",
-    "objectID"
-  ]
-}
-```
-
-示例:
-
-```json
-{
-  "objectType": "<string>",
-  "objectID": 1
-}
-```
-
-### 返回值
-
-- 返回形态：`object`
-- 对象类型：`file`
-
-### SDK 示例
-
-```ts
-import { request } from 'zentao-api';
-
-const result = await request("file/link", {
-  "fileID": 1,
-  "objectType": "<string>",
-  "objectID": 1
 });
 ```
 ## 获取附件信息

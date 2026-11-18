@@ -1,5 +1,5 @@
 import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
-import { parseZentaoVersion, supportsZentaoVersion } from '../misc/zentao-version.js';
+import { assertSupportedVersion } from '../misc/zentao-version.js';
 import { getGlobalOptions } from '../misc/global-options.js';
 import type {
   DataRecord,
@@ -19,13 +19,13 @@ import { extractPager, extractResult, resolveActionRequest } from '../modules/re
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
-import { HtmlFileRequest } from './html-file-request.js';
+import { HtmlFileRequest, isFileWriteFailure, setFileUid } from './html-file-request.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
 type BuiltinNamedRequestName = {
   [M in BuiltinModuleName]: `${M}/${BuiltinActionName<M>}`;
-}[BuiltinModuleName] | 'my/info' | 'file/get' | 'file/read' | 'file/link';
+}[BuiltinModuleName] | 'my/info' | 'file/get' | 'file/read';
 type BuiltinIdRequestName = `${BuiltinModuleName}/${number}`;
 /** 内置模块支持的请求名：`module`、`module/action` 或 `module/123`。 */
 export type BuiltinRequestName = BuiltinListRequestName | BuiltinNamedRequestName | BuiltinIdRequestName;
@@ -140,6 +140,8 @@ async function autoFillUpdateParams(
   const explicitDataKeys = getExplicitDataKeys(params.data);
   const filled: Record<string, unknown> = { ...params };
   for (const key of Object.keys(properties)) {
+    // An upload uid identifies this save and must never be copied from a previous edit.
+    if (key === 'uid') continue;
     const userProvided = Object.prototype.hasOwnProperty.call(params, key) || explicitDataKeys.has(key);
     if (!userProvided && Object.prototype.hasOwnProperty.call(current, key)) {
       filled[key] = current[key];
@@ -224,13 +226,14 @@ function normalizeResponse<T>(
   command: ReturnType<typeof resolveActionRequest>,
   raw: unknown,
   options: RequestProcessOptions,
+  fileWrite: boolean,
 ): ResponseData<T> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return attachResultObjectType({ status: 'success', data: raw as T }, command);
   }
 
   const record = raw as Record<string, unknown>;
-  const status = record.status === 'fail' ? 'fail' : 'success';
+  const status = (fileWrite ? isFileWriteFailure(record) : record.status === 'fail') ? 'fail' : 'success';
   const data = applyProcessing(extractResult(command.action, record, command.params, options), options);
   const rawMessage = record.message;
 
@@ -311,6 +314,7 @@ async function requestInternal<T = unknown>(
   options: RequestOptions,
   version?: string | null,
   processHtmlFiles = true,
+  checkSession?: () => void,
 ): Promise<unknown> {
   const globals = getGlobalOptions();
   const client = options.client ?? globals.client;
@@ -354,13 +358,7 @@ async function requestInternal<T = unknown>(
       }
     }
   }
-  if (version !== null && !supportsZentaoVersion(parseZentaoVersion(version), action.minVersion)) {
-    throw new ZentaoError('E_UNSUPPORTED_ZENTAO_VERSION', {
-      action: `${module.name}/${action.name}`,
-      version,
-      minVersion: action.minVersion.join(', '),
-    }, { action: `${module.name}/${action.name}`, version, minVersion: action.minVersion });
-  }
+  assertSupportedVersion(version, action.minVersion, `${module.name}/${action.name}`);
   const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
     ? await autoFillUpdateParams(module, action, mergedParams, { ...options, client }, version)
     : mergedParams;
@@ -374,27 +372,37 @@ async function requestInternal<T = unknown>(
     insecure: options.insecure ?? globals.insecure,
     actionAssistant: options.actionAssistant !== undefined ? options.actionAssistant : globals.actionAssistant,
   };
-  const files = processHtmlFiles ? new HtmlFileRequest(command, {
+  const method = String(command.action.method).toUpperCase() as HttpMethod;
+  const isWrite = method === 'POST' || method === 'PUT';
+  const isUpload = moduleName === 'file' && actionName === 'create';
+  const flatUid = isUpload && command.query?.uid !== undefined ? command.query.uid : command.params.uid;
+  const explicitUid = command.data?.uid !== undefined ? command.data.uid : flatUid;
+  const uid = isWrite && explicitUid !== undefined ? setFileUid(command, explicitUid, version) : undefined;
+  const files = processHtmlFiles && isWrite && !isUpload ? new HtmlFileRequest(command, {
     client, version, ...transportOptions,
     fileResolver: options.fileResolver ?? globals.fileResolver,
     continueOnFileUploadError: options.continueOnFileUploadError ?? globals.continueOnFileUploadError,
     onFileError: options.onFileError ?? globals.onFileError,
-    requestFile: async (action, params) => {
-      const response = await requestInternal(`file/${action}`, params, {
+    requestFile: async (action, params, fileSession) => {
+      const raw = await requestInternal(`file/${action}`, params, {
         client, ...transportOptions, maxUploadBytes: options.maxUploadBytes,
-        throwOnFail: true, autoFill: false,
-      }, version, false) as ResponseData;
-      // File lifecycle writes return JSON objects; PHP/HTML text is not an acknowledgement.
-      if (!isRecord(response.data) || response.data.result === 'fail') {
-        throw new ZentaoError('E_API_FAILED', { message: `Invalid file/${action} response.` }, response);
+        raw: true, autoFill: false,
+      }, version, false, fileSession);
+      if (action === 'create' && (typeof raw === 'number' || typeof raw === 'string')) return { id: raw };
+      const nested = isRecord(raw) && isRecord(raw.data) ? raw.data : undefined;
+      const deleteConfirmed = action !== 'delete' || (isRecord(raw) && (raw.status === 'success' || raw.result === 'success'));
+      if (!isRecord(raw) || !deleteConfirmed || isFileWriteFailure(raw) || (nested && isFileWriteFailure(nested))) {
+        const message = isRecord(raw) ? stringifyMessage(raw.message ?? nested?.message) : undefined;
+        throw new ZentaoError('E_API_FAILED', { message: message ?? `Invalid file/${action} response.` }, raw);
       }
-      return response;
+      return raw;
     },
-  }) : undefined;
+  }, uid) : undefined;
   let preparedBody;
   try {
     await files?.prepare();
     preparedBody = await prepareActionBody(command, { maxUploadBytes: options.maxUploadBytes });
+    (checkSession ?? files?.checkSession)?.();
   } catch (error) {
     await files?.cleanup();
     throw files?.errorWithFiles(error) ?? error;
@@ -405,16 +413,12 @@ async function requestInternal<T = unknown>(
     raw = command.action.request
       ? await command.action.request({ request: command, ...requestOptions, client, options })
       : await client.request(command.path, {
-        method: String(command.action.method).toUpperCase() as HttpMethod,
+        method,
         query: command.query,
         ...requestOptions,
       });
   } catch (error) {
-    // A transport failure does not prove that the server rejected the write.
-    if (command.action.type === 'create' && error instanceof ZentaoError && error.code === 'E_API_FAILED') {
-      await files?.cleanup();
-    }
-    throw files?.errorWithFiles(error) ?? error;
+    throw files ? await files.saveError(error) : error;
   }
   await files?.complete(raw);
 
@@ -424,7 +428,7 @@ async function requestInternal<T = unknown>(
 
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: RequestProcessOptions = { ...options, limit: options.limit ?? globals.limit };
-  const response = normalizeResponse<T>(command, raw, processOptions);
+  const response = normalizeResponse<T>(command, raw, processOptions, isUpload || (isWrite && command.data?.uid !== undefined));
   if (files?.warnings.length) response.fileWarnings = files.warnings;
   if (response.status === 'fail' && (options.throwOnFail ?? globals.throwOnFail)) {
     throw new ZentaoError('E_API_FAILED', { message: response.message ?? '' }, response);

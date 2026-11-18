@@ -3,7 +3,9 @@ import { extractResult } from './resolve.js';
 import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
 import { isRecord } from '../utils/index.js';
 import { request } from '../request/index.js';
+import { captureFileSession } from '../client/index.js';
 import { ZentaoError } from '../misc/errors.js';
+import { VERSION_23_MINIMUMS } from '../misc/zentao-version.js';
 import type { HttpMethod, ModuleActionRequestCallback } from '../types/index.js';
 
 /** 这些内置接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
@@ -370,11 +372,13 @@ export function applyBuiltinOverrides(): void {
       const fields = ['status', 'assignedTo', 'type', 'pri', 'deadline', 'mailto'];
       const missing = fields.filter(field => data[field] === undefined);
       if (missing.length) {
+        const checkSession = data.uid === undefined ? undefined : client[captureFileSession]();
         const response = await request('bug/get', { id: command.id }, {
           client, timeout, insecure, actionAssistant, throwOnFail: true,
           forceRefreshConfig: options.forceRefreshConfig,
           skipVersionCheckOnConfigError: options.skipVersionCheckOnConfigError,
         });
+        checkSession?.();
         const current = response.data;
         if (!isRecord(current) || missing.some(field => current[field] === undefined)) {
           throw new ZentaoError('E_API_FAILED', { message: 'Bug details are incomplete; confirmation was not sent.' });
@@ -442,10 +446,9 @@ export function applyBuiltinOverrides(): void {
     });
   });
 
-  const version23 = ['23.0', 'biz14.0', 'max9.0', 'ipd6.0'];
   defineModuleActions('my', {
     name: 'info',
-    minVersion: version23,
+    minVersion: VERSION_23_MINIMUMS,
     display: '获取当前用户基础资料',
     description: '返回当前 Token 用户的 id、dept、account、realname、nickname、avatar、role、type；avatar 可为空字符串或 null。',
     type: 'get',
@@ -457,30 +460,6 @@ export function applyBuiltinOverrides(): void {
     request: requestJSON,
   });
   defineModuleActions('file', [
-    {
-      name: 'link',
-      minVersion: version23,
-      display: '关联附件到对象',
-      description: '将尚未关联对象（objectType 为空）的附件关联到对象；objectType 和 objectID 均必填，已关联的附件返回 409。',
-      type: 'action',
-      method: 'put',
-      path: '/files/{fileID}/link',
-      pathParams: { fileID: '附件数字 ID' },
-      resultType: 'object',
-      resultObjectType: 'file',
-      requestBody: {
-        type: 'object',
-        required: true,
-        schema: {
-          type: 'object',
-          properties: {
-            objectType: { type: 'string', description: '关联对象类型' },
-            objectID: { type: 'integer', format: 'int32', description: '关联对象ID' },
-          },
-          required: ['objectType', 'objectID'],
-        },
-      },
-    },
     {
       name: 'get',
       minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
@@ -498,7 +477,7 @@ export function applyBuiltinOverrides(): void {
     },
     {
       name: 'read',
-      minVersion: version23,
+      minVersion: VERSION_23_MINIMUMS,
       display: '读取附件内容',
       description: '默认返回 ArrayBuffer；stream=1 返回 Base64 字符串。两种模式均完整载入内存，大文件流式读取可使用底层客户端的 responseType: response。',
       type: 'get',

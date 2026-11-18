@@ -20,6 +20,8 @@ import type {
 const DEFAULT_TIMEOUT = 10000;
 const CONFIG_MAX_AGE = 24 * 60 * 60 * 1000;
 const ACTION_ASSISTANT_HEADER = 'ZenTao-Action-Assistant';
+/** @internal */
+export const captureFileSession = Symbol('captureFileSession');
 
 function serializeActionAssistant(value: ActionAssistant): string {
   if (typeof value === 'string') return value;
@@ -381,6 +383,14 @@ export class ZentaoClient {
     this.timeout = options.timeout;
     this.insecure = options.insecure;
     this.actionAssistant = options.actionAssistant;
+  }
+
+  /** @internal Check that uploads and their object save still use the same Token. */
+  [captureFileSession](): () => void {
+    const token = this.token;
+    return () => {
+      if (this.token !== token) throw new ZentaoError('E_FILE_SESSION_CHANGED');
+    };
   }
 
   /**

@@ -122,20 +122,20 @@ const raw = await request('bug/list', { productID: 1 }, { raw: true });
 
 缺省为 `false`。
 
-`raw` 只跳过响应数据处理，HTML 附件上传、链接替换和创建后的关联仍然执行。关联使用未经 `pick`、`convertSingle` 加工的新对象 ID。普通响应通过 `fileWarnings` 提供附件警告；`raw: true` 保持原始响应不变，使用 `onFileError` 接收警告：
+富文本图片在对象提交前上传，禅道在保存时按 `uid` 绑定图片。`pick` 和 `convertSingle` 在收到保存结果后执行。普通响应通过 `fileWarnings` 提供图片警告，使用 `raw: true` 时可通过 `onFileError` 接收警告。
 
 ```ts
 const raw = await request('story/update', {
   id: 1001,
   title: '登录需求',
-  spec: '<img src="file:42" alt="screenshot.png">',
+  spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">',
 }, {
   raw: true,
   onFileError: warning => console.warn(warning),
 });
 ```
 
-对象已创建但文件关联失败时，正常响应仍为成功，并附上 `fileWarnings`，不会因为开启 `throwOnFail` 而变成创建失败。完整失败恢复规则见 [HTML 富文本文件](/guide/examples#html-富文本文件)。
+如果保存超时或断线，可以用异常详情中的 `uid` 和 `fileIDs` 核对结果。[图片上传与失败恢复](/guide/examples#html-富文本图片)
 
 ## 直接调用处理函数
 

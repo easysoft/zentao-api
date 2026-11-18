@@ -17,7 +17,7 @@ Browser & Node.js SDK for [ZenTao](https://www.zentao.net) (禅道) API v2.
 - 统一响应结构：自动提取业务数据和分页信息，稳定返回 `ResponseData<T>`。
 - 覆盖禅道常用模块：产品、项目、执行、需求、任务、Bug、测试、版本、发布等。
 - 内置本地数据处理：支持转换、过滤、搜索、排序、限制数量和字段摘取。
-- HTML 富文本附件：解析文件引用，上传并替换链接，自动关联新建或已有对象。
+- 富文本图片支持本地文件、Blob 和已有禅道文件 ID，上传的图片随对象保存一起绑定。
 - 可扩展模块注册表、持久化 Profile、稳定错误码及 Node.js 自签名证书支持。
 
 ## 安装
@@ -184,9 +184,9 @@ console.log(uploaded.data?.id, uploaded.data?.url);
 
 单个本地文件或 Blob 默认限制为 50 MiB；可通过单次调用选项 `maxUploadBytes` 调整。
 
-### HTML 富文本中的文件
+### HTML 富文本中的图片
 
-高阶请求会处理标记为 HTML 的请求体字段。Node.js/Bun 中可直接引用本地文件 URL，也可用 `file:42` 引用已有禅道文件：
+高阶请求处理 HTML 字段中的 `<img src>`。Node.js/Bun 可以引用本地图片，也可以用 `file:42` 引用已有禅道图片。
 
 ```ts
 const result = await request('story/update', {
@@ -200,11 +200,11 @@ const result = await request('story/update', {
 
 浏览器使用 `fileResolver` 把 HTML 中的标识映射为 Blob，例如 `fileResolver: { 'image-1': { blob: file, name: 'image.png' } }`。解析器、`continueOnFileUploadError` 和 `onFileError` 都可在单次请求或全局设置，单次优先。网络链接直接保留；没有解析器时，普通相对地址和自定义标识也保持原样。
 
-上传失败默认继续请求，并将错误写入图片 `alt` 或链接 `title`；设为 `false` 时终止并清理本次上传。新对象创建成功后关联文件失败，仍返回成功结果，同时提供 `fileWarnings`。`raw: true` 保留原始响应，文件警告通过 `onFileError` 接收。
+创建或修改对象时，SDK 为本次上传生成唯一的 `uid`。同一 Token 下的图片上传和对象保存共用这个值，服务端在保存时绑定图片。也可以传入手动预上传时使用的 `uid`。`<a>` 的属性和文字原样提交，其中嵌套的图片照常处理。
 
-自动关联新对象使用 `file/link`（`PUT /files/{fileID}/link`），需要目标部署支持 `23.0 / biz14.0 / max9.0 / ipd6.0` 起的该接口。它要求 `objectType`、`objectID`，只允许关联尚无归属的文件；关联结果不确定时，应先查询文件元数据再决定是否重试。`file/update` 仍用于重命名，要求 `fileName`，最低版本保持 `22.5 / biz13.5 / max8.5 / ipd5.5`。完整解析规则、失败恢复和示例见[富文本文件指南](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#html-富文本文件)。
+使用 `uid` 需要禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 或更新版本，部署须包含服务端提交 `0a4de3a66f5` 或等效修复。
 
-HTML 使用 `parse5` 解析并按源码位置改写属性，保留其他原文；未出现待处理引用时不增加文件请求。同一请求中的相同文件来源与名称去重后依次上传。
+默认在上传失败时把错误写入图片 `alt`，继续保存对象。设置 `continueOnFileUploadError: false` 可中止保存并清理本次已上传的图片。通过 `fileWarnings` 或 `onFileError` 查看警告，`raw: true` 时使用回调。[富文本图片与失败恢复](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#html-富文本图片)
 
 ### 底层 REST 客户端
 
@@ -254,7 +254,7 @@ setGlobalOptions({
 
 常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`relative`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。`relative` 设置 `createLink()` 的链接形式，默认 `false`（完整网址），单次显式 `false` 可覆盖全局 `true`。
 
-富文本文件选项 `fileResolver`、`continueOnFileUploadError`、`onFileError` 仅支持单次请求和全局设置。自动生成的富文本文件链接固定为站内路径，不受全局 `relative` 影响。
+富文本图片选项 `fileResolver`、`continueOnFileUploadError`、`onFileError` 仅支持单次请求和全局设置。上传图片优先使用服务端返回的 URL。仅有文件 ID 时，SDK 使用站内相对路径。
 
 ### 操作辅助工具标记
 

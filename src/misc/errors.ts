@@ -37,8 +37,8 @@ export const ERRORS = {
   E_UPLOAD_FILE_TOO_LARGE: 'Upload file is {size} bytes and exceeds the {limit} byte limit.',
   E_INVALID_UPLOAD_SOURCE: 'Invalid upload source for field: {field}',
   E_FILE_RESOLVE_FAILED: 'Failed to resolve HTML file reference: {path}',
-  E_FILE_TARGET_UNKNOWN: 'Cannot determine the object associated with HTML file uploads.',
-  E_FILE_OBJECT_ID_MISSING: 'The created object response does not contain a valid ID for file association.',
+  E_FILE_SAVE_UNCONFIRMED: 'The server did not confirm the object save for this upload batch.',
+  E_FILE_SESSION_CHANGED: 'The client login changed during the image upload batch.',
   E_FILE_UPLOAD_FAILED: 'The file upload response does not contain a valid file ID.',
 } as const;
 

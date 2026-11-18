@@ -32,6 +32,8 @@ export type FileCreateParams = Record<string, unknown> & {
   file: FileUploadSource;
   objectType?: 'bug' | 'story' | 'task' | 'testcase' | (string & {});
   objectID?: number;
+  /** 上传批次。保存同一对象时在 JSON 体中携带相同 uid，并使用同一个 Token。 */
+  uid?: string;
   /** 附件标记，默认 editor（文档编辑器图片），23.0 / biz14.0 / max9.0 / ipd6.0 起支持；显式空字符串用于普通附件，其他值由服务端按空字符串处理。 */
   extra?: string;
 };
@@ -43,11 +45,11 @@ export interface FileCreateResult {
   [key: string]: unknown;
 }
 
-/** HTML 图片或下载链接中的文件引用；路径和名称已解码 HTML 实体。 */
+/** HTML 图片中的文件引用；路径和名称已解码 HTML 实体。 */
 export interface FileReference {
-  /** 图片 src 或链接 href 中的原始路径。 */
+  /** 图片 src 中的原始路径。 */
   path: string;
-  /** 从 alt、download、title、链接文本或来源路径提取的文件名。 */
+  /** 从 alt 或来源路径提取的文件名。 */
   name?: string;
 }
 
@@ -59,17 +61,17 @@ export type ResolvedFile =
   | { url: string; name?: string };
 
 /**
- * HTML 文件解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。
+ * HTML 图片解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。
  * 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时终止请求。
  */
 export type FileResolver =
   | ((reference: FileReference) => ResolvedFile | Promise<ResolvedFile>)
   | Record<string, ResolvedFile>;
 
-/** HTML 文件处理中的错误上下文，可用于展示问题或重试关联、清理。 */
+/** 富文本图片处理中的错误上下文。 */
 export interface FileWarning {
-  /** 出错阶段：解析、上传、关联或清理。 */
-  stage: 'resolve' | 'upload' | 'associate' | 'cleanup';
+  /** 图片解析、上传或清理阶段。 */
+  stage: 'resolve' | 'upload' | 'cleanup';
   /** SDK 或服务端错误码。 */
   code: string;
   /** 可读错误消息。 */
@@ -82,13 +84,15 @@ export interface FileWarning {
   name?: string;
   /** 本次上传产生的禅道文件 ID。 */
   fileID?: number;
+  /** 本次对象保存的上传批次。 */
+  uid?: string;
   /** 文件应关联的对象类型。 */
   objectType?: string;
   /** 文件应关联的对象 ID。 */
   objectID?: number;
 }
 
-/** 高阶请求的 HTML 文件处理配置；单次请求优先于全局选项。 */
+/** 高阶请求的 HTML 图片处理配置；单次请求优先于全局选项。 */
 export interface FileHandlingOptions {
   /** 解析本地及自定义文件引用；HTTP(S) 和已有禅道文件链接直接保留。 */
   fileResolver?: FileResolver;

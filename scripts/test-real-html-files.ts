@@ -8,9 +8,10 @@ import { resolve, join, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import {
-  ZentaoClient, request, setGlobalOptions, createLink,
+  ZentaoClient, request, setGlobalOptions, createLink, getModuleAction, parseLink,
   type ClientRequestOptions, type RequestOptions, type ResponseData, type FileWarning,
 } from '../src/index';
+import { parseHtmlFiles } from '../src/request/html-files';
 import { formatRealEnvError, validateRealEnvResponse, resolveRealEnvWorkflowGroup } from '../tests/real-env-support';
 
 const server = process.env.ZENTAO_URL ?? process.env.ZENTAO_BASE_URL;
@@ -32,7 +33,7 @@ type ObjectEntry = { type: string; id: number; title: string; case: string; url?
 type FileEntry = {
   id: number; name: string; case: string; bytes: number; sha256: string;
   metadata?: Record<string, unknown>; downloadMatches?: boolean; url?: string;
-  expectedObjectType?: string; expectedObjectID?: number;
+  expectedObjectType?: string; expectedObjectID?: number; uid?: string;
 };
 const objects: ObjectEntry[] = previous?.objects ?? [];
 const files: FileEntry[] = previous?.files ?? [];
@@ -65,14 +66,17 @@ client.request = (async (path: string, options: ClientRequestOptions = {}) => {
     const raw = await originalRequest(path, options);
     entry.status = record(raw).status;
     const result = method === 'POST' && raw instanceof Response ? await raw.clone().json().catch(() => ({})) : raw;
-    if (method === 'POST' && path === '/files' && record(raw).status !== 'fail') {
+    if (method === 'POST' && path === '/files' && record(raw).status === 'success') {
       const id = idOf(raw);
       const form = options.body as FormData;
       // Reparse multipart to observe Bun's transmitted filename rather than its source File.name.
       const sent = await new Response(form).formData();
       const source = sent.get('file') as File;
       const bytes = new Uint8Array(await source.arrayBuffer());
-      files.push({ id, name: source.name, case: currentCase, bytes: bytes.length, sha256: hash(bytes) });
+      const uid = options.query?.uid;
+      assert(typeof uid === 'string' && /^[A-Za-z0-9_-]+$/.test(uid));
+      assert.equal(options.query?.extra, 'editor');
+      files.push({ id, name: source.name, case: currentCase, bytes: bytes.length, sha256: hash(bytes), uid });
       save();
     }
     if (method === 'POST' && record(result).status !== 'fail') {
@@ -165,6 +169,15 @@ async function verifyFile(item: FileEntry, objectType: string, objectID: number)
   assert.equal(metadata.objectType, objectType, `File #${item.id} objectType`);
   assert.equal(Number(metadata.objectID), objectID, `File #${item.id} objectID`);
 }
+function assertImage(html: unknown, id: number): void {
+  const documents = parseHtmlFiles({ steps: html }, getModuleAction('bug', 'update')!);
+  const profile = { server: client.siteUrl, serverConfig: config };
+  assert(documents.some(document => document.references.some(reference => {
+    const link = parseLink(profile, reference.path, { requestType: 'auto' });
+    return link.moduleName === 'file' && link.methodName === 'read' && (link.params?.fileID ?? link.params?.$1) === String(id);
+  })), `Missing image for file #${id}`);
+}
+
 const newFiles = (since: number) => files.slice(since);
 function noWarnings(response: ResponseData): void {
   assert.equal(response.fileWarnings?.length ?? 0, 0, JSON.stringify(response.fileWarnings));
@@ -193,10 +206,8 @@ function png(): Uint8Array {
   return Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), chunk('IHDR', header), chunk('IDAT', deflateSync(pixels)), chunk('IEND', Buffer.alloc(0))]);
 }
 const imagePath = join(outputDir, '本地 image & sample.png');
-const textPath = join(outputDir, '附件 checklist.txt');
 const imageBytes = png();
 writeFileSync(imagePath, imageBytes);
-writeFileSync(textPath, `${runID}\n富文本关联文件测试：中文、空格和 & 文件名。\n`);
 const missingURL = pathToFileURL(join(outputDir, 'missing.png')).href;
 const imageBlob = () => new Blob([new Uint8Array(imageBytes)], { type: 'image/png' });
 
@@ -209,17 +220,17 @@ try {
   console.log(JSON.stringify({ runID, server: client.siteUrl, version: config.version, outputDir }));
 
   if (!verifyPath) {
-  await check('新建产品：本地图片和下载附件，创建后关联', async () => {
+  await check('新建产品并绑定正文图片', async () => {
     const before = files.length;
     const response = await api('product/create', {
       name: runID, type: 'normal', acl: 'open',
-      desc: `<h2>01 新建产品</h2><p>${runID}</p><img src="${pathToFileURL(imagePath).href}" alt="产品三色图.png"><p><a href="${pathToFileURL(textPath).href}" title="产品检查清单.txt"><strong>下载检查清单</strong></a></p><a href="https://example.com/">网络链接原样保留</a>`,
+      desc: `<h2>01 新建产品</h2><p>${runID}</p><img src="${pathToFileURL(imagePath).href}" alt="产品三色图.png"><a href="https://example.com/">网络链接原样保留</a>`,
     });
     noWarnings(response);
     const object = ownObject('product');
-    assert.equal(newFiles(before).length, 2);
+    assert.equal(newFiles(before).length, 1);
     const detail = await data('product/get', object.id);
-    assert.match(String(detail.desc), /file-read-\d+\.png/);
+    assertImage(detail.desc, newFiles(before)[0].id);
     assert(!String(detail.desc).includes('file:///'));
     for (const file of newFiles(before)) await verifyFile(file, 'product', object.id);
   });
@@ -246,16 +257,16 @@ try {
     const response = await api('story/create', {
       productID: ownObject('product').id, title: `${runID} 需求`, category: 'feature', source: 'po',
       spec: '<h2>03 需求描述</h2><img src="shared-image" alt="共享图.png">',
-      verify: '<h2>验收标准</h2><img src="shared-image" alt="共享图.png"><a href="network-asset">远程文件</a>',
-    }, { fileResolver: { 'shared-image': { path: imagePath }, 'network-asset': { url: 'https://example.com/report.pdf', name: '远程报告.pdf' } } });
+      verify: '<h2>验收标准</h2><img src="shared-image" alt="共享图.png"><img src="network-asset" alt="远程截图">',
+    }, { fileResolver: { 'shared-image': { path: imagePath }, 'network-asset': { url: 'https://example.com/report.png', name: '远程截图.png' } } });
     noWarnings(response);
     assert.equal(newFiles(before).length, 1);
     const object = ownObject('story');
     const detail = await data('story/get', object.id);
     const id = files.at(-1)!.id;
-    assert(String(detail.spec).includes(`file-read-${id}.png`));
-    assert(String(detail.verify).includes(`file-read-${id}.png`));
-    assert(String(detail.verify).includes('https://example.com/report.pdf'));
+    assertImage(detail.spec, id);
+    assertImage(detail.verify, id);
+    assert(String(detail.verify).includes('https://example.com/report.png'));
     await verifyFile(files.at(-1)!, 'story', object.id);
   });
 
@@ -270,13 +281,13 @@ try {
     noWarnings(response);
     assert.equal(newFiles(before).length, 1);
     const detail = await data('story/get', object.id);
-    assert(String(detail.spec).includes(`file-read-${files[0].id}.png`));
+    assertImage(detail.spec, files[0].id);
     assert(!String(detail.spec).includes(`file:${files[0].id}`));
     await verifyFile(files.at(-1)!, 'story', object.id);
     await verifyFile(files[0], 'product', ownObject('product').id);
   });
 
-  await check('产品文档库及 HTML 文档：父级 ID、raw 响应和创建后关联', async () => {
+  await check('产品文档库及 HTML 文档：父级 ID、raw 响应和图片归属', async () => {
     const productID = ownObject('product').id;
     await api('doc/createProductLib', { productID, name: `${runID} 文档库`, acl: 'default' });
     const before = files.length;
@@ -289,7 +300,7 @@ try {
     assert.equal(newFiles(before).length, 1);
     const object = ownObject('doc');
     const detail = await data('doc/get', object.id);
-    assert(String(detail.content).includes(`file-read-${files.at(-1)!.id}.png`));
+    assertImage(detail.content, files.at(-1)!.id);
     await verifyFile(files.at(-1)!, 'doc', object.id);
   });
 
@@ -299,13 +310,13 @@ try {
     const original = String((await data('doc/get', object.id)).content);
     const response = await api('doc/update', {
       id: object.id, title: object.title, contentType: 'html',
-      content: `${original}<h2>06 文档附件</h2><a href="custom-source" download="文档 &amp; 检查清单.txt">下载清单</a>`,
-    }, { fileResolver: { '文档 & 检查清单.txt': textPath } });
+      content: `${original}<h2>06 文档插图</h2><img src="custom-source" alt="文档 &amp; 清单.png">`,
+    }, { fileResolver: { '文档 & 清单.png': imagePath } });
     noWarnings(response);
     assert.equal(newFiles(before).length, 1);
-    assert.equal(files.at(-1)!.name, '文档 & 检查清单.txt');
+    assert.equal(files.at(-1)!.name, '文档 & 清单.png');
     await verifyFile(files.at(-1)!, 'doc', object.id);
-    assert(String((await data('doc/get', object.id)).content).includes(`file-read-${files.at(-1)!.id}.txt`));
+    assertImage((await data('doc/get', object.id)).content, files.at(-1)!.id);
   });
 
   await check('新建 Bug：pick/convertSingle 不干扰附件关联', async () => {
@@ -353,7 +364,7 @@ try {
     noWarnings(response);
     assert.equal(newFiles(before).length, 1);
     await verifyFile(files.at(-1)!, 'meeting', object.id);
-    assert(String((await data('meeting/get', object.id)).minutes).includes(`file-read-${files.at(-1)!.id}.png`));
+    assertImage((await data('meeting/get', object.id)).minutes, files.at(-1)!.id);
   });
 
   await check('无待处理附件：只提交主请求，不调用文件 API', async () => {
@@ -396,11 +407,13 @@ try {
     await verifyFile(files.at(-1)!, '', 0);
   });
 
-  await check('file/link 冲突：重复关联返回 409 且原归属保持', async () => {
-    const file = files[0];
-    await assert.rejects(api('file/link', { fileID: file.id, objectType: 'product', objectID: ownObject('product').id }),
-      (error: unknown) => record(record(error).details).status === 409);
-    await verifyFile(file, 'product', ownObject('product').id);
+  await check('同一 Token 下分别回读需求和 Bug 的图片归属', async () => {
+    const storyImage = files.find(file => file.expectedObjectType === 'story');
+    const bugImage = files.find(file => file.expectedObjectType === 'bug');
+    assert(storyImage?.uid && bugImage?.uid, 'Expected separate story and Bug upload batches.');
+    assert.notEqual(storyImage.uid, bugImage.uid);
+    await verifyFile(storyImage, 'story', ownObject('story').id);
+    await verifyFile(bugImage, 'bug', ownObject('bug').id);
   });
   }
 
