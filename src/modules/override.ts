@@ -458,6 +458,30 @@ export function applyBuiltinOverrides(): void {
   });
   defineModuleActions('file', [
     {
+      name: 'link',
+      minVersion: version23,
+      display: '关联附件到对象',
+      description: '将尚未关联对象（objectType 为空）的附件关联到对象；objectType 和 objectID 均必填，已关联的附件返回 409。',
+      type: 'action',
+      method: 'put',
+      path: '/files/{fileID}/link',
+      pathParams: { fileID: '附件数字 ID' },
+      resultType: 'object',
+      resultObjectType: 'file',
+      requestBody: {
+        type: 'object',
+        required: true,
+        schema: {
+          type: 'object',
+          properties: {
+            objectType: { type: 'string', description: '关联对象类型' },
+            objectID: { type: 'integer', format: 'int32', description: '关联对象ID' },
+          },
+          required: ['objectType', 'objectID'],
+        },
+      },
+    },
+    {
       name: 'get',
       minVersion: ['22.5', 'biz13.5', 'max8.5', 'ipd5.5'],
       display: '获取附件信息',

@@ -167,6 +167,20 @@ await request('file/create', {
 
 `extra` 也可放在 `params.data` 中，优先于平铺参数。省略时默认发送 `'editor'`，普通附件可显式传 `extra: ''`。上传接口的最低版本保持不变；该字段仅用于上传。
 
+`file/update` 用于修改文件名称，要求 `fileID` 和 `fileName`，最低版本为 `22.5 / biz13.5 / max8.5 / ipd5.5`：
+
+```ts
+await request('file/update', { fileID: 42, fileName: 'report.pdf' });
+```
+
+禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，使用 `file/link`（`PUT /files/{fileID}/link`）将无归属文件关联到对象。`fileID` 必须为数字 ID，`objectType` 和 `objectID` 均必填：
+
+```ts
+await request('file/link', { fileID: 42, objectType: 'story', objectID: 1001 });
+```
+
+目标部署需提供该接口。服务端只接受 `objectType` 为空的文件；已经关联的文件会返回 HTTP 409，即使再次指定相同对象也不能重复关联。
+
 也可以直接使用底层客户端。它会自动识别 `FormData`、`Blob`、`ArrayBuffer`、`URLSearchParams` 等原生请求体；普通对象默认按 JSON 发送。
 
 ```ts

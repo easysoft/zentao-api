@@ -42,9 +42,78 @@ describe('high-level file uploads', () => {
     expect(params.filter(param => param.required).map(param => param.name)).toEqual(['file']);
     expect(getModuleActionParams('file', 'update', { roles: ['body'] })
       .filter(param => param.required).map(param => param.name)).toEqual(['fileName']);
+    expect(getModuleActionParams('file', 'update', { roles: ['body'] }).map(param => param.name)).toEqual(['fileName']);
     expect(getModuleActionParams('file', 'update', { roles: ['body'] }).some(param => param.name === 'extra')).toBe(false);
     expect(exportRegistry().file.actions.find(action => action.name === 'create')?.bodyParams)
       .toContainEqual(expect.objectContaining({ name: 'extra', type: 'string', required: false, defaultValue: 'editor' }));
+  });
+
+  test('file/link metadata keeps required associations and the file result after reset', () => {
+    resetModuleDefinitions();
+    expect(getModuleAction('file', 'link')).toMatchObject({
+      type: 'action', method: 'put', path: '/files/{fileID}/link', resultType: 'object', resultObjectType: 'file',
+      minVersion: ['23.0', 'biz14.0', 'max9.0', 'ipd6.0'],
+    });
+    expect(getModuleActionParams('file', 'link', { roles: ['body'] })
+      .filter(param => param.required).map(param => param.name)).toEqual(['objectType', 'objectID']);
+    expect(getModuleActionParams('file', 'link', { roles: ['path'] }))
+      .toContainEqual(expect.objectContaining({ name: 'fileID', required: true }));
+    expect(exportRegistry().file.actions.find(action => action.name === 'link')?.bodyParams)
+      .toContainEqual(expect.objectContaining({ name: 'objectID', type: 'number', required: true }));
+  });
+
+  test('file/link links without metadata prefetch and checks all four version boundaries', async () => {
+    const bodies: unknown[] = [];
+    const server = createMockServer(async req => {
+      expect(req.method).toBe('PUT');
+      expect(new URL(req.url).pathname).toBe('/api.php/v2/files/45/link');
+      bodies.push(await req.json());
+      return Response.json({ status: 'success', id: 45, objectType: 'story', objectID: 7 });
+    });
+    try {
+      const client = new ZentaoClient(server.url.href);
+      for (const version of ['22.5', 'biz13.5', 'max8.5', 'ipd5.5']) {
+        setGlobalOptions({ version });
+        await expect(request('file/link', { fileID: 45, objectType: 'story', objectID: 7 }, { client }))
+          .rejects.toMatchObject({ code: 'E_UNSUPPORTED_ZENTAO_VERSION' });
+      }
+      expect(bodies).toEqual([]);
+      for (const version of ['23.0', 'biz14.0', 'max9.0', 'ipd6.0']) {
+        setGlobalOptions({ version });
+        await expect(request('file/link', { fileID: 45, objectType: 'story', objectID: 7 }, { client, autoFill: true }))
+          .resolves.toMatchObject({ status: 'success', resultObjectType: 'file', data: { id: 45, objectType: 'story', objectID: 7 } });
+      }
+      expect(bodies).toEqual(Array.from({ length: 4 }, () => ({ objectType: 'story', objectID: 7 })));
+      await expect(request('file/link', { objectType: 'story', objectID: 7 }, { client }))
+        .rejects.toMatchObject({ code: 'E_MISSING_PARAM', params: { param: 'fileID' } });
+      await expect(request('file/link', { fileID: 45, objectID: 7 }, { client }))
+        .rejects.toMatchObject({ code: 'E_MISSING_PARAM', params: { param: 'objectType' } });
+      await expect(request('file/link', { fileID: 45, objectType: 'story' }, { client }))
+        .rejects.toMatchObject({ code: 'E_MISSING_PARAM', params: { param: 'objectID' } });
+      expect(bodies).toHaveLength(4);
+    } finally { server.stop(true); }
+  });
+
+  test('file/link preserves the server conflict when an attachment is already linked', async () => {
+    let requests = 0;
+    const server = createMockServer(req => {
+      expect(req.method).toBe('PUT');
+      expect(new URL(req.url).pathname).toBe('/api.php/v2/files/45/link');
+      requests++;
+      return requests === 1
+        ? Response.json({ status: 'success', id: 45, objectType: 'story', objectID: 7 })
+        : Response.json({ status: 'fail', message: 'File is already linked.' }, { status: 409 });
+    });
+    try {
+      setGlobalOptions({ version: '23.0' });
+      const client = new ZentaoClient(server.url.href);
+      const params = { fileID: 45, objectType: 'story', objectID: 7 };
+      await expect(request('file/link', params, { client })).resolves.toMatchObject({ status: 'success' });
+      await expect(request('file/link', params, { client })).rejects.toMatchObject({
+        code: 'E_HTTP_ERROR', details: { status: 409, body: '{"status":"fail","message":"File is already linked."}' },
+      });
+      expect(requests).toBe(2);
+    } finally { server.stop(true); }
   });
 
   test('defaults multipart extra to editor and honors explicit values and data precedence', async () => {
