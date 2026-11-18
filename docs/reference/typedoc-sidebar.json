@@ -54,12 +54,24 @@
         "link": "/reference/interfaces/FileCreateResult.md"
       },
       {
+        "text": "FileHandlingOptions",
+        "link": "/reference/interfaces/FileHandlingOptions.md"
+      },
+      {
+        "text": "FileReference",
+        "link": "/reference/interfaces/FileReference.md"
+      },
+      {
         "text": "FileUploadDataInput",
         "link": "/reference/interfaces/FileUploadDataInput.md"
       },
       {
         "text": "FileUploadPathInput",
         "link": "/reference/interfaces/FileUploadPathInput.md"
+      },
+      {
+        "text": "FileWarning",
+        "link": "/reference/interfaces/FileWarning.md"
       },
       {
         "text": "FromProfileOptions",
@@ -204,6 +216,10 @@
         "link": "/reference/type-aliases/FileCreateParams.md"
       },
       {
+        "text": "FileResolver",
+        "link": "/reference/type-aliases/FileResolver.md"
+      },
+      {
         "text": "FileUploadSource",
         "link": "/reference/type-aliases/FileUploadSource.md"
       },
@@ -286,6 +302,10 @@
       {
         "text": "RequestResultFor",
         "link": "/reference/type-aliases/RequestResultFor.md"
+      },
+      {
+        "text": "ResolvedFile",
+        "link": "/reference/type-aliases/ResolvedFile.md"
       },
       {
         "text": "SortExpr",

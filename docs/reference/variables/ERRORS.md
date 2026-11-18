@@ -15,6 +15,10 @@ SDK 已知错误码到默认消息的映射表。
 | ------ | ------ | ------ |
 | <a id="property-e_aborted"></a> `E_ABORTED` | `"Request was aborted."` | `'Request was aborted.'` |
 | <a id="property-e_api_failed"></a> `E_API_FAILED` | `"ZenTao API returned failure: {message}"` | `'ZenTao API returned failure: {message}'` |
+| <a id="property-e_file_object_id_missing"></a> `E_FILE_OBJECT_ID_MISSING` | `"The created object response does not contain a valid ID for file association."` | `'The created object response does not contain a valid ID for file association.'` |
+| <a id="property-e_file_resolve_failed"></a> `E_FILE_RESOLVE_FAILED` | `"Failed to resolve HTML file reference: {path}"` | `'Failed to resolve HTML file reference: {path}'` |
+| <a id="property-e_file_target_unknown"></a> `E_FILE_TARGET_UNKNOWN` | `"Cannot determine the object associated with HTML file uploads."` | `'Cannot determine the object associated with HTML file uploads.'` |
+| <a id="property-e_file_upload_failed"></a> `E_FILE_UPLOAD_FAILED` | `"The file upload response does not contain a valid file ID."` | `'The file upload response does not contain a valid file ID.'` |
 | <a id="property-e_http_error"></a> `E_HTTP_ERROR` | `"HTTP request failed: {status} {statusText}"` | `'HTTP request failed: {status} {statusText}'` |
 | <a id="property-e_indeterminate_action_method"></a> `E_INDETERMINATE_ACTION_METHOD` | "Cannot infer HTTP method for action \"\{action\}\" from type \"\{type\}\"; specify \"method\" explicitly." | `'Cannot infer HTTP method for action "{action}" from type "{type}"; specify "method" explicitly.'` |
 | <a id="property-e_indeterminate_action_result_type"></a> `E_INDETERMINATE_ACTION_RESULT_TYPE` | "Cannot infer result type for action \"\{action\}\" from type \"\{type\}\"; specify \"resultType\" explicitly." | `'Cannot infer result type for action "{action}" from type "{type}"; specify "resultType" explicitly.'` |

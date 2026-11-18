@@ -39,12 +39,13 @@ writeFileSync(uploadPath, 'node upload smoke');
 let receivedContentType = '';
 let receivedBody = '';
 let receivedAssistant;
+const receivedRequests = [];
 const server = createServer((request, response) => {
   if (request.url === '/?mode=getconfig') {
     assert.equal(request.headers.token, undefined);
     assert.equal(request.headers['zentao-action-assistant'], undefined);
     response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify({ version: '23.0' }));
+    response.end(JSON.stringify({ version: '23.0', requestType: 'PATH_INFO', requestFix: '-' }));
     return;
   }
   receivedContentType = String(request.headers['content-type'] ?? '');
@@ -60,7 +61,13 @@ const server = createServer((request, response) => {
   request.on('data', (chunk) => chunks.push(chunk));
   request.on('end', () => {
     receivedBody = Buffer.concat(chunks).toString('utf8');
+    receivedRequests.push({ path: request.url, method: request.method, body: receivedBody });
     response.writeHead(200, { 'Content-Type': 'application/json' });
+    if (request.url === '/api.php/v2/files/1/link') {
+      assert.equal(request.method, 'PUT');
+      response.end(JSON.stringify({ status: 'success', id: 1, ...JSON.parse(receivedBody) }));
+      return;
+    }
     response.end(JSON.stringify({ status: 'success', data: { id: 1, url: '/file-read-1.txt' } }));
   });
 });
@@ -113,6 +120,25 @@ try {
   assert.deepEqual(new Uint8Array(content.data), new Uint8Array([0, 255, 195, 40]));
   const base64 = await api.request('file/read', { fileID: 1, stream: 1 }, { client: uploadClient });
   assert.equal(base64.data, Buffer.from([0, 255, 195, 40]).toString('base64'));
+
+  api.defineModules({ name: 'htmlsmoke', actions: [{
+    name: 'create', type: 'create', path: '/htmlsmoke', minVersion: ['23.0'],
+    requestBody: { schema: { type: 'object', properties: { content: { type: 'string', description: '(HTML)' } } } },
+  }] });
+  const beforeHTML = receivedRequests.length;
+  const created = await api.request('htmlsmoke/create', {
+    content: `<a href="${pathToFileURL(uploadPath).href}">download.txt</a><img src="file:24" alt="existing.png">`,
+  }, { client: uploadClient });
+  assert.equal(created.status, 'success');
+  assert.equal(created.fileWarnings, undefined);
+  const htmlRequests = receivedRequests.slice(beforeHTML);
+  assert.deepEqual(htmlRequests.map(({ path, method }) => [path, method]), [
+    ['/api.php/v2/files', 'POST'], ['/api.php/v2/htmlsmoke', 'POST'], ['/api.php/v2/files/1/link', 'PUT'],
+  ]);
+  assert.match(htmlRequests[0].body, /filename="download\.txt"/);
+  assert.equal(JSON.parse(htmlRequests[1].body).content,
+    '<a href="/file-read-1.txt" download="download.txt">download.txt</a><img src="/file-read-24.png" alt="existing.png">');
+  assert.deepEqual(JSON.parse(htmlRequests[2].body), { objectType: 'htmlsmoke', objectID: 1 });
 } finally {
   await new Promise((resolveClose) => server.close(resolveClose));
   rmSync(uploadDir, { recursive: true, force: true });

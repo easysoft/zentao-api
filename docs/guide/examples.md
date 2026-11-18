@@ -228,6 +228,95 @@ const bytes = await client.request('/files/42/read', {
 
 大文件需要流式读取时，使用 `responseType: 'response'` 并消费返回的 `response.body`。
 
+## HTML 富文本文件
+
+`request()` 仅处理请求体中描述以 `(HTML)` 结尾或 `textType: 'html'` 的顶层字符串字段。处理发生在 `beforeRequest` 之后，因此钩子修改后的 HTML 同样有效；调用方的原始参数保持不变。
+
+Node.js/Bun 可以在 HTML 中使用本地文件 URL：
+
+```ts
+const result = await request('story/update', {
+  id: 1001,
+  title: '登录需求',
+  spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">'
+    + '<a href="file:///tmp/report.pdf">report.pdf</a>'
+    + '<img src="file:42" alt="existing.png">',
+});
+
+console.log(result.fileWarnings);
+```
+
+`file:///tmp/report.pdf` 表示绝对路径；`file://path/to/report.pdf` 是相对当前工作目录的简写。已有 `file:42` 只转换链接，不重复上传。生成链接固定为站内路径，例如 `/file-read-42.png`，并遵循服务器的 GET/PATH_INFO 路由配置。下载链接会补充 `download` 文件名。
+
+浏览器通过解析器提供用户选中的 File 或 Blob：
+
+```ts
+const file = fileInput.files![0];
+await request('story/update', {
+  id: 1001,
+  title: '登录需求',
+  spec: '<img src="image-1" alt="screenshot.png">',
+}, {
+  fileResolver: { 'image-1': { blob: file, name: 'screenshot.png' } },
+});
+```
+
+解析器也可以是同步或异步函数，接收 `{path, name}`，返回字符串路径、`{path, name?}`、`{blob, name?}` 或 `{url, name?}`。例如：
+
+```ts
+import { setGlobalOptions, type FileResolver } from 'zentao-api';
+
+const fileResolver: FileResolver = async ({ path, name }) => {
+  const blob = await loadLocalAttachment(path);
+  return { blob, name };
+};
+
+setGlobalOptions({
+  fileResolver,
+  onFileError: warning => console.warn(warning.stage, warning.fileID, warning.message),
+});
+```
+
+`loadLocalAttachment` 由应用提供。单次请求的同名选项覆盖全局配置，解析器对象整体替换。每个引用只解析一次，并在任何文件上传之前完成全部解析；未命中、抛错或返回无效来源会终止请求。
+
+文件名的提取顺序为图片 `alt`，或链接非空的 `download` → `title` → 链接文字，最后回退到来源文件名。映射依次按引用路径、文件名查找自身属性；映射值为字符串时用命中的 key 作文件名。函数返回值或对象值未指定名称时沿用输入名称。
+
+HTTP(S)、协议相对 URL、已有禅道文件链接及普通锚点、邮件链接直接保留。没有解析器时，`image-1`、`images/a.png`、`/uploads/a.png` 等原始引用保持不变；配置解析器后，本地和自定义引用必须成功解析。解析器返回的网络 URL 直接替换，不下载或上传。
+
+修改对象时，上传直接关联目标对象；创建对象时，先上传无归属文件、替换 HTML，再创建对象并通过 `file/link` 关联。关联使用真实的新对象 ID，`pick`、`convertSingle` 和 `raw` 不会跳过或影响这一步。此流程需要目标部署支持前述 `file/link` 接口。
+
+### 文件错误与部分完成
+
+默认 `continueOnFileUploadError: true`：上传或本地读取失败后保留原引用，将图片 `alt` 或链接 `title` 改为错误消息，再提交对象。要求全部上传成功时设置：
+
+```ts
+await request('story/update', params, {
+  continueOnFileUploadError: false,
+  onFileError: warning => console.warn(warning),
+});
+```
+
+严格模式会停止主请求并清理本次已上传文件。对象明确创建失败时也会清理；已有 `file:<ID>` 引用不会删除。清理失败会保留主错误，并通过警告提供未删除的文件 ID。
+
+对象创建成功但返回结果缺少 ID，或后续文件关联失败时，仍返回创建成功结果，并通过 `fileWarnings` 和 `onFileError` 提供 `stage: 'associate'` 警告。警告包含错误码、消息、原始引用及可用的 `fileID`、`objectType`、`objectID`，可据此核对或修复关联。通知回调抛错不会改变主请求结果。
+
+部分服务端在创建对象时已自动关联编辑器附件。`file/link` 返回 HTTP 409 时，SDK 额外调用一次 `file/get`，仅在类型和 ID 均与本次对象一致时视为成功；归属不同或查询失败仍保留关联警告，不重试写入。
+
+关联请求超时或断线时，由调用方先通过 `file/get` 查询文件元数据：已关联到预期对象则无需重试，仍无归属时才调用 `file/link`。
+
+创建请求超时或断线时，服务端可能已完成创建。SDK 保留本次上传文件，在异常的 `details.fileIDs` 中提供待核对 ID，`details.fileWarnings` 提供已有警告；确认对象状态后再关联或清理，避免直接重复创建。
+
+`raw: true` 仍执行全部附件流程，并保持原始响应不变，警告仅通过 `onFileError` 接收：
+
+```ts
+const raw = await request('story/create', params, {
+  raw: true,
+  onFileError: warning => console.warn(warning),
+});
+```
+
+HTML 由 `parse5` 在 Node 和浏览器中一致解析，只改写目标属性，不执行脚本或加载引用资源。没有 HTML 文件引用时不增加网络请求；同一请求内按最终来源与文件名去重后串行上传，沿用 `maxUploadBytes` 的单文件限制。
+
 ## 限制返回列表数量
 
 `limit` 只影响 SDK 归一化后的 `data` 数组，不改变服务端返回页大小。

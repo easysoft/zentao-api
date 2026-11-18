@@ -16,6 +16,7 @@
 | ------ | ------ | ------ |
 | <a id="property-apicode"></a> `apiCode?` | `string` \| `number` | 服务端返回的业务错误码或状态码字段。 |
 | <a id="property-data"></a> `data?` | `T` | 根据模块动作 `resultGetter` 提取后的业务数据。 |
+| <a id="property-filewarnings"></a> `fileWarnings?` | [`FileWarning`](FileWarning.md)[] | HTML 文件处理中的警告；仅有警告时提供，主对象已创建但文件关联失败时仍保留成功状态。 |
 | <a id="property-message"></a> `message?` | `string` | 禅道服务端返回的消息。 |
 | <a id="property-pager"></a> `pager?` | `object` | 统一分页信息。 |
 | `pager.page` | `number` | 当前页码。 |

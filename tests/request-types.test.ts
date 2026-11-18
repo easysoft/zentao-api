@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'bun:test';
-import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type FileCreateParams, type RequestOptions, type RequestResultFor } from '../src/index';
-import type { ActionAssistant as BrowserActionAssistant } from '../src/browser';
+import { getModuleAction, request, type ActionAssistant, type BuiltinRequestName, type DataRecord, type FileCreateParams, type FileReference, type FileResolver, type FileWarning, type GlobalOptions, type RequestOptions, type RequestResultFor, type ResolvedFile } from '../src/index';
+import type { ActionAssistant as BrowserActionAssistant, FileResolver as BrowserFileResolver } from '../src/browser';
 
 interface ProductSummary {
   id: number;
@@ -9,6 +9,22 @@ interface ProductSummary {
 
 async function typedRequestExamples(): Promise<void> {
   expectTypeOf<BrowserActionAssistant>().toEqualTypeOf<ActionAssistant>();
+  expectTypeOf<BrowserFileResolver>().toEqualTypeOf<FileResolver>();
+  expectTypeOf<RequestOptions['fileResolver']>().toEqualTypeOf<GlobalOptions['fileResolver']>();
+  const fileResolver: FileResolver = async ({ path, name }: FileReference): Promise<ResolvedFile> => ({ path, name });
+  const fileOptions: RequestOptions = {
+    fileResolver,
+    continueOnFileUploadError: false,
+    onFileError: async (warning: FileWarning) => { String(warning.fileID); },
+  };
+  const htmlResult = await request('story/update', { id: 1, spec: '<img src="file:1">' }, fileOptions);
+  expectTypeOf(htmlResult).toEqualTypeOf<unknown>();
+  const htmlNormalized = await request('story/update', { id: 1, spec: '<img src="image-1">' }, {
+    fileResolver: { 'image-1': { blob: new Blob(['image']), name: 'image.png' } },
+    continueOnFileUploadError: true,
+    onFileError: warning => { String(warning.message); },
+  });
+  expectTypeOf(htmlNormalized.fileWarnings).toEqualTypeOf<FileWarning[] | undefined>();
   const moduleOnlyName: BuiltinRequestName = 'product';
   const actionName: BuiltinRequestName = 'product/list';
   const detailName: BuiltinRequestName = 'product/1';

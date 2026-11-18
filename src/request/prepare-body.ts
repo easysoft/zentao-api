@@ -70,7 +70,7 @@ function inferContentType(filename: string): string {
   return dotIndex >= 0 ? MIME_TYPES[normalized.slice(dotIndex)] ?? 'application/octet-stream' : 'application/octet-stream';
 }
 
-function inferExtension(contentType: string): string {
+export function inferExtension(contentType: string): string {
   const normalized = contentType.split(';', 1)[0]?.trim().toLowerCase();
   const entry = Object.entries(MIME_TYPES).find(([, type]) => type === normalized);
   return entry?.[0] ?? '.bin';
@@ -90,7 +90,7 @@ function assertUploadSize(size: number, limit: number): void {
   }
 }
 
-function normalizeFilename(value: string | undefined, fallback: string, field: string): string {
+export function normalizeFilename(value: string | undefined, fallback: string, field: string): string {
   const requested = value?.trim() || fallback.trim();
   const filename = requested.split(/[\\/]/).at(-1)?.trim() ?? '';
   if (!filename) {

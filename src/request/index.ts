@@ -19,6 +19,7 @@ import { extractPager, extractResult, resolveActionRequest } from '../modules/re
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
+import { HtmlFileRequest } from './html-file-request.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
@@ -309,6 +310,7 @@ async function requestInternal<T = unknown>(
   params: Record<string, unknown>,
   options: RequestOptions,
   version?: string | null,
+  processHtmlFiles = true,
 ): Promise<unknown> {
   const globals = getGlobalOptions();
   const client = options.client ?? globals.client;
@@ -367,22 +369,54 @@ async function requestInternal<T = unknown>(
   if (command.action.beforeRequest) {
     Object.assign(command, await command.action.beforeRequest(command));
   }
-  const preparedBody = await prepareActionBody(command, {
-    maxUploadBytes: options.maxUploadBytes,
-  });
-  const requestOptions = {
-    ...preparedBody,
+  const transportOptions = {
     timeout: options.timeout ?? globals.timeout,
     insecure: options.insecure ?? globals.insecure,
     actionAssistant: options.actionAssistant !== undefined ? options.actionAssistant : globals.actionAssistant,
   };
-  const raw = command.action.request
-    ? await command.action.request({ request: command, ...requestOptions, client, options })
-    : await client.request(command.path, {
-      method: String(command.action.method).toUpperCase() as HttpMethod,
-      query: command.query,
-      ...requestOptions,
-    });
+  const files = processHtmlFiles ? new HtmlFileRequest(command, {
+    client, version, ...transportOptions,
+    fileResolver: options.fileResolver ?? globals.fileResolver,
+    continueOnFileUploadError: options.continueOnFileUploadError ?? globals.continueOnFileUploadError,
+    onFileError: options.onFileError ?? globals.onFileError,
+    requestFile: async (action, params) => {
+      const response = await requestInternal(`file/${action}`, params, {
+        client, ...transportOptions, maxUploadBytes: options.maxUploadBytes,
+        throwOnFail: true, autoFill: false,
+      }, version, false) as ResponseData;
+      // File lifecycle writes return JSON objects; PHP/HTML text is not an acknowledgement.
+      if (!isRecord(response.data) || response.data.result === 'fail') {
+        throw new ZentaoError('E_API_FAILED', { message: `Invalid file/${action} response.` }, response);
+      }
+      return response;
+    },
+  }) : undefined;
+  let preparedBody;
+  try {
+    await files?.prepare();
+    preparedBody = await prepareActionBody(command, { maxUploadBytes: options.maxUploadBytes });
+  } catch (error) {
+    await files?.cleanup();
+    throw files?.errorWithFiles(error) ?? error;
+  }
+  const requestOptions = { ...preparedBody, ...transportOptions };
+  let raw: unknown;
+  try {
+    raw = command.action.request
+      ? await command.action.request({ request: command, ...requestOptions, client, options })
+      : await client.request(command.path, {
+        method: String(command.action.method).toUpperCase() as HttpMethod,
+        query: command.query,
+        ...requestOptions,
+      });
+  } catch (error) {
+    // A transport failure does not prove that the server rejected the write.
+    if (command.action.type === 'create' && error instanceof ZentaoError && error.code === 'E_API_FAILED') {
+      await files?.cleanup();
+    }
+    throw files?.errorWithFiles(error) ?? error;
+  }
+  await files?.complete(raw);
 
   if (options.raw) {
     return raw;
@@ -391,6 +425,7 @@ async function requestInternal<T = unknown>(
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: RequestProcessOptions = { ...options, limit: options.limit ?? globals.limit };
   const response = normalizeResponse<T>(command, raw, processOptions);
+  if (files?.warnings.length) response.fileWarnings = files.warnings;
   if (response.status === 'fail' && (options.throwOnFail ?? globals.throwOnFail)) {
     throw new ZentaoError('E_API_FAILED', { message: response.message ?? '' }, response);
   }

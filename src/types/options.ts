@@ -1,9 +1,10 @@
 import type { ZentaoClient } from '../client/index.js';
 import type { ActionAssistant } from './client.js';
 import type { ProcessListOptions, ProcessSingleOptions } from './data.js';
+import type { FileHandlingOptions } from './upload.js';
 
 /** SDK 进程级全局默认选项，供请求和 {@link createLink} 等辅助方法复用。 */
-export interface GlobalOptions {
+export interface GlobalOptions extends FileHandlingOptions {
   /** 当前禅道正式版本，例如 `biz13.5`；普通高阶请求直接使用，单次强制刷新时使用实际版本。不会自动写入 profile。 */
   version?: string;
   /** 配置网络或响应获取失败时，允许登录继续或高阶请求跳过版本检查，默认 false；不忽略版本不匹配、格式错误或存储错误。 */
@@ -35,7 +36,7 @@ export interface GlobalOptions {
 }
 
 /** 高阶 `request("moduleName")` / `request("moduleName/methodName")` / `request("moduleName/<objectID>")` 的单次调用选项。 */
-export interface RequestOptions extends ProcessListOptions {
+export interface RequestOptions extends ProcessListOptions, FileHandlingOptions {
   /** 强制刷新服务器配置并用实际版本校验本次请求，优先于全局 version；不会改写全局版本。 */
   forceRefreshConfig?: boolean;
   /** 配置网络或响应获取失败时跳过本次版本检查；优先于全局设置，默认 false，不忽略版本不匹配或格式错误。 */

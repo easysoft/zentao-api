@@ -36,6 +36,10 @@ export const ERRORS = {
   E_UPLOAD_FILE_READ_FAILED: 'Failed to read upload file: {path}',
   E_UPLOAD_FILE_TOO_LARGE: 'Upload file is {size} bytes and exceeds the {limit} byte limit.',
   E_INVALID_UPLOAD_SOURCE: 'Invalid upload source for field: {field}',
+  E_FILE_RESOLVE_FAILED: 'Failed to resolve HTML file reference: {path}',
+  E_FILE_TARGET_UNKNOWN: 'Cannot determine the object associated with HTML file uploads.',
+  E_FILE_OBJECT_ID_MISSING: 'The created object response does not contain a valid ID for file association.',
+  E_FILE_UPLOAD_FAILED: 'The file upload response does not contain a valid file ID.',
 } as const;
 
 /** SDK 已知错误码，对应 {@link ERRORS} 的 key。 */

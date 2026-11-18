@@ -6,7 +6,7 @@
 
 Browser & Node.js SDK for [ZenTao](https://www.zentao.net) (禅道) API v2.
 
-`zentao-api` 是一个零运行时依赖的 JavaScript/TypeScript SDK，提供底层 REST 客户端和基于模块注册表的高阶请求接口，可运行在 Node.js 18+、Bun、浏览器打包工具及 CDN/script 标签环境中。
+`zentao-api` 是一个 JavaScript/TypeScript SDK，提供底层 REST 客户端和基于模块注册表的高阶请求接口，可运行在 Node.js 18+、Bun、浏览器打包工具及 CDN/script 标签环境中。
 
 [快速开始](#快速开始) · [调用方式](#两种调用方式) · [浏览器](#浏览器) · [完整文档](#文档)
 
@@ -17,6 +17,7 @@ Browser & Node.js SDK for [ZenTao](https://www.zentao.net) (禅道) API v2.
 - 统一响应结构：自动提取业务数据和分页信息，稳定返回 `ResponseData<T>`。
 - 覆盖禅道常用模块：产品、项目、执行、需求、任务、Bug、测试、版本、发布等。
 - 内置本地数据处理：支持转换、过滤、搜索、排序、限制数量和字段摘取。
+- HTML 富文本附件：解析文件引用，上传并替换链接，自动关联新建或已有对象。
 - 可扩展模块注册表、持久化 Profile、稳定错误码及 Node.js 自签名证书支持。
 
 ## 安装
@@ -135,6 +136,7 @@ interface ResponseData<T> {
   message?: string;
   data?: T;
   resultObjectType?: string;
+  fileWarnings?: FileWarning[];
   pager?: {
     total: number;
     page: number;
@@ -181,6 +183,28 @@ console.log(uploaded.data?.id, uploaded.data?.url);
 ```
 
 单个本地文件或 Blob 默认限制为 50 MiB；可通过单次调用选项 `maxUploadBytes` 调整。
+
+### HTML 富文本中的文件
+
+高阶请求会处理标记为 HTML 的请求体字段。Node.js/Bun 中可直接引用本地文件 URL，也可用 `file:42` 引用已有禅道文件：
+
+```ts
+const result = await request('story/update', {
+  id: 1001,
+  title: '登录需求',
+  spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">',
+}, {
+  continueOnFileUploadError: false,
+});
+```
+
+浏览器使用 `fileResolver` 把 HTML 中的标识映射为 Blob，例如 `fileResolver: { 'image-1': { blob: file, name: 'image.png' } }`。解析器、`continueOnFileUploadError` 和 `onFileError` 都可在单次请求或全局设置，单次优先。网络链接直接保留；没有解析器时，普通相对地址和自定义标识也保持原样。
+
+上传失败默认继续请求，并将错误写入图片 `alt` 或链接 `title`；设为 `false` 时终止并清理本次上传。新对象创建成功后关联文件失败，仍返回成功结果，同时提供 `fileWarnings`。`raw: true` 保留原始响应，文件警告通过 `onFileError` 接收。
+
+自动关联新对象使用 `file/link`（`PUT /files/{fileID}/link`），需要目标部署支持 `23.0 / biz14.0 / max9.0 / ipd6.0` 起的该接口。它要求 `objectType`、`objectID`，只允许关联尚无归属的文件；关联结果不确定时，应先查询文件元数据再决定是否重试。`file/update` 仍用于重命名，要求 `fileName`，最低版本保持 `22.5 / biz13.5 / max8.5 / ipd5.5`。完整解析规则、失败恢复和示例见[富文本文件指南](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#html-富文本文件)。
+
+HTML 使用 `parse5` 解析并按源码位置改写属性，保留其他原文；未出现待处理引用时不增加文件请求。同一请求中的相同文件来源与名称去重后依次上传。
 
 ### 底层 REST 客户端
 
@@ -229,6 +253,8 @@ setGlobalOptions({
 ```
 
 常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`relative`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。`relative` 设置 `createLink()` 的链接形式，默认 `false`（完整网址），单次显式 `false` 可覆盖全局 `true`。
+
+富文本文件选项 `fileResolver`、`continueOnFileUploadError`、`onFileError` 仅支持单次请求和全局设置。自动生成的富文本文件链接固定为站内路径，不受全局 `relative` 影响。
 
 ### 操作辅助工具标记
 

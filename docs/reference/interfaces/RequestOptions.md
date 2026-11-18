@@ -6,7 +6,7 @@
 
 ## Extends
 
-- [`ProcessListOptions`](ProcessListOptions.md)
+- [`ProcessListOptions`](ProcessListOptions.md).[`FileHandlingOptions`](FileHandlingOptions.md)
 
 ## Properties
 
@@ -15,13 +15,16 @@
 | <a id="property-actionassistant"></a> `actionAssistant?` | [`ActionAssistant`](../type-aliases/ActionAssistant.md) | 本次操作辅助工具标记；覆盖全局和客户端默认值，对象整体替换，undefined 表示继承，空字符串表示关闭。 | - |
 | <a id="property-autofill"></a> `autoFill?` | `boolean` | 是否在执行 `update` 操作时自动填充未传入的字段。 设为 `true` 后，会先 GET 当前对象，把用户未显式传入（含 `params.data`）且 动作 body schema 中声明的字段用现值补齐，再发起 PUT，避免禅道用空值覆盖未提交字段。 因此只需传想修改的字段即可。仅对 `type: 'update'` 且模块存在 `type: 'get'` 动作时生效。 只有模块中存在与 update 路径相同的 GET 动作时才会预取；否则直接发送更新请求。 不传时回落到全局 `autoFill`，默认 false。 | - |
 | <a id="property-client"></a> `client?` | [`ZentaoClient`](../classes/ZentaoClient.md) | 本次调用使用的客户端；优先级高于全局客户端。 | - |
+| <a id="property-continueonfileuploaderror"></a> `continueOnFileUploadError?` | `boolean` | 上传或读取本地文件失败后是否标注 HTML 并继续主请求，默认 true；解析器失败始终终止。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`continueOnFileUploadError`](FileHandlingOptions.md#property-continueonfileuploaderror) |
 | <a id="property-convert"></a> `convert?` | (`records`) => [`DataRecord`](../type-aliases/DataRecord.md)[] | 列表转换函数，在过滤前对记录数组整体执行。 | [`ProcessListOptions`](ProcessListOptions.md).[`convert`](ProcessListOptions.md#property-convert) |
 | <a id="property-convertsingle"></a> `convertSingle?` | (`record`) => [`DataRecord`](../type-aliases/DataRecord.md) | 单条对象转换函数，在字段摘取前执行；列表转换请使用 `convert`。 | - |
+| <a id="property-fileresolver"></a> `fileResolver?` | [`FileResolver`](../type-aliases/FileResolver.md) | 解析本地及自定义文件引用；HTTP(S) 和已有禅道文件链接直接保留。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`fileResolver`](FileHandlingOptions.md#property-fileresolver) |
 | <a id="property-filter"></a> `filter?` | `string`[] | 过滤表达式组，如 `["status=active,pri>=2", "assignedTo.id=5"]`；组内 AND、组间 OR，`=` 与 `:` 均表示相等。 | [`ProcessListOptions`](ProcessListOptions.md).[`filter`](ProcessListOptions.md#property-filter) |
 | <a id="property-forcerefreshconfig"></a> `forceRefreshConfig?` | `boolean` | 强制刷新服务器配置并用实际版本校验本次请求，优先于全局 version；不会改写全局版本。 | - |
 | <a id="property-insecure"></a> `insecure?` | `boolean` | 本次调用 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 | - |
 | <a id="property-limit"></a> `limit?` | `string` | 限制返回列表数量，在排序后、摘取前截断；不改变服务端页大小。 | [`ProcessListOptions`](ProcessListOptions.md).[`limit`](ProcessListOptions.md#property-limit) |
 | <a id="property-maxuploadbytes"></a> `maxUploadBytes?` | `number` | 单个本地文件或 Blob 上传的最大字节数，默认 50 MiB。 | - |
+| <a id="property-onfileerror"></a> `onFileError?` | (`warning`) => `void` \| `Promise`\<`void`\> | 文件错误通知；支持异步回调，回调异常不改变主请求结果。 普通响应同时提供 fileWarnings；raw 模式仅通过此回调通知，不修改原始响应。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`onFileError`](FileHandlingOptions.md#property-onfileerror) |
 | <a id="property-pick"></a> `pick?` | `string`[] | 摘取字段路径列表。 | [`ProcessListOptions`](ProcessListOptions.md).[`pick`](ProcessListOptions.md#property-pick) |
 | <a id="property-raw"></a> `raw?` | `boolean` | 是否返回原始响应体，默认 false。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 | - |

@@ -5,6 +5,58 @@ import { join } from 'node:path';
 import vm from 'node:vm';
 
 describe('browser bundle', () => {
+  test('rewrites HTML using Blob resolvers without a DOM or Node and never fetches embedded URLs', async () => {
+    const bundle = await Bun.build({ entrypoints: ['src/browser-global.ts'], target: 'browser', format: 'iife', globalName: 'ZentaoAPI' } as any);
+    expect(bundle.success).toBe(true);
+    const calls: string[] = [];
+    const bodies: unknown[] = [];
+    const context = vm.createContext({
+      window: {}, self: {}, console, setTimeout, clearTimeout, structuredClone, URL, URLSearchParams,
+      AbortController, Headers, Response, FormData, Blob,
+      fetch: async (url: string, init?: RequestInit) => {
+        calls.push(url);
+        const parsed = new URL(url);
+        expect(parsed.origin).toBe('https://zentao.example.com');
+        if (parsed.searchParams.get('mode') === 'getconfig') {
+          return Response.json({ version: '23.0', requestType: 'PATH_INFO', requestFix: '-' });
+        }
+        bodies.push(init?.body);
+        if (parsed.pathname === '/api.php/v2/files') {
+          const form = init?.body as FormData;
+          expect(form.get('file')).toBeInstanceOf(Blob);
+          expect(form.get('objectType')).toBe('article');
+          expect(form.get('objectID')).toBe('7');
+          return Response.json({ status: 'success', id: 41 });
+        }
+        expect(parsed.pathname).toBe('/api.php/v2/articles/7');
+        return Response.json({ status: 'success', id: 7 });
+      },
+    });
+    vm.runInContext(await bundle.outputs[0].text(), context);
+    const api = (context as any).ZentaoAPI;
+    api.defineModules([{ name: 'article', actions: [{
+      name: 'update', type: 'update', minVersion: ['23.0'], path: '/articles/{articleID}',
+      pathParams: { articleID: 'ID' }, requestBody: { schema: {
+        type: 'object', properties: { content: { type: 'string', description: '(HTML)' } },
+      } },
+    }] }]);
+    api.setGlobalOptions({ client: new api.ZentaoClient('https://zentao.example.com'), version: '23.0' });
+    const input = '<img src="image-1" alt="screen.png"><img src="https://remote.test/a.png"><script>"<img src=ignored>"</script>';
+    const response = await api.request('article/update', { id: 7, content: input }, {
+      fileResolver: { 'image-1': { blob: new Blob(['png'], { type: 'image/png' }) } },
+    });
+    expect(response.status).toBe('success');
+    expect(calls).toHaveLength(3);
+    expect(JSON.parse(bodies[1] as string).content).toBe(input.replace('src="image-1"', 'src="/file-read-41.png"'));
+    expect((context as any).document).toBeUndefined();
+    expect((context as any).process).toBeUndefined();
+
+    const local = await api.request('article/update', { id: 7, content: '<img src="file:///tmp/image.png">' });
+    expect(local.fileWarnings[0].code).toBe('E_UPLOAD_PATH_UNSUPPORTED');
+    expect(JSON.parse(bodies.at(-1) as string).content).toContain('alt="Local file paths');
+    expect(calls).toHaveLength(4);
+  });
+
   test('exposes window.ZentaoAPI with build info and rejects insecure requests in browser runtime', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'zentao-api-browser-'));
     const injectedVersion = '1.2.3-test';

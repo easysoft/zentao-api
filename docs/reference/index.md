@@ -20,8 +20,11 @@
 | [DefineModulesOptions](interfaces/DefineModulesOptions.md) | [defineModules](functions/defineModules.md) 的选项。 |
 | [ExportRegistryOptions](interfaces/ExportRegistryOptions.md) | [exportRegistry](functions/exportRegistry.md) 的选项。 |
 | [FileCreateResult](interfaces/FileCreateResult.md) | `request("file/create")` 归一化后的结果。 |
+| [FileHandlingOptions](interfaces/FileHandlingOptions.md) | 高阶请求的 HTML 文件处理配置；单次请求优先于全局选项。 |
+| [FileReference](interfaces/FileReference.md) | HTML 图片或下载链接中的文件引用；路径和名称已解码 HTML 实体。 |
 | [FileUploadDataInput](interfaces/FileUploadDataInput.md) | 内存数据形式的上传输入。 |
 | [FileUploadPathInput](interfaces/FileUploadPathInput.md) | Node.js/Bun 本地文件路径形式的上传输入。 |
+| [FileWarning](interfaces/FileWarning.md) | HTML 文件处理中的错误上下文，可用于展示问题或重试关联、清理。 |
 | [FromProfileOptions](interfaces/FromProfileOptions.md) | 从本地 profile 恢复客户端时的选项。 |
 | [GetZentaoConfigOptions](interfaces/GetZentaoConfigOptions.md) | [ZentaoClient.getZentaoConfig](classes/ZentaoClient.md#getzentaoconfig) 的选项。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供请求和 [createLink](functions/createLink.md) 等辅助方法复用。 |
@@ -61,6 +64,7 @@
 | [ExportedModuleAction](type-aliases/ExportedModuleAction.md) | 导出的模块动作定义。 |
 | [ExportedModuleDefinition](type-aliases/ExportedModuleDefinition.md) | 导出的模块定义。 |
 | [FileCreateParams](type-aliases/FileCreateParams.md) | `request("file/create")` 的参数。 |
+| [FileResolver](type-aliases/FileResolver.md) | HTML 文件解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时终止请求。 |
 | [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
 | [LinkProfile](type-aliases/LinkProfile.md) | 链接处理只使用站点地址与服务器配置，无需账号或 Token。 |
@@ -82,6 +86,7 @@
 | [RequestParamsFor](type-aliases/RequestParamsFor.md) | 根据内置请求名推导出的参数类型。字段细节以运行时 registry 为准，这里保持可扩展。 |
 | [RequestProcessOptions](type-aliases/RequestProcessOptions.md) | - |
 | [RequestResultFor](type-aliases/RequestResultFor.md) | 根据内置请求名推导出的 `ResponseData.data` 类型。 |
+| [ResolvedFile](type-aliases/ResolvedFile.md) | 文件解析器返回的来源；字符串表示路径，未指定名称时沿用输入名称。 |
 | [SortExpr](type-aliases/SortExpr.md) | 排序表达式；推荐 `字段:asc|desc`，兼容 `字段_asc|desc`。 |
 | [SortFn](type-aliases/SortFn.md) | 自定义排序比较函数。 |
 
