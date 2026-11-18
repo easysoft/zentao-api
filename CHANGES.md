@@ -1,5 +1,28 @@
 # 变更日志
 
+## 0.9.0 - 2026-11-18
+
+### 新增
+
+- 新增 `my/info` 读取当前用户资料、`file/get` 查询附件元数据、`file/read` 读取附件内容。`file/read` 默认返回 `ArrayBuffer`，传 `stream: 1` 可取得 Base64 文本。
+- 新增 `createLink()` 和 `parseLink()`，可根据 profile 生成和解析三种禅道页面路由。`createLink()` 默认返回完整网址，可通过全局或单次 `relative` 选项生成站内路径。
+- 注册表和成功响应通过 `resultObjectType` 标识返回的业务对象类型。`getModuleActionParams()` 通过 `textType: 'html'` 标识富文本参数。对象字段词典同步了当前接口的字段和中文名称。
+- 富文本图片可引用已有禅道文件 ID，也可通过 `fileResolver` 提供本地文件、浏览器 `File` 或 `Blob`。一次保存中，相同来源和文件名的图片只上传一次。手动预上传时，可让上传和保存使用同一 Token 和 `uid` 来绑定图片。
+
+### 变更
+
+- `file/create` 现在默认发送 `extra: 'editor'`。**上传普通附件时请显式传 `extra: ''`**。上传时可以省略 `objectType` 和 `objectID`。
+- 使用 `request()` 写入 HTML 字段时，Node.js 和 Bun 现在会读取并上传 `<img src>` 中的 `file://` 本地图片。自动绑定需要禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 或更新版本，并包含服务端修复 `0a4de3a66f5` 或等效改动。**较早部署请使用已上传图片的 HTTP(S) URL**。
+- 单张图片上传失败时默认继续保存，警告可从 `fileWarnings` 或 `onFileError` 读取。传 `continueOnFileUploadError: false` 可中止保存并清理本次上传。保存结果无法确认时会保留图片，供调用方按 `uid` 和文件 ID 核对归属。
+
+### 测试
+
+- 覆盖并发保存的图片归属、手动预上传、失败清理、附件读取、页面路由往返解析和结果对象类型，并扩展 Node 与浏览器入口的冒烟测试。
+
+### 文档
+
+- 补充附件与富文本图片、页面链接和响应类型的示例，更新 SDK 参考及禅道 API 模块文档。
+
 ## 0.8.5 - 2026-11-11
 
 ### 修复
