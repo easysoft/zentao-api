@@ -29,7 +29,7 @@ const client = new ZentaoClient({
 });
 setGlobalOptions({ persistProfiles: false });
 
-type ObjectEntry = { type: string; id: number; title: string; case: string; url?: string; parentID?: number };
+type ObjectEntry = { type: string; id: number; title: string; case: string; url?: string; parentID?: number; parentType?: string };
 type FileEntry = {
   id: number; name: string; case: string; bytes: number; sha256: string;
   metadata?: Record<string, unknown>; downloadMatches?: boolean; url?: string;
@@ -37,7 +37,7 @@ type FileEntry = {
 };
 const objects: ObjectEntry[] = previous?.objects ?? [];
 const files: FileEntry[] = previous?.files ?? [];
-const calls: { case: string; method: string; path: string; ms: number; status?: unknown; error?: string }[] = previous?.calls ?? [];
+const calls: { case: string; method: string; path: string; uid?: string; ms: number; status?: unknown; error?: string }[] = previous?.calls ?? [];
 const checks: { name: string; status: 'pass' | 'fail' | 'skip'; ms: number; detail?: string }[] = previous?.checks.filter((x: { name: string }) => !x.name.startsWith('最终清单')) ?? [];
 const blockedDeletes: string[] = previous?.blockedDeletes ?? [];
 let currentCase = 'setup';
@@ -60,7 +60,8 @@ client.request = (async (path: string, options: ClientRequestOptions = {}) => {
   }
   assert(!verifyPath || method === 'GET' || path === '/users/login', 'Verification only permits reads and authentication.');
   const started = performance.now();
-  const entry: typeof calls[number] = { case: currentCase, method, path, ms: 0 };
+  const uid = path === '/files' ? options.query?.uid : record(options.body).uid;
+  const entry: typeof calls[number] = { case: currentCase, method, path, uid: typeof uid === 'string' ? uid : undefined, ms: 0 };
   calls.push(entry);
   try {
     const raw = await originalRequest(path, options);
@@ -73,7 +74,6 @@ client.request = (async (path: string, options: ClientRequestOptions = {}) => {
       const sent = await new Response(form).formData();
       const source = sent.get('file') as File;
       const bytes = new Uint8Array(await source.arrayBuffer());
-      const uid = options.query?.uid;
       assert(typeof uid === 'string' && /^[A-Za-z0-9_-]+$/.test(uid));
       assert.equal(options.query?.extra, 'editor');
       files.push({ id, name: source.name, case: currentCase, bytes: bytes.length, sha256: hash(bytes), uid });
@@ -102,11 +102,12 @@ client.request = (async (path: string, options: ClientRequestOptions = {}) => {
 function save(): void {
   const profile = config && { server: client.siteUrl, serverConfig: config };
   if (profile) {
-    for (const item of objects) item.url = createLink(profile, {
-      moduleName: item.type === 'doclib' ? 'doc' : item.type,
-      methodName: item.type === 'doclib' ? 'browse' : 'view',
-      vars: `${item.type === 'doclib' ? 'libID' : `${item.type}ID`}=${item.id}`,
-    });
+    for (const item of objects) {
+      if (item.type === 'doclib' && (!item.parentType || !item.parentID)) continue;
+      item.url = createLink(profile, item.type === 'doclib'
+        ? { moduleName: 'doc', methodName: `${item.parentType}Space`, vars: `objectID=${item.parentID}&libID=${item.id}` }
+        : { moduleName: item.type, methodName: 'view', vars: `${item.type}ID=${item.id}` });
+    }
     for (const item of files) item.url = createLink(profile, {
       moduleName: 'file', methodName: 'read', vars: `fileID=${item.id}`,
       viewType: item.name.split('.').at(-1) || 'png',
@@ -115,18 +116,19 @@ function save(): void {
   const summary = { runID, phase, server: client.siteUrl, version: config?.version, checks, objects, files, blockedDeletes, calls };
   writeFileSync(join(outputDir, 'report.json'), JSON.stringify(summary, null, 2));
   const cell = (value: unknown) => String(value ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ');
+  const owner = (type: unknown, id: unknown) => type === '' && Number(id) === 0 ? '未绑定' : type && id ? `${cell(type)} #${cell(id)}` : '待核对';
   writeFileSync(join(outputDir, 'report.md'), [
-    `# 富文本关联文件测试 ${runID}`, '',
-    `环境：${client.siteUrl}；版本：${config?.version ?? 'pending'}；状态：${phase}。`,
-    '本次创建的对象、上传文件和本地样本全部保留；所有 DELETE 请求均在本地拦截。', '',
+    `# 富文本图片实测清单 ${runID}`, '',
+    `禅道 ${config?.version ?? 'pending'} · ${client.siteUrl} · ${phase}`, '',
+    '测试对象、上传文件和本地样本均保留。清理用例的 DELETE 请求由本地拦截。', '',
     '| 检查 | 结果 | 耗时 ms | 说明 |', '| --- | --- | ---: | --- |',
     ...checks.map(x => `| ${cell(x.name)} | ${x.status} | ${x.ms} | ${cell(x.detail)} |`), '',
     '| 类型 | ID | 名称 | 创建场景 | 禅道链接 |', '| --- | ---: | --- | --- | --- |',
-    ...objects.map(x => `| ${x.type} | ${x.id} | ${cell(x.title)} | ${cell(x.case)} | [查看](${x.url}) |`), '',
+    ...objects.map(x => `| ${x.type} | ${x.id} | ${cell(x.title)} | ${cell(x.case)} | ${x.url ? `[查看](${x.url})` : ''} |`), '',
     '| 文件 ID | 名称 | 字节 | 实际归属 | 预期归属 | 内容校验 | 禅道链接 |', '| ---: | --- | ---: | --- | --- | --- | --- |',
-    ...files.map(x => `| ${x.id} | ${cell(x.name)} | ${x.bytes} | ${cell(x.metadata?.objectType)} #${cell(x.metadata?.objectID)} | ${cell(x.expectedObjectType)} #${cell(x.expectedObjectID)} | ${x.downloadMatches ?? 'pending'} | [下载](${x.url}) |`), '',
+    ...files.map(x => `| ${x.id} | ${cell(x.name)} | ${x.bytes} | ${owner(x.metadata?.objectType, x.metadata?.objectID)} | ${owner(x.expectedObjectType, x.expectedObjectID)} | ${x.downloadMatches === undefined ? '待核对' : x.downloadMatches ? '一致' : '不一致'} | [查看](${x.url}) |`), '',
     `拦截的清理请求：${blockedDeletes.join(', ') || '无'}。`,
-    '详细请求路径、耗时和 SHA-256 见同目录 report.json；未记录凭据和业务响应正文。', '',
+    '各次请求的 uid、路径、耗时及文件的 SHA-256 见同目录的 [report.json](./report.json)。', '',
   ].join('\n'));
 }
 
@@ -156,16 +158,17 @@ function ownObject(type: string): ObjectEntry {
   assert(result, `Missing test ${type}.`);
   return result;
 }
-async function verifyFile(item: FileEntry, objectType: string, objectID: number): Promise<void> {
+async function verifyFile(item: FileEntry, objectType = item.expectedObjectType, objectID = item.expectedObjectID): Promise<void> {
+  item.expectedObjectType = objectType;
+  item.expectedObjectID = objectID;
   const metadata = await data('file/get', item.id);
   item.metadata = Object.fromEntries(['id', 'title', 'extension', 'objectType', 'objectID', 'extra', 'size'].map(k => [k, metadata[k]]));
-  item.expectedObjectType ??= objectType;
-  item.expectedObjectID ??= objectID;
   const response = await api('file/read', { fileID: item.id, stream: 0 });
   assert(response.data instanceof ArrayBuffer, 'file/read must return bytes.');
   item.downloadMatches = hash(new Uint8Array(response.data)) === item.sha256;
-  assert(item.downloadMatches, `File #${item.id} content differs.`);
   save();
+  assert(item.downloadMatches, `File #${item.id} content differs.`);
+  assert(objectType !== undefined && objectID !== undefined, `Missing expected owner for file #${item.id}.`);
   assert.equal(metadata.objectType, objectType, `File #${item.id} objectType`);
   assert.equal(Number(metadata.objectID), objectID, `File #${item.id} objectID`);
 }
@@ -272,11 +275,12 @@ try {
 
   await check('变更需求：异步函数解析和已有 file:ID 引用', async () => {
     const object = ownObject('story');
+    const original = await data('story/get', object.id);
     const before = files.length;
     const response = await api('story/change', {
       id: object.id, title: object.title,
-      spec: `<h2>04 需求变更</h2><img src="function-image" alt="变更图.png"><img src="file:${files[0].id}" alt="已有产品图.png">`,
-      verify: '<p>异步解析和已有文件 ID 均可展示。</p>',
+      spec: `${original.spec}<h2>04 需求变更</h2><img src="function-image" alt="变更图.png"><img src="file:${files[0].id}" alt="已有产品图.png">`,
+      verify: `${original.verify}<p>异步解析和已有文件 ID 均可展示。</p>`,
     }, { fileResolver: async reference => ({ blob: imageBlob(), name: reference.name }) });
     noWarnings(response);
     assert.equal(newFiles(before).length, 1);
@@ -333,10 +337,11 @@ try {
 
   await check('修改 Bug：全局选项被单次解析器覆盖', async () => {
     const object = ownObject('bug');
+    const original = await data('bug/get', object.id);
     const before = files.length;
     setGlobalOptions({ fileResolver: () => { throw new Error('Global resolver should be overridden.'); }, continueOnFileUploadError: false });
     try {
-      const response = await api('bug/update', { id: object.id, steps: '<h2>08 修改 Bug</h2><img src="override" alt="Bug修改图.png">' }, {
+      const response = await api('bug/update', { id: object.id, steps: `${original.steps}<h2>08 修改 Bug</h2><img src="override" alt="Bug修改图.png">` }, {
         autoFill: true, fileResolver: { override: { blob: imageBlob() } }, continueOnFileUploadError: true,
       });
       noWarnings(response);
@@ -370,13 +375,41 @@ try {
   await check('无待处理附件：只提交主请求，不调用文件 API', async () => {
     const object = ownObject('bug');
     const detail = await data('bug/get', object.id);
+    const href = createLink({ server: client.siteUrl, serverConfig: config }, {
+      moduleName: 'product', methodName: 'view', vars: `productID=${ownObject('product').id}`, relative: true,
+    });
     const before = calls.length;
     const response = await api('bug/update', {
-      id: object.id, steps: `${detail.steps}<p><a href="https://example.com/">HTTP 链接</a><a href="#inspection">锚点</a></p>`,
-    });
+      id: object.id, steps: `${detail.steps}<p><a href="${href}" title="测试产品">查看测试产品</a></p>`,
+    }, { autoFill: false, fileResolver: () => { throw new Error('Unexpected resolver call for the anchor.'); } });
     noWarnings(response);
     assert.equal(calls.length - before, 1);
     assert.equal(calls.at(-1)!.method, 'PUT');
+    assert.equal(calls.at(-1)!.uid, undefined);
+    const saved = String((await data('bug/get', object.id)).steps);
+    assert(saved.includes(href) && saved.includes('查看测试产品'));
+  });
+
+  await check('显式 uid 预上传：用 data.uid 保存并绑定链接内的图片', async () => {
+    const object = ownObject('bug');
+    const original = await data('bug/get', object.id);
+    const uid = randomUUID();
+    const before = calls.length;
+    const uploaded = await request('file/create', { uid, extra: 'editor', file: { data: imageBlob(), filename: '预上传图.png' } }, { client, throwOnFail: true });
+    const id = uploaded.data!.id;
+    const image = files.find(file => file.id === id)!;
+    const pending = await data('file/get', id);
+    assert.equal(Number(pending.objectID), 0);
+    const readyAt = calls.length;
+    const href = '#pre-upload';
+    const steps = `${original.steps}<p><a href="${href}"><img src="file:${id}" alt="预上传图.png">预上传图片</a></p>`;
+    noWarnings(await api('bug/update', { id: object.id, uid: 'unused-flat-uid', data: { uid, steps } }, { autoFill: false }));
+    assert.deepEqual(calls.slice(readyAt).map(call => [call.method, call.path, call.uid]), [['PUT', `/bugs/${object.id}`, uid]]);
+    assert.equal(calls[before].uid, uid);
+    const saved = String((await data('bug/get', object.id)).steps);
+    assertImage(saved, id);
+    assert(saved.includes(href) && saved.includes('预上传图片'));
+    await verifyFile(image, 'bug', object.id);
   });
 
   await check('解析失败：上传和主请求之前终止', async () => {
@@ -407,13 +440,46 @@ try {
     await verifyFile(files.at(-1)!, '', 0);
   });
 
-  await check('同一 Token 下分别回读需求和 Bug 的图片归属', async () => {
-    const storyImage = files.find(file => file.expectedObjectType === 'story');
-    const bugImage = files.find(file => file.expectedObjectType === 'bug');
-    assert(storyImage?.uid && bugImage?.uid, 'Expected separate story and Bug upload batches.');
-    assert.notEqual(storyImage.uid, bugImage.uid);
-    await verifyFile(storyImage, 'story', ownObject('story').id);
-    await verifyFile(bugImage, 'bug', ownObject('bug').id);
+  await check('同一 Token 并发保存需求和 Bug，各上传两张图片并回读归属', async () => {
+    const story = ownObject('story'), bug = ownObject('bug');
+    const [beforeStory, beforeBug] = await Promise.all([data('story/get', story.id), data('bug/get', bug.id)]);
+    const images = '<p><a href="#concurrent"><img src="concurrent-A">并发插图</a><img src="concurrent-B"></p>';
+    const sources = (name: string) => ({
+      'concurrent-A': { blob: imageBlob(), name: `${name}-A.png` }, 'concurrent-B': { blob: imageBlob(), name: `${name}-B.png` },
+    });
+    const startCalls = calls.length, startFiles = files.length;
+    const attempts = await Promise.allSettled([
+      api('story/change', { id: story.id, title: story.title, spec: beforeStory.spec + images, verify: beforeStory.verify }, { autoFill: false, fileResolver: sources('并发需求') }),
+      api('bug/update', { id: bug.id, steps: beforeBug.steps + images }, { autoFill: false, fileResolver: sources('并发Bug') }),
+    ]);
+    const added = newFiles(startFiles);
+    for (const file of added) {
+      const owner = file.name.startsWith('并发需求-') ? story : bug;
+      file.expectedObjectType = owner.type;
+      file.expectedObjectID = owner.id;
+    }
+    for (const result of attempts) {
+      if (result.status === 'rejected') throw result.reason;
+      noWarnings(result.value);
+    }
+    const writes = calls.slice(startCalls);
+    assert.equal(writes.length, 6);
+    assert.equal(added.length, 4);
+    const uids = new Set<string>();
+    for (const [object, path, field, name] of [[story, `/stories/${story.id}/change`, 'spec', '并发需求'], [bug, `/bugs/${bug.id}`, 'steps', '并发Bug']] as const) {
+      const uid = writes.find(call => call.method === 'PUT' && call.path === path)?.uid;
+      assert(uid, `Missing uid on ${path}`);
+      uids.add(uid);
+      assert.deepEqual(writes.filter(call => call.uid === uid).map(call => [call.method, call.path]), [['POST', '/files'], ['POST', '/files'], ['PUT', path]]);
+      const batch = added.filter(file => file.uid === uid);
+      assert.deepEqual(batch.map(file => file.name), [`${name}-A.png`, `${name}-B.png`]);
+      const saved = (await data(`${object.type}/get`, object.id))[field];
+      for (const file of batch) {
+        assertImage(saved, file.id);
+        await verifyFile(file, object.type, object.id);
+      }
+    }
+    assert.equal(uids.size, 2);
   });
   }
 
@@ -433,8 +499,7 @@ try {
     }
     for (const file of files) {
       try {
-        const metadata = await data('file/get', file.id);
-        await verifyFile(file, file.expectedObjectType ?? String(metadata.objectType ?? ''), file.expectedObjectID ?? Number(metadata.objectID ?? 0));
+        await verifyFile(file);
       } catch (error) { failures.push(`file #${file.id}: ${formatRealEnvError(error)}`); }
     }
     for (const object of [...objects]) {
@@ -444,8 +509,13 @@ try {
         const response = await api(action, { [`${object.type}ID`]: object.id });
         for (const child of response.data as Record<string, unknown>[]) {
           const id = Number(child.id);
-          if (objects.some(x => x.type === type && x.id === id)) continue;
-          objects.push({ type, id, title: String(child.name), case: `服务端随${object.type} #${object.id}自动创建`, parentID: object.id });
+          const existing = objects.find(x => x.type === type && x.id === id);
+          if (existing) {
+            existing.parentType = object.type;
+            existing.parentID = object.id;
+          } else {
+            objects.push({ type, id, title: String(child.name), case: `服务端随${object.type} #${object.id}自动创建`, parentType: object.type, parentID: object.id });
+          }
         }
       }
     }
