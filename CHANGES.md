@@ -1,5 +1,16 @@
 # 变更日志
 
+## 0.9.3 - 2026-11-19
+
+### 新增
+
+- `request('setting/workHours')` 可读取每日可用工时（`dailyWorkHours`，单位为小时）和工时展示单位（`effortUnit`，取值为 `day` 或 `hour`）。返回数据的 TypeScript 类型为 `WorkHourSettings`。
+- 该接口支持的最低禅道版本为 `23.0` / `biz14.0` / `max9.0` / `ipd6.0`。
+
+### 测试
+
+- 覆盖按日和按小时展示、小数工时、原始响应、返回类型推导及最低版本检查。
+
 ## 0.9.2 - 2026-11-19
 
 - `extractFileIdFromUrl()` 支持从附件列表中的 `file-download` 路径和 GET 查询链接提取文件 ID。
