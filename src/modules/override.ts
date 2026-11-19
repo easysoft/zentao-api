@@ -447,13 +447,13 @@ export function applyBuiltinOverrides(): void {
   });
 
   defineModuleActions('my', {
-    name: 'info',
+    name: 'profile',
     minVersion: VERSION_23_MINIMUMS,
     display: '获取当前用户基础资料',
     description: '返回当前 Token 用户的 id、dept、account、realname、nickname、avatar、role、type；avatar 可为空字符串或 null。',
     type: 'get',
     method: 'get',
-    path: '/my/info',
+    path: '/my/profile',
     resultType: 'object',
     resultObjectType: 'user',
     resultGetter: 'user',

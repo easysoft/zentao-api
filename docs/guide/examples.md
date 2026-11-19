@@ -124,7 +124,7 @@ const raw = await client.request('/products/1', {
 禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 起，可以查询当前 Token 对应用户的基础资料：
 
 ```ts
-const me = await request('my/info');
+const me = await request('my/profile');
 console.log(me.data?.account, me.data?.realname);
 ```
 

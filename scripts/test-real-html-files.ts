@@ -356,7 +356,7 @@ try {
     const today = new Date().toISOString().slice(0, 10);
     const end = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
     await api('project/create', { name: `${runID} 项目`, model: 'scrum', begin: today, end, workflowGroup, products: [ownObject('product').id] });
-    const me = record((await api('my/info', {})).data);
+    const me = record((await api('my/profile', {})).data);
     await api('meeting/create', {
       project: ownObject('project').id, name: `${runID} 会议`, begin: `${today} 14:00`, end: `${today} 15:00`,
       mode: 'online', host: me.account, participant: [me.account],

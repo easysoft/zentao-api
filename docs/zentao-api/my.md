@@ -38,7 +38,7 @@
 | `auditPlans` | 我的地盘-待处理审计计划 | `GET` | `/my/auditplans` |
 | `ncs` | 我的地盘-待处理不符合项 | `GET` | `/my/ncs` |
 | `createSSH` | 添加我的 SSH 公钥 | `POST` | `/my/sshkeys` |
-| `info` | 获取当前用户基础资料 | `GET` | `/my/info` |
+| `profile` | 获取当前用户基础资料 | `GET` | `/my/profile` |
 
 ## 我的待办
 
@@ -1551,8 +1551,8 @@ const result = await request("my/createSSH", {
 
 返回当前 Token 用户的 id、dept、account、realname、nickname、avatar、role、type；avatar 可为空字符串或 null。
 
-- SDK 调用：`request("my/info", params)`
-- HTTP：`GET /my/info`
+- SDK 调用：`request("my/profile", params)`
+- HTTP：`GET /my/profile`
 - 动作类型：`get`
 - 最低禅道版本：`23.0` / `biz14.0` / `max9.0` / `ipd6.0`
 
@@ -1579,5 +1579,5 @@ const result = await request("my/createSSH", {
 ```ts
 import { request } from 'zentao-api';
 
-const result = await request("my/info");
+const result = await request("my/profile");
 ```

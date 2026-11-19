@@ -59,7 +59,7 @@ describe('result object type registration', () => {
       expect(JSON.parse(JSON.stringify(exportRegistry({ raw }))).fixture.actions[0].resultObjectType).toEqual(stored);
     }
     resetModuleDefinitions();
-    expect(getModuleAction('my', 'info')!.resultObjectType).toBe('user');
+    expect(getModuleAction('my', 'profile')!.resultObjectType).toBe('user');
     expect(getModuleAction('product', 'repos')!.resultObjectType).toBe('repo');
     expect(getModuleAction('file', 'read')!.resultObjectType).toBeNull();
   });
@@ -224,7 +224,7 @@ describe('result object type responses', () => {
 
 describe('builtin result object types', () => {
   test.each([
-    ['bug', 'list', 'bug'], ['my', 'info', 'user'], ['my', 'activityTasks', 'task'],
+    ['bug', 'list', 'bug'], ['my', 'profile', 'user'], ['my', 'activityTasks', 'task'],
     ['my', 'auditPlans', 'auditplan'], ['my', 'reviewIssues', 'reviewissue'],
     ['project', 'createStory', 'story'], ['project', 'createRisk', 'risk'],
     ['feedback', 'createTicket', 'ticket'], ['ticket', 'createStory', 'story'],

@@ -91,7 +91,7 @@ describe('ZenTao versions and registry filtering', () => {
     const transport = spyOn(client, 'request').mockRejectedValue(new Error('Unexpected request'));
     try {
       for (const [module, action, minimums, previous] of [
-        ['my', 'info', version23, latestVersions],
+        ['my', 'profile', version23, latestVersions],
         ['file', 'read', version23, latestVersions],
         ['file', 'update', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],
         ['file', 'get', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],

@@ -25,7 +25,7 @@ type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActio
 type BuiltinListRequestName = BuiltinModuleName;
 type BuiltinNamedRequestName = {
   [M in BuiltinModuleName]: `${M}/${BuiltinActionName<M>}`;
-}[BuiltinModuleName] | 'my/info' | 'file/get' | 'file/read';
+}[BuiltinModuleName] | 'my/profile' | 'file/get' | 'file/read';
 type BuiltinIdRequestName = `${BuiltinModuleName}/${number}`;
 /** 内置模块支持的请求名：`module`、`module/action` 或 `module/123`。 */
 export type BuiltinRequestName = BuiltinListRequestName | BuiltinNamedRequestName | BuiltinIdRequestName;
