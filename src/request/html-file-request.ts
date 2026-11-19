@@ -185,8 +185,8 @@ export class HtmlFileRequest {
     try { await this.context.onFileError?.({ ...warning }); } catch { /* notification only */ }
   }
 
-  async prepare(): Promise<void> {
-    const documents = parseHtmlFiles(this.command.data, this.command.action);
+  async prepare(markdownField?: string): Promise<void> {
+    const documents = parseHtmlFiles(this.command.data, this.command.action, markdownField);
     const references = documents.flatMap(document => document.references);
     if (!references.length) return;
     const sources = new Map<HtmlFileReference, Source>();

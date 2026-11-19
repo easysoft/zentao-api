@@ -184,6 +184,10 @@ console.log(uploaded.data?.id, uploaded.data?.url);
 
 单个本地文件或 Blob 默认限制为 50 MiB；可通过单次调用选项 `maxUploadBytes` 调整。
 
+### 用 Markdown 写入富文本
+
+`request()` 的 `renderMarkdown` 选项接受同步或异步渲染回调。SDK 在 `autoFill` 前只转换显式提交的富文本字段，优先取 `params.data`，保留空字符串和已有 HTML。协同文档的 `content` 默认保留 Markdown，显式指定 `contentType: 'html'` 后参与渲染。[调用示例](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#用-markdown-写入富文本)
+
 ### HTML 富文本中的图片
 
 高阶请求处理 HTML 字段中的 `<img src>`。Node.js/Bun 可以引用本地图片，也可以用 `file:42` 引用已有禅道图片。

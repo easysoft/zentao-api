@@ -24,6 +24,7 @@ SDK 进程级全局默认选项，供请求和 [createLink](../functions/createL
 | <a id="property-persistprofiles"></a> `persistProfiles?` | `boolean` | 是否在登录成功后把账号、Token 和配置持久化为本地 profile。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 默认每页记录数，会映射到模块动作的 `recPerPage` 参数。 | - |
 | <a id="property-relative"></a> `relative?` | `boolean` | createLink 默认返回站内路径；单次调用的 relative 优先，默认 false（完整网址）。 | - |
+| <a id="property-rendermarkdown"></a> `renderMarkdown?` | [`MarkdownRenderer`](../type-aliases/MarkdownRenderer.md) | 默认 Markdown 渲染回调，详见 [RequestOptions.renderMarkdown](RequestOptions.md#property-rendermarkdown)。 | - |
 | <a id="property-skipversioncheckonconfigerror"></a> `skipVersionCheckOnConfigError?` | `boolean` | 配置网络或响应获取失败时，允许登录继续或高阶请求跳过版本检查，默认 false；不忽略版本不匹配、格式错误或存储错误。 | - |
 | <a id="property-throwonfail"></a> `throwOnFail?` | `boolean` | 当禅道服务端返回 `{ status: "fail" }` 时是否抛出 `E_API_FAILED`，默认 false。 | - |
 | <a id="property-timeout"></a> `timeout?` | `number` | 默认请求超时时间，优先级低于单次请求选项。 | - |

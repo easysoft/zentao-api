@@ -57,7 +57,7 @@ function resolvePath(action: ModuleAction, values: Record<string, string | numbe
 }
 
 /** 支持用户通过 `params.data` 传入 JSON 字符串或对象作为请求体基础值。 */
-function parseData(value: unknown): Record<string, unknown> | undefined {
+export function parseRequestData(value: unknown): Record<string, unknown> | undefined {
   if (value === undefined) return undefined;
   if (typeof value === 'string') {
     try {
@@ -68,6 +68,14 @@ function parseData(value: unknown): Record<string, unknown> | undefined {
     }
   }
   return isRecord(value) ? value : undefined;
+}
+
+/** 取显式字段所属的对象。请求体只复制 params.data 中自身可枚举的字段。 */
+export function explicitBodyFieldSource(
+  params: Record<string, unknown>, data: Record<string, unknown> | undefined, key: string,
+): Record<string, unknown> | undefined {
+  if (data && Object.prototype.propertyIsEnumerable.call(data, key)) return data;
+  return Object.hasOwn(params, key) ? params : undefined;
 }
 
 const TRUTHY_STRINGS = new Set(['true', '1', 'yes', 'on']);
@@ -181,7 +189,7 @@ function buildQuery(action: ModuleAction, params: Record<string, unknown>): Reco
 
 /** 按 requestBody schema 组装请求体，并对各字段做取值优先级解析与类型转换。 */
 function buildRequestBody(action: ModuleAction, params: Record<string, unknown>): Record<string, unknown> | undefined {
-  const base = parseData(params.data);
+  const base = parseRequestData(params.data);
   if (action.requestBody?.schema?.type !== 'object') return base;
 
   const data: Record<string, unknown> = base ? { ...base } : {};
@@ -192,13 +200,12 @@ function buildRequestBody(action: ModuleAction, params: Record<string, unknown>)
   const required = new Set(schema.required ?? []);
   for (const [key, property] of Object.entries(schema.properties ?? {})) {
     // body 字段优先级：params.data 中的字段 > 平铺 params 字段 > schema 默认值。
-    const hasDataValue = Object.prototype.hasOwnProperty.call(data, key);
-    const hasParamValue = Object.prototype.hasOwnProperty.call(params, key);
-    const raw = hasDataValue ? data[key] : hasParamValue ? params[key] : property.defaultValue;
+    const source = explicitBodyFieldSource(params, data, key);
+    const raw = source ? source[key] : property.defaultValue;
     if (raw === undefined && (property.required || required.has(key))) {
       throw new ZentaoError('E_MISSING_PARAM', { param: key });
     }
-    const value = coerceValue(raw, property.type, key, hasDataValue);
+    const value = coerceValue(raw, property.type, key, source === data);
     if (value !== undefined) {
       data[key] = value;
     }

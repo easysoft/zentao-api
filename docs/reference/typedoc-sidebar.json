@@ -256,6 +256,10 @@
         "link": "/reference/type-aliases/ListPagerInfo.md"
       },
       {
+        "text": "MarkdownRenderer",
+        "link": "/reference/type-aliases/MarkdownRenderer.md"
+      },
+      {
         "text": "ModuleActionBeforeRequestCallback",
         "link": "/reference/type-aliases/ModuleActionBeforeRequestCallback.md"
       },

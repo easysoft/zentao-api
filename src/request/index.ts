@@ -16,11 +16,12 @@ import type {
 } from '../types/index.js';
 import { getModule, getModuleAction } from '../modules/registry.js';
 import type { BuiltinActionMeta, BuiltinModuleName } from '../modules/generated.js';
-import { extractPager, extractResult, resolveActionRequest } from '../modules/resolve.js';
+import { explicitBodyFieldSource, extractPager, extractResult, parseRequestData, resolveActionRequest } from '../modules/resolve.js';
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
 import { HtmlFileRequest, setFileUid } from './html-file-request.js';
+import { renderExplicitMarkdown } from './markdown.js';
 import { resolveRequestVersion } from './version.js';
 import { classifyWriteError, classifyWriteReceipt, isWriteFailure, trackWrite, type WriteAttempt } from './write-outcome.js';
 
@@ -94,22 +95,6 @@ function splitRequestName(name: string): { moduleName: string; actionName: strin
   };
 }
 
-/** 解析 `params.data` 中用户显式传入的 body 字段名，用于 autoFill 判断字段归属。 */
-function getExplicitDataKeys(data: unknown): Set<string> {
-  let value = data;
-  if (typeof value === 'string') {
-    try {
-      value = JSON.parse(value);
-    } catch {
-      return new Set();
-    }
-  }
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    return new Set(Object.keys(value as Record<string, unknown>));
-  }
-  return new Set();
-}
-
 /**
  * 在执行 `update` 动作前，用当前对象的现值填充用户未显式传入的 body 字段。
  *
@@ -142,13 +127,12 @@ async function autoFillUpdateParams(
   }, { version }) as ResponseData).data;
   if (!isRecord(current)) return params;
 
-  const explicitDataKeys = getExplicitDataKeys(params.data);
+  const data = parseRequestData(params.data);
   const filled: Record<string, unknown> = { ...params };
   for (const key of Object.keys(properties)) {
     // An upload uid identifies this save and must never be copied from a previous edit.
     if (key === 'uid') continue;
-    const userProvided = Object.prototype.hasOwnProperty.call(params, key) || explicitDataKeys.has(key);
-    if (!userProvided && Object.prototype.hasOwnProperty.call(current, key)) {
+    if (!explicitBodyFieldSource(params, data, key) && Object.hasOwn(current, key)) {
       filled[key] = current[key];
     }
   }
@@ -275,6 +259,7 @@ function normalizeResponse<T>(
  *
  * 对 `update` 动作，当 `options.autoFill` 或全局 `autoFill` 为真时，会先 GET 当前对象，
  * 用现值补齐用户未显式传入的 body 字段后再 PUT，避免禅道覆盖未提交字段。详见 {@link RequestOptions#autoFill}。
+ * 若提供 {@link RequestOptions.renderMarkdown}，在预读前渲染本次显式提交的富文本字段。
  *
  * @typeParam T 归一化响应中期望的 `data` 字段类型；不传时为 `unknown`，调用方需要自行收窄。
  * @param name - 请求名，例如 `product`、`product/list` 或 `product/1`。
@@ -332,9 +317,9 @@ async function requestInternal<T = unknown>(
   name: string,
   params: Record<string, unknown>,
   options: RequestOptions,
-  { version, processHtmlFiles = true, checkSession, attempt }: {
+  { version, prepareRichText = true, checkSession, attempt }: {
     version?: string | null;
-    processHtmlFiles?: boolean;
+    prepareRichText?: boolean;
     checkSession?: () => void;
     attempt?: WriteAttempt;
   },
@@ -364,6 +349,10 @@ async function requestInternal<T = unknown>(
 
   if (version === undefined) version = await resolveRequestVersion(options, globals);
   assertSupportedVersion(version, action.minVersion, `${module.name}/${action.name}`);
+  const renderMarkdown = prepareRichText && (options.renderMarkdown ?? globals.renderMarkdown);
+  const markdownField = renderMarkdown
+    ? await renderExplicitMarkdown(module.name, action, mergedParams, renderMarkdown)
+    : undefined;
   // autoFill completes its GET before the target object's write can start.
   const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
     ? await autoFillUpdateParams(module, action, mergedParams, { ...options, client }, version)
@@ -386,7 +375,7 @@ async function requestInternal<T = unknown>(
   const flatUid = isUpload && command.query?.uid !== undefined ? command.query.uid : command.params.uid;
   const explicitUid = command.data?.uid !== undefined ? command.data.uid : flatUid;
   const uid = isWrite && explicitUid !== undefined ? setFileUid(command, explicitUid, version) : undefined;
-  const files = processHtmlFiles && isWrite && !isUpload ? new HtmlFileRequest(command, {
+  const files = prepareRichText && isWrite && !isUpload ? new HtmlFileRequest(command, {
     client, version, ...transportOptions,
     fileResolver: options.fileResolver ?? globals.fileResolver,
     continueOnFileResolveError: options.continueOnFileResolveError ?? globals.continueOnFileResolveError,
@@ -396,7 +385,7 @@ async function requestInternal<T = unknown>(
       const raw = await requestInternal(`file/${action}`, params, {
         client, ...transportOptions, maxUploadBytes: options.maxUploadBytes,
         raw: true, autoFill: false,
-      }, { version, processHtmlFiles: false, checkSession: fileSession });
+      }, { version, prepareRichText: false, checkSession: fileSession });
       if (action === 'create' && (typeof raw === 'number' || typeof raw === 'string')) return { id: raw };
       const nested = isRecord(raw) && isRecord(raw.data) ? raw.data : undefined;
       const deleteConfirmed = action !== 'delete' || (isRecord(raw) && (raw.status === 'success' || raw.result === 'success'));
@@ -409,7 +398,7 @@ async function requestInternal<T = unknown>(
   }, uid) : undefined;
   let preparedBody;
   try {
-    await files?.prepare();
+    await files?.prepare(markdownField);
     preparedBody = await prepareActionBody(command, { maxUploadBytes: options.maxUploadBytes });
     (checkSession ?? files?.checkSession)?.();
   } catch (error) {

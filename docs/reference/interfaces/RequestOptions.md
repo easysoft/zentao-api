@@ -30,6 +30,7 @@
 | <a id="property-pick"></a> `pick?` | `string`[] | 摘取字段路径列表。 | [`ProcessListOptions`](ProcessListOptions.md).[`pick`](ProcessListOptions.md#property-pick) |
 | <a id="property-raw"></a> `raw?` | `boolean` | 是否返回原始响应体，默认 false。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 | - |
+| <a id="property-rendermarkdown"></a> `renderMarkdown?` | `false` \| [`MarkdownRenderer`](../type-aliases/MarkdownRenderer.md) | 在 autoFill 前把本次 POST / PUT 显式提交的富文本字段渲染为 HTML。 `params.data` 的同名字段优先，空白字符串和已有 HTML 原样保留。 `doc.content` 仅在本次显式指定 `contentType: 'html'` 时参与渲染。 默认使用全局回调，传 `false` 可关闭本次渲染。 | - |
 | <a id="property-search"></a> `search?` | `string`[] | 模糊搜索关键词组，如 `["登录,超时", "注册,失败"]`；组内 AND、组间 OR。 | [`ProcessListOptions`](ProcessListOptions.md).[`search`](ProcessListOptions.md#property-search) |
 | <a id="property-searchfields"></a> `searchFields?` | `string`[] | 限定搜索字段，缺省时搜索全部字段。 | [`ProcessListOptions`](ProcessListOptions.md).[`searchFields`](ProcessListOptions.md#property-searchfields) |
 | <a id="property-skipversioncheckonconfigerror"></a> `skipVersionCheckOnConfigError?` | `boolean` | 配置网络或响应获取失败时跳过本次版本检查；优先于全局设置，默认 false，不忽略版本不匹配或格式错误。 | - |

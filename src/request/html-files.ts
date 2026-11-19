@@ -1,5 +1,6 @@
 import type { ModuleAction } from '../types/module.js';
 import { findHtmlImages } from '../utils/html.js';
+import { isRecord } from '../utils/object.js';
 
 type SourceRange = { startOffset: number; endOffset: number };
 
@@ -25,10 +26,6 @@ export interface HtmlFileReplacement {
   url?: string;
   error?: string;
   text?: string;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function nonempty(value: string | undefined): string | undefined {
@@ -71,13 +68,22 @@ function parseReferences(field: string, html: string): HtmlFileReference[] {
   });
 }
 
-/** 只扫描最终请求体里声明为 HTML 的顶层字符串字段，不创建浏览器 DOM。 */
-export function parseHtmlFiles(data: Record<string, unknown> | undefined, action: ModuleAction): HtmlFileDocument[] {
+/** 请求体 schema 声明的顶层富文本字段，兼容旧注册表的 (HTML) 说明。 */
+export function getHtmlFields(action: ModuleAction): string[] {
   const properties = action.requestBody?.schema.properties;
-  if (!data || !isRecord(properties)) return [];
+  if (!isRecord(properties)) return [];
+  return Object.keys(properties).filter(field => {
+    const schema = properties[field];
+    return isRecord(schema) && (schema.textType === 'html' || (typeof schema.description === 'string' && schema.description.endsWith('(HTML)')));
+  });
+}
+
+/** 只扫描最终请求体里声明为 HTML 的顶层字符串字段，不创建浏览器 DOM。 */
+export function parseHtmlFiles(data: Record<string, unknown> | undefined, action: ModuleAction, markdownField?: string): HtmlFileDocument[] {
+  if (!data) return [];
   const documents: HtmlFileDocument[] = [];
-  for (const [field, schema] of Object.entries(properties)) {
-    if (!isRecord(schema) || (schema.textType !== 'html' && !(typeof schema.description === 'string' && schema.description.endsWith('(HTML)')))) continue;
+  for (const field of getHtmlFields(action)) {
+    if (field === markdownField) continue;
     const html = data[field];
     if (typeof html !== 'string') continue;
     const references = parseReferences(field, html);

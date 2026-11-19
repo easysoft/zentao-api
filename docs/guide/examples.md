@@ -234,6 +234,27 @@ const bytes = await client.request('/files/42/read', {
 
 大文件需要流式读取时，使用 `responseType: 'response'` 并消费返回的 `response.body`。
 
+## 用 Markdown 写入富文本
+
+`request()` 接受应用提供的 `renderMarkdown` 回调，可以同步或异步返回 HTML。例如，使用应用里的 Marked 渲染需求描述：
+
+```ts
+import { marked } from 'marked';
+import { request } from 'zentao-api';
+
+await request('story/change', {
+  id: 1001,
+  title: '登录需求',
+  data: { spec: '**验收条件**：用户可以登录', verify: '' },
+}, {
+  renderMarkdown: markdown => marked.parse(markdown),
+});
+```
+
+SDK 只将本次 POST / PUT 显式提交的顶层富文本字段传给回调，第二个参数包含 `module`、`action` 和 `field`。`params.data` 支持对象和 JSON 字符串，同名字段优先于平铺参数。空字符串可清空字段，空白和已有 HTML 保留原文。渲染完成后才执行 `autoFill` 预读、`beforeRequest` 和 HTML 图片处理。渲染失败会中止本次写入。
+
+协同文档的 `content` 默认按 Markdown 提交，包括正文里的图片示例。要把它渲染为 HTML，在创建或更新文档时显式传入 `contentType: 'html'`。应用也可以用 `setGlobalOptions({ renderMarkdown })` 配置默认回调，单次传 `renderMarkdown: false` 可关闭。
+
 <a id="html-富文本文件"></a>
 
 ## HTML 富文本图片
