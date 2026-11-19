@@ -32,9 +32,10 @@ export {
   type RequestParamsFor,
   type RequestResultFor,
 } from './request/index.js';
+export { readImageFile, type ImageFileContent } from './request/read-image-file.js';
+export { extractFileIdFromUrl, parseFileUrl, type ParsedFileUrl } from './url.js';
 export {
   createLink,
-  extractFileIdFromUrl,
   extractFileIdsFromHtml,
   parseLink,
   pickFields,

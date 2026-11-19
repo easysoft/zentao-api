@@ -86,6 +86,10 @@
         "link": "/reference/interfaces/GlobalOptions.md"
       },
       {
+        "text": "ImageFileContent",
+        "link": "/reference/interfaces/ImageFileContent.md"
+      },
+      {
         "text": "LoginResponse",
         "link": "/reference/interfaces/LoginResponse.md"
       },
@@ -124,6 +128,10 @@
       {
         "text": "Pager",
         "link": "/reference/interfaces/Pager.md"
+      },
+      {
+        "text": "ParsedFileUrl",
+        "link": "/reference/interfaces/ParsedFileUrl.md"
       },
       {
         "text": "ParseLinkOptions",
@@ -432,6 +440,10 @@
         "link": "/reference/functions/isModuleName.md"
       },
       {
+        "text": "parseFileUrl",
+        "link": "/reference/functions/parseFileUrl.md"
+      },
+      {
         "text": "parseLink",
         "link": "/reference/functions/parseLink.md"
       },
@@ -446,6 +458,10 @@
       {
         "text": "processData",
         "link": "/reference/functions/processData.md"
+      },
+      {
+        "text": "readImageFile",
+        "link": "/reference/functions/readImageFile.md"
       },
       {
         "text": "request",

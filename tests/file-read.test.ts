@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, mock, spyOn, test } from 'bun:test';
-import { ZentaoClient, exportRegistry, getModuleActionParams, request, setGlobalOptions } from '../src/index';
+import { ZentaoClient, exportRegistry, getGlobalOptions, getModuleActionParams, parseFileUrl, readImageFile, request, setGlobalOptions } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
 
 const servers: ReturnType<typeof Bun.serve>[] = [];
@@ -20,6 +20,109 @@ afterEach(() => {
 });
 
 const file = { id: 42, title: 'example.png', extension: 'png', size: 1024, realPath: '/uploads/example.png', gid: '', addedBy: 'admin', addedDate: '2026-11-17 00:00:00', objectType: 'task', objectID: 1 };
+
+test('readImageFile uses a path image extension in a single binary request', async () => {
+  const paths: string[] = [];
+  const bytes = Uint8Array.of(0, 255, 128, 10);
+  const client = createClient(req => {
+    expect(req.method).toBe('GET');
+    expect(req.headers.get('Token')).toBe('file-token');
+    expect(req.headers.get('ZenTao-Action-Assistant')).toBe('AI <read>');
+    const url = new URL(req.url);
+    paths.push(url.pathname + url.search);
+    return new Response(bytes);
+  });
+  const image = await readImageFile(client.siteUrl + '/file-read-42.JPEG?size=large', {
+    client, actionAssistant: { name: 'AI', info: 'read' },
+  });
+  expect(paths).toEqual(['/api.php/v2/files/42/read?stream=0']);
+  expect(image).toEqual({ fileID: 42, filename: '42.jpeg', contentType: 'image/jpeg', data: bytes.buffer });
+});
+
+test('readImageFile accepts a parsed route with its method and extension intact', async () => {
+  const paths: string[] = [];
+  const client = createClient(req => {
+    const url = new URL(req.url);
+    paths.push(url.pathname + url.search);
+    return new Response(Uint8Array.of(0, 255));
+  });
+  expect(await readImageFile(parseFileUrl('/file-download-42.html')!, { client })).toBeUndefined();
+  const image = await readImageFile(parseFileUrl('/file-read-42.PNG')!, { client });
+  expect(image?.data).toBeInstanceOf(ArrayBuffer);
+  expect(new Uint8Array(image!.data)).toEqual(Uint8Array.of(0, 255));
+  expect(paths).toEqual(['/api.php/v2/files/42/read?stream=0']);
+});
+
+test('readImageFile resolves query links from metadata even when the view parameter says png', async () => {
+  const paths: string[] = [];
+  const bytes = Uint8Array.of(82, 73, 70, 70);
+  const previous = getGlobalOptions().client;
+  const client = createClient(req => {
+    expect(req.headers.get('ZenTao-Action-Assistant')).toBe('AI');
+    const url = new URL(req.url);
+    paths.push(url.pathname + url.search);
+    if (url.pathname.endsWith('/42/read')) return new Response(bytes);
+    // Both requests must stay on the client selected at the start of the read.
+    setGlobalOptions({ client: undefined });
+    return Response.json({ status: 'success', file: { title: 'preview.jpg', extension: 'WEBP' } });
+  });
+  setGlobalOptions({ client });
+  try {
+    const image = await readImageFile(client.siteUrl + '/index.php?m=file&amp;f=read&amp;fileID=42&amp;t=png', { actionAssistant: 'AI' });
+    expect(paths).toEqual(['/api.php/v2/files/42', '/api.php/v2/files/42/read?stream=0']);
+    expect(image).toEqual({ fileID: 42, filename: '42.webp', contentType: 'image/webp', data: bytes.buffer });
+  } finally {
+    setGlobalOptions({ client: previous });
+  }
+});
+
+test('readImageFile uses the title suffix only when metadata has no extension', async () => {
+  const paths: string[] = [];
+  const client = createClient(req => {
+    const url = new URL(req.url);
+    paths.push(url.pathname + url.search);
+    if (url.pathname.endsWith('/read')) return new Response('tiff bytes');
+    const metadata = url.pathname.endsWith('/42') ? { title: 'screen.TIFF' } : { title: 'screen.png', extension: 'pdf' };
+    return Response.json({ status: 'success', file: metadata });
+  });
+  expect(await readImageFile(42, { client })).toMatchObject({ filename: '42.tiff', contentType: 'image/tiff' });
+  expect(await readImageFile('/file-read-42', { client })).toMatchObject({ filename: '42.tiff', contentType: 'image/tiff' });
+  expect(await readImageFile('/?module=file&method=read&fileID=43', { client })).toBeUndefined();
+  expect(paths).toEqual([
+    '/api.php/v2/files/42', '/api.php/v2/files/42/read?stream=0',
+    '/api.php/v2/files/42', '/api.php/v2/files/42/read?stream=0', '/api.php/v2/files/43',
+  ]);
+});
+
+test('readImageFile skips downloads, non-image paths and invalid references before any HTTP request', async () => {
+  let calls = 0;
+  const client = createClient(() => { calls++; return new Response(); });
+  setGlobalOptions({ version: undefined });
+  for (const source of [
+    '/file-download-42-left.html', '/?m=file&f=download&fileID=42&t=png', '/file-read-42.pdf',
+    '/?m=file&f=read&fileID=42&fileID=43', '/?m=file&f=read&method=download&fileID=42',
+    '/file-read-42.png?m=file&f=download&fileID=43',
+    'https://other.example/file-read-42.png', '/assets/photo.png', 0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1,
+  ]) {
+    expect(await readImageFile(source, { client })).toBeUndefined();
+  }
+  expect(calls).toBe(0);
+});
+
+test('readImageFile propagates failed requests and skips empty image content', async () => {
+  const paths: string[] = [];
+  const client = createClient(req => {
+    const url = new URL(req.url);
+    paths.push(url.pathname);
+    if (url.pathname.endsWith('/42')) return Response.json({ status: 'fail', message: 'Access denied' });
+    if (url.pathname.endsWith('/43/read')) return new Response('Not found', { status: 404 });
+    return new Response();
+  });
+  await expect(readImageFile(42, { client })).rejects.toMatchObject({ code: 'E_API_FAILED' });
+  await expect(readImageFile('/file-read-43.png', { client })).rejects.toMatchObject({ code: 'E_HTTP_ERROR' });
+  expect(await readImageFile('/file-read-44.png', { client })).toBeUndefined();
+  expect(paths).toEqual(['/api.php/v2/files/42', '/api.php/v2/files/43/read', '/api.php/v2/files/44/read']);
+});
 
 test('file/get supports IDs, shorthand and encoded gids after reset', async () => {
   const paths: string[] = [];

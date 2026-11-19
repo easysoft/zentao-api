@@ -47,6 +47,15 @@ const MIME_TYPES: Readonly<Record<string, string>> = {
   '.zip': 'application/zip',
 };
 
+/** @internal 图片读取支持的格式，保留上传时原有的 MIME 推断。 */
+export function getImageContentType(extension: string): string | undefined {
+  if (extension === 'bmp') return 'image/bmp';
+  if (extension === 'ico') return 'image/x-icon';
+  if (extension === 'tif' || extension === 'tiff') return 'image/tiff';
+  const mime = MIME_TYPES[`.${extension}`];
+  return mime?.startsWith('image/') ? mime : undefined;
+}
+
 // 与 environment.ts 相同：通过变量形式的动态 import 避免浏览器 bundle 静态拉入 node:*。
 function importNodeModule<T>(specifier: string): Promise<T> {
   return import(specifier) as Promise<T>;

@@ -255,10 +255,10 @@ console.log(result.fileWarnings);
 
 `file:///tmp/screenshot.png` 表示绝对路径，`file://path/to/screenshot.png` 表示相对当前工作目录的路径。SDK 将上传返回的 `url` 写入图片 `src`，保留部署子目录和查询参数。对于 `file:42` 或仅返回 ID 的上传响应，SDK 按服务器路由配置生成站内链接，例如 `/file-read-42.png`。
 
-用 `extractFileIdFromUrl` 从图片 `src` 或附件下载链接提取文件 ID。相对路径可直接传入。带域名的 URL 还需传入禅道站点地址（含安装目录），站点或文件路由不匹配时返回 `undefined`。
+只需解析 URL 时，可从 `zentao-api/url` 导入工具，无需加载 HTTP 客户端或 HTML 解析器。主入口也导出相同的函数。用 `extractFileIdFromUrl` 从图片 `src` 或附件下载链接提取文件 ID。相对路径可直接传入。带域名的 URL 还需传入禅道站点地址（含安装目录），站点或文件路由不匹配时返回 `undefined`。
 
 ```ts
-import { extractFileIdFromUrl } from 'zentao-api';
+import { extractFileIdFromUrl, parseFileUrl } from 'zentao-api/url';
 
 extractFileIdFromUrl('/sub-path/file-read-298.png'); // 298
 extractFileIdFromUrl('/sub-path/file-download-298-left.html'); // 298
@@ -266,6 +266,24 @@ extractFileIdFromUrl(
   'https://example.com/sub-path/?module=file&amp;method=read&amp;fileID=298',
   'https://example.com/sub-path',
 ); // 298
+
+parseFileUrl('/sub-path/file-read-298.WEBP'); // { fileID: 298, method: 'read', extension: 'webp' }
+parseFileUrl('/file-download-298-left.html'); // { fileID: 298, method: 'download' }
+```
+
+用 `readImageFile` 读取当前站点的图片，可传 URL、同站点的解析结果或数字 ID。路径带已知图片后缀时直接调用 `file/read`。数字 ID 和无后缀的读取链接先查 `file/get`，以 `extension` 为准，缺省时取 `title` 后缀。查询式链接中的 `t=png` 等视图参数可能是默认值。
+
+下载链接、有歧义的查询和非图片路径会在请求前返回 `undefined`。元数据表明附件不是图片或读取到空内容时也返回 `undefined`，请求错误会抛出。
+
+```ts
+import { readImageFile } from 'zentao-api';
+
+const image = await readImageFile('/sub-path/index.php?m=file&f=read&fileID=298&t=png', { client });
+if (image) {
+  // 若附件元数据的 extension 是 webp，文件名为 298.webp，MIME 类型为 image/webp。
+  const { filename, contentType, data } = image;
+  console.log(filename, contentType, data.byteLength);
+}
 ```
 
 用 `extractFileIdsFromHtml(html, siteUrl)` 处理整段富文本。它按 `<img>` 的出现顺序返回匹配的 `[imgSrc, zentaoFileID]`，保留重复引用。返回的 `src` 是 HTML 实体解码后的属性值。没有匹配图片时返回 `[]`。

@@ -1,7 +1,8 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { runInNewContext } from 'node:vm';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -39,12 +40,15 @@ function toPackedPath(file: string): string {
 const browserExportTargets = resolveExportTargets(browserExport);
 assert(browserExportTargets.includes('./dist/browser.js'), 'package.json ./browser import target must be dist/browser.js.');
 assert(browserExportTargets.includes('./dist/browser.d.ts'), 'package.json ./browser types target must be dist/browser.d.ts.');
+const urlExportTargets = resolveExportTargets(packageJson.exports['./url']);
+assert(urlExportTargets.includes('./dist/url.d.ts'), 'Package ./url must include its type declarations.');
 
 const requiredFiles = [
   packageJson.main,
   packageJson.types,
   browserGlobalExport,
   ...browserExportTargets,
+  ...urlExportTargets,
 ];
 
 for (const file of requiredFiles) {
@@ -87,15 +91,27 @@ try {
   assert(listing.exitCode === 0, `Cannot inspect package: ${new TextDecoder().decode(listing.stderr)}`);
   packedFiles = new Set(new TextDecoder().decode(listing.stdout).trim().split('\n')
     .filter(file => !file.endsWith('/')).map(file => file.replace(/^package\//, '')));
+
+  // Self-import the packed subpath outside the repo, with no installed HTML parser or SDK dependencies.
+  const unpack = Bun.spawnSync(['tar', '-xzf', archive, '-C', packDir]);
+  assert(unpack.exitCode === 0, `Cannot extract package: ${new TextDecoder().decode(unpack.stderr)}`);
+  const entry = join(packDir, 'package', 'url-smoke.mjs');
+  writeFileSync(entry, [
+    "import { extractFileIdFromUrl, parseFileUrl } from 'zentao-api/url';",
+    "if (extractFileIdFromUrl('/file-download-42.html') !== 42) throw new Error('Missing download ID');",
+    "if (parseFileUrl('/file-read-42.PNG')?.extension !== 'png') throw new Error('Missing image extension');",
+  ].join('\n'));
+  const run = Bun.spawnSync(['node', entry]);
+  assert(run.exitCode === 0, `Standalone URL import failed: ${new TextDecoder().decode(run.stderr)}`);
+  const bundle = await Bun.build({ entrypoints: [entry], target: 'browser', format: 'iife' });
+  assert(bundle.success, `Standalone URL browser bundle failed: ${bundle.logs.join('\n')}`);
+  runInNewContext(await bundle.outputs[0].text(), { URL, URLSearchParams });
 } finally {
   rmSync(packDir, { recursive: true, force: true });
 }
 
 for (const file of [
-  toPackedPath(packageJson.main),
-  toPackedPath(packageJson.types),
-  toPackedPath(browserGlobalExport),
-  ...browserExportTargets.map(toPackedPath),
+  ...requiredFiles.map(toPackedPath),
   'README.md',
   'LICENSE',
 ]) {

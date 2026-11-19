@@ -28,6 +28,7 @@
 | [FromProfileOptions](interfaces/FromProfileOptions.md) | 从本地 profile 恢复客户端时的选项。 |
 | [GetZentaoConfigOptions](interfaces/GetZentaoConfigOptions.md) | [ZentaoClient.getZentaoConfig](classes/ZentaoClient.md#getzentaoconfig) 的选项。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供请求和 [createLink](functions/createLink.md) 等辅助方法复用。 |
+| [ImageFileContent](interfaces/ImageFileContent.md) | 图片附件的原始内容及按附件 ID 生成的文件名。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
 | [ModuleActionPagerGetterMap](interfaces/ModuleActionPagerGetterMap.md) | 从原始响应中提取分页字段时使用的字段映射，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
@@ -38,6 +39,7 @@
 | [ModuleDefinition](interfaces/ModuleDefinition.md) | 禅道模块定义，由多个动作组成。 |
 | [ModuleQueryOptions](interfaces/ModuleQueryOptions.md) | 注册库查询选项；不传版本时返回完整的当前定义，不使用全局版本。 |
 | [Pager](interfaces/Pager.md) | 禅道 API 原始分页结构。 |
+| [ParsedFileUrl](interfaces/ParsedFileUrl.md) | 禅道附件页面路由。只有路径式 read 链接提供文件后缀。 |
 | [ParseLinkOptions](interfaces/ParseLinkOptions.md) | 解析禅道页面链接的选项。 |
 | [ProcessListOptions](interfaces/ProcessListOptions.md) | [processData](functions/processData.md) 处理列表时的选项；执行顺序为 转换 → 过滤 → 搜索 → 排序 → 限制数量 → 摘取。 |
 | [ProcessSingleOptions](interfaces/ProcessSingleOptions.md) | [processData](functions/processData.md) 处理单条对象时的选项；执行顺序为 转换 → 摘取。 |
@@ -125,10 +127,12 @@
 | [getProfile](functions/getProfile.md) | 获取指定 profile。 |
 | [getProfileKey](functions/getProfileKey.md) | 根据 profile 的账号和禅道站点地址生成稳定 key。 |
 | [isModuleName](functions/isModuleName.md) | 判断模块名是否已注册。 |
+| [parseFileUrl](functions/parseFileUrl.md) | 解析禅道附件的读取或下载路由。路径式链接可附带普通查询参数。 用查询参数指定路由时，模块、方法和文件 ID 必须唯一，且不能与路径路由混用。 |
 | [parseLink](functions/parseLink.md) | 解析禅道页面链接，同步执行且不读取浏览器当前位置、存储或网络。 |
 | [pickFields](functions/pickFields.md) | 对列表中的每条对象摘取指定字段。 |
 | [pickFieldsSingle](functions/pickFieldsSingle.md) | 从单条对象中摘取指定字段，支持通过 `.` 访问子字段，保留嵌套结构。 |
 | [processData](functions/processData.md) | 处理单条对象：按 转换 → 摘取 的顺序执行。 |
+| [readImageFile](functions/readImageFile.md) | 从当前禅道站点读取图片附件。路径中有图片后缀时直接调用 file/read。 无后缀的读取链接和数字 ID 先通过 file/get 取得扩展名，缺少扩展名时取文件标题的后缀。 |
 | [request](functions/request.md) | 按模块名或模块动作名请求禅道 API。 |
 | [searchData](functions/searchData.md) | 对列表做大小写不敏感的模糊匹配。 |
 | [setGlobalOptions](functions/setGlobalOptions.md) | 以浅合并的方式更新全局选项。 |
