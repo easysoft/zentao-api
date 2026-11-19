@@ -15,7 +15,8 @@ SDK 进程级全局默认选项，供请求和 [createLink](../functions/createL
 | <a id="property-actionassistant"></a> `actionAssistant?` | [`ActionAssistant`](../type-aliases/ActionAssistant.md) | 默认操作辅助工具标记；覆盖客户端默认值，可被单次请求覆盖，空字符串表示关闭，不保存到 profile。 | - |
 | <a id="property-autofill"></a> `autoFill?` | `boolean` | 是否在执行 `update` 操作时自动填充未传入的字段，默认 false。 优先级低于单次请求选项；语义见 [RequestOptions#autoFill](RequestOptions.md#property-autofill)。 | - |
 | <a id="property-client"></a> `client?` | [`ZentaoClient`](../classes/ZentaoClient.md) | 默认客户端；通常由 `ZentaoClient.init()` 设置。 | - |
-| <a id="property-continueonfileuploaderror"></a> `continueOnFileUploadError?` | `boolean` | 上传或读取本地文件失败后是否标注 HTML 并继续主请求，默认 true；解析器失败始终终止。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`continueOnFileUploadError`](FileHandlingOptions.md#property-continueonfileuploaderror) |
+| <a id="property-continueonfileresolveerror"></a> `continueOnFileResolveError?` | `boolean` | 解析失败时，将该图片替换为原 alt 的纯文本，缺省时取原路径，记录警告并继续保存。默认 false，在上传前中止。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`continueOnFileResolveError`](FileHandlingOptions.md#property-continueonfileresolveerror) |
+| <a id="property-continueonfileuploaderror"></a> `continueOnFileUploadError?` | `boolean` | 上传或读取本地文件失败后是否标注 HTML 并继续主请求，默认 true。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`continueOnFileUploadError`](FileHandlingOptions.md#property-continueonfileuploaderror) |
 | <a id="property-fileresolver"></a> `fileResolver?` | [`FileResolver`](../type-aliases/FileResolver.md) | 解析本地及自定义文件引用；HTTP(S) 和已有禅道文件链接直接保留。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`fileResolver`](FileHandlingOptions.md#property-fileresolver) |
 | <a id="property-insecure"></a> `insecure?` | `boolean` | 默认 TLS 跳过证书验证选项；仅 Node.js 运行时支持。 | - |
 | <a id="property-limit"></a> `limit?` | `string` | 默认限制返回列表数量，只影响 SDK 归一化后的 `data`。 | - |

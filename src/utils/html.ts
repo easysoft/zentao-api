@@ -5,7 +5,7 @@ interface HtmlImage {
   src: string;
   alt?: string;
   attributes: Record<string, Token.Location>;
-  endOffset: number;
+  startTag: Token.Location;
 }
 
 function attribute(element: DefaultTreeAdapterMap['element'], name: string): string | undefined {
@@ -35,10 +35,10 @@ export function findHtmlImages(html: string): HtmlImage[] {
     const startTag = node.sourceCodeLocation?.startTag;
     if (!src || !attributes?.src || !startTag || html[startTag.endOffset - 1] !== '>' || seenOffsets.has(startTag.startOffset)) continue;
     seenOffsets.add(startTag.startOffset);
-    images.push({ src, alt: attribute(node, 'alt'), attributes, endOffset: startTag.endOffset });
+    images.push({ src, alt: attribute(node, 'alt'), attributes, startTag });
   }
   // HTML error recovery can move elements ahead of earlier source tags.
-  return images.sort((a, b) => a.endOffset - b.endOffset);
+  return images.sort((a, b) => a.startTag.startOffset - b.startTag.startOffset);
 }
 
 /**

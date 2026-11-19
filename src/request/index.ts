@@ -1,4 +1,4 @@
-import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
+import { ZentaoError } from '../misc/errors.js';
 import { assertSupportedVersion } from '../misc/zentao-version.js';
 import { getGlobalOptions } from '../misc/global-options.js';
 import type {
@@ -21,6 +21,7 @@ import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
 import { HtmlFileRequest, setFileUid } from './html-file-request.js';
+import { resolveRequestVersion } from './version.js';
 import { classifyWriteError, classifyWriteReceipt, isWriteFailure, trackWrite, type WriteAttempt } from './write-outcome.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
@@ -361,23 +362,7 @@ async function requestInternal<T = unknown>(
     ...(recPerPage !== undefined ? { recPerPage } : {}),
   };
 
-  if (version === undefined) {
-    if (!options.forceRefreshConfig && globals.version !== undefined) {
-      version = globals.version;
-    } else {
-      try {
-        version = (await client.getZentaoConfig({
-          forceRefresh: options.forceRefreshConfig,
-          timeout: options.timeout ?? globals.timeout,
-          insecure: options.insecure ?? globals.insecure,
-        })).version;
-      } catch (error) {
-        if (!(options.skipVersionCheckOnConfigError ?? globals.skipVersionCheckOnConfigError)
-          || !isZentaoConfigFetchError(error)) throw error;
-        version = null;
-      }
-    }
-  }
+  if (version === undefined) version = await resolveRequestVersion(options, globals);
   assertSupportedVersion(version, action.minVersion, `${module.name}/${action.name}`);
   // autoFill completes its GET before the target object's write can start.
   const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
@@ -404,6 +389,7 @@ async function requestInternal<T = unknown>(
   const files = processHtmlFiles && isWrite && !isUpload ? new HtmlFileRequest(command, {
     client, version, ...transportOptions,
     fileResolver: options.fileResolver ?? globals.fileResolver,
+    continueOnFileResolveError: options.continueOnFileResolveError ?? globals.continueOnFileResolveError,
     continueOnFileUploadError: options.continueOnFileUploadError ?? globals.continueOnFileUploadError,
     onFileError: options.onFileError ?? globals.onFileError,
     requestFile: async (action, params, fileSession) => {

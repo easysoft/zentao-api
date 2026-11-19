@@ -2,7 +2,7 @@ import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 import {
   ZentaoClient, defineModules, defineModuleActions, extendModuleAction, exportRegistry,
   getModule, getModuleAction, getModuleActionParams, getModuleNames, isModuleName,
-  request, setGlobalOptions, getGlobalOptions, type ModuleAction,
+  request, setGlobalOptions, getGlobalOptions, supportsFileBinding, type ModuleAction,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
 import { parseZentaoVersion, supportsZentaoVersion, validateMinVersion } from '../src/misc/zentao-version';
@@ -19,6 +19,59 @@ afterEach(() => {
 });
 
 describe('ZenTao versions and registry filtering', () => {
+  test('the binding capability matches uid validation in every edition independently of file/read', async () => {
+    extendModuleAction('file', 'read', { minVersion: ['99.0'] });
+    const client = new ZentaoClient('https://zentao.test');
+    const transport = spyOn(client, 'request').mockResolvedValue({ status: 'success', id: 1 });
+    try {
+      for (const [i, minimum] of version23.entries()) {
+        setGlobalOptions({ version: latestVersions[i] });
+        expect(await supportsFileBinding()).toBe(false);
+        expect(await supportsFileBinding({ version: minimum })).toBe(true);
+        expect(await supportsFileBinding({ version: minimum + '.1' })).toBe(true);
+        const params = { file: new Blob(['test']), uid: 'binding-check' };
+        await expect(request('file/create', params, { client })).rejects.toMatchObject({
+          code: 'E_UNSUPPORTED_ZENTAO_VERSION', params: { action: 'file/create', version: latestVersions[i] },
+        });
+        setGlobalOptions({ version: minimum });
+        await request('file/create', params, { client });
+      }
+      expect(transport).toHaveBeenCalledTimes(4);
+      await expect(supportsFileBinding({ version: '23.0-rc1' })).rejects.toMatchObject({ code: 'E_INVALID_ZENTAO_VERSION' });
+    } finally { transport.mockRestore(); }
+  });
+
+  test('binding discovery uses cached configuration and reports an unknown version only on an allowed config failure', async () => {
+    const paths: string[] = [];
+    let status = 200;
+    let version = 'ipd5.9';
+    const server = Bun.serve({ port: 0, fetch(req) {
+      const url = new URL(req.url);
+      paths.push(url.pathname + url.search);
+      return Response.json({ version }, { status });
+    } });
+    try {
+      const client = new ZentaoClient(server.url.toString());
+      setGlobalOptions({ client, version: 'ipd6.0' });
+      expect(await supportsFileBinding()).toBe(true);
+      expect(paths).toEqual([]);
+      expect(await supportsFileBinding({ forceRefreshConfig: true })).toBe(false);
+      expect(getGlobalOptions().version).toBe('ipd6.0');
+      setGlobalOptions({ version: undefined });
+      expect(await supportsFileBinding()).toBe(false);
+      expect(paths).toEqual(['/?mode=getconfig']);
+
+      status = 503;
+      await expect(supportsFileBinding({ forceRefreshConfig: true })).rejects.toMatchObject({ code: 'E_HTTP_ERROR' });
+      const skip = { forceRefreshConfig: true, skipVersionCheckOnConfigError: true };
+      expect(await supportsFileBinding(skip)).toBeUndefined();
+      status = 200;
+      version = 'ipd6.0-beta';
+      await expect(supportsFileBinding(skip)).rejects.toMatchObject({ code: 'E_INVALID_ZENTAO_VERSION' });
+      expect(paths).toEqual(Array(4).fill('/?mode=getconfig'));
+    } finally { server.stop(true); }
+  });
+
   test.each([
     ['22.4', false], ['22.5', true], ['22.5.0', true], ['22.5.1', true], ['22.10', true],
     ['biz13.4', false], ['biz13.5', true], ['biz13.10', true],

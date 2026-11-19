@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
-  ZentaoClient, ZentaoError, defineModuleActions, defineModules, extendModuleAction, request, setGlobalOptions,
+  ZentaoClient, ZentaoError, defineModuleActions, defineModules, extendModuleAction, request, setGlobalOptions, supportsFileBinding,
   type ClientRequestOptions, type FileWarning, type ServerConfig, type WriteOutcome,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
@@ -76,7 +76,7 @@ afterEach(() => {
   resetModuleDefinitions();
   setGlobalOptions({
     version: undefined, client: undefined, fileResolver: undefined,
-    continueOnFileUploadError: undefined, onFileError: undefined,
+    continueOnFileResolveError: undefined, continueOnFileUploadError: undefined, onFileError: undefined,
     autoFill: undefined, throwOnFail: undefined, relative: undefined, persistProfiles: undefined,
     timeout: undefined, insecure: undefined, actionAssistant: undefined, limit: undefined,
   });
@@ -455,6 +455,100 @@ describe('HTML file references in high-level requests', () => {
 });
 
 describe('HTML file failure lifecycle', () => {
+  test('preserves missing image descriptions as text and binds the resolved images on the same save', async () => {
+    const h = setup(call => call.path === '/files' ? { id: 100, url: '/file-read-100.png' } : undefined);
+    const source = blob();
+    const warnings: FileWarning[] = [];
+    const content = '<p>before <A href="/item"><IMG SRC="chat/a&amp;b.png" ALT="&lt;diagram&gt; &amp; notes" /></A>'
+      + '<img src="ok" alt="ok.png"> after</p>';
+    const response = await request('article/update', {
+      id: 9, content, data: { spec: '<img src="ok" alt="ok.png"><img src="chat/a&amp;b.png">' },
+    }, {
+      continueOnFileResolveError: true, continueOnFileUploadError: false,
+      fileResolver: async ({ path }) => {
+        if (path === 'ok') return { blob: source };
+        throw new Error('Workspace image missing');
+      },
+      onFileError: warning => { warnings.push(warning); },
+    });
+    expect(response.writeOutcome).toBe('confirmed');
+    expect(h.calls.map(call => [call.path, call.options.method])).toEqual([['/files', 'POST'], ['/articles/9', 'PUT']]);
+    expect(data(h.objects()[0])).toMatchObject({
+      uid: h.uploads()[0].options.query?.uid,
+      content: '<p>before <A href="/item">&lt;diagram&gt; &amp; notes</A><img src="/file-read-100.png" alt="ok.png"> after</p>',
+      spec: '<img src="/file-read-100.png" alt="ok.png">chat/a&amp;b.png',
+    });
+    expect(h.getConfig).not.toHaveBeenCalled();
+    expect(warnings.map(({ stage, code, field, path }) => ({ stage, code, field, path }))).toEqual([
+      { stage: 'resolve', code: 'E_FILE_RESOLVE_FAILED', field: 'content', path: 'chat/a&b.png' },
+      { stage: 'resolve', code: 'E_FILE_RESOLVE_FAILED', field: 'spec', path: 'chat/a&b.png' },
+    ]);
+    expect(warnings[0].message).toContain('Workspace image missing');
+    expect(response.fileWarnings).toEqual(warnings);
+  });
+
+  test('saves text once without generating a uid when every image is missing, including raw mode', async () => {
+    const receipt = { status: 'success', id: 77 };
+    const h = setup(undefined, receipt);
+    const warnings: FileWarning[] = [];
+    setGlobalOptions({ continueOnFileResolveError: true, fileResolver: { invalid: { url: 'relative' } } });
+    const raw = await request('article/create', {
+      spec: '<p><img src="missing" alt="说明"> / <img src="invalid" alt="   "></p>',
+    }, { raw: true, onFileError: warning => { warnings.push(warning); } });
+    expect(raw).toBe(receipt);
+    expect(receipt).not.toHaveProperty('fileWarnings');
+    expect(h.calls.map(call => call.path)).toEqual(['/articles']);
+    expect(data(h.calls[0])).toEqual({ spec: '<p>说明 / invalid</p>' });
+    expect(warnings.map(({ stage, field, path }) => [stage, field, path])).toEqual([
+      ['resolve', 'spec', 'missing'], ['resolve', 'spec', 'invalid'],
+    ]);
+    expect(h.getConfig).not.toHaveBeenCalled();
+  });
+
+  test('a strict request overrides global continuation and fails before uploading any resolved image', async () => {
+    const h = setup();
+    setGlobalOptions({ continueOnFileResolveError: true });
+    await expect(request('article/create', {
+      content: '<img src="found">', spec: '<img src="chat/missing.png">',
+    }, {
+      fileResolver: { found: { blob: blob() } }, continueOnFileResolveError: false,
+    })).rejects.toMatchObject({
+      code: 'E_FILE_RESOLVE_FAILED', writeOutcome: 'not-sent',
+      details: { fileWarnings: [expect.objectContaining({ stage: 'resolve', field: 'spec', path: 'chat/missing.png' })] },
+    });
+    expect(h.calls).toHaveLength(0);
+  });
+
+  test('an older site can save the story text using the same version check and no attachment batch', async () => {
+    const paths: string[] = [];
+    let saved: unknown;
+    const server = Bun.serve({ port: 0, async fetch(req) {
+      const url = new URL(req.url);
+      paths.push(`${req.method} ${url.pathname}${url.search}`);
+      if (url.searchParams.has('mode')) return Response.json({ ...config, version: 'ipd5.7' });
+      saved = await req.json();
+      return Response.json({ status: 'success' });
+    } });
+    try {
+      const client = new ZentaoClient(server.url.href);
+      const canBind = await supportsFileBinding({ client });
+      expect(canBind).toBe(false);
+      const response = await request('story/change', {
+        id: 9, spec: '<p>操作步骤 <img src="chat/a.png" alt="登录截图"></p>',
+      }, {
+        client, continueOnFileResolveError: true,
+        fileResolver: () => {
+          if (!canBind) throw new Error('Attachment binding unavailable');
+          return { blob: blob() };
+        },
+      });
+      expect(response.fileWarnings).toMatchObject([{ stage: 'resolve', field: 'spec', path: 'chat/a.png' }]);
+      expect(saved).toMatchObject({ spec: '<p>操作步骤 登录截图</p>' });
+      expect(saved).not.toHaveProperty('uid');
+      expect(paths).toEqual(['GET /?mode=getconfig', 'PUT /api.php/v2/stories/9/change']);
+    } finally { server.stop(true); }
+  });
+
   test('finishes resolving all references before any upload, even in continue mode', async () => {
     const h = setup();
     await expect(request('article/create', { content: '<img src="first"><img src="missing">' }, {

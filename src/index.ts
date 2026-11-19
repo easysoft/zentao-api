@@ -33,6 +33,7 @@ export {
   type RequestResultFor,
 } from './request/index.js';
 export { readImageFile, type ImageFileContent } from './request/read-image-file.js';
+export { supportsFileBinding } from './request/version.js';
 export { extractFileIdFromUrl, parseFileUrl, type ParsedFileUrl } from './url.js';
 export {
   createLink,

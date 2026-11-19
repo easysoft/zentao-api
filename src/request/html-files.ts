@@ -8,6 +8,8 @@ export interface HtmlFileReference {
   field: string;
   path: string;
   name?: string;
+  alt?: string;
+  startTag: SourceRange;
   attributes: Readonly<Record<string, SourceRange>>;
   insertOffset: number;
 }
@@ -22,6 +24,7 @@ export interface HtmlFileDocument {
 export interface HtmlFileReplacement {
   url?: string;
   error?: string;
+  text?: string;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -56,14 +59,15 @@ function sourceFilename(path: string): string | undefined {
 }
 
 function parseReferences(field: string, html: string): HtmlFileReference[] {
-  return findHtmlImages(html).map(({ src, alt, attributes, endOffset }) => {
+  return findHtmlImages(html).map(({ src, alt, attributes, startTag }) => {
+    const { endOffset } = startTag;
     let insertOffset = endOffset - 1;
     // An unquoted value may itself end in '/', which is not a self-closing marker.
     const slash = insertOffset - 1;
     if (html[slash] === '/' && !Object.values(attributes).some(range => range.startOffset <= slash && range.endOffset > slash)) {
       insertOffset = slash;
     }
-    return { field, path: src, name: nonempty(alt) || sourceFilename(src), attributes, insertOffset };
+    return { field, path: src, name: nonempty(alt) || sourceFilename(src), alt, startTag, attributes, insertOffset };
   });
 }
 
@@ -82,7 +86,7 @@ export function parseHtmlFiles(data: Record<string, unknown> | undefined, action
   return documents;
 }
 
-function escapeAttribute(value: string): string {
+function escapeHtml(value: string): string {
   return value.replace(/[&"<>]/g, char => ({ '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' })[char]!);
 }
 
@@ -97,15 +101,20 @@ export function rewriteHtmlFiles(
     for (const reference of document.references) {
       const replacement = replacements.get(reference);
       if (!replacement) continue;
+      if (replacement.text !== undefined) {
+        const { startOffset, endOffset } = reference.startTag;
+        edits.push({ start: startOffset, end: endOffset, value: escapeHtml(replacement.text) });
+        continue;
+      }
       const name = replacement.error === undefined ? 'src' : 'alt';
       const value = replacement.error ?? replacement.url;
       if (value === undefined) continue;
       const range = reference.attributes[name];
       if (range) {
         const spelling = document.html.slice(range.startOffset, range.endOffset).match(/^[^\t\n\f\r =/>]+/)?.[0] || name;
-        edits.push({ start: range.startOffset, end: range.endOffset, value: `${spelling}="${escapeAttribute(value)}"` });
+        edits.push({ start: range.startOffset, end: range.endOffset, value: `${spelling}="${escapeHtml(value)}"` });
       } else {
-        edits.push({ start: reference.insertOffset, end: reference.insertOffset, value: ` ${name}="${escapeAttribute(value)}"` });
+        edits.push({ start: reference.insertOffset, end: reference.insertOffset, value: ` ${name}="${escapeHtml(value)}"` });
       }
     }
     if (!edits.length) continue;

@@ -66,8 +66,9 @@
 | [ErrorCode](type-aliases/ErrorCode.md) | SDK 已知错误码，对应 [ERRORS](variables/ERRORS.md) 的 key。 |
 | [ExportedModuleAction](type-aliases/ExportedModuleAction.md) | 导出的模块动作定义。 |
 | [ExportedModuleDefinition](type-aliases/ExportedModuleDefinition.md) | 导出的模块定义。 |
+| [FileBindingOptions](type-aliases/FileBindingOptions.md) | 附件绑定能力查询使用的版本和配置读取选项。显式 version 优先于全局版本，forceRefreshConfig 优先使用站点实际版本。 |
 | [FileCreateParams](type-aliases/FileCreateParams.md) | `request("file/create")` 的参数。 |
-| [FileResolver](type-aliases/FileResolver.md) | HTML 图片解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时终止请求。 |
+| [FileResolver](type-aliases/FileResolver.md) | HTML 图片解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时按 [FileHandlingOptions.continueOnFileResolveError](interfaces/FileHandlingOptions.md#property-continueonfileresolveerror) 处理。 |
 | [FileUploadSource](type-aliases/FileUploadSource.md) | 高阶 `request()` 可接受的文件输入。 |
 | [HttpMethod](type-aliases/HttpMethod.md) | SDK 支持的 HTTP 方法。 |
 | [LinkProfile](type-aliases/LinkProfile.md) | 链接处理只使用站点地址与服务器配置，无需账号或 Token。 |
@@ -137,4 +138,5 @@
 | [searchData](functions/searchData.md) | 对列表做大小写不敏感的模糊匹配。 |
 | [setGlobalOptions](functions/setGlobalOptions.md) | 以浅合并的方式更新全局选项。 |
 | [sortData](functions/sortData.md) | 对列表排序，返回新数组（不修改入参）。 |
+| [supportsFileBinding](functions/supportsFileBinding.md) | 判断当前禅道版本是否支持用 uid 将编辑器附件绑定到对象。版本门槛与实际保存共用。 |
 | [switchProfile](functions/switchProfile.md) | 切换当前使用的 profile，并刷新其 `lastUsedTime`。 |

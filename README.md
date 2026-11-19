@@ -189,7 +189,7 @@ console.log(uploaded.data?.id, uploaded.data?.url);
 高阶请求处理 HTML 字段中的 `<img src>`。Node.js/Bun 可以引用本地图片，也可以用 `file:42` 引用已有禅道图片。
 
 ```ts
-const result = await request('story/update', {
+const result = await request('story/change', {
   id: 1001,
   title: '登录需求',
   spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">',
@@ -198,11 +198,13 @@ const result = await request('story/update', {
 });
 ```
 
-浏览器使用 `fileResolver` 把 HTML 中的标识映射为 Blob，例如 `fileResolver: { 'image-1': { blob: file, name: 'image.png' } }`。解析器、`continueOnFileUploadError` 和 `onFileError` 都可在单次请求或全局设置，单次优先。网络链接直接保留；没有解析器时，普通相对地址和自定义标识也保持原样。
+浏览器使用 `fileResolver` 把 HTML 中的标识映射为 Blob，例如 `fileResolver: { 'image-1': { blob: file, name: 'image.png' } }`。网络链接直接保留。没有解析器时，普通相对地址和自定义标识按原样提交。
+
+解析失败默认在上传前中止。设置 `continueOnFileResolveError: true` 后，SDK 将缺图替换为原 `alt` 的纯文本，没有说明时取原路径，然后继续保存正文。每条解析警告包含原富文本字段 `field` 和原图片路径 `path`。
 
 创建或修改对象时，SDK 为本次上传生成唯一的 `uid`。同一 Token 下的图片上传和对象保存共用这个值，服务端在保存时绑定图片。也可以传入手动预上传时使用的 `uid`。`<a>` 的属性和文字原样提交，其中嵌套的图片照常处理。
 
-使用 `uid` 需要禅道 `23.0 / biz14.0 / max9.0 / ipd6.0` 或更新版本，部署须包含服务端提交 `0a4de3a66f5` 或等效修复。
+使用 `await supportsFileBinding({ client })` 可在加载图片前判断当前版本是否支持 `uid` 绑定。最低版本为 `23.0 / biz14.0 / max9.0 / ipd6.0`，部署须包含服务端提交 `0a4de3a66f5` 或等效修复。
 
 默认在上传失败时把错误写入图片 `alt`，继续保存对象。设置 `continueOnFileUploadError: false` 可中止保存并清理本次已上传的图片。通过 `fileWarnings` 或 `onFileError` 查看警告，`raw: true` 时使用回调。[富文本图片与失败恢复](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#html-富文本图片)
 
@@ -254,7 +256,7 @@ setGlobalOptions({
 
 常用全局选项包括 `client`、`version`、`actionAssistant`、`recPerPage`、`limit`、`relative`、`timeout`、`insecure`、`persistProfiles`、`skipVersionCheckOnConfigError`、`throwOnFail` 和 `autoFill`。优先级通常为：单次调用选项 > 全局选项 > 客户端默认值。`relative` 设置 `createLink()` 的链接形式，默认 `false`（完整网址），单次显式 `false` 可覆盖全局 `true`。
 
-富文本图片选项 `fileResolver`、`continueOnFileUploadError`、`onFileError` 仅支持单次请求和全局设置。上传图片优先使用服务端返回的 URL。仅有文件 ID 时，SDK 使用站内相对路径。
+富文本图片选项 `fileResolver`、`continueOnFileResolveError`、`continueOnFileUploadError`、`onFileError` 支持单次请求和全局设置，单次优先。上传图片优先使用服务端返回的 URL。仅有文件 ID 时，SDK 使用站内相对路径。
 
 ### 操作辅助工具标记
 

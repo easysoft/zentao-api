@@ -62,7 +62,7 @@ export type ResolvedFile =
 
 /**
  * HTML 图片解析器。函数可异步执行；映射依次按路径和文件名查找自身属性。
- * 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时终止请求。
+ * 映射的字符串值以命中的 key 为文件名。未命中、抛错或返回无效来源时按 {@link FileHandlingOptions.continueOnFileResolveError} 处理。
  */
 export type FileResolver =
   | ((reference: FileReference) => ResolvedFile | Promise<ResolvedFile>)
@@ -76,9 +76,9 @@ export interface FileWarning {
   code: string;
   /** 可读错误消息。 */
   message: string;
-  /** HTML body 字段名。 */
+  /** 原 HTML body 字段名。解析警告始终提供此字段。 */
   field?: string;
-  /** 原始文件引用路径。 */
+  /** 原图片 src 的路径，已解码 HTML 实体。解析警告始终提供此字段。 */
   path?: string;
   /** 文件名。 */
   name?: string;
@@ -96,7 +96,9 @@ export interface FileWarning {
 export interface FileHandlingOptions {
   /** 解析本地及自定义文件引用；HTTP(S) 和已有禅道文件链接直接保留。 */
   fileResolver?: FileResolver;
-  /** 上传或读取本地文件失败后是否标注 HTML 并继续主请求，默认 true；解析器失败始终终止。 */
+  /** 解析失败时，将该图片替换为原 alt 的纯文本，缺省时取原路径，记录警告并继续保存。默认 false，在上传前中止。 */
+  continueOnFileResolveError?: boolean;
+  /** 上传或读取本地文件失败后是否标注 HTML 并继续主请求，默认 true。 */
   continueOnFileUploadError?: boolean;
   /**
    * 文件错误通知；支持异步回调，回调异常不改变主请求结果。

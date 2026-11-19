@@ -243,7 +243,7 @@ const bytes = await client.request('/files/42/read', {
 Node.js/Bun 可以在 HTML 中使用本地文件 URL：
 
 ```ts
-const result = await request('story/update', {
+const result = await request('story/change', {
   id: 1001,
   title: '登录需求',
   spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">'
@@ -300,7 +300,7 @@ const images = extractFileIdsFromHtml(html, 'https://example.com/zentao');
 
 ```ts
 const file = fileInput.files![0];
-await request('story/update', {
+await request('story/change', {
   id: 1001,
   title: '登录需求',
   spec: '<img src="image-1" alt="screenshot.png">',
@@ -321,15 +321,16 @@ const fileResolver: FileResolver = async ({ path, name }) => {
 
 setGlobalOptions({
   fileResolver,
-  onFileError: warning => console.warn(warning.stage, warning.fileID, warning.message),
+  continueOnFileResolveError: true,
+  onFileError: warning => console.warn(warning.stage, warning.field, warning.path, warning.message),
 });
 ```
 
-`loadLocalAttachment` 由应用提供。单次请求的同名选项覆盖全局配置，解析器对象整体替换。每个引用只解析一次，并在任何文件上传之前完成全部解析；未命中、抛错或返回无效来源会终止请求。
+`loadLocalAttachment` 由应用提供。单次请求的同名选项覆盖全局配置，解析器对象整体替换。SDK 按引用逐个调用解析器，在首次上传前完成解析。
 
 文件名优先取图片的 `alt`，再取来源路径中的文件名。映射依次按引用路径、文件名查找自身属性；映射值为字符串时用命中的 key 作文件名。函数返回值或对象值未指定名称时沿用输入名称。
 
-HTTP(S)、协议相对 URL 和已有禅道图片链接直接保留。没有解析器时，`image-1`、`images/a.png`、`/uploads/a.png` 等原始引用保持不变；配置解析器后，本地和自定义引用必须成功解析。解析器返回的网络 URL 直接替换，不下载或上传。
+HTTP(S)、协议相对 URL 和已有禅道图片链接直接保留。没有解析器时，`image-1`、`images/a.png`、`/uploads/a.png` 等原始引用按原样提交。解析器也可以返回网络 URL 直接替换图片地址。
 
 ### 上传与对象保存
 
@@ -339,9 +340,18 @@ HTTP(S)、协议相对 URL 和已有禅道图片链接直接保留。没有解�
 
 `uid` 绑定要求 `23.0 / biz14.0 / max9.0 / ipd6.0` 或更新版本，并且部署须包含服务端提交 `0a4de3a66f5` 或等效修复。较早构建会覆盖客户端提供的 `uid`。服务端按批次绑定全部上传，只有需要归属到该对象的图片才应使用这个值。
 
+调用方可在读取本地或会话图片之前查询版本能力。已知版本可直接传入，缺省时使用全局版本或客户端的站点配置缓存。`forceRefreshConfig: true` 使用实际站点版本。配置读取失败默认抛错，显式允许 `skipVersionCheckOnConfigError` 时返回 `undefined`，表示版本未知。
+
+```ts
+import { supportsFileBinding } from 'zentao-api';
+
+const canBind = await supportsFileBinding({ client });
+const ipdSupported = await supportsFileBinding({ version: 'ipd6.0' }); // true，无需请求
+```
+
 ### 失败与恢复
 
-- 解析器失败时，请求在开始上传前中止。
+- 解析器抛错、映射未命中或返回无效来源时，默认在首次上传前抛出 `E_FILE_RESOLVE_FAILED`。设置 `continueOnFileResolveError: true` 后，仅将失败的 `<img>` 替换为原 `alt` 的纯文本，缺少说明时使用原路径。文本会按 HTML 转义，其余图片继续处理。例如 `spec` 中的 `<img src="chat/login.png" alt="登录截图">` 会保存为“登录截图”，对应警告带有 `stage: 'resolve'`、`field: 'spec'` 和 `path: 'chat/login.png'`。
 - 上传或读取本地图片失败时，默认保留原 `src`，把错误写入 `alt` 并继续保存。设置 `continueOnFileUploadError: false` 可中止保存。
 - 提交前中止，或服务端明确拒绝保存时，SDK 清理本次请求新上传的图片。预上传图片和已有文件 ID 由调用方管理。清理失败时，`cleanup` 警告包含 `uid`、原始图片路径和已知的文件 ID。
 - 传输中断、超时或保存响应无法确认时，SDK 保留图片。异常的 `details.uid` 和 `details.fileIDs` 可用于查询对象状态及文件归属，再决定是否重试或清理。使用 `raw: true` 时，已收到的回执原样返回，通过 `onWriteOutcome` 区分写入结果。

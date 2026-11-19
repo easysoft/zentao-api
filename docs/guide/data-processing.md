@@ -125,7 +125,7 @@ const raw = await request('bug/list', { productID: 1 }, { raw: true });
 富文本图片在对象提交前上传，禅道在保存时按 `uid` 绑定图片。`pick` 和 `convertSingle` 在收到保存结果后执行。普通响应通过 `fileWarnings` 提供图片警告，使用 `raw: true` 时可通过 `onFileError` 接收警告。
 
 ```ts
-const raw = await request('story/update', {
+const raw = await request('story/change', {
   id: 1001,
   title: '登录需求',
   spec: '<img src="file:///tmp/screenshot.png" alt="screenshot.png">',

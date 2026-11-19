@@ -1,13 +1,14 @@
 import { captureFileSession, type ZentaoClient } from '../client/index.js';
 import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
-import { assertSupportedVersion, VERSION_23_MINIMUMS } from '../misc/zentao-version.js';
+import { assertSupportedVersion } from '../misc/zentao-version.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
 import type { FileHandlingOptions, FileUploadSource, FileWarning, LinkProfile, ModuleActionRequest, ResolvedFile, WriteOutcome } from '../types/index.js';
 import { isRecord } from '../utils/object.js';
 import { createLink, parseLink } from '../utils/link.js';
 import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReference, type HtmlFileReplacement } from './html-files.js';
 import { inferExtension, normalizeFilename } from './prepare-body.js';
+import { FILE_BINDING_MINIMUMS } from './version.js';
 import { positiveID } from './write-outcome.js';
 
 type FileRequest = (action: 'create' | 'delete', params: Record<string, unknown>, checkSession?: () => void) => Promise<Record<string, unknown>>;
@@ -59,7 +60,7 @@ export function setFileUid(command: ModuleActionRequest, value: unknown, version
   if (typeof value !== 'string' || !value || /[^A-Za-z0-9_-]/.test(value) || ['0', '1', 'used', 'apiv2'].includes(value)) {
     throw new ZentaoError('E_INVALID_PARAM', { param: 'uid', value: typeof value === 'string' ? value : typeof value });
   }
-  assertSupportedVersion(version, VERSION_23_MINIMUMS, `${command.module}/${command.action.name}`);
+  assertSupportedVersion(version, FILE_BINDING_MINIMUMS, `${command.module}/${command.action.name}`);
   if (command.module === 'file' && command.action.name === 'create') {
     const { uid: _uid, extra, ...form } = command.data ?? {};
     command.data = form;
@@ -162,19 +163,23 @@ export class HtmlFileRequest {
     return !link.external && link.moduleName === 'file' && link.methodName === 'read' ? link : undefined;
   }
 
-  private async warn(stage: FileWarning['stage'], error: unknown, reference?: HtmlFileReference, fileID?: number): Promise<void> {
+  private async warn(stage: FileWarning['stage'], error: unknown, reference: HtmlFileReference, fileID?: number): Promise<void> {
     const creating = this.command.action.type === 'create';
     const objectType = creating ? resolveResultObjectType(this.command.action.resultObjectType, this.command.params, {}) : this.command.module;
     const warning: FileWarning = {
       stage,
       code: error instanceof ZentaoError ? error.code : 'E_FILE_OPERATION_FAILED',
       message: error instanceof Error ? error.message : String(error),
-      ...(reference ? { field: reference.field, path: reference.path, name: reference.name } : {}),
+      field: reference.field, path: reference.path, name: reference.name,
       ...(fileID !== undefined ? { fileID } : {}),
       ...(this.uid ? { uid: this.uid } : {}),
       ...(objectType ? { objectType } : {}),
       ...(!creating && this.command.id ? { objectID: this.command.id } : {}),
     };
+    if (stage === 'resolve' && error instanceof ZentaoError) {
+      const reason = error.details instanceof Error ? error.details.message : error.details;
+      if (typeof reason === 'string' && reason) warning.message += ` (${reason})`;
+    }
     this.warnings.push(warning);
     // Notifications must not turn a completed write into a reported failure.
     try { await this.context.onFileError?.({ ...warning }); } catch { /* notification only */ }
@@ -185,6 +190,7 @@ export class HtmlFileRequest {
     const references = documents.flatMap(document => document.references);
     if (!references.length) return;
     const sources = new Map<HtmlFileReference, Source>();
+    const replacements = new Map<HtmlFileReference, HtmlFileReplacement>();
     const resolver = this.context.fileResolver;
 
     // Finish all user resolution before the first upload, including later fields.
@@ -216,16 +222,16 @@ export class HtmlFileRequest {
       } catch (cause) {
         const error = new ZentaoError('E_FILE_RESOLVE_FAILED', { path: reference.path }, cause);
         await this.warn('resolve', error, reference);
-        throw error;
+        if (this.context.continueOnFileResolveError !== true) throw error;
+        replacements.set(reference, { text: reference.alt?.trim() ? reference.alt : reference.path });
       }
     }
-    if (!sources.size) return;
+    if (!sources.size && !replacements.size) return;
     if (!this.uid && [...sources.values()].some(source => source.kind === 'upload')) {
       this.uid = setFileUid(this.command, await newFileUid(), this.context.version);
       this.checkSession = this.context.client[captureFileSession]();
     }
 
-    const replacements = new Map<HtmlFileReference, HtmlFileReplacement>();
     const uploaded = new Map<string | Blob, Map<string, { id?: number; url?: string; error?: unknown }>>();
     for (const [reference, source] of sources) {
       if (source.kind === 'url') {

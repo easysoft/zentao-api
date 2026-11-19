@@ -224,6 +224,10 @@
         "link": "/reference/type-aliases/ExportedModuleDefinition.md"
       },
       {
+        "text": "FileBindingOptions",
+        "link": "/reference/type-aliases/FileBindingOptions.md"
+      },
+      {
         "text": "FileCreateParams",
         "link": "/reference/type-aliases/FileCreateParams.md"
       },
@@ -478,6 +482,10 @@
       {
         "text": "sortData",
         "link": "/reference/functions/sortData.md"
+      },
+      {
+        "text": "supportsFileBinding",
+        "link": "/reference/functions/supportsFileBinding.md"
       },
       {
         "text": "switchProfile",
