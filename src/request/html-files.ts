@@ -1,8 +1,6 @@
-import { parseFragment, type DefaultTreeAdapterMap } from 'parse5';
 import type { ModuleAction } from '../types/module.js';
+import { findHtmlImages } from '../utils/html.js';
 
-type HtmlNode = DefaultTreeAdapterMap['node'];
-type HtmlElement = DefaultTreeAdapterMap['element'];
 type SourceRange = { startOffset: number; endOffset: number };
 
 /** HTML 中的文件引用；源码位置仅供内部定点改写。 */
@@ -34,10 +32,6 @@ function nonempty(value: string | undefined): string | undefined {
   return value?.trim() || undefined;
 }
 
-function attribute(element: HtmlElement, name: string): string | undefined {
-  return element.attrs.find(item => item.name === name && !item.namespace)?.value;
-}
-
 function sourceFilename(path: string): string | undefined {
   if (/^file:(?!\/\/)/i.test(path)) return undefined;
   let pathname = path;
@@ -62,43 +56,15 @@ function sourceFilename(path: string): string | undefined {
 }
 
 function parseReferences(field: string, html: string): HtmlFileReference[] {
-  const fragment = parseFragment(html, { sourceCodeLocationInfo: true });
-  const stack: HtmlNode[] = [...fragment.childNodes].reverse();
-  const references: HtmlFileReference[] = [];
-  const seenOffsets = new Set<number>();
-  while (stack.length) {
-    const node = stack.pop()!;
-    if ('childNodes' in node) {
-      for (let i = node.childNodes.length - 1; i >= 0; i--) stack.push(node.childNodes[i]);
-    }
-    if (!('tagName' in node)) continue;
-    if ('content' in node) {
-      const content = (node as DefaultTreeAdapterMap['template']).content;
-      for (let i = content.childNodes.length - 1; i >= 0; i--) stack.push(content.childNodes[i]);
-    }
-    if (node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.tagName !== 'img') continue;
-    const path = attribute(node, 'src');
-    const location = node.sourceCodeLocation;
-    const source = location?.attrs?.src;
-    const startTag = location?.startTag;
-    if (!path || !source || !startTag || html[startTag.endOffset - 1] !== '>' || seenOffsets.has(source.startOffset)) continue;
-    seenOffsets.add(source.startOffset);
-    let insertOffset = startTag.endOffset - 1;
+  return findHtmlImages(html).map(({ src, alt, attributes, endOffset }) => {
+    let insertOffset = endOffset - 1;
     // An unquoted value may itself end in '/', which is not a self-closing marker.
     const slash = insertOffset - 1;
-    if (html[slash] === '/' && !Object.values(location.attrs!).some(range => range.startOffset <= slash && range.endOffset > slash)) {
+    if (html[slash] === '/' && !Object.values(attributes).some(range => range.startOffset <= slash && range.endOffset > slash)) {
       insertOffset = slash;
     }
-    references.push({
-      field,
-      path,
-      name: nonempty(attribute(node, 'alt')) || sourceFilename(path),
-      attributes: location.attrs!,
-      insertOffset,
-    });
-  }
-  // HTML error recovery can reorder nodes; resolver calls still follow source order.
-  return references.sort((a, b) => a.insertOffset - b.insertOffset);
+    return { field, path: src, name: nonempty(alt) || sourceFilename(src), attributes, insertOffset };
+  });
 }
 
 /** 只扫描最终请求体里声明为 HTML 的顶层字符串字段，不创建浏览器 DOM。 */
@@ -109,7 +75,7 @@ export function parseHtmlFiles(data: Record<string, unknown> | undefined, action
   for (const [field, schema] of Object.entries(properties)) {
     if (!isRecord(schema) || (schema.textType !== 'html' && !(typeof schema.description === 'string' && schema.description.endsWith('(HTML)')))) continue;
     const html = data[field];
-    if (typeof html !== 'string' || !/<img(?=[\t\n\f\r />])/i.test(html)) continue;
+    if (typeof html !== 'string') continue;
     const references = parseReferences(field, html);
     if (references.length) documents.push({ field, html, references });
   }

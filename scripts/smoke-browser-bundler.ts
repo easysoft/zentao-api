@@ -26,7 +26,7 @@ const packageEntry = join(root, `${entryBaseName}.ts`);
 
 try {
   writeFileSync(packageEntry, [
-    "export { ZentaoClient, VERSION, BUILD, request, createLink, extractFileIdFromUrl, parseLink } from 'zentao-api/browser';",
+    "export { ZentaoClient, VERSION, BUILD, request, createLink, extractFileIdFromUrl, extractFileIdsFromHtml, parseLink } from 'zentao-api/browser';",
     "export type { ActionAssistant, ClientRequestOptions, ResponseData, LinkProfile, CreateLinkOptions, ParseLinkOptions, ZentaoLink } from 'zentao-api/browser';",
   ].join('\n'));
 
@@ -111,6 +111,8 @@ try {
   assert(pageLink === '/zentao/index.php?m=bug&f=view&bugID=7', 'Browser createLink did not use profile routing.');
   assert(api.parseLink(linkProfile, pageLink, { requestType: 'auto' }).vars?.[0][1] === '7', 'Browser parseLink did not parse GET parameters.');
   assert(api.extractFileIdFromUrl(`${linkProfile.server}/file-read-298.png`, linkProfile.server) === 298, 'Browser file ID extraction failed.');
+  const [image] = api.extractFileIdsFromHtml('<img src="/?m=file&amp;f=read&amp;fileID=42">', linkProfile.server);
+  assert(image?.[0] === '/?m=file&f=read&fileID=42' && image[1] === 42, 'Browser HTML image extraction failed.');
   api.setGlobalOptions({ relative: true });
   assert(api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7' }) === pageLink, 'Browser createLink did not inherit global relative.');
   assert(api.createLink(linkProfile, { moduleName: 'bug', methodName: 'view', vars: 'bugID=7', relative: false }) === `https://zentao.example.com${pageLink}`, 'Browser createLink did not honor explicit relative: false.');

@@ -28,6 +28,11 @@ export function normalizeSiteUrl(baseUrl: string): string {
  * @returns 正的安全整数 ID。地址无效、站点或路由不匹配时返回 `undefined`。
  */
 export function extractFileIdFromUrl(url: string, siteUrl?: string): number | undefined {
+  return parseFileIdFromUrl(url, siteUrl, true);
+}
+
+/** @internal HTML 解析器给出的 src 已完成实体解码。 */
+export function parseFileIdFromUrl(url: string, siteUrl?: string, decodeHtmlSeparators = false): number | undefined {
   const src = typeof url === 'string' ? url.trim() : '';
   if (!src || /[\\\u0000-\u001f]/.test(src)) return undefined;
 
@@ -49,7 +54,9 @@ export function extractFileIdFromUrl(url: string, siteUrl?: string): number | un
   let digits = /\/file-read-(\d+)\.[A-Za-z0-9]+$/.exec(parsed.pathname)?.[1];
   if (!digits) {
     if (!parsed.pathname.endsWith('/') && !parsed.pathname.endsWith('/index.php')) return undefined;
-    const params = new URLSearchParams(parsed.search.replaceAll('&amp;', '&'));
+    const params = decodeHtmlSeparators && parsed.search.includes('&amp;')
+      ? new URLSearchParams(parsed.search.replaceAll('&amp;', '&'))
+      : parsed.searchParams;
     const isFileRead = (params.get('module') === 'file' && params.get('method') === 'read')
       || (params.get('m') === 'file' && params.get('f') === 'read');
     if (!isFileRead) return undefined;

@@ -1,6 +1,7 @@
 export { isRecord, isBlank, getNestedValue } from './object.js';
 export { asArray } from './array.js';
 export { extractFileIdFromUrl, normalizeSiteUrl } from './url.js';
+export { extractFileIdsFromHtml } from './html.js';
 export { createLink, parseLink } from './link.js';
 export {
   pickFields,

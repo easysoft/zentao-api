@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { extractFileIdsFromHtml } from '../src/index';
 import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReplacement } from '../src/request/html-files';
 import type { ModuleAction } from '../src/types/module';
 
@@ -11,6 +12,45 @@ function rewrite(html: string, replacement: HtmlFileReplacement) {
   const documents = parseHtmlFiles({ content: html }, action);
   return rewriteHtmlFiles(documents, new Map(documents.flatMap(document => document.references.map(reference => [reference, replacement])))).content;
 }
+
+describe('extractFileIdsFromHtml', () => {
+  const siteUrl = 'https://example.com/zentao';
+
+  test('returns each decoded src and ID in source order, including repeated images', () => {
+    const html = [
+      '<p><IMG SRC=./file-read-298.png></p>',
+      '<a href="/file-read-99.png"><img src="https://example.com/zentao/?module=file&amp;method=read&#38;fileID=42"></a>',
+      "<template><img src='&#47;file-read-7.webp'></template>",
+      '<img src="./file-read-298.png">',
+    ].join('');
+    expect(extractFileIdsFromHtml(html, siteUrl)).toEqual([
+      ['./file-read-298.png', 298],
+      [siteUrl + '/?module=file&method=read&fileID=42', 42],
+      ['/file-read-7.webp', 7],
+      ['./file-read-298.png', 298],
+    ]);
+  });
+
+  test('keeps source order when HTML table recovery reorders the tree', () => {
+    const html = '<table><tr><td><img src="/file-read-1.png"></td></tr><img src="/file-read-2.png"></table>';
+    expect(extractFileIdsFromHtml(html, siteUrl)).toEqual([['/file-read-1.png', 1], ['/file-read-2.png', 2]]);
+  });
+
+  test('skips unrelated elements, attributes, sites and invalid file routes', () => {
+    const fake = '<img src="/file-read-1.png">';
+    const html = [
+      `<!--${fake}--><script>${fake}</script><textarea>${fake}</textarea>`,
+      '<a href="/file-read-2.png">attachment</a><svg><image href="/file-read-3.png"/></svg>',
+      '<img data-src="/file-read-4.png" srcset="/file-read-5.png 1x"><img src="">',
+      '<img src="https://other.example/zentao/file-read-6.png"><img src="https://example.com/zentao-old/file-read-7.png">',
+      '<img src="/index.php?m=file&amp;f=read&amp;fileID=0">',
+      '<img src="/index.php?m=file&amp;amp;f=read&amp;amp;fileID=8">',
+      '<img src="/file-read-9.png"',
+    ].join('');
+    expect(extractFileIdsFromHtml(html, siteUrl)).toEqual([]);
+    expect(extractFileIdsFromHtml('', siteUrl)).toEqual([]);
+  });
+});
 
 describe('HTML file reference parsing', () => {
   test('limits parsing to declared top-level string HTML fields', () => {

@@ -376,6 +376,10 @@
         "link": "/reference/functions/extractFileIdFromUrl.md"
       },
       {
+        "text": "extractFileIdsFromHtml",
+        "link": "/reference/functions/extractFileIdsFromHtml.md"
+      },
+      {
         "text": "filterData",
         "link": "/reference/functions/filterData.md"
       },

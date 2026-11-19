@@ -35,6 +35,7 @@ export {
 export {
   createLink,
   extractFileIdFromUrl,
+  extractFileIdsFromHtml,
   parseLink,
   pickFields,
   pickFieldsSingle,

@@ -267,6 +267,16 @@ extractFileIdFromUrl(
 ); // 298
 ```
 
+用 `extractFileIdsFromHtml(html, siteUrl)` 处理整段富文本。它按 `<img>` 的出现顺序返回匹配的 `[imgSrc, zentaoFileID]`，保留重复引用。返回的 `src` 是 HTML 实体解码后的属性值。没有匹配图片时返回 `[]`。
+
+```ts
+import { extractFileIdsFromHtml } from 'zentao-api';
+
+const html = '<img src="/file-read-298.png"><img src="/?m=file&amp;f=read&amp;fileID=42">';
+const images = extractFileIdsFromHtml(html, 'https://example.com/zentao');
+// [['/file-read-298.png', 298], ['/?m=file&f=read&fileID=42', 42]]
+```
+
 浏览器通过解析器提供用户选中的 File 或 Blob：
 
 ```ts
