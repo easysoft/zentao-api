@@ -206,6 +206,31 @@ setGlobalOptions({ throwOnFail: true });
 
 启用后失败响应会抛出 `ZentaoError`，错误码为 `E_API_FAILED`，原始归一化响应通过 `error.details` 暴露。
 
+## 判断对象是否已写入
+
+高阶 `request()` 的对象写操作在归一化响应或 SDK 抛出的 `ZentaoError` 上提供 `writeOutcome`。例如，同一个 `E_NETWORK_ERROR` 在更新前的 `autoFill` 预读失败时是 `not-sent`，在创建请求发出后断线时是 `unknown`。
+
+| `writeOutcome` | 含义 |
+| --- | --- |
+| `not-sent` | 目标对象的写请求尚未发起。版本检查、预读或附件准备可能已经执行。 |
+| `rejected` | 服务端明确拒绝写入，例如返回表单校验失败或 HTTP 403。 |
+| `unknown` | 写入结果待确认。例如提交后断线、HTTP 408 或 5xx、回执格式无法识别。重试前先回读对象。 |
+| `confirmed` | 收到成功标记或可识别的对象 ID。 |
+
+使用 `raw: true` 时，SDK 直接返回动作收到的原始回执，通过单次请求的 `onWriteOutcome` 单独通知判定。自定义 `beforeRequest` 或 `request` 回调抛出的异常保留原样，调用方也可通过通知取得写入判定。
+
+```ts
+const receipt = await request('bug/create', params, {
+  client,
+  raw: true,
+  onWriteOutcome(outcome) {
+    console.log(outcome);
+  },
+});
+```
+
+通知只针对本次目标对象写入，在请求结束时执行一次。带附件批次的保存收到无法确认的回执时，SDK 保留已上传的文件。普通模式抛出 `E_FILE_SAVE_UNCONFIRMED`，raw 模式返回收到的回执，两者的写入判定都是 `unknown`。[附件失败恢复](./examples.md#失败与恢复)
+
 ## 常见错误码
 
 | 错误码 | 说明 |

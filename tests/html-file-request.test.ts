@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   ZentaoClient, ZentaoError, defineModuleActions, defineModules, extendModuleAction, request, setGlobalOptions,
-  type ClientRequestOptions, type FileWarning, type ServerConfig,
+  type ClientRequestOptions, type FileWarning, type ServerConfig, type WriteOutcome,
 } from '../src/index';
 import { resetModuleDefinitions } from '../src/modules/registry';
 
@@ -522,7 +522,7 @@ describe('HTML file failure lifecycle', () => {
     const h = setup(call => call.path === '/files' && ++uploads === 2 ? { status: 'fail', message: 'Upload failed' } : undefined);
     await expect(request('article/create', { content: '<img src="one"><img src="two">' }, {
       fileResolver: { one: { blob: blob() }, two: { blob: blob() } }, continueOnFileUploadError: false,
-    })).rejects.toMatchObject({ code: 'E_API_FAILED' });
+    })).rejects.toMatchObject({ code: 'E_API_FAILED', writeOutcome: 'not-sent' });
     expect(h.objects()).toHaveLength(0);
     expect(h.removals().map(call => call.path)).toEqual(['/files/100']);
   });
@@ -577,7 +577,7 @@ describe('HTML file failure lifecycle', () => {
     });
     await expect(request('article/create', { content: '<img src="source">' }, {
       fileResolver: { source: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_TIMEOUT', details: expect.objectContaining({ uid: expect.any(String), fileIDs: [100] }) });
+    })).rejects.toMatchObject({ code: 'E_TIMEOUT', writeOutcome: 'unknown', details: expect.objectContaining({ uid: expect.any(String), fileIDs: [100] }) });
     expect(h.removals()).toHaveLength(0);
   });
 
@@ -636,7 +636,21 @@ describe('HTML file failure lifecycle', () => {
     const h = setup(undefined, raw);
     await expect(request('article/update', { id: 8, uid: 'retry-batch', content: '<img src="new">' }, {
       fileResolver: { new: { blob: blob() } },
-    })).rejects.toMatchObject({ code: 'E_FILE_SAVE_UNCONFIRMED', details: { uid: 'retry-batch', fileIDs: [100] } });
+    })).rejects.toMatchObject({ code: 'E_FILE_SAVE_UNCONFIRMED', writeOutcome: 'unknown', details: { uid: 'retry-batch', fileIDs: [100] } });
+    expect(h.removals()).toHaveLength(0);
+  });
+
+  test('raw preserves an inconclusive image save receipt and retains its uploads', async () => {
+    const receipt = Object.freeze({ receipt: 'queued' });
+    const h = setup(undefined, receipt);
+    const onWriteOutcome = mock<(outcome: WriteOutcome) => void>();
+    const raw = await request('article/update', { id: 8, content: '<img src="new">' }, {
+      fileResolver: { new: { blob: blob() } }, raw: true, throwOnFail: true, onWriteOutcome,
+    });
+    expect(raw).toBe(receipt);
+    expect(onWriteOutcome.mock.calls).toEqual([['unknown']]);
+    expect(h.uploads()).toHaveLength(1);
+    expect(h.objects()).toHaveLength(1);
     expect(h.removals()).toHaveLength(0);
   });
 
@@ -672,7 +686,8 @@ describe('HTML file failure lifecycle', () => {
     await expect(request('article/update', { id: 8, uid: 'http-batch', content: '<img src="new">' }, {
       fileResolver: { new: { blob: blob() } },
     })).rejects.toMatchObject({
-      code: 'E_HTTP_ERROR', details: { status, uid: 'http-batch', fileIDs: rejected ? [] : [100] },
+      code: 'E_HTTP_ERROR', writeOutcome: rejected ? 'rejected' : 'unknown',
+      details: { status, uid: 'http-batch', fileIDs: rejected ? [] : [100] },
     });
     expect(h.removals()).toHaveLength(rejected ? 1 : 0);
   });

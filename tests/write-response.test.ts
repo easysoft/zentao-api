@@ -28,8 +28,9 @@ for (const responseText of [
       const client = new ZentaoClient(server.url.href);
       const output = await request(name, params, { client });
       expect(output.status).toBe('fail');
+      expect(output.writeOutcome).toBe('unknown');
       expect(output.raw).toMatchObject({ httpStatus: 200, responseText });
-      await expect(request(name, params, { client, throwOnFail: true })).rejects.toMatchObject({ code: 'E_API_FAILED' });
+      await expect(request(name, params, { client, throwOnFail: true })).rejects.toMatchObject({ code: 'E_API_FAILED', writeOutcome: 'unknown' });
       const raw = await request(name, params, { client, raw: true, throwOnFail: true });
       expect(raw).toMatchObject({ status: 'fail', httpStatus: 200, responseText });
     } finally { server.stop(true); }
@@ -45,12 +46,14 @@ test.each([{ status: 'success' }, 7, 'Saved'])('valid JSON is retained even with
   } finally { server.stop(true); }
 });
 
-test('HTTP failures retain the transport error code', async () => {
-  const server = Bun.serve({ port: 0, fetch: () => new Response('Service unavailable', { status: 503 }) });
+test.each([[403, 'rejected'], [408, 'unknown'], [503, 'unknown']] as const)('HTTP %i retains the transport error and reports %s', async (status, writeOutcome) => {
+  const server = Bun.serve({ port: 0, fetch: () => new Response(null, { status }) });
   try {
     setGlobalOptions({ version: 'ipd5.6' });
     const client = new ZentaoClient(server.url.href);
-    await expect(request('product/create', { name: 'Product' }, { client })).rejects.toMatchObject({ code: 'E_HTTP_ERROR' });
+    await expect(request('product/create', { name: 'Product' }, { client })).rejects.toMatchObject({
+      code: 'E_HTTP_ERROR', writeOutcome, details: { status },
+    });
   } finally { server.stop(true); }
 });
 
@@ -60,6 +63,6 @@ test('custom text actions retain their response semantics', async () => {
     setGlobalOptions({ version: 'ipd5.6' });
     defineModuleActions('product', { name: 'customText', type: 'action', path: '/custom', minVersion: ['ipd5.5'] });
     const client = new ZentaoClient(server.url.href);
-    expect(await request('product/customText', {}, { client })).toEqual({ status: 'success', data: 'Saved' });
+    expect(await request('product/customText', {}, { client })).toEqual({ status: 'success', data: 'Saved', writeOutcome: 'unknown' });
   } finally { server.stop(true); }
 });

@@ -326,7 +326,7 @@ HTTP(S)、协议相对 URL 和已有禅道图片链接直接保留。没有解�
 - 解析器失败时，请求在开始上传前中止。
 - 上传或读取本地图片失败时，默认保留原 `src`，把错误写入 `alt` 并继续保存。设置 `continueOnFileUploadError: false` 可中止保存。
 - 提交前中止，或服务端明确拒绝保存时，SDK 清理本次请求新上传的图片。预上传图片和已有文件 ID 由调用方管理。清理失败时，`cleanup` 警告包含 `uid`、原始图片路径和已知的文件 ID。
-- 传输中断、超时或保存响应无法确认时，SDK 保留图片。异常的 `details.uid` 和 `details.fileIDs` 可用于查询对象状态及文件归属，再决定是否重试或清理。
+- 传输中断、超时或保存响应无法确认时，SDK 保留图片。异常的 `details.uid` 和 `details.fileIDs` 可用于查询对象状态及文件归属，再决定是否重试或清理。使用 `raw: true` 时，已收到的回执原样返回，通过 `onWriteOutcome` 区分写入结果。
 
 普通响应通过 `fileWarnings` 提供警告。`onFileError` 可用于普通请求和 `raw: true` 的请求，接收 `resolve`、`upload` 和 `cleanup` 阶段的通知。
 

@@ -2,6 +2,7 @@ import type { ZentaoClient } from '../client/index.js';
 import type { ActionAssistant } from './client.js';
 import type { ProcessListOptions, ProcessSingleOptions } from './data.js';
 import type { FileHandlingOptions } from './upload.js';
+import type { WriteOutcome } from './response.js';
 
 /** SDK 进程级全局默认选项，供请求和 {@link createLink} 等辅助方法复用。 */
 export interface GlobalOptions extends FileHandlingOptions {
@@ -75,6 +76,9 @@ export interface RequestOptions extends ProcessListOptions, FileHandlingOptions 
 
   /** 是否返回原始响应体，默认 false。 */
   raw?: boolean;
+
+  /** 对象写操作结束时通知一次，包括抛错和 raw 模式。读取操作跳过通知，回调异常不影响请求结果。 */
+  onWriteOutcome?: (outcome: WriteOutcome) => void | Promise<void>;
 }
 
 export type RequestProcessOptions = ProcessListOptions & Pick<RequestOptions, 'convertSingle'>;

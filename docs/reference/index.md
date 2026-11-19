@@ -90,6 +90,7 @@
 | [ResolvedFile](type-aliases/ResolvedFile.md) | 文件解析器返回的来源；字符串表示路径，未指定名称时沿用输入名称。 |
 | [SortExpr](type-aliases/SortExpr.md) | 排序表达式；推荐 `字段:asc|desc`，兼容 `字段_asc|desc`。 |
 | [SortFn](type-aliases/SortFn.md) | 自定义排序比较函数。 |
+| [WriteOutcome](type-aliases/WriteOutcome.md) | 目标对象的写入结果。 |
 
 ## Variables
 

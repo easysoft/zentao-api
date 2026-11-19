@@ -1,7 +1,8 @@
-import { isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
+import { asTransportError, isZentaoConfigFetchError, ZentaoError } from '../misc/errors.js';
 import { parseZentaoVersion } from '../misc/zentao-version.js';
 import { assertInsecureSupported, fetchWithInsecureTls } from '../misc/environment.js';
 import { getGlobalOptions, setGlobalOptions } from '../misc/global-options.js';
+import { rejectionStatuses, writeAttempts } from '../request/write-outcome.js';
 import { getProfileOrThrow, saveLoginProfile, switchProfile, updateProfileServerConfig } from '../profiles/index.js';
 import { isRecord, normalizeSiteUrl } from '../utils/index.js';
 import type {
@@ -418,7 +419,11 @@ export class ZentaoClient {
   async request(path: string, options: ClientRequestOptions & { responseType: 'blob' }): Promise<Blob>;
   async request<T = unknown>(path: string, options?: ClientRequestOptions): Promise<T>;
   async request(path: string, options: ClientRequestOptions = {}): Promise<unknown> {
-    return this.fetch(buildUrl(this.baseUrl, path, options.query), options, this.token);
+    const write = writeAttempts.get(options);
+    if (write) write.phase = 'preparing';
+    const url = buildUrl(this.baseUrl, path, options.query);
+    if (write) write.phase = 'dispatching';
+    return this.fetch(url, options, this.token);
   }
 
   /**
@@ -437,6 +442,8 @@ export class ZentaoClient {
     token?: string,
     fetchOptions: Pick<RequestInit, 'cache' | 'credentials'> = {},
   ): Promise<unknown> {
+    const write = writeAttempts.get(options);
+    if (write) write.phase = 'preparing';
     const globals = getGlobalOptions();
     const method: HttpMethod = options.method ?? 'GET';
     const timeout = options.timeout ?? globals.timeout ?? this.timeout ?? DEFAULT_TIMEOUT;
@@ -472,8 +479,10 @@ export class ZentaoClient {
 
     let keepResponseSignal = false;
     try {
+      if (write && !signal.aborted) write.phase = 'dispatching';
       const response = await fetchWithInsecureTls(insecure, url, init);
       if (!response.ok) {
+        if (write && rejectionStatuses.has(response.status)) write.outcome = 'rejected';
         throw new ZentaoError('E_HTTP_ERROR', {
           status: response.status,
           statusText: response.statusText,
@@ -486,18 +495,12 @@ export class ZentaoClient {
       }
       if (options.responseType === 'response') {
         keepResponseSignal = true;
+        if (write) write.responseBodyError = cause => asTransportError(cause, signal, didTimeout);
         return keepResponseSignalUntilBodyEnds(response, cleanup);
       }
       return await parseResponse(response, options.responseType);
     } catch (error) {
-      if (signal.aborted) {
-        throw new ZentaoError(didTimeout() ? 'E_TIMEOUT' : 'E_ABORTED', undefined, error);
-      }
-      if (error instanceof ZentaoError) throw error;
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new ZentaoError('E_ABORTED', undefined, error);
-      }
-      throw new ZentaoError('E_NETWORK_ERROR', { message: (error as Error).message ?? String(error) }, error);
+      throw asTransportError(error, signal, didTimeout);
     } finally {
       if (!keepResponseSignal) cleanup();
     }

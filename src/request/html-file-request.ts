@@ -3,11 +3,12 @@ import { ZentaoError } from '../misc/errors.js';
 import { isNodeRuntime } from '../misc/environment.js';
 import { assertSupportedVersion, VERSION_23_MINIMUMS } from '../misc/zentao-version.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
-import type { FileHandlingOptions, FileUploadSource, FileWarning, LinkProfile, ModuleActionRequest, ResolvedFile } from '../types/index.js';
+import type { FileHandlingOptions, FileUploadSource, FileWarning, LinkProfile, ModuleActionRequest, ResolvedFile, WriteOutcome } from '../types/index.js';
 import { isRecord } from '../utils/object.js';
 import { createLink, parseLink } from '../utils/link.js';
 import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReference, type HtmlFileReplacement } from './html-files.js';
 import { inferExtension, normalizeFilename } from './prepare-body.js';
+import { positiveID } from './write-outcome.js';
 
 type FileRequest = (action: 'create' | 'delete', params: Record<string, unknown>, checkSession?: () => void) => Promise<Record<string, unknown>>;
 interface Context extends FileHandlingOptions {
@@ -25,12 +26,6 @@ interface Upload {
   id?: number;
   url?: string;
   reference: HtmlFileReference;
-}
-
-function positiveID(value: unknown): number | undefined {
-  if (typeof value !== 'number' && typeof value !== 'string') return undefined;
-  const id = Number(value);
-  return Number.isSafeInteger(id) && id > 0 ? id : undefined;
 }
 
 function directURL(path: string): boolean {
@@ -73,10 +68,6 @@ export function setFileUid(command: ModuleActionRequest, value: unknown, version
     command.data = { ...command.data, uid: value };
   }
   return value;
-}
-
-export function isFileWriteFailure(raw: Record<string, unknown>): boolean {
-  return raw.status === 'fail' || raw.status === 'error' || raw.result === 'fail' || raw.result === 'error';
 }
 
 async function localPath(path: string): Promise<string> {
@@ -323,25 +314,16 @@ export class HtmlFileRequest {
     return Object.assign(new Error(error instanceof Error ? error.message : String(error), { cause: error }), { details: extra });
   }
 
-  async saveError(error: unknown): Promise<unknown> {
-    if (this.uploads.length && error instanceof ZentaoError) {
-      // Network failures, HTTP 408 and 5xx can follow a successful save.
-      const status = error.code === 'E_HTTP_ERROR' && isRecord(error.details) ? Number(error.details.status) : 0;
-      const rejected = [400, 401, 403, 404, 405, 409, 412, 413, 415, 422, 429].includes(status);
-      if (rejected || ['E_API_FAILED', 'E_INVALID_PARAM', 'E_FILE_SESSION_CHANGED'].includes(error.code)) {
-        await this.cleanup();
-      }
-    }
+  async saveError(error: unknown, outcome: WriteOutcome): Promise<unknown> {
+    if (this.uploads.length && (outcome === 'rejected' || outcome === 'not-sent')) await this.cleanup();
     return this.errorWithFiles(error);
   }
 
-  async complete(raw: unknown): Promise<void> {
+  async complete(raw: unknown, outcome: WriteOutcome, rawMode: boolean): Promise<void> {
     if (!this.uid) return;
-    if (isRecord(raw) && !(raw.status === 'fail' && typeof raw.httpStatus === 'number' && typeof raw.responseText === 'string')) {
-      if (isFileWriteFailure(raw)) return this.cleanup();
-      if (raw.status === 'success' || raw.result === 'success' || positiveID(raw.id) || (isRecord(raw.data) && positiveID(raw.data.id))) return;
+    if (outcome === 'rejected') return this.cleanup();
+    if (outcome === 'unknown' && !rawMode) {
+      throw this.errorWithFiles(new ZentaoError('E_FILE_SAVE_UNCONFIRMED', undefined, raw));
     }
-    if (positiveID(raw)) return;
-    throw this.errorWithFiles(new ZentaoError('E_FILE_SAVE_UNCONFIRMED', undefined, raw));
   }
 }

@@ -1,9 +1,21 @@
 import type { FileWarning } from './upload.js';
 
+/**
+ * 目标对象的写入结果。
+ *
+ * - `not-sent` 表示目标写请求尚未发起，例如更新前读取旧值失败。
+ * - `rejected` 表示服务端明确拒绝目标写请求。
+ * - `unknown` 表示回执不足以判定结果，需要回读对象确认。
+ * - `confirmed` 表示收到了成功回执。
+ */
+export type WriteOutcome = 'not-sent' | 'rejected' | 'unknown' | 'confirmed';
+
 /** 高阶 `request()` 归一化后的返回数据。 */
 export interface ResponseData<T = unknown> {
   /** 禅道服务端状态；非标准响应会按成功响应包装到 `data`。 */
   status: 'success' | 'fail';
+  /** 对象写操作的回执判定。读取操作省略此字段。 */
+  writeOutcome?: WriteOutcome;
   /** 禅道服务端返回的消息。 */
   message?: string;
   /** 原始消息字段；当服务端返回对象/数组等非字符串消息时保留在这里。 */

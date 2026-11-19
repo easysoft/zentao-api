@@ -1,3 +1,5 @@
+import type { WriteOutcome } from '../types/response.js';
+
 /**
  * SDK 已知错误码到默认消息的映射表。
  *
@@ -53,6 +55,14 @@ export function isZentaoConfigFetchError(error: unknown): boolean {
   );
 }
 
+/** @internal Normalize transport failures, including failures while consuming a response body. */
+export function asTransportError(error: unknown, signal?: AbortSignal, didTimeout?: () => boolean): ZentaoError {
+  if (signal?.aborted) return new ZentaoError(didTimeout?.() ? 'E_TIMEOUT' : 'E_ABORTED', undefined, error);
+  if (error instanceof ZentaoError) return error;
+  if (error instanceof DOMException && error.name === 'AbortError') return new ZentaoError('E_ABORTED', undefined, error);
+  return new ZentaoError('E_NETWORK_ERROR', { message: (error as Error | null)?.message ?? String(error) }, error);
+}
+
 /**
  * SDK 统一错误类型。
  *
@@ -67,6 +77,8 @@ export class ZentaoError extends Error {
   declare readonly params: Readonly<Record<string, string | number>>;
   /** 附加上下文，例如 HTTP 响应详情、原始异常或失败的禅道响应原文。 */
   readonly details?: unknown;
+  /** 高阶对象写请求失败时的写入判定，错误码和 details 保留其原有含义。 */
+  declare readonly writeOutcome?: WriteOutcome;
 
   /**
    * 构造 SDK 错误实例。

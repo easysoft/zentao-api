@@ -3,18 +3,28 @@ import { extractResult } from './resolve.js';
 import { snapshotToMarkdown } from '../utils/doc-helper/markdown.js';
 import { isRecord } from '../utils/index.js';
 import { request } from '../request/index.js';
+import { classifyWriteReceipt, trackWrite, writeAttempts } from '../request/write-outcome.js';
 import { captureFileSession } from '../client/index.js';
-import { ZentaoError } from '../misc/errors.js';
+import { asTransportError, ZentaoError } from '../misc/errors.js';
 import { VERSION_23_MINIMUMS } from '../misc/zentao-version.js';
 import type { HttpMethod, ModuleActionRequestCallback } from '../types/index.js';
 
 /** 这些内置接口要求 JSON，不能把 HTTP 200 的 PHP/SQL 错误文本视为成功。 */
-const requestJSON: ModuleActionRequestCallback = async ({ request: command, body, bodyType, client, timeout, insecure, actionAssistant }) => {
-  const response = await client.request(command.path, {
+const requestJSON: ModuleActionRequestCallback = async info => {
+  const { request: command, body, bodyType, client, timeout, insecure, actionAssistant } = info;
+  const write = writeAttempts.get(info);
+  if (write) write.phase = 'dispatching';
+  const response = await client.request(command.path, trackWrite({
     method: command.action.method!.toUpperCase() as HttpMethod,
     query: command.query, body, bodyType, timeout, insecure, actionAssistant, responseType: 'response',
-  });
-  const responseText = await response.text();
+  } as const, write));
+  let responseText: string;
+  try {
+    responseText = await response.text();
+  } catch (error) {
+    if (!write) throw error;
+    throw (write.responseBodyError ?? asTransportError)(error);
+  }
   try {
     return JSON.parse(responseText);
   } catch {
@@ -30,6 +40,11 @@ const requestJSON: ModuleActionRequestCallback = async ({ request: command, body
 /** 代码库接口只有 status=success 才成功，表单校验还可能返回 result=fail。 */
 const requestCoderJSON: ModuleActionRequestCallback = async info => {
   const response = await requestJSON(info);
+  const write = writeAttempts.get(info);
+  if (write) {
+    const receipt = classifyWriteReceipt(response);
+    write.outcome = receipt === 'confirmed' && !(isRecord(response) && response.status === 'success') ? 'unknown' : receipt;
+  }
   if (info.options.raw || (isRecord(response) && response.status === 'success' && response.result !== 'fail')) return response;
   return isRecord(response)
     ? { ...response, status: 'fail' }
@@ -385,7 +400,10 @@ export function applyBuiltinOverrides(): void {
 
   // 确认表单会重置缺省字段；仅补齐可写字段，不回传详情中的其他属性。
   extendModuleAction('bug', 'confirm', {
-    request: async ({ request: command, body, bodyType, client, timeout, insecure, actionAssistant, options }) => {
+    request: async info => {
+      const { request: command, body, client, timeout, insecure, actionAssistant, options } = info;
+      const write = writeAttempts.get(info);
+      if (write) write.phase = 'preparing';
       const data = { ...(body as Record<string, unknown>) };
       const fields = ['status', 'assignedTo', 'type', 'pri', 'deadline', 'mailto'];
       const missing = fields.filter(field => data[field] === undefined);
@@ -414,7 +432,7 @@ export function applyBuiltinOverrides(): void {
       if (data.assignedTo === 'closed') {
         throw new ZentaoError('E_INVALID_PARAM', { param: 'assignedTo', value: 'closed' });
       }
-      return requestJSON({ request: command, body: data, bodyType, client, timeout, insecure, actionAssistant, options });
+      return requestJSON(trackWrite({ ...info, body: data }, write));
     },
   });
 

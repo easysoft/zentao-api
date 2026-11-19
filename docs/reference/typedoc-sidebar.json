@@ -318,6 +318,10 @@
       {
         "text": "SortFn",
         "link": "/reference/type-aliases/SortFn.md"
+      },
+      {
+        "text": "WriteOutcome",
+        "link": "/reference/type-aliases/WriteOutcome.md"
       }
     ]
   },

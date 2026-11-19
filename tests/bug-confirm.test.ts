@@ -66,7 +66,9 @@ test.each([
   const client = new ZentaoClient('http://zentao.test');
   const transport = spyOn(client, 'request').mockResolvedValue(raw);
   setGlobalOptions({ version: 'ipd5.6' });
-  await expect(request('bug/confirm', { id: 7 }, { client, raw: true, throwOnFail: false })).rejects.toMatchObject({ code: 'E_API_FAILED' });
+  await expect(request('bug/confirm', { id: 7 }, { client, raw: true, throwOnFail: false })).rejects.toMatchObject({
+    code: 'E_API_FAILED', writeOutcome: 'not-sent',
+  });
   expect(transport).toHaveBeenCalledTimes(1);
   expect(transport.mock.calls[0][0]).toBe('/bugs/7');
 });

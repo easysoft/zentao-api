@@ -20,7 +20,8 @@ import { extractPager, extractResult, resolveActionRequest } from '../modules/re
 import { isRecord, processData } from '../utils/index.js';
 import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
-import { HtmlFileRequest, isFileWriteFailure, setFileUid } from './html-file-request.js';
+import { HtmlFileRequest, setFileUid } from './html-file-request.js';
+import { classifyWriteError, classifyWriteReceipt, isWriteFailure, trackWrite, type WriteAttempt } from './write-outcome.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
@@ -137,7 +138,7 @@ async function autoFillUpdateParams(
     insecure: options.insecure,
     actionAssistant: options.actionAssistant,
     throwOnFail: true,
-  }, version) as ResponseData).data;
+  }, { version }) as ResponseData).data;
   if (!isRecord(current)) return params;
 
   const explicitDataKeys = getExplicitDataKeys(params.data);
@@ -229,14 +230,14 @@ function normalizeResponse<T>(
   command: ReturnType<typeof resolveActionRequest>,
   raw: unknown,
   options: RequestProcessOptions,
-  fileWrite: boolean,
+  rejected: boolean,
 ): ResponseData<T> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return attachResultObjectType({ status: 'success', data: raw as T }, command);
   }
 
   const record = raw as Record<string, unknown>;
-  const status = (fileWrite ? isFileWriteFailure(record) : record.status === 'fail') ? 'fail' : 'success';
+  const status = rejected || record.status === 'fail' ? 'fail' : 'success';
   const data = applyProcessing(extractResult(command.action, record, command.params, options), options);
   const rawMessage = record.message;
 
@@ -307,7 +308,22 @@ export async function request<T = unknown>(
   params: Record<string, unknown> = {},
   options: RequestOptions = {},
 ): Promise<unknown> {
-  return requestInternal<T>(name, params, options);
+  const attempt: WriteAttempt = {};
+  try {
+    return await requestInternal<T>(name, params, options, { attempt });
+  } catch (error) {
+    if (!attempt.phase) throw error;
+    attempt.outcome ??= classifyWriteError(attempt.phase, error);
+    if (!(error instanceof ZentaoError) || attempt.phase === 'before-hook' || attempt.phase === 'custom') throw error;
+    // A config fetch can reject several concurrent requests with the same error.
+    const failure = new ZentaoError(error.code, error.params, error.details);
+    Object.defineProperty(failure, 'cause', { value: error, configurable: true });
+    throw Object.assign(failure, { writeOutcome: attempt.outcome });
+  } finally {
+    if (attempt.outcome && options.onWriteOutcome) {
+      try { await options.onWriteOutcome(attempt.outcome); } catch { /* notification only */ }
+    }
+  }
 }
 
 /** version 为 undefined 时解析一次，null 表示本次调用已选择跳过版本检查。 */
@@ -315,20 +331,27 @@ async function requestInternal<T = unknown>(
   name: string,
   params: Record<string, unknown>,
   options: RequestOptions,
-  version?: string | null,
-  processHtmlFiles = true,
-  checkSession?: () => void,
+  { version, processHtmlFiles = true, checkSession, attempt }: {
+    version?: string | null;
+    processHtmlFiles?: boolean;
+    checkSession?: () => void;
+    attempt?: WriteAttempt;
+  },
 ): Promise<unknown> {
   const globals = getGlobalOptions();
   const client = options.client ?? globals.client;
-  if (!client) {
-    throw new ZentaoError('E_NO_GLOBAL_CLIENT');
-  }
-
   const { moduleName, actionName, id } = splitRequestName(name);
   const module = getModule(moduleName);
+  const action = getModuleAction(moduleName, actionName);
+  const write = action && action.type !== 'get' && action.type !== 'list' && action.method?.toUpperCase() !== 'GET'
+    ? attempt : undefined;
+  if (write) write.phase = 'preparing';
+  if (!client) throw new ZentaoError('E_NO_GLOBAL_CLIENT');
   if (!module) {
     throw new ZentaoError('E_INVALID_MODULE', { module: moduleName });
+  }
+  if (!action) {
+    throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });
   }
   // recPerPage 是最常用的列表参数，允许在全局或本次调用中统一覆盖。
   const recPerPage = params.recPerPage ?? options.recPerPage ?? globals.recPerPage;
@@ -338,12 +361,6 @@ async function requestInternal<T = unknown>(
     ...(recPerPage !== undefined ? { recPerPage } : {}),
   };
 
-  // autoFill：update 动作先 GET 当前对象，用现值补齐用户未显式传入的字段，
-  // 避免禅道 PUT 把未提交字段覆盖为空。
-  const action = getModuleAction(moduleName, actionName);
-  if (!action) {
-    throw new ZentaoError('E_INVALID_ACTION', { module: moduleName, action: actionName });
-  }
   if (version === undefined) {
     if (!options.forceRefreshConfig && globals.version !== undefined) {
       version = globals.version;
@@ -362,13 +379,16 @@ async function requestInternal<T = unknown>(
     }
   }
   assertSupportedVersion(version, action.minVersion, `${module.name}/${action.name}`);
+  // autoFill completes its GET before the target object's write can start.
   const finalParams = action.type === 'update' && (options.autoFill ?? globals.autoFill)
     ? await autoFillUpdateParams(module, action, mergedParams, { ...options, client }, version)
     : mergedParams;
 
   const command = resolveActionRequest(module, actionName, finalParams);
   if (command.action.beforeRequest) {
+    if (write) write.phase = 'before-hook';
     Object.assign(command, await command.action.beforeRequest(command));
+    if (write) write.phase = 'preparing';
   }
   const transportOptions = {
     timeout: options.timeout ?? globals.timeout,
@@ -390,11 +410,11 @@ async function requestInternal<T = unknown>(
       const raw = await requestInternal(`file/${action}`, params, {
         client, ...transportOptions, maxUploadBytes: options.maxUploadBytes,
         raw: true, autoFill: false,
-      }, version, false, fileSession);
+      }, { version, processHtmlFiles: false, checkSession: fileSession });
       if (action === 'create' && (typeof raw === 'number' || typeof raw === 'string')) return { id: raw };
       const nested = isRecord(raw) && isRecord(raw.data) ? raw.data : undefined;
       const deleteConfirmed = action !== 'delete' || (isRecord(raw) && (raw.status === 'success' || raw.result === 'success'));
-      if (!isRecord(raw) || !deleteConfirmed || isFileWriteFailure(raw) || (nested && isFileWriteFailure(nested))) {
+      if (!isRecord(raw) || !deleteConfirmed || isWriteFailure(raw) || (nested && isWriteFailure(nested))) {
         const message = isRecord(raw) ? stringifyMessage(raw.message ?? nested?.message) : undefined;
         throw new ZentaoError('E_API_FAILED', { message: message ?? `Invalid file/${action} response.` }, raw);
       }
@@ -413,17 +433,30 @@ async function requestInternal<T = unknown>(
   const requestOptions = { ...preparedBody, ...transportOptions };
   let raw: unknown;
   try {
+    // A custom transport may send a write even when it throws without a receipt.
+    if (write) write.phase = command.action.request ? 'custom' : 'dispatching';
     raw = command.action.request
-      ? await command.action.request({ request: command, ...requestOptions, client, options })
-      : await client.request(command.path, {
+      ? await command.action.request(trackWrite({ request: command, ...requestOptions, client, options }, write))
+      : await client.request(command.path, trackWrite({
         method,
         query: command.query,
         ...requestOptions,
-      });
+      }, write));
   } catch (error) {
-    throw files ? await files.saveError(error) : error;
+    const outcome = write?.outcome ?? classifyWriteError(write?.phase, error);
+    if (write) write.outcome = outcome;
+    throw files ? await files.saveError(error, outcome) : error;
   }
-  await files?.complete(raw);
+  const receipt = write || (files && command.data?.uid !== undefined)
+    ? write?.outcome ?? classifyWriteReceipt(raw)
+    : undefined;
+  if (receipt) {
+    if (write) {
+      write.phase = 'received';
+      write.outcome = receipt;
+    }
+    await files?.complete(raw, receipt, options.raw === true);
+  }
 
   if (options.raw) {
     return raw;
@@ -431,7 +464,8 @@ async function requestInternal<T = unknown>(
 
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: RequestProcessOptions = { ...options, limit: options.limit ?? globals.limit };
-  const response = normalizeResponse<T>(command, raw, processOptions, isUpload || (isWrite && command.data?.uid !== undefined));
+  const response = normalizeResponse<T>(command, raw, processOptions, receipt === 'rejected');
+  if (write) response.writeOutcome = write.outcome;
   if (files?.warnings.length) response.fileWarnings = files.warnings;
   if (response.status === 'fail' && (options.throwOnFail ?? globals.throwOnFail)) {
     throw new ZentaoError('E_API_FAILED', { message: response.message ?? '' }, response);

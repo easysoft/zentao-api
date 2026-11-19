@@ -25,6 +25,7 @@
 | <a id="property-limit"></a> `limit?` | `string` | 限制返回列表数量，在排序后、摘取前截断；不改变服务端页大小。 | [`ProcessListOptions`](ProcessListOptions.md).[`limit`](ProcessListOptions.md#property-limit) |
 | <a id="property-maxuploadbytes"></a> `maxUploadBytes?` | `number` | 单个本地文件或 Blob 上传的最大字节数，默认 50 MiB。 | - |
 | <a id="property-onfileerror"></a> `onFileError?` | (`warning`) => `void` \| `Promise`\<`void`\> | 文件错误通知；支持异步回调，回调异常不改变主请求结果。 普通响应同时提供 fileWarnings；raw 模式仅通过此回调通知，不修改原始响应。 | [`FileHandlingOptions`](FileHandlingOptions.md).[`onFileError`](FileHandlingOptions.md#property-onfileerror) |
+| <a id="property-onwriteoutcome"></a> `onWriteOutcome?` | (`outcome`) => `void` \| `Promise`\<`void`\> | 对象写操作结束时通知一次，包括抛错和 raw 模式。读取操作跳过通知，回调异常不影响请求结果。 | - |
 | <a id="property-pick"></a> `pick?` | `string`[] | 摘取字段路径列表。 | [`ProcessListOptions`](ProcessListOptions.md).[`pick`](ProcessListOptions.md#property-pick) |
 | <a id="property-raw"></a> `raw?` | `boolean` | 是否返回原始响应体，默认 false。 | - |
 | <a id="property-recperpage"></a> `recPerPage?` | `string` | 本次调用使用的每页记录数，优先级高于全局 `recPerPage`。 | - |
