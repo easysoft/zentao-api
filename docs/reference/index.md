@@ -44,6 +44,7 @@
 | [RequestOptions](interfaces/RequestOptions.md) | 高阶 `request("moduleName")` / `request("moduleName/methodName")` / `request("moduleName/<objectID>")` 的单次调用选项。 |
 | [ResponseData](interfaces/ResponseData.md) | 高阶 `request()` 归一化后的返回数据。 |
 | [ServerConfig](interfaces/ServerConfig.md) | 禅道 `?mode=getconfig` 返回的服务端配置。 |
+| [WorkHourSettings](interfaces/WorkHourSettings.md) | 禅道系统的工时设置。 |
 | [ZentaoClientOptions](interfaces/ZentaoClientOptions.md) | 创建 [ZentaoClient](classes/ZentaoClient.md) 时使用的配置。 |
 | [ZentaoLink](interfaces/ZentaoLink.md) | 解析得到的禅道链接；空输入和外链仅返回 url 及必要的 external 标记。 |
 | [ZentaoProfile](interfaces/ZentaoProfile.md) | 本地持久化的禅道账号 profile。 |

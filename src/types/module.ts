@@ -224,6 +224,7 @@ export type ModuleName =
   | 'feedback'
   | 'ticket'
   | 'system'
+  | 'setting'
   | 'build'
   | 'testtask'
   | 'release'

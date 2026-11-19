@@ -167,6 +167,10 @@
         "link": "/zentao-api/knowledge"
       },
       {
+        "text": "系统设置 (setting)",
+        "link": "/zentao-api/setting"
+      },
+      {
         "text": "代码库空间 (space)",
         "link": "/zentao-api/space"
       },

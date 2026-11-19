@@ -150,6 +150,10 @@
         "link": "/reference/interfaces/ServerConfig.md"
       },
       {
+        "text": "WorkHourSettings",
+        "link": "/reference/interfaces/WorkHourSettings.md"
+      },
+      {
         "text": "ZentaoClientOptions",
         "link": "/reference/interfaces/ZentaoClientOptions.md"
       },

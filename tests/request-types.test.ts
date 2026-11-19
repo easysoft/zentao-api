@@ -61,6 +61,9 @@ async function typedRequestExamples(): Promise<void> {
   expectTypeOf<FileCreateParams['uid']>().toEqualTypeOf<string | undefined>();
   const readName: BuiltinRequestName = 'file/read';
   expectTypeOf((await request(profileName)).data).toEqualTypeOf<DataRecord | undefined>();
+  const settings = await request('setting/workHours');
+  expectTypeOf(settings.data?.dailyWorkHours).toEqualTypeOf<number | undefined>();
+  expectTypeOf(settings.data?.effortUnit).toEqualTypeOf<'day' | 'hour' | undefined>();
   expectTypeOf((await request(fileName, { fileID: 'Zy1hYmM=' })).data).toEqualTypeOf<DataRecord | undefined>();
   expectTypeOf((await request('file/123')).data).toEqualTypeOf<DataRecord | undefined>();
   expectTypeOf((await request(readName, { fileID: 123 })).data).toEqualTypeOf<ArrayBuffer | string | undefined>();

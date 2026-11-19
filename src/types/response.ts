@@ -60,6 +60,14 @@ export interface ApiListResponse extends ApiResponse {
   pager?: Pager;
 }
 
+/** 禅道系统的工时设置。 */
+export interface WorkHourSettings {
+  /** 每日可用工时，单位为小时。 */
+  dailyWorkHours: number;
+  /** 工时展示单位，`day` 表示日，`hour` 表示小时。 */
+  effortUnit: 'day' | 'hour';
+}
+
 /** 登录接口响应结构。 */
 export interface LoginResponse extends ApiResponse {
   /** 登录成功后返回的 API Token。 */

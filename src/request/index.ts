@@ -12,6 +12,7 @@ import type {
   RequestOptions,
   RequestProcessOptions,
   ResponseData,
+  WorkHourSettings,
 } from '../types/index.js';
 import { getModule, getModuleAction } from '../modules/registry.js';
 import type { BuiltinActionMeta, BuiltinModuleName } from '../modules/generated.js';
@@ -25,7 +26,7 @@ type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActio
 type BuiltinListRequestName = BuiltinModuleName;
 type BuiltinNamedRequestName = {
   [M in BuiltinModuleName]: `${M}/${BuiltinActionName<M>}`;
-}[BuiltinModuleName] | 'my/profile' | 'file/get' | 'file/read';
+}[BuiltinModuleName] | 'my/profile' | 'file/get' | 'file/read' | 'setting/workHours';
 type BuiltinIdRequestName = `${BuiltinModuleName}/${number}`;
 /** 内置模块支持的请求名：`module`、`module/action` 或 `module/123`。 */
 export type BuiltinRequestName = BuiltinListRequestName | BuiltinNamedRequestName | BuiltinIdRequestName;
@@ -49,15 +50,17 @@ export type RequestParamsFor<Name extends BuiltinRequestName> = Name extends 'fi
   ? FileCreateParams
   : Record<string, unknown>;
 /** 根据内置请求名推导出的 `ResponseData.data` 类型。 */
-export type RequestResultFor<Name extends BuiltinRequestName> = ActionMetaOf<Name> extends { resultType: 'list' }
-  ? DataRecord[]
-  : Name extends 'file/create'
-    ? FileCreateResult
-    : Name extends 'file/read'
-      ? ArrayBuffer | string
-      : ActionMetaOf<Name> extends { resultType: 'object' }
-        ? DataRecord
-        : unknown;
+export type RequestResultFor<Name extends BuiltinRequestName> = Name extends 'setting/workHours'
+  ? WorkHourSettings
+  : ActionMetaOf<Name> extends { resultType: 'list' }
+    ? DataRecord[]
+    : Name extends 'file/create'
+      ? FileCreateResult
+      : Name extends 'file/read'
+        ? ArrayBuffer | string
+        : ActionMetaOf<Name> extends { resultType: 'object' }
+          ? DataRecord
+          : unknown;
 
 /** 将 `moduleName`、`moduleName/methodName` 或 `moduleName/<objectID>` 请求名拆成模块名、动作名和对象 ID。 */
 function splitRequestName(name: string): { moduleName: string; actionName: string; id?: number } {

@@ -51,11 +51,11 @@ describe('ZenTao versions and registry filtering', () => {
 
   test('assigns historical, db, knowledge and coder version cohorts including builtin overrides', () => {
     const actions = getModuleNames().flatMap(name => getModule(name)!.actions);
-    expect(actions).toHaveLength(364);
+    expect(actions).toHaveLength(365);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(oldVersions))).toHaveLength(106);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(newVersions))).toHaveLength(124);
     expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(latestVersions))).toHaveLength(132);
-    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(version23))).toHaveLength(2);
+    expect(actions.filter(action => JSON.stringify(action.minVersion) === JSON.stringify(version23))).toHaveLength(3);
     expect(getModule('db')!.actions.every(action => JSON.stringify(action.minVersion)
       === JSON.stringify(latestVersions))).toBe(true);
     for (const [moduleName, actionName] of [['space', 'list'], ['repo', 'list'], ['repo', 'create'], ['product', 'repos'], ['my', 'createSSH']]) {
@@ -85,12 +85,13 @@ describe('ZenTao versions and registry filtering', () => {
     expect(exportRegistry().story.actions.find(action => action.name === 'getGrades')!.minVersion).toEqual(newVersions);
   });
 
-  test('enforces profile and file version boundaries without raising the upload minimum', async () => {
+  test('enforces settings, profile and file version boundaries without raising the upload minimum', async () => {
     resetModuleDefinitions();
     const client = new ZentaoClient('http://zentao.invalid');
     const transport = spyOn(client, 'request').mockRejectedValue(new Error('Unexpected request'));
     try {
       for (const [module, action, minimums, previous] of [
+        ['setting', 'workHours', version23, latestVersions],
         ['my', 'profile', version23, latestVersions],
         ['file', 'read', version23, latestVersions],
         ['file', 'update', newVersions, ['22.4', 'biz13.4', 'max8.4', 'ipd5.4']],
@@ -131,7 +132,7 @@ describe('ZenTao versions and registry filtering', () => {
     expect(getModuleAction('story', 'ls', { version: '22.0' })?.name).toBe('list');
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.0', roles: ['body'] })).toEqual([]);
     expect(getModuleActionParams('doc', 'createMyDoc', { version: '22.5', roles: ['body'] }).length).toBeGreaterThan(0);
-    expect(getModuleNames()).toHaveLength(42);
+    expect(getModuleNames()).toHaveLength(43);
     expect(getModuleNames({ version: '22.0' })).toHaveLength(19);
     expect(getModuleNames({ version: '21.9' })).toEqual([]);
     expect(getModule('doc', { version: '22.0' })).toBeUndefined();

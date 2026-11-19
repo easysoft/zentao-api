@@ -169,13 +169,17 @@ describe('module registry', () => {
     }
   });
 
-  test('defines resultGetter for every generated GET action', () => {
+  test('defines a result getter for every builtin GET action', () => {
     for (const moduleName of getModuleNames()) {
       const module = getModule(moduleName)!;
       for (const action of module.actions) {
         if (action.method?.toLowerCase() !== 'get') continue;
-        expect(action.resultGetter, `${moduleName}/${action.name}`).toBeDefined();
-        expect(action.resultGetter!.length, `${moduleName}/${action.name}`).toBeGreaterThan(0);
+        const getter = action.resultGetter;
+        if (typeof getter === 'function') continue;
+        const paths = typeof getter === 'string' ? [getter] : Object.values(getter ?? {});
+        const name = `${moduleName}/${action.name}`;
+        expect(paths.length, name).toBeGreaterThan(0);
+        for (const path of paths) expect(path.trim().length, name).toBeGreaterThan(0);
       }
     }
   });
@@ -592,6 +596,28 @@ describe('extendModuleAction', () => {
 });
 
 describe('builtin overrides (override.ts)', () => {
+  test.each([
+    { dailyWorkHours: 8, effortUnit: 'day' },
+    { dailyWorkHours: 7.5, effortUnit: 'hour' },
+  ])('setting/workHours returns the configured values for %p', async settings => {
+    const raw = { ...settings, status: 'success' };
+    const server = createMockServer(req => {
+      const url = new URL(req.url);
+      expect([req.method, url.pathname, url.search]).toEqual(['GET', '/api.php/v2/settings/workhours', '']);
+      return Response.json(raw);
+    });
+    try {
+      setGlobalOptions({ version: 'ipd6.0', client: new ZentaoClient(server.url.href) });
+      const response = await request('setting/workHours');
+      expect(response.status).toBe('success');
+      expect(response.data).toEqual(settings);
+      expect(response.resultObjectType).toBeUndefined();
+      expect(await request('setting/workHours', {}, { raw: true })).toEqual(raw);
+    } finally {
+      server.stop(true);
+    }
+  });
+
   test('execution/create adds products to required fields', () => {
     const required = getModuleAction('execution', 'create')!.requestBody?.schema?.required;
     expect(Array.isArray(required)).toBe(true);

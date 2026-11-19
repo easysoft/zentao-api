@@ -98,6 +98,24 @@ const requestCoderJSON: ModuleActionRequestCallback = async info => {
  * @internal
  */
 export function applyBuiltinOverrides(): void {
+  defineModules({
+    name: 'setting',
+    display: '系统设置',
+    actions: [{
+      name: 'workHours',
+      minVersion: VERSION_23_MINIMUMS,
+      display: '获取工时设置',
+      description: 'dailyWorkHours 是每日可用工时，单位为小时。effortUnit 是工时展示单位，day 表示日，hour 表示小时。',
+      type: 'get',
+      method: 'get',
+      path: '/settings/workhours',
+      resultType: 'object',
+      resultObjectType: null,
+      resultGetter: { dailyWorkHours: 'dailyWorkHours', effortUnit: 'effortUnit' },
+      request: requestJSON,
+    }],
+  });
+
   // 已纳入 OpenAPI 的接口仅保留 JSON 校验及兼容响应处理。
   for (const [moduleName, actionName] of [
     ['db', 'query'], ['db', 'tables'], ['db', 'table'],
