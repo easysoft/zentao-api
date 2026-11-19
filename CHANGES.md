@@ -1,15 +1,15 @@
 # 变更日志
 
-## 未发布
-
-- 获取当前用户资料的 SDK 调用由 `my/info` 更名为 `my/profile`，请求路径同步改为 `GET /my/profile`。
-
 ## 0.9.1 - 2026-11-19
 
 ### 新增
 
 - `extractFileIdFromUrl(url, siteUrl?)` 可从禅道图片的路径路由或 GET 查询路由提取文件 ID。相对路径可直接解析，带域名的 URL 需匹配指定站点及安装目录。
 - `extractFileIdsFromHtml(html, siteUrl)` 可按 `<img>` 在富文本中的出现顺序返回 `[imgSrc, zentaoFileID]` 列表，保留重复引用，并对 `src` 中的 HTML 实体解码。
+
+### 变更
+
+- 获取当前用户资料改用 `GET /my/profile`。**从 0.9.0 升级时，请将 `request('my/info')` 改为 `request('my/profile')`。**
 
 ### 测试
 
