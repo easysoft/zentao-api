@@ -372,6 +372,10 @@
         "link": "/reference/functions/extendModuleAction.md"
       },
       {
+        "text": "extractFileIdFromUrl",
+        "link": "/reference/functions/extractFileIdFromUrl.md"
+      },
+      {
         "text": "filterData",
         "link": "/reference/functions/filterData.md"
       },

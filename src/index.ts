@@ -34,6 +34,7 @@ export {
 } from './request/index.js';
 export {
   createLink,
+  extractFileIdFromUrl,
   parseLink,
   pickFields,
   pickFieldsSingle,
