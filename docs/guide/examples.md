@@ -255,12 +255,13 @@ console.log(result.fileWarnings);
 
 `file:///tmp/screenshot.png` 表示绝对路径，`file://path/to/screenshot.png` 表示相对当前工作目录的路径。SDK 将上传返回的 `url` 写入图片 `src`，保留部署子目录和查询参数。对于 `file:42` 或仅返回 ID 的上传响应，SDK 按服务器路由配置生成站内链接，例如 `/file-read-42.png`。
 
-用 `extractFileIdFromUrl` 从图片 `src` 提取文件 ID。相对路径可直接传入。带域名的 URL 还需传入禅道站点地址（含安装目录），站点或文件路由不匹配时返回 `undefined`。
+用 `extractFileIdFromUrl` 从图片 `src` 或附件下载链接提取文件 ID。相对路径可直接传入。带域名的 URL 还需传入禅道站点地址（含安装目录），站点或文件路由不匹配时返回 `undefined`。
 
 ```ts
 import { extractFileIdFromUrl } from 'zentao-api';
 
 extractFileIdFromUrl('/sub-path/file-read-298.png'); // 298
+extractFileIdFromUrl('/sub-path/file-download-298-left.html'); // 298
 extractFileIdFromUrl(
   'https://example.com/sub-path/?module=file&amp;method=read&amp;fileID=298',
   'https://example.com/sub-path',

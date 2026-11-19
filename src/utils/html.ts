@@ -51,7 +51,7 @@ export function findHtmlImages(html: string): HtmlImage[] {
 export function extractFileIdsFromHtml(html: string, siteUrl: string): [imgSrc: string, zentaoFileID: number][] {
   const files: [string, number][] = [];
   for (const { src } of findHtmlImages(html)) {
-    const id = parseFileIdFromUrl(src, siteUrl);
+    const id = parseFileIdFromUrl(src, siteUrl, 'imageSrc');
     if (id !== undefined) files.push([src, id]);
   }
   return files;

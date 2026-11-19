@@ -21,18 +21,18 @@ export function normalizeSiteUrl(baseUrl: string): string {
 }
 
 /**
- * 从禅道富文本图片的 `src` 提取文件 ID，支持路径路由和 GET 查询路由。
+ * 从禅道图片或附件下载链接提取文件 ID，支持路径路由和 GET 查询路由。
  *
- * @param url - 图片的相对路径或 HTTP(S) 地址。查询参数可使用 `&amp;` 分隔。
+ * @param url - file/read 或 file/download 的相对路径或 HTTP(S) 地址。查询参数可使用 `&amp;` 分隔。
  * @param siteUrl - 禅道站点根地址，含安装目录。解析带域名的地址时必填。
  * @returns 正的安全整数 ID。地址无效、站点或路由不匹配时返回 `undefined`。
  */
 export function extractFileIdFromUrl(url: string, siteUrl?: string): number | undefined {
-  return parseFileIdFromUrl(url, siteUrl, true);
+  return parseFileIdFromUrl(url, siteUrl, 'fileUrl');
 }
 
-/** @internal HTML 解析器给出的 src 已完成实体解码。 */
-export function parseFileIdFromUrl(url: string, siteUrl?: string, decodeHtmlSeparators = false): number | undefined {
+/** @internal An HTML image src is already entity-decoded and identifies only a read route. */
+export function parseFileIdFromUrl(url: string, siteUrl: string | undefined, source: 'fileUrl' | 'imageSrc'): number | undefined {
   const src = typeof url === 'string' ? url.trim() : '';
   if (!src || /[\\\u0000-\u001f]/.test(src)) return undefined;
 
@@ -52,14 +52,15 @@ export function parseFileIdFromUrl(url: string, siteUrl?: string, decodeHtmlSepa
   }
 
   let digits = /\/file-read-(\d+)\.[A-Za-z0-9]+$/.exec(parsed.pathname)?.[1];
+  if (!digits && source === 'fileUrl') digits = /\/file-download-(\d+)(?:-left)?\.html$/.exec(parsed.pathname)?.[1];
   if (!digits) {
     if (!parsed.pathname.endsWith('/') && !parsed.pathname.endsWith('/index.php')) return undefined;
-    const params = decodeHtmlSeparators && parsed.search.includes('&amp;')
+    const params = source === 'fileUrl' && parsed.search.includes('&amp;')
       ? new URLSearchParams(parsed.search.replaceAll('&amp;', '&'))
       : parsed.searchParams;
-    const isFileRead = (params.get('module') === 'file' && params.get('method') === 'read')
-      || (params.get('m') === 'file' && params.get('f') === 'read');
-    if (!isFileRead) return undefined;
+    const matchesMethod = (method: string | null) => method === 'read' || (source === 'fileUrl' && method === 'download');
+    if (!(params.get('module') === 'file' && matchesMethod(params.get('method')))
+      && !(params.get('m') === 'file' && matchesMethod(params.get('f')))) return undefined;
     digits = params.get('fileID') ?? '';
     if (!/^\d+$/.test(digits)) return undefined;
   }

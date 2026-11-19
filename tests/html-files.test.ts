@@ -43,6 +43,7 @@ describe('extractFileIdsFromHtml', () => {
       '<a href="/file-read-2.png">attachment</a><svg><image href="/file-read-3.png"/></svg>',
       '<img data-src="/file-read-4.png" srcset="/file-read-5.png 1x"><img src="">',
       '<img src="https://other.example/zentao/file-read-6.png"><img src="https://example.com/zentao-old/file-read-7.png">',
+      '<img src="/file-download-10-left.html"><img src="/?m=file&amp;f=download&amp;fileID=11">',
       '<img src="/index.php?m=file&amp;f=read&amp;fileID=0">',
       '<img src="/index.php?m=file&amp;amp;f=read&amp;amp;fileID=8">',
       '<img src="/file-read-9.png"',

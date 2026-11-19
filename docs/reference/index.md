@@ -111,7 +111,7 @@
 | [deleteProfile](functions/deleteProfile.md) | 删除指定 profile。 |
 | [exportRegistry](functions/exportRegistry.md) | 导出注册表。 |
 | [extendModuleAction](functions/extendModuleAction.md) | 扩展已存在的模块动作。 |
-| [extractFileIdFromUrl](functions/extractFileIdFromUrl.md) | 从禅道富文本图片的 `src` 提取文件 ID，支持路径路由和 GET 查询路由。 |
+| [extractFileIdFromUrl](functions/extractFileIdFromUrl.md) | 从禅道图片或附件下载链接提取文件 ID，支持路径路由和 GET 查询路由。 |
 | [extractFileIdsFromHtml](functions/extractFileIdsFromHtml.md) | 按富文本 HTML 中 `<img>` 的出现顺序提取禅道图片引用，保留重复项。 |
 | [filterData](functions/filterData.md) | 按条件组过滤列表，多组之间按 AND 组合。 |
 | [getAllProfiles](functions/getAllProfiles.md) | 列出本地保存的所有 profile。 |
