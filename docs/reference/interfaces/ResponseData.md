@@ -4,6 +4,10 @@
 
 高阶 `request()` 归一化后的返回数据。
 
+## Extended by
+
+- [`ListPage`](ListPage.md)
+
 ## Type Parameters
 
 | Type Parameter | Default type |

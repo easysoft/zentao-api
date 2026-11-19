@@ -27,6 +27,7 @@ export {
   getObjectProps,
 } from './modules/registry.js';
 export {
+  iteratePages,
   request,
   type BuiltinRequestName,
   type RequestParamsFor,

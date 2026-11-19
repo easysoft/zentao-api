@@ -6,6 +6,7 @@ import type {
   FileCreateParams,
   FileCreateResult,
   HttpMethod,
+  ListPage,
   ModuleAction,
   ModuleDefinition,
   ProcessListOptions,
@@ -22,6 +23,7 @@ import { prepareActionBody } from './prepare-body.js';
 import { resolveResultObjectType } from '../modules/result-object-type.js';
 import { HtmlFileRequest, setFileUid } from './html-file-request.js';
 import { renderExplicitMarkdown } from './markdown.js';
+import { assertListPage, pagerNumber, setIterationPage, type PageCursor } from './pagination.js';
 import { resolveRequestVersion } from './version.js';
 import { classifyWriteError, classifyWriteReceipt, isWriteFailure, trackWrite, type WriteAttempt } from './write-outcome.js';
 
@@ -216,6 +218,7 @@ function normalizeResponse<T>(
   raw: unknown,
   options: RequestProcessOptions,
   rejected: boolean,
+  cursor?: PageCursor,
 ): ResponseData<T> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return attachResultObjectType({ status: 'success', data: raw as T }, command);
@@ -223,18 +226,21 @@ function normalizeResponse<T>(
 
   const record = raw as Record<string, unknown>;
   const status = rejected || record.status === 'fail' ? 'fail' : 'success';
-  const data = applyProcessing(extractResult(command.action, record, command.params, options), options);
+  const source = extractResult(command.action, record, command.params, options);
+  if (cursor) cursor.rowCount = Array.isArray(source) ? source.length : undefined;
+  const data = applyProcessing(source, options);
   const rawMessage = record.message;
 
-  const pager = extractPager(command.action, record, command.params, options);
+  const toNumber = cursor ? pagerNumber : Number;
+  const pager = extractPager(command.action, record, command.params, options, toNumber);
   const response: ResponseData<T> = {
     status,
     message: stringifyMessage(rawMessage),
     data: data as T,
     pager: pager ? {
-      total: Number(pager.recTotal),
-      page: Number(pager.pageID),
-      recPerPage: Number(pager.recPerPage),
+      total: toNumber(pager.recTotal),
+      page: toNumber(pager.pageID),
+      recPerPage: toNumber(pager.recPerPage),
     } : undefined,
   };
   if (rawMessage !== undefined && typeof rawMessage !== 'string') {
@@ -312,19 +318,43 @@ export async function request<T = unknown>(
   }
 }
 
+/**
+ * 按需读取列表，从指定页码（默认 1）开始，每次迭代请求一页。退出循环即停止取页。
+ * 每页沿用 {@link request} 的本地处理选项，筛选后为空的页也会交付。是否翻页依据服务端 pager。
+ * @typeParam Row - 每条记录的类型。
+ * @throws {ZentaoError} 业务失败时抛出 E_API_FAILED。分页信息缺失、页码不匹配或服务端空页仍有后页时抛出 E_PAGINATION_INCOMPLETE。
+ */
+export async function* iteratePages<Row = DataRecord>(
+  name: string,
+  params: Record<string, unknown> = {},
+  options: Omit<RequestOptions, 'raw' | 'throwOnFail'> = {},
+): AsyncGenerator<ListPage<Row>, void, void> {
+  const cursor: PageCursor = { globals: getGlobalOptions() };
+  const pageParams = { ...params };
+  const pageOptions = { ...options, raw: false, throwOnFail: true };
+  do {
+    const response = await requestInternal<Row[]>(name, pageParams, pageOptions, { cursor, version: cursor.version }) as ResponseData<Row[]>;
+    assertListPage(name, cursor, response);
+    const { page, recPerPage, total } = response.pager;
+    cursor.pageID = page * recPerPage < total ? page + 1 : undefined;
+    yield response;
+  } while (cursor.pageID !== undefined);
+}
+
 /** version 为 undefined 时解析一次，null 表示本次调用已选择跳过版本检查。 */
 async function requestInternal<T = unknown>(
   name: string,
   params: Record<string, unknown>,
   options: RequestOptions,
-  { version, prepareRichText = true, checkSession, attempt }: {
+  { version, prepareRichText = true, checkSession, attempt, cursor }: {
     version?: string | null;
     prepareRichText?: boolean;
     checkSession?: () => void;
     attempt?: WriteAttempt;
+    cursor?: PageCursor;
   },
 ): Promise<unknown> {
-  const globals = getGlobalOptions();
+  const globals = cursor?.globals ?? getGlobalOptions();
   const client = options.client ?? globals.client;
   const { moduleName, actionName, id } = splitRequestName(name);
   const module = getModule(moduleName);
@@ -346,8 +376,12 @@ async function requestInternal<T = unknown>(
     ...(id !== undefined ? { id } : {}),
     ...(recPerPage !== undefined ? { recPerPage } : {}),
   };
+  const pageQuery = cursor && setIterationPage(action, mergedParams, cursor);
 
-  if (version === undefined) version = await resolveRequestVersion(options, globals);
+  if (version === undefined) {
+    version = await resolveRequestVersion(options, globals);
+    if (cursor) cursor.version = version;
+  }
   assertSupportedVersion(version, action.minVersion, `${module.name}/${action.name}`);
   const renderMarkdown = prepareRichText && (options.renderMarkdown ?? globals.renderMarkdown);
   const markdownField = renderMarkdown
@@ -359,6 +393,7 @@ async function requestInternal<T = unknown>(
     : mergedParams;
 
   const command = resolveActionRequest(module, actionName, finalParams);
+  if (pageQuery) Object.assign(command.query ??= {}, pageQuery);
   if (command.action.beforeRequest) {
     if (write) write.phase = 'before-hook';
     Object.assign(command, await command.action.beforeRequest(command));
@@ -439,7 +474,7 @@ async function requestInternal<T = unknown>(
 
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: RequestProcessOptions = { ...options, limit: options.limit ?? globals.limit };
-  const response = normalizeResponse<T>(command, raw, processOptions, receipt === 'rejected');
+  const response = normalizeResponse<T>(command, raw, processOptions, receipt === 'rejected', cursor);
   if (write) response.writeOutcome = write.outcome;
   if (files?.warnings.length) response.fileWarnings = files.warnings;
   if (response.status === 'fail' && (options.throwOnFail ?? globals.throwOnFail)) {

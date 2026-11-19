@@ -250,3 +250,4 @@ const receipt = await request('bug/create', params, {
 | `E_MISSING_PARAM` | 缺少必填路径参数或请求体字段。 |
 | `E_INVALID_PARAM` | 参数值不合法，例如布尔字段传入了无法识别的取值。 |
 | `E_API_FAILED` | 启用 `throwOnFail` 时禅道返回 `{ status: "fail" }`。 |
+| `E_PAGINATION_INCOMPLETE` | `iteratePages()` 无法确认列表完整性。错误参数包含动作名、请求页码和原因。 |

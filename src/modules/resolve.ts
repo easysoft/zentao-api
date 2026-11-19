@@ -260,6 +260,7 @@ export function extractPager(
   response: Record<string, unknown>,
   params: Record<string, unknown> = {},
   options: RequestProcessOptions = {},
+  toNumber: (value: unknown) => number = Number,
 ): ListPagerInfo | undefined {
   const getter = action.pagerGetter;
   if (!getter) return response.pager as ListPagerInfo | undefined;
@@ -271,8 +272,8 @@ export function extractPager(
   const recTotal = getNestedValue(response, getter.recTotal);
   if (page === undefined || recPerPage === undefined || recTotal === undefined) return undefined;
   return {
-    pageID: Number(page),
-    recPerPage: Number(recPerPage),
-    recTotal: Number(recTotal),
+    pageID: toNumber(page),
+    recPerPage: toNumber(recPerPage),
+    recTotal: toNumber(recTotal),
   };
 }

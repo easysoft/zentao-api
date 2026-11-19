@@ -44,6 +44,13 @@ export interface ResponseData<T = unknown> {
   };
 }
 
+/** {@link iteratePages} 交付的单页结果，包含本地处理后的记录和服务端分页信息。 */
+export interface ListPage<Row> extends ResponseData<Row[]> {
+  status: 'success';
+  data: Row[];
+  pager: NonNullable<ResponseData['pager']>;
+}
+
 /** 禅道 API 原始分页结构。 */
 export interface Pager {
   /** 总记录数。 */

@@ -29,6 +29,28 @@ const result = await request('product', {
 });
 ```
 
+## 按需翻页
+
+`request()` 读取指定的一页。`iteratePages()` 默认从第 1 页开始，第一次进入循环才发送请求。下面的查询在找到第一个名称含“发布”的仓库时结束。
+
+```ts
+import { iteratePages } from 'zentao-api';
+
+async function findReleaseRepo(spaceID: number) {
+  for await (const page of iteratePages<{ id: number; name: string }>(
+    'repo/list',
+    { spaceID, recPerPage: 20, orderBy: 'id_asc' },
+    { search: ['发布'], searchFields: ['name'] },
+  )) {
+    if (page.data.length) return page.data[0];
+  }
+}
+```
+
+用 `pageID` 指定起始页，支持 `page` 别名。筛选、搜索、排序和 `limit` 都作用于当前页。即使本地匹配数为零，只要服务端分页信息显示还有记录，继续迭代就会请求下一页。退出循环后停止取页。
+
+迭代器交付的每页都有 `data` 和 `pager`。缺少有效分页信息、服务端回传的页码与请求不符，或服务端返回空列表却声明还有后页时，本次迭代抛出 `E_PAGINATION_INCOMPLETE`。业务失败沿用 `E_API_FAILED`。
+
 ## 获取产品详情
 
 详情接口可以使用完整动作名，也可以把对象 ID 写在请求名里。

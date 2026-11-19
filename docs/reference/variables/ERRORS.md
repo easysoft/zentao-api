@@ -39,6 +39,7 @@ SDK 已知错误码到默认消息的映射表。
 | <a id="property-e_network_error"></a> `E_NETWORK_ERROR` | `"Network request failed: {message}"` | `'Network request failed: {message}'` |
 | <a id="property-e_no_global_client"></a> `E_NO_GLOBAL_CLIENT` | `"No global client configured. Call ZentaoClient.init() or pass options.client."` | `'No global client configured. Call ZentaoClient.init() or pass options.client.'` |
 | <a id="property-e_no_profile"></a> `E_NO_PROFILE` | `"No ZenTao profile is configured."` | `'No ZenTao profile is configured.'` |
+| <a id="property-e_pagination_incomplete"></a> `E_PAGINATION_INCOMPLETE` | `"Incomplete pagination for {action} at page {page}: {reason}"` | `'Incomplete pagination for {action} at page {page}: {reason}'` |
 | <a id="property-e_profile_not_found"></a> `E_PROFILE_NOT_FOUND` | `"ZenTao profile not found: {profileKey}"` | `'ZenTao profile not found: {profileKey}'` |
 | <a id="property-e_profile_storage_invalid"></a> `E_PROFILE_STORAGE_INVALID` | `"ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string."` | `'ZenTao profile storage must be a JSON object with a profiles array and an optional currentProfile string.'` |
 | <a id="property-e_profile_storage_unavailable"></a> `E_PROFILE_STORAGE_UNAVAILABLE` | `"ZenTao profile storage is unavailable in this runtime."` | `'ZenTao profile storage is unavailable in this runtime.'` |

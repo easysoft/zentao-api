@@ -90,6 +90,10 @@
         "link": "/reference/interfaces/ImageFileContent.md"
       },
       {
+        "text": "ListPage",
+        "link": "/reference/interfaces/ListPage.md"
+      },
+      {
         "text": "LoginResponse",
         "link": "/reference/interfaces/LoginResponse.md"
       },
@@ -446,6 +450,10 @@
       {
         "text": "isModuleName",
         "link": "/reference/functions/isModuleName.md"
+      },
+      {
+        "text": "iteratePages",
+        "link": "/reference/functions/iteratePages.md"
       },
       {
         "text": "parseFileUrl",

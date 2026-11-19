@@ -80,7 +80,7 @@ const products = await request('product/list');
 
 | 调用方式 | 适合场景 | 返回值 |
 | --- | --- | --- |
-| `request("module/action")` | 调用注册表中的常用禅道 API，自动处理参数与分页 | 统一的 `ResponseData<T>` |
+| `request("module/action")` | 调用注册表中的禅道 API，列表请求读取指定的一页 | 统一的 `ResponseData<T>` |
 | `ZentaoClient` | 调用尚未注册的路径、上传文件或读取二进制响应 | 禅道原始响应体 |
 
 ### 高阶模块请求
@@ -125,6 +125,8 @@ const bugs = await request(
 ```
 
 更多过滤语法和处理顺序见[本地数据处理指南](https://github.com/easysoft/zentao-api/blob/main/docs/guide/data-processing.md)。
+
+需要逐页读取时，用 `for await (const page of iteratePages(name, params, options))`。每次迭代才请求一页，找到目标后可用 `break` 提前结束。本地筛选可以使 `page.data` 为空，SDK 仍按服务端 `pager` 推进。[按需翻页示例](https://github.com/easysoft/zentao-api/blob/main/docs/guide/examples.md#按需翻页)
 
 ### 统一返回结构
 

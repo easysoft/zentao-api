@@ -29,6 +29,7 @@
 | [GetZentaoConfigOptions](interfaces/GetZentaoConfigOptions.md) | [ZentaoClient.getZentaoConfig](classes/ZentaoClient.md#getzentaoconfig) 的选项。 |
 | [GlobalOptions](interfaces/GlobalOptions.md) | SDK 进程级全局默认选项，供请求和 [createLink](functions/createLink.md) 等辅助方法复用。 |
 | [ImageFileContent](interfaces/ImageFileContent.md) | 图片附件的原始内容及按附件 ID 生成的文件名。 |
+| [ListPage](interfaces/ListPage.md) | [iteratePages](functions/iteratePages.md) 交付的单页结果，包含本地处理后的记录和服务端分页信息。 |
 | [LoginResponse](interfaces/LoginResponse.md) | 登录接口响应结构。 |
 | [ModuleAction](interfaces/ModuleAction.md) | 禅道模块中的单个 API 动作定义。 |
 | [ModuleActionPagerGetterMap](interfaces/ModuleActionPagerGetterMap.md) | 从原始响应中提取分页字段时使用的字段映射，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
@@ -129,6 +130,7 @@
 | [getProfile](functions/getProfile.md) | 获取指定 profile。 |
 | [getProfileKey](functions/getProfileKey.md) | 根据 profile 的账号和禅道站点地址生成稳定 key。 |
 | [isModuleName](functions/isModuleName.md) | 判断模块名是否已注册。 |
+| [iteratePages](functions/iteratePages.md) | 按需读取列表，从指定页码（默认 1）开始，每次迭代请求一页。退出循环即停止取页。 每页沿用 [request](functions/request.md) 的本地处理选项，筛选后为空的页也会交付。是否翻页依据服务端 pager。 |
 | [parseFileUrl](functions/parseFileUrl.md) | 解析禅道附件的读取或下载路由。路径式链接可附带普通查询参数。 用查询参数指定路由时，模块、方法和文件 ID 必须唯一，且不能与路径路由混用。 |
 | [parseLink](functions/parseLink.md) | 解析禅道页面链接，同步执行且不读取浏览器当前位置、存储或网络。 |
 | [pickFields](functions/pickFields.md) | 对列表中的每条对象摘取指定字段。 |

@@ -33,6 +33,7 @@ export const ERRORS = {
   E_INVALID_PARAM: 'Invalid value for parameter {param}: {value}',
   E_INVALID_REQUEST_NAME: 'Request name must use the form "moduleName", "moduleName/methodName", or "moduleName/<objectID>".',
   E_API_FAILED: 'ZenTao API returned failure: {message}',
+  E_PAGINATION_INCOMPLETE: 'Incomplete pagination for {action} at page {page}: {reason}',
   E_UPLOAD_PATH_UNSUPPORTED: 'Local file paths are not supported in browser runtimes. Pass a File or Blob instead.',
   E_UPLOAD_FILE_NOT_FOUND: 'Upload file not found: {path}',
   E_UPLOAD_FILE_READ_FAILED: 'Failed to read upload file: {path}',
