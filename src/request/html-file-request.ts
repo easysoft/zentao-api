@@ -9,9 +9,9 @@ import { createLink, parseLink } from '../utils/link.js';
 import { parseHtmlFiles, rewriteHtmlFiles, type HtmlFileReference, type HtmlFileReplacement } from './html-files.js';
 import { inferExtension, normalizeFilename } from './prepare-body.js';
 import { FILE_BINDING_MINIMUMS } from './version.js';
-import { positiveID } from './write-outcome.js';
+import { positiveID, type FileReceipt } from './write-outcome.js';
 
-type FileRequest = (action: 'create' | 'delete', params: Record<string, unknown>, checkSession?: () => void) => Promise<Record<string, unknown>>;
+type FileRequest = (action: 'create' | 'delete', params: Record<string, unknown>, checkSession?: () => void) => Promise<FileReceipt>;
 interface Context extends FileHandlingOptions {
   client: ZentaoClient;
   version: string | null;
@@ -253,11 +253,9 @@ export class HtmlFileRequest {
             const file: FileUploadSource = source.blob
               ? { data: source.blob, filename: source.name }
               : { path: source.path!, filename: source.name };
-            const response = await this.context.requestFile('create', { file, uid: this.uid, extra: 'editor' }, this.checkSession);
-            const data = isRecord(response.data) ? response.data : {};
-            outcome.id = positiveID(response.id) ?? positiveID(data.id) ?? positiveID(response.data);
-            const url = typeof response.url === 'string' && response.url.trim() ? response.url : data.url;
-            if (typeof url === 'string' && url.trim()) outcome.url = url;
+            const receipt = await this.context.requestFile('create', { file, uid: this.uid, extra: 'editor' }, this.checkSession);
+            outcome.id = receipt.id;
+            outcome.url = receipt.url;
             if (!outcome.id && !outcome.url) throw new ZentaoError('E_FILE_UPLOAD_FAILED');
             this.uploads.push({ id: outcome.id, url: outcome.url, reference });
           } catch (error) { outcome.error = error; }

@@ -25,7 +25,7 @@ import { HtmlFileRequest, setFileUid } from './html-file-request.js';
 import { renderExplicitMarkdown } from './markdown.js';
 import { assertListPage, pagerNumber, setIterationPage, type PageCursor } from './pagination.js';
 import { resolveRequestVersion } from './version.js';
-import { classifyWriteError, classifyWriteReceipt, isWriteFailure, trackWrite, type WriteAttempt } from './write-outcome.js';
+import { classifyWriteError, classifyWriteReceipt, readFileReceipt, trackWrite, type FileReceipt, type WriteAttempt } from './write-outcome.js';
 
 type BuiltinActionName<M extends BuiltinModuleName> = Extract<keyof BuiltinActionMeta[M], string>;
 type BuiltinListRequestName = BuiltinModuleName;
@@ -219,6 +219,7 @@ function normalizeResponse<T>(
   options: RequestProcessOptions,
   rejected: boolean,
   cursor?: PageCursor,
+  fileReceipt?: FileReceipt,
 ): ResponseData<T> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return attachResultObjectType({ status: 'success', data: raw as T }, command);
@@ -229,7 +230,7 @@ function normalizeResponse<T>(
   const source = extractResult(command.action, record, command.params, options);
   if (cursor) cursor.rowCount = Array.isArray(source) ? source.length : undefined;
   const data = applyProcessing(source, options);
-  const rawMessage = record.message;
+  const rawMessage = fileReceipt ? fileReceipt.message : record.message;
 
   const toNumber = cursor ? pagerNumber : Number;
   const pager = extractPager(command.action, record, command.params, options, toNumber);
@@ -406,7 +407,8 @@ async function requestInternal<T = unknown>(
   };
   const method = String(command.action.method).toUpperCase() as HttpMethod;
   const isWrite = method === 'POST' || method === 'PUT';
-  const isUpload = moduleName === 'file' && actionName === 'create';
+  const fileAction: string | undefined = module.name === 'file' ? action.name : undefined;
+  const isUpload = fileAction === 'create';
   const flatUid = isUpload && command.query?.uid !== undefined ? command.query.uid : command.params.uid;
   const explicitUid = command.data?.uid !== undefined ? command.data.uid : flatUid;
   const uid = isWrite && explicitUid !== undefined ? setFileUid(command, explicitUid, version) : undefined;
@@ -421,14 +423,11 @@ async function requestInternal<T = unknown>(
         client, ...transportOptions, maxUploadBytes: options.maxUploadBytes,
         raw: true, autoFill: false,
       }, { version, prepareRichText: false, checkSession: fileSession });
-      if (action === 'create' && (typeof raw === 'number' || typeof raw === 'string')) return { id: raw };
-      const nested = isRecord(raw) && isRecord(raw.data) ? raw.data : undefined;
-      const deleteConfirmed = action !== 'delete' || (isRecord(raw) && (raw.status === 'success' || raw.result === 'success'));
-      if (!isRecord(raw) || !deleteConfirmed || isWriteFailure(raw) || (nested && isWriteFailure(nested))) {
-        const message = isRecord(raw) ? stringifyMessage(raw.message ?? nested?.message) : undefined;
-        throw new ZentaoError('E_API_FAILED', { message: message ?? `Invalid file/${action} response.` }, raw);
-      }
-      return raw;
+      const receipt = readFileReceipt(action, raw);
+      if (action === 'create' && (typeof raw === 'number' || typeof raw === 'string')) return receipt;
+      if (action === 'create' && isRecord(raw) && raw.status !== 'fail' && receipt.outcome !== 'rejected') return receipt;
+      if (receipt.outcome === 'confirmed') return receipt;
+      throw new ZentaoError('E_API_FAILED', { message: stringifyMessage(receipt.message) ?? `Invalid file/${action} response.` }, raw);
     },
   }, uid) : undefined;
   let preparedBody;
@@ -457,8 +456,9 @@ async function requestInternal<T = unknown>(
     if (write) write.outcome = outcome;
     throw files ? await files.saveError(error, outcome) : error;
   }
+  const fileReceipt = write && (fileAction === 'create' || fileAction === 'delete') ? readFileReceipt(fileAction, raw) : undefined;
   const receipt = write || (files && command.data?.uid !== undefined)
-    ? write?.outcome ?? classifyWriteReceipt(raw)
+    ? write?.outcome ?? fileReceipt?.outcome ?? classifyWriteReceipt(raw)
     : undefined;
   if (receipt) {
     if (write) {
@@ -474,7 +474,7 @@ async function requestInternal<T = unknown>(
 
   // limit 现归入本地处理选项；本次调用优先，缺省回落到全局默认。
   const processOptions: RequestProcessOptions = { ...options, limit: options.limit ?? globals.limit };
-  const response = normalizeResponse<T>(command, raw, processOptions, receipt === 'rejected', cursor);
+  const response = normalizeResponse<T>(command, raw, processOptions, receipt === 'rejected', cursor, fileReceipt);
   if (write) response.writeOutcome = write.outcome;
   if (files?.warnings.length) response.fileWarnings = files.warnings;
   if (response.status === 'fail' && (options.throwOnFail ?? globals.throwOnFail)) {

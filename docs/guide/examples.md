@@ -158,6 +158,10 @@ Node.js/Bun 中，高阶 `request()` 可以直接读取本地文件路径并按 
 
 不关联业务对象时，可省略 `objectType` 和 `objectID`。
 
+`file/create` 和 `file/delete` 会检查回执顶层和 `data` 中的 `status`、`result`。若一层明确失败，归一化响应返回 `status: 'fail'` 和 `writeOutcome: 'rejected'`，并优先采用失败层的消息。设置 `throwOnFail: true` 时抛出 `E_API_FAILED`。
+
+直接删除和富文本附件自动清理都以顶层成功标记确认删除。若回执只有文件 ID，`file/delete` 的 `writeOutcome` 为 `unknown`，自动清理会记录 `cleanup` 警告。
+
 ```ts
 await request('file/create', {
   file: '/tmp/zentao-api-upload.txt',

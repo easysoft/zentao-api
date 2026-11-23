@@ -87,6 +87,47 @@ test('an explicit rejection is reported in normalized and throwing modes', async
   });
 });
 
+test.each([
+  ['file/create', { status: 'success', message: 'Uploaded', data: { id: 7, result: 'fail' } }, undefined],
+  ['File/Create', { status: 'success', message: 'Uploaded', data: { id: 7, status: 'error', message: 'Quota exceeded' } }, 'Quota exceeded'],
+  ['file/create', { status: 'fail', message: 'Upload denied', data: { result: 'fail', message: 'Invalid file' } }, 'Upload denied'],
+  ['file/create', { status: 'fail', data: { result: 'success', message: 'Uploaded' } }, undefined],
+  ['File/Delete', { status: 'success', message: 'Deleted', data: { id: 7, result: 'fail', message: 'Delete denied' } }, 'Delete denied'],
+] as const)('%s reports the failed layer of the file receipt %p', async (name, receipt, message) => {
+  Object.freeze(receipt);
+  spyOn(client, 'request').mockResolvedValue(receipt);
+  const onWriteOutcome = mock<(outcome: WriteOutcome) => void>();
+  const options = { client, onWriteOutcome };
+  const params = name === 'File/Delete' ? { fileID: 7 } : { file: new Blob(['sample'], { type: 'image/png' }) };
+  const failure = { status: 'fail', writeOutcome: 'rejected', raw: receipt, message };
+
+  await expect(request(name, params, options)).resolves.toMatchObject(failure);
+  await expect(request(name, params, { ...options, throwOnFail: true })).rejects.toMatchObject({
+    code: 'E_API_FAILED', writeOutcome: 'rejected', details: failure, params: { message: message ?? '' },
+  });
+  expect(await request(name, params, { ...options, raw: true, throwOnFail: true })).toBe(receipt);
+  expect(onWriteOutcome.mock.calls).toEqual([['rejected'], ['rejected'], ['rejected']]);
+});
+
+test.each([
+  [{ id: 7 }, 'unknown'],
+  [{ result: 'success' }, 'confirmed'],
+] as const)('file/delete requires an explicit success marker to confirm deletion: %p', async (receipt, outcome) => {
+  spyOn(client, 'request').mockResolvedValue(receipt);
+  const response = await request('file/delete', { fileID: 7 }, { client });
+  expect(response.writeOutcome).toBe(outcome);
+});
+
+test('keeps a structured failure message from the upload receipt', async () => {
+  const reason = Object.freeze({ file: ['Quota exceeded'] });
+  const receipt = { status: 'fail', message: '', data: { status: 'error', message: reason } };
+  spyOn(client, 'request').mockResolvedValue(receipt);
+  const response = await request('file/create', { file: new Blob(['sample']) }, { client });
+  expect(response.rawMessage).toBe(reason);
+  expect(response.message).toBe(JSON.stringify(reason));
+  expect(response.raw).toBe(receipt);
+});
+
 test('a read-only POST never reports an object write', async () => {
   spyOn(client, 'request').mockResolvedValue(Response.json({ status: 'success', data: [] }));
   const onWriteOutcome = mock<(outcome: WriteOutcome) => void>();

@@ -585,6 +585,18 @@ describe('HTML file failure lifecycle', () => {
     expect(html).toContain('<a href="two">report.pdf</a>');
   });
 
+  test('the upload warning and strict exception both report the nested reason', async () => {
+    const receipt = { status: 'success', message: 'Uploaded', data: { id: 7, result: 'fail', message: 'Quota exceeded' } };
+    const h = setup(call => call.path === '/files' ? receipt : undefined);
+    const onFileError = mock<(warning: FileWarning) => void>();
+    const options = { fileResolver: { source: { blob: blob() } }, onFileError, continueOnFileUploadError: false };
+    await expect(request('article/create', { content: '<img src="source">' }, options)).rejects.toMatchObject({
+      code: 'E_API_FAILED', params: { message: 'Quota exceeded' }, writeOutcome: 'not-sent',
+    });
+    expect(onFileError.mock.calls[0]?.[0]).toMatchObject({ stage: 'upload', message: expect.stringContaining('Quota exceeded') });
+    expect(h.calls.map(call => call.path)).toEqual(['/files']);
+  });
+
   test('local read and upload-size failures follow the configured upload failure policy', async () => {
     const h = setup();
     const response = await request('article/update', { id: 9, content: '<img src="file:///__zentao_missing__/image.png">' });
@@ -611,9 +623,12 @@ describe('HTML file failure lifecycle', () => {
     expect(data(h.objects()[0]).content).not.toContain('/file-read-undefined');
   });
 
-  test('strict upload failure cleans previously uploaded files and never sends the main request', async () => {
+  test.each([
+    { status: 'fail', message: 'Upload failed' },
+    { status: 'success', data: { id: 7, result: 'fail' } },
+  ])('strict upload failure cleans previously uploaded files and never sends the main request: %p', async receipt => {
     let uploads = 0;
-    const h = setup(call => call.path === '/files' && ++uploads === 2 ? { status: 'fail', message: 'Upload failed' } : undefined);
+    const h = setup(call => call.path === '/files' && ++uploads === 2 ? receipt : undefined);
     await expect(request('article/create', { content: '<img src="one"><img src="two">' }, {
       fileResolver: { one: { blob: blob() }, two: { blob: blob() } }, continueOnFileUploadError: false,
     })).rejects.toMatchObject({ code: 'E_API_FAILED', writeOutcome: 'not-sent' });
@@ -738,8 +753,11 @@ describe('HTML file failure lifecycle', () => {
     expect(h.removals()).toHaveLength(0);
   });
 
-  test('cleanup failure preserves the original creation failure and identifies the orphaned file', async () => {
-    const h = setup(call => call.options.method === 'DELETE' ? { status: 'fail', message: 'Delete denied' } : undefined,
+  test.each([
+    { status: 'fail', message: 'Delete denied' },
+    { status: 'success', message: 'Deleted', data: { id: 100, result: 'fail', message: 'Delete denied' } },
+  ])('cleanup reports the deletion failure and preserves the main failure: %p', async receipt => {
+    const h = setup(call => call.options.method === 'DELETE' ? receipt : undefined,
       { status: 'fail', message: 'Creation denied' });
     const warnings: FileWarning[] = [];
     const response = await request('article/create', { content: '<img src="source">' }, {
@@ -747,7 +765,7 @@ describe('HTML file failure lifecycle', () => {
     });
     expect(response).toMatchObject({ status: 'fail', message: 'Creation denied' });
     expect(response.fileWarnings).toContainEqual(expect.objectContaining({ stage: 'cleanup', fileID: 100 }));
-    expect(warnings).toContainEqual(expect.objectContaining({ stage: 'cleanup', fileID: 100 }));
+    expect(warnings).toContainEqual(expect.objectContaining({ stage: 'cleanup', fileID: 100, message: expect.stringContaining('Delete denied') }));
     expect(h.removals()).toHaveLength(1);
   });
 
@@ -780,6 +798,7 @@ describe('HTML file failure lifecycle', () => {
   test.each([
     'PHP Fatal error: cleanup did not finish',
     {},
+    { id: 100 },
     { result: 'fail', message: 'Cleanup denied' },
     { status: 'success', result: 'fail', message: 'Cleanup denied' },
   ])('malformed or explicitly failed file cleanup response preserves the main failure: %p', async fileResult => {

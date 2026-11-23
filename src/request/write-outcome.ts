@@ -1,6 +1,6 @@
 import { ZentaoError } from '../misc/errors.js';
 import type { WriteOutcome } from '../types/response.js';
-import { isRecord } from '../utils/object.js';
+import { isBlank, isRecord } from '../utils/object.js';
 
 export interface WriteAttempt {
   phase?: 'preparing' | 'before-hook' | 'custom' | 'dispatching' | 'received';
@@ -31,19 +31,57 @@ function failed(value: unknown): boolean {
   return value === 'fail' || value === 'error' || value === 'failed';
 }
 
-export function isWriteFailure(raw: Record<string, unknown>): boolean {
-  return failed(raw.status) || failed(raw.result);
+type ReceiptOutcome = Exclude<WriteOutcome, 'not-sent'>;
+
+function explicitOutcome(record: Record<string, unknown>): ReceiptOutcome | undefined {
+  // The strict JSON adapter builds this diagnostic when it cannot read a valid receipt.
+  if (record.status === 'fail' && typeof record.httpStatus === 'number' && typeof record.responseText === 'string') return 'unknown';
+  if (failed(record.status) || failed(record.result)) return 'rejected';
+  if (record.status === 'success' || record.result === 'success') return 'confirmed';
 }
 
-export function classifyWriteReceipt(raw: unknown): Exclude<WriteOutcome, 'not-sent'> {
+export function classifyWriteReceipt(raw: unknown): ReceiptOutcome {
   if (isRecord(raw)) {
-    // The strict JSON adapter builds this diagnostic when it cannot read a valid receipt.
-    if (raw.status === 'fail' && typeof raw.httpStatus === 'number' && typeof raw.responseText === 'string') return 'unknown';
-    if (isWriteFailure(raw)) return 'rejected';
-    if (raw.status === 'success' || raw.result === 'success' || positiveID(raw.id)) return 'confirmed';
+    const outcome = explicitOutcome(raw);
+    if (outcome) return outcome;
+    if (positiveID(raw.id)) return 'confirmed';
     if (isRecord(raw.data) && positiveID(raw.data.id)) return 'confirmed';
   }
   return positiveID(raw) ? 'confirmed' : 'unknown';
+}
+
+export interface FileReceipt {
+  outcome: ReceiptOutcome;
+  message?: unknown;
+  id?: number;
+  url?: string;
+}
+
+function fileURL(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
+// Upload and deletion can wrap a second receipt in data. Other actions use data for business objects.
+export function readFileReceipt(action: 'create' | 'delete', raw: unknown): FileReceipt {
+  const record = isRecord(raw) ? raw : undefined;
+  const data = record?.data;
+  const nested = isRecord(data) ? data : undefined;
+  const outcome = record && explicitOutcome(record);
+  const message = record?.message;
+  if (outcome === 'unknown') return { outcome, message };
+  if (outcome === 'rejected') {
+    const fallback = nested && explicitOutcome(nested) !== 'confirmed' ? nested.message : undefined;
+    return { outcome, message: isBlank(message) ? fallback ?? message : message };
+  }
+  if (nested && (failed(nested.status) || failed(nested.result))) {
+    const reason = nested.message;
+    return { outcome: 'rejected', message: isBlank(reason) && !outcome ? message ?? reason : reason };
+  }
+  if (action === 'delete') return { outcome: outcome ?? 'unknown', message };
+
+  const id = positiveID(record?.id) ?? positiveID(nested?.id) ?? positiveID(record ? data : raw);
+  const url = fileURL(record?.url) ?? fileURL(nested?.url);
+  return { outcome: outcome ?? (id ? 'confirmed' : 'unknown'), message, id, url };
 }
 
 export function classifyWriteError(phase: WriteAttempt['phase'], error: unknown): WriteOutcome {
