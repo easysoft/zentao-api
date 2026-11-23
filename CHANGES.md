@@ -1,5 +1,28 @@
 # 变更日志
 
+## 0.9.4 - 2026-11-23
+
+### 新增
+
+- `iteratePages()` 支持按需读取列表，退出循环即停止请求后续页。本地筛选得到空页时仍按服务端分页信息继续，分页信息缺失或矛盾时抛出 `E_PAGINATION_INCOMPLETE`。
+- `request()` 支持通过 `renderMarkdown` 在 `autoFill` 前将显式提交的富文本字段转为 HTML。协同文档正文默认保留 Markdown，显式指定 `contentType: 'html'` 后可参与渲染。
+- `parseFileUrl()` 可解析附件的读取和下载链接，也可从 `zentao-api/url` 单独导入 URL 工具。`readImageFile()` 可按读取链接或文件 ID 获取图片内容、文件名和 MIME 类型。
+- `supportsFileBinding()` 可按禅道版本判断是否支持用 `uid` 绑定附件。设置 `continueOnFileResolveError: true` 后，解析失败的图片会替换为原 `alt` 文本，缺少说明时使用原路径，正文可继续保存。
+- 对象写入通过 `writeOutcome` 区分尚未发送、服务端拒绝、结果未知和已确认四种状态。`raw: true` 保留原始回执，可通过 `onWriteOutcome` 获取判定。
+
+### 修复
+
+- `file/create` 将不同上传回执中的有效文件 ID 统一为数字 `data.id`。上传和删除都能识别回执顶层或 `data` 中的失败标记。删除回执仅含 ID 时，写入结果为 `unknown`，自动清理会记录警告。
+- 并发保存富文本时，附件异常中的 `uid`、文件 ID 和警告按请求隔离，调用方可通过 `cause` 取得原始异常。
+
+### 测试
+
+- 补充提前结束分页、Markdown 渲染顺序、写入中断与附件回执的回归测试，并验证打包后的 `zentao-api/url` 可独立加载。
+
+### 文档
+
+- 在使用指南中补充逐页查询、Markdown 写入、图片读取和写入结果判定的示例，并更新 SDK 参考。
+
 ## 0.9.3 - 2026-11-19
 
 ### 新增
