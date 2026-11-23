@@ -709,6 +709,35 @@ describe('HTML file failure lifecycle', () => {
     expect(h.removals()).toHaveLength(0);
   });
 
+  test.each([
+    ['Error', new Error('Shared transport error')],
+    ['ZentaoError', Object.freeze(new ZentaoError('E_API_FAILED', { message: 'Shared transport error' }, { traceID: 'original' }))],
+  ] as const)('scopes attachment details to the request when a custom transport reuses a %s', async (_, shared) => {
+    const h = setup(({ path, options }) => {
+      if (path === '/files') return { id: options.query?.uid === 'batch-A' ? 17 : 29, url: '/image.png' };
+    });
+    extendModuleAction('bug', 'update', { request: async () => { throw shared; } });
+    const batches = ['batch-A', 'batch-B'];
+    const onWriteOutcome = mock<(value: WriteOutcome) => void>();
+    const options = { autoFill: false, onWriteOutcome, fileResolver: { source: { blob: blob() } } };
+    const failures = await Promise.all(batches.map(uid =>
+      request('bug/update', { id: 7, uid, steps: '<img src="source">' }, options).catch(error => error),
+    ));
+    expect(failures[0]).not.toBe(failures[1]);
+    for (const [i, failure] of failures.entries()) {
+      expect(failure.cause).toBe(shared);
+      expect(failure.details).toMatchObject({ uid: batches[i], fileIDs: [i === 0 ? 17 : 29], fileWarnings: [] });
+      if (shared instanceof ZentaoError) {
+        expect(failure).toBeInstanceOf(ZentaoError);
+        expect(failure).toMatchObject({ code: shared.code, params: shared.params, details: { traceID: 'original' } });
+      }
+    }
+    expect(shared).not.toHaveProperty('details.uid');
+    expect(onWriteOutcome.mock.calls).toEqual([['unknown'], ['unknown']]);
+    expect(h.uploads()).toHaveLength(2);
+    expect(h.removals()).toHaveLength(0);
+  });
+
   test('cleanup failure preserves the original creation failure and identifies the orphaned file', async () => {
     const h = setup(call => call.options.method === 'DELETE' ? { status: 'fail', message: 'Delete denied' } : undefined,
       { status: 'fail', message: 'Creation denied' });

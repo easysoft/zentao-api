@@ -306,18 +306,15 @@ export class HtmlFileRequest {
     const fileIDs = this.uploads.flatMap(upload => upload.id === undefined ? [] : [upload.id]);
     const extra = { uid: this.uid, fileIDs, fileWarnings: [...this.warnings] };
     if (error instanceof ZentaoError) {
-      return new ZentaoError(error.code, error.params, {
+      const failure = new ZentaoError(error.code, error.params, {
         ...(plainRecord(error.details) ? error.details : { cause: error.details }), ...extra,
       });
+      return Object.defineProperty(failure, 'cause', { value: error, configurable: true });
     }
-    if (error instanceof Error && Object.isExtensible(error)) {
-      const descriptor = Object.getOwnPropertyDescriptor(error, 'details');
-      if (!descriptor || descriptor.configurable) {
-        Object.defineProperty(error, 'details', { value: { cause: descriptor?.value, ...extra }, configurable: true });
-        return error;
-      }
-    }
-    return Object.assign(new Error(error instanceof Error ? error.message : String(error), { cause: error }), { details: extra });
+    const failure = new Error(error instanceof Error ? error.message : String(error), { cause: error });
+    if (error instanceof Error) failure.name = error.name;
+    const previousDetails = error instanceof Error ? Object.getOwnPropertyDescriptor(error, 'details')?.value : undefined;
+    return Object.assign(failure, { details: previousDetails === undefined ? extra : { cause: previousDetails, ...extra } });
   }
 
   async saveError(error: unknown, outcome: WriteOutcome): Promise<unknown> {

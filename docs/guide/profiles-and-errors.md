@@ -217,7 +217,9 @@ setGlobalOptions({ throwOnFail: true });
 | `unknown` | 写入结果待确认。例如提交后断线、HTTP 408 或 5xx、回执格式无法识别。重试前先回读对象。 |
 | `confirmed` | 收到成功标记或可识别的对象 ID。 |
 
-使用 `raw: true` 时，SDK 直接返回动作收到的原始回执，通过单次请求的 `onWriteOutcome` 单独通知判定。自定义 `beforeRequest` 或 `request` 回调抛出的异常保留原样，调用方也可通过通知取得写入判定。
+使用 `raw: true` 时，SDK 直接返回动作收到的原始回执，通过单次请求的 `onWriteOutcome` 通知判定。自定义 `beforeRequest` 或 `request` 回调抛错时，也可从此通知取得写入判定。
+
+SDK 默认原样传递自定义回调抛出的异常。自定义 `request` 需要附加附件批次或警告时，SDK 为本次请求创建独立的异常。`error.details` 包含本次的 `uid`、`fileIDs` 和 `fileWarnings`，`error.cause` 指向回调抛出的原异常。
 
 ```ts
 const receipt = await request('bug/create', params, {

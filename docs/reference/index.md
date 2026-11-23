@@ -82,7 +82,7 @@
 | [ModuleActionName](type-aliases/ModuleActionName.md) | 模块动作名称，允许除基础动作外的自定义名称。 |
 | [ModuleActionParamOption](type-aliases/ModuleActionParamOption.md) | 模块动作参数可选项。 |
 | [ModuleActionParamRole](type-aliases/ModuleActionParamRole.md) | 模块动作参数角色。 |
-| [ModuleActionRequestCallback](type-aliases/ModuleActionRequestCallback.md) | 自定义动作的请求发送逻辑，在版本检查、参数解析和请求体准备完成后调用。 返回原始响应数据，后续仍按动作定义提取结果、分页并应用请求选项；抛出的错误原样传递。 |
+| [ModuleActionRequestCallback](type-aliases/ModuleActionRequestCallback.md) | 自定义动作的请求发送逻辑，在版本检查、参数解析和请求体准备完成后调用。 返回原始响应数据，后续按动作定义提取结果、分页并应用请求选项。 默认原样传递回调抛出的异常。需要附加附件批次或警告时，SDK 为当前请求创建异常，并通过 `cause` 保留原异常。 |
 | [ModuleActionRequestMediaType](type-aliases/ModuleActionRequestMediaType.md) | 高阶请求支持的请求体媒体类型。 |
 | [ModuleActionResultFieldMap](type-aliases/ModuleActionResultFieldMap.md) | 从原始响应中重映射业务数据字段的映射表。 键为输出字段名，值为原始响应中的字段路径（支持 `a.b` 嵌套）。 |
 | [ModuleActionResultObjectType](type-aliases/ModuleActionResultObjectType.md) | 返回业务对象的 SDK 资源类型，或从调用参数读取类型的可序列化规则。 `null` 表示没有统一对象类型；类型名称不要求是已注册的模块名。 |
