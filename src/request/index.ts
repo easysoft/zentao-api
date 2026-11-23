@@ -221,13 +221,21 @@ function normalizeResponse<T>(
   cursor?: PageCursor,
   fileReceipt?: FileReceipt,
 ): ResponseData<T> {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+  // A bare upload ID uses the same result processing as an object receipt.
+  if (fileReceipt?.id && !isRecord(raw) && !command.action.resultGetter) raw = { id: fileReceipt.id };
+  if (!isRecord(raw)) {
     return attachResultObjectType({ status: 'success', data: raw as T }, command);
   }
 
-  const record = raw as Record<string, unknown>;
+  const record = raw;
   const status = rejected || record.status === 'fail' ? 'fail' : 'success';
-  const source = extractResult(command.action, record, command.params, options);
+  let source = extractResult(command.action, record, command.params, options);
+  if (fileReceipt?.id && !command.action.resultGetter) {
+    const fields = isRecord(source) ? source : {};
+    if (fields.id !== fileReceipt.id || (fileReceipt.url && fields.url !== fileReceipt.url)) {
+      source = { ...fields, id: fileReceipt.id, ...(fileReceipt.url && { url: fileReceipt.url }) };
+    }
+  }
   if (cursor) cursor.rowCount = Array.isArray(source) ? source.length : undefined;
   const data = applyProcessing(source, options);
   const rawMessage = fileReceipt ? fileReceipt.message : record.message;

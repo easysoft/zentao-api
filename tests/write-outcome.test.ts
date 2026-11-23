@@ -128,6 +128,18 @@ test('keeps a structured failure message from the upload receipt', async () => {
   expect(response.raw).toBe(receipt);
 });
 
+test('applies upload result processing after extracting the ID and honors a custom result getter', async () => {
+  const receipt = Object.freeze({ id: '7', data: Object.freeze({ title: 'Image' }) });
+  spyOn(client, 'request').mockResolvedValue(receipt);
+  const params = { file: new Blob(['sample']) };
+  const picked = await request('file/create', params, { client, pick: ['id'] });
+  expect(picked.data).toEqual({ id: 7 });
+  extendModuleAction('file', 'create', { resultGetter: 'data' });
+  const custom = await request('file/create', params, { client });
+  expect(custom.data).toBe(receipt.data);
+  expect(await request('file/create', params, { client, raw: true })).toBe(receipt);
+});
+
 test('a read-only POST never reports an object write', async () => {
   spyOn(client, 'request').mockResolvedValue(Response.json({ status: 'success', data: [] }));
   const onWriteOutcome = mock<(outcome: WriteOutcome) => void>();

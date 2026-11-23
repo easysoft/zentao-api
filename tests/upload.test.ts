@@ -201,6 +201,7 @@ describe('high-level file uploads', () => {
       const data: FileCreateResult | undefined = response.data;
 
       expect(response.status).toBe('success');
+      expect(response.writeOutcome).toBe('confirmed');
       expect(data).toEqual({ id: 42, url: '/file-read-42.txt' });
       expect(receivedContentType).toContain('multipart/form-data; boundary=');
       expect(receivedToken).toBe('upload-token');
@@ -214,6 +215,25 @@ describe('high-level file uploads', () => {
       server.stop();
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  test.each([
+    [7, { id: 7 }],
+    ['7', { id: 7 }],
+    [{ status: 'success', data: 7 }, { id: 7 }],
+    [{ data: '7' }, { id: 7 }],
+    [{ status: 'success', id: '7', data: { url: '/7.png', title: 'image' } }, { id: 7, url: '/7.png', title: 'image' }],
+    [{ status: 'success', url: '/7.png', data: { id: '7' } }, { id: 7, url: '/7.png' }],
+  ] as const)('returns a numeric data.id for the upload receipt %p', async (receipt, expected) => {
+    const server = createMockServer(() => Response.json(receipt));
+    try {
+      const client = new ZentaoClient(server.url.href);
+      const params = { file: new Blob(['sample'], { type: 'image/png' }) };
+      const upload = await request('file/create', params, { client, throwOnFail: true });
+      expect(upload.writeOutcome).toBe('confirmed');
+      expect(upload.data).toEqual(expected);
+      expect(await request('file/create', params, { client, raw: true })).toEqual(receipt);
+    } finally { server.stop(); }
   });
 
   test('accepts in-memory data with an explicit filename and content type', async () => {
